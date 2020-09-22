@@ -3,40 +3,10 @@
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 PACKAGES_UNITTEST=$(shell go list ./... | grep -v '/simulation' | grep -v '/cli_test')
 
-all: tools install lint
+all: tools lint
 
 # The below include contains the tools.
 include contrib/devtools/Makefile
-
-build: go.sum
-ifeq ($(OS),Windows_NT)
-	go build $(BUILD_FLAGS) -o build/iris.exe ./cmd/iris
-else
-	go build $(BUILD_FLAGS) -o build/iris ./cmd/iris
-endif
-
-build-linux: go.sum
-	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
-
-build-contract-tests-hooks:
-ifeq ($(OS),Windows_NT)
-	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests.exe ./cmd/contract_tests
-else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
-endif
-
-install: go.sum
-	go install $(BUILD_FLAGS) ./cmd/iris
-
-update-swagger-docs: statik
-	$(BINDIR)/statik -src=lite/grpc-gateway -dest=lite/grpc-gateway -f -m
-	@if [ -n "$(git status --porcelain)" ]; then \
-        echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
-        exit 1;\
-    else \
-    	echo "\033[92mSwagger docs are in sync\033[0m";\
-    fi
-.PHONY: update-swagger-docs
 
 ########################################
 ### Tools & dependencies
