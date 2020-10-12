@@ -606,10 +606,7 @@ func (k Keeper) DeleteActiveRequestByBinding(
 }
 
 // AddActiveRequestByID adds the specified active request by request ID
-func (k Keeper) AddActiveRequestByID(
-	ctx sdk.Context,
-	requestID tmbytes.HexBytes,
-) {
+func (k Keeper) AddActiveRequestByID(ctx sdk.Context, requestID tmbytes.HexBytes) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryBare(&gogotypes.BytesValue{Value: requestID})
@@ -617,19 +614,13 @@ func (k Keeper) AddActiveRequestByID(
 }
 
 // DeleteActiveRequestByID deletes the specified active request by request ID
-func (k Keeper) DeleteActiveRequestByID(
-	ctx sdk.Context,
-	requestID tmbytes.HexBytes,
-) {
+func (k Keeper) DeleteActiveRequestByID(ctx sdk.Context, requestID tmbytes.HexBytes) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetActiveRequestKeyByID(requestID))
 }
 
 // IsRequestActive checks if the specified request is active
-func (k Keeper) IsRequestActive(
-	ctx sdk.Context,
-	requestID tmbytes.HexBytes,
-) bool {
+func (k Keeper) IsRequestActive(ctx sdk.Context, requestID tmbytes.HexBytes) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.GetActiveRequestKeyByID(requestID))
 }
@@ -735,7 +726,7 @@ func (k Keeper) IterateExpiredRequestBatch(
 func (k Keeper) IterateNewRequestBatch(
 	ctx sdk.Context,
 	requestBatchHeight int64,
-	op func(requestContextID tmbytes.HexBytes, requestContext types.RequestContext),
+	op func(requestContextID tmbytes.HexBytes, requestContext *types.RequestContext),
 ) {
 	store := ctx.KVStore(k.storeKey)
 
@@ -748,7 +739,7 @@ func (k Keeper) IterateNewRequestBatch(
 
 		requestContext, _ := k.GetRequestContext(ctx, requestContextID.Value)
 
-		op(requestContextID.Value, requestContext)
+		op(requestContextID.Value, &requestContext)
 	}
 }
 
