@@ -63,9 +63,9 @@ func (k Keeper) AddServiceBinding(
 		return err
 	}
 
-	for _, token := range parsedPricing.Price {
+	for i, token := range parsedPricing.Price {
 		if total := k.bankKeeper.GetSupply(ctx).GetTotal().AmountOf(token.Denom); !total.IsPositive() {
-			return sdkerrors.Wrapf(types.ErrInvalidPricing, "invalid denom %s", parsedPricing.Price[0].Denom)
+			return sdkerrors.Wrapf(types.ErrInvalidPricing, "invalid denom: %s", parsedPricing.Price[i].Denom)
 		}
 	}
 
@@ -179,9 +179,9 @@ func (k Keeper) UpdateServiceBinding(
 			return err
 		}
 
-		for _, token := range parsedPricing.Price {
+		for i, token := range parsedPricing.Price {
 			if total := k.bankKeeper.GetSupply(ctx).GetTotal().AmountOf(token.Denom); !total.IsPositive() {
-				return sdkerrors.Wrapf(types.ErrInvalidPricing, "invalid denom %s", parsedPricing.Price[0].Denom)
+				return sdkerrors.Wrapf(types.ErrInvalidPricing, "invalid denom: %s", parsedPricing.Price[i].Denom)
 			}
 		}
 
