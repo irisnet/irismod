@@ -55,3 +55,4 @@ Ref: https://keepachangelog.com/en/1.0.0/
 <!-- Release links -->
 
 [v1.1.0]: https://github.com/irisnet/irismod/releases/tag/v1.1.0
+[v1.1.1]: https://github.com/irisnet/irismod/releases/tag/v1.1.1
