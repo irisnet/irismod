@@ -606,10 +606,7 @@ func (k Keeper) DeleteActiveRequestByBinding(
 }
 
 // AddActiveRequestByID adds the specified active request by request ID
-func (k Keeper) AddActiveRequestByID(
-	ctx sdk.Context,
-	requestID tmbytes.HexBytes,
-) {
+func (k Keeper) AddActiveRequestByID(ctx sdk.Context, requestID tmbytes.HexBytes) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryBare(&gogotypes.BytesValue{Value: requestID})
@@ -617,19 +614,13 @@ func (k Keeper) AddActiveRequestByID(
 }
 
 // DeleteActiveRequestByID deletes the specified active request by request ID
-func (k Keeper) DeleteActiveRequestByID(
-	ctx sdk.Context,
-	requestID tmbytes.HexBytes,
-) {
+func (k Keeper) DeleteActiveRequestByID(ctx sdk.Context, requestID tmbytes.HexBytes) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetActiveRequestKeyByID(requestID))
 }
 
 // IsRequestActive checks if the specified request is active
-func (k Keeper) IsRequestActive(
-	ctx sdk.Context,
-	requestID tmbytes.HexBytes,
-) bool {
+func (k Keeper) IsRequestActive(ctx sdk.Context, requestID tmbytes.HexBytes) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.GetActiveRequestKeyByID(requestID))
 }
@@ -735,7 +726,7 @@ func (k Keeper) IterateExpiredRequestBatch(
 func (k Keeper) IterateNewRequestBatch(
 	ctx sdk.Context,
 	requestBatchHeight int64,
-	op func(requestContextID tmbytes.HexBytes, requestContext types.RequestContext),
+	op func(requestContextID tmbytes.HexBytes, requestContext *types.RequestContext),
 ) {
 	store := ctx.KVStore(k.storeKey)
 
@@ -748,7 +739,7 @@ func (k Keeper) IterateNewRequestBatch(
 
 		requestContext, _ := k.GetRequestContext(ctx, requestContextID.Value)
 
-		op(requestContextID.Value, requestContext)
+		op(requestContextID.Value, &requestContext)
 	}
 }
 
@@ -808,12 +799,13 @@ func (k Keeper) FilterServiceProviders(
 
 		if found && binding.Available {
 			if binding.QoS <= uint64(timeout) {
-				price, rawDenom, err := k.GetExchangedPrice(ctx, consumer, binding)
+				exchangedPrice, rawDenom, err := k.GetExchangedPrice(ctx, consumer, binding)
 				if err != nil {
 					return nil, nil, rawDenom, err
 				}
 
-				if price.IsAllLTE(serviceFeeCap) {
+				price := k.GetPricing(ctx, binding.ServiceName, binding.Provider).Price
+				if exchangedPrice.IsAllLTE(serviceFeeCap) {
 					newProviders = append(newProviders, provider)
 					totalPrices = totalPrices.Add(price...)
 				}
@@ -829,8 +821,6 @@ func (k Keeper) DeductServiceFees(ctx sdk.Context, consumer sdk.AccAddress, serv
 	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, consumer, types.RequestAccName, serviceFees)
 }
 
-// GetPrice gets the current price for the specified consumer and binding
-// Note: ensure that the binding is valid
 func (k Keeper) GetPrice(
 	ctx sdk.Context,
 	consumer sdk.AccAddress,
@@ -844,17 +834,13 @@ func (k Keeper) GetPrice(
 		pricing, k.GetRequestVolume(ctx, consumer, binding.ServiceName, binding.Provider),
 	)
 
-	// compute the price
-	baseDenom := k.BaseDenom(ctx)
-	basePrice := pricing.Price.AmountOf(baseDenom)
-	price := sdk.NewDecFromInt(basePrice).Mul(discountByTime).Mul(discountByVolume)
-
-	// set to 1 if price < 1
-	if price.LT(sdk.OneDec()) {
-		price = sdk.OneDec()
+	price := []sdk.Coin{}
+	for _, token := range pricing.Price {
+		priceAmount := sdk.NewDecFromInt(token.Amount).Mul(discountByTime).Mul(discountByVolume)
+		price = append(price, sdk.NewCoin(token.Denom, priceAmount.TruncateInt()))
 	}
 
-	return sdk.NewCoins(sdk.NewCoin(baseDenom, price.TruncateInt()))
+	return sdk.NewCoins(price...)
 }
 
 // AddResponse adds the response for the specified request ID

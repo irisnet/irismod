@@ -37,13 +37,20 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v1.1.1] - 2020-10-20
+
+### Bug Fixes
+
+* (modules/coinswap) [\#27](https://github.com/irisnet/irismod/issues/27) Get liquidity reserve via total supply.
+* (modules/service) [\#26](https://github.com/irisnet/irismod/pull/26) Fix deduct service fees and optimized code.
+* (modules/coinswap) [\#25](https://github.com/irisnet/irismod/pull/25) Integrate htlc beginblock.
+* (modules/service) [\#18](https://github.com/irisnet/irismod/pull/18) Fix incorrect price in request and fix init request when insufficient banlances.
+
 ## [v1.1.0] - 2020-09-30
 
 ### Features
 
 * Add modules `token`, `nft`, `htlc`, `coinswap`, `service`, `oracle`, `random`, `record`.
-
-
 
 <!-- Release links -->
 
