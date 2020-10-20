@@ -37,6 +37,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v1.1.1] - 2020-10-20
+
 ### Bug Fixes
 
 * (modules/coinswap) [\#27](https://github.com/irisnet/irismod/issues/27) Get liquidity reserve via total supply.
