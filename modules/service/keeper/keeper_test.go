@@ -410,7 +410,7 @@ func (suite *KeeperTestSuite) TestKeeperRequestService() {
 	suite.Equal(0, len(newProviders))
 }
 
-func (suite *KeeperTestSuite) TestKeeper_Respond_Service() {
+func (suite *KeeperTestSuite) TestKeeperRespondService() {
 	ctx := suite.ctx.WithValue(types.TxHash, tmhash.Sum([]byte("tx_hash")))
 
 	provider := testProvider
