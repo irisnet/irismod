@@ -598,7 +598,7 @@ func GetCmdCallService() *cobra.Command {
 			}
 
 			input = buf.String()
-			timeout, err := cmd.Flags().GetInt64(FlagTimeout)
+			timeout, err := cmd.Flags().GetUint64(FlagTimeout)
 			if err != nil {
 				return err
 			}
@@ -627,7 +627,7 @@ func GetCmdCallService() *cobra.Command {
 
 			msg := types.NewMsgCallService(
 				serviceName, providers, consumer, input, serviceFeeCap,
-				timeout, superMode, repeated, frequency, total,
+				int64(timeout), superMode, repeated, frequency, total,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -913,7 +913,7 @@ func GetCmdUpdateRequestContext() *cobra.Command {
 				}
 			}
 
-			timeout, err := cmd.Flags().GetInt64(FlagTimeout)
+			timeout, err := cmd.Flags().GetUint64(FlagTimeout)
 			if err != nil {
 				return err
 			}
@@ -928,7 +928,7 @@ func GetCmdUpdateRequestContext() *cobra.Command {
 
 			msg := types.NewMsgUpdateRequestContext(
 				requestContextID, providers, serviceFeeCap,
-				timeout, frequency, total, consumer,
+				int64(timeout), frequency, total, consumer,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

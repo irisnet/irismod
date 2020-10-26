@@ -142,7 +142,7 @@ func GetCmdCreateFeed() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			threshold, err := cmd.Flags().GetUint32(FlagThreshold)
+			threshold, err := cmd.Flags().GetUint16(FlagThreshold)
 			if err != nil {
 				return err
 			}
@@ -158,7 +158,7 @@ func GetCmdCreateFeed() *cobra.Command {
 				Timeout:           timeout,
 				ServiceFeeCap:     serviceFeeCap,
 				RepeatedFrequency: frequency,
-				ResponseThreshold: threshold,
+				ResponseThreshold: uint32(threshold),
 				Creator:           creator,
 			}
 			if err := msg.ValidateBasic(); err != nil {
@@ -312,7 +312,7 @@ func GetCmdEditFeed() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			threshold, err := cmd.Flags().GetUint32(FlagThreshold)
+			threshold, err := cmd.Flags().GetUint16(FlagThreshold)
 			if err != nil {
 				return err
 			}
@@ -324,7 +324,7 @@ func GetCmdEditFeed() *cobra.Command {
 				Timeout:           timeout,
 				ServiceFeeCap:     serviceFeeCap,
 				RepeatedFrequency: frequency,
-				ResponseThreshold: threshold,
+				ResponseThreshold: uint32(threshold),
 				Creator:           creator,
 			}
 			if err := msg.ValidateBasic(); err != nil {

@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -92,7 +93,7 @@ func GetCmdCreateHTLC() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			timeLock, err := cmd.Flags().GetInt64(FlagTimeLock)
+			timeLock, err := cmd.Flags().GetString(FlagTimeLock)
 			if err != nil {
 				return err
 			}
@@ -102,20 +103,20 @@ func GetCmdCreateHTLC() *cobra.Command {
 
 			flags := cmd.Flags()
 			if flags.Changed(FlagHashLock) {
-				rawHashLock, err := cmd.Flags().GetString(FlagHashLock)
+				rawHashLock, err := cmd.Flags().GetBytesHex(FlagHashLock)
 				if err != nil {
 					return err
 				}
-				hashLockStr := strings.TrimSpace(rawHashLock)
+				hashLockStr := strings.TrimSpace(hex.EncodeToString(rawHashLock))
 				if hashLock, err = hex.DecodeString(hashLockStr); err != nil {
 					return err
 				}
 			} else {
-				rawSecret, err := cmd.Flags().GetString(FlagSecret)
+				rawSecret, err := cmd.Flags().GetBytesHex(FlagSecret)
 				if err != nil {
 					return err
 				}
-				secretStr := strings.TrimSpace(rawSecret)
+				secretStr := strings.TrimSpace(hex.EncodeToString(rawSecret))
 				if len(secretStr) > 0 {
 					if len(secretStr) != 2*types.SecretLength {
 						return fmt.Errorf("length of the secret must be %d in bytes", types.SecretLength)
@@ -133,9 +134,10 @@ func GetCmdCreateHTLC() *cobra.Command {
 				hashLock = types.GetHashLock(secret, uint64(timestamp))
 			}
 
+			timeLockRes,_ :=strconv.ParseUint(timeLock, 10, 64)
 			msg := types.NewMsgCreateHTLC(
 				sender, to, receiverOnOtherChain, amount,
-				hashLock, uint64(timestamp), uint64(timeLock),
+				hashLock, uint64(timestamp), timeLockRes,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
