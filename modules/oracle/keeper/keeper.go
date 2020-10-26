@@ -304,7 +304,7 @@ func (k Keeper) GetRequestContext(ctx sdk.Context, requestContextID tmbytes.HexB
 }
 
 func (k Keeper) ModuleServiceRequest(ctx sdk.Context, input string) (result string, output string) {
-	feedName := gjson.Get(input, "body").Get("pair").String()
+	feedName := gjson.Get(input, servicetypes.PATH_BODY).Get("pair").String()
 	if _, found := k.GetFeed(ctx, feedName); !found {
 		result = `{"code":"400","message":"feed not found"}`
 		return

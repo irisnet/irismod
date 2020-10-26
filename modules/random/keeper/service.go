@@ -12,11 +12,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	servicetypes "github.com/irisnet/irismod/modules/service/types"
-
-	"github.com/irisnet/irismod/modules/service/exported"
-
 	"github.com/irisnet/irismod/modules/random/types"
+	"github.com/irisnet/irismod/modules/service/exported"
+	servicetypes "github.com/irisnet/irismod/modules/service/types"
 )
 
 // RequestService request the service for oracle seed
@@ -104,7 +102,7 @@ func (k Keeper) HandlerResponse(ctx sdk.Context, requestContextID tmbytes.HexByt
 		return
 	}
 
-	outputBody := gjson.Get(responseOutput[0], "body").String()
+	outputBody := gjson.Get(responseOutput[0], servicetypes.PATH_BODY).String()
 	if err := servicetypes.ValidateResponseOutputBody(types.ServiceSchemas, outputBody); err != nil {
 		ctx.Logger().Error(
 			"invalid output body",
