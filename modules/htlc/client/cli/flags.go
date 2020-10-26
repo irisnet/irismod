@@ -23,8 +23,8 @@ func init() {
 	FsCreateHTLC.String(FlagTo, "", "Bech32 encoding address to receive tokens")
 	FsCreateHTLC.String(FlagReceiverOnOtherChain, "", "Receiving address on the other chain")
 	FsCreateHTLC.String(FlagAmount, "", "Amount to be transferred")
-	FsCreateHTLC.String(FlagSecret, "", "The secret for generating the hash lock, randomly generated if omitted")
-	FsCreateHTLC.String(FlagHashLock, "", "The sha256 hash generated from secret (and timestamp if provided), generated according to the secret flag if omitted")
+	FsCreateHTLC.BytesHex(FlagSecret, nil, "The secret for generating the hash lock, randomly generated if omitted")
+	FsCreateHTLC.BytesHex(FlagHashLock, nil, "The sha256 hash generated from secret (and timestamp if provided), generated according to the secret flag if omitted")
 	FsCreateHTLC.Uint64(FlagTimestamp, 0, "The timestamp in seconds for generating the hash lock if provided")
 	FsCreateHTLC.Uint64(FlagTimeLock, 0, "The number of blocks to wait before tokens may be refunded")
 }
