@@ -6,6 +6,7 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -116,9 +117,9 @@ func (k Keeper) CreateRequestContext(
 		batchState, state, responseThreshold, moduleName,
 	)
 
-	txHash := ctx.Context().Value(types.TxHash).([]byte)
-	msgIndex := ctx.Context().Value(types.MsgIndex).(int64)
-	requestContextID := types.GenerateRequestContextID(txHash, msgIndex)
+	internalCounter := ctx.Context().Value(types.InternalCounterKey).(*types.InternalCounter)
+	requestContextID := types.GenerateRequestContextID(TxHash(ctx), internalCounter.Count())
+	internalCounter.Incr()
 	k.SetRequestContext(ctx, requestContextID, requestContext)
 
 	if requestContext.State == types.RUNNING {
@@ -1151,4 +1152,8 @@ func (k Keeper) validateServiceFeeCap(ctx sdk.Context, serviceFeeCap sdk.Coins) 
 	}
 
 	return nil
+}
+
+func TxHash(ctx sdk.Context) []byte {
+	return tmhash.Sum(ctx.TxBytes())
 }

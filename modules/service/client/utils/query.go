@@ -45,7 +45,7 @@ func QueryRequestContext(
 // QueryRequestContextByTxQuery will query for a single request context via a direct txs tags query.
 func QueryRequestContextByTxQuery(cliCtx client.Context, queryRoute string, params types.QueryRequestContextRequest) (
 	requestContext types.RequestContext, err error) {
-	txHash, msgIndex, err := types.SplitRequestContextID(params.RequestContextId)
+	txHash, _, err := types.SplitRequestContextID(params.RequestContextId)
 	if err != nil {
 		return requestContext, err
 	}
@@ -56,7 +56,23 @@ func QueryRequestContextByTxQuery(cliCtx client.Context, queryRoute string, para
 		return requestContext, err
 	}
 
-	if int64(len(txInfo.GetTx().GetMsgs())) > msgIndex {
+	var msgIndex int
+I:
+	for i, log := range txInfo.Logs {
+		for _, event := range log.Events {
+			if event.Type == sdk.EventTypeMessage {
+				for _, attribute := range event.Attributes {
+					if attribute.Key == types.AttributeKeyRequestContextID &&
+						attribute.Value == string(params.RequestContextId) {
+						msgIndex = i
+						break I
+					}
+				}
+			}
+		}
+	}
+
+	if len(txInfo.GetTx().GetMsgs()) > msgIndex {
 		if msg := txInfo.GetTx().GetMsgs()[msgIndex]; msg.Type() == types.TypeMsgCallService {
 			requestMsg := msg.(*types.MsgCallService)
 			return types.NewRequestContext(

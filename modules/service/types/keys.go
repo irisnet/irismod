@@ -26,11 +26,8 @@ const (
 	// RequestAccName is the root string for the service request account address
 	RequestAccName = "service_request_account"
 
-	// TxHash is the context key for tx hash
-	TxHash = "tx_hash"
-
-	// MsgIndex is the context key for msg index
-	MsgIndex = "msg_index"
+	// InternalCounterKey is the internal counter key for service request context counter
+	InternalCounterKey = "service_internal_counter"
 )
 
 var (
