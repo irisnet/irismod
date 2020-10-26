@@ -77,7 +77,7 @@ func GetCmdIssueToken() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			scale, err := cmd.Flags().GetUint8(FlagScale)
+			scale, err := cmd.Flags().GetUint32(FlagScale)
 			if err != nil {
 				return err
 			}
@@ -98,7 +98,7 @@ func GetCmdIssueToken() *cobra.Command {
 				Symbol:        symbol,
 				Name:          name,
 				MinUnit:       minUnit,
-				Scale:         uint32(scale),
+				Scale:         scale,
 				InitialSupply: initialSupply,
 				MaxSupply:     maxSupply,
 				Mintable:      mintable,
