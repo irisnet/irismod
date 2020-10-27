@@ -17,7 +17,7 @@ import (
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
 	// Get the total supply of a collection or owner
-	r.HandleFunc(fmt.Sprintf("/%s/nfts/{%s}/supply", types.ModuleName, RestParamDenom), querySupply(cliCtx, queryRoute)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/collections/{%s}/supply", types.ModuleName, RestParamDenom), querySupply(cliCtx, queryRoute)).Methods("GET")
 	// Get the collections of NFTs owned by an address
 	r.HandleFunc(fmt.Sprintf("/%s/owners/{%s}", types.ModuleName, RestParamOwner), queryOwner(cliCtx, queryRoute)).Methods("GET")
 	// Get all the NFT from a given collection
