@@ -11,27 +11,27 @@ option go_package = "github.com/irisnet/irismod/modules/nft/types";
 service Query {
     // Supply queries the total supply of a given denom or owner
     rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
-      option (google.api.http).get = "/irismod/nft/supplies/{denom}";
+      option (google.api.http).get = "/irismod/nft/nfts/supplies/{denom}";
     }
 
     // Owner queries the NFTs of the specified owner
     rpc Owner(QueryOwnerRequest) returns (QueryOwnerResponse) {
-      option (google.api.http).get = "/irismod/nft/owners/{owner}";
+      option (google.api.http).get = "/irismod/nft/nfts/owners/{owner}";
     }
 
     // Collection queries the NFTs of the specified denom
     rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
-      option (google.api.http).get = "/irismod/nft/collections/{denom}";
+      option (google.api.http).get = "/irismod/nft/nfts/collections/{denom}";
     }
 
     // Denom queries the definition of a given denom
     rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
-      option (google.api.http).get = "/irismod/nft/denoms/{denom}";
+      option (google.api.http).get = "/irismod/nft/nfts/denoms/{denom}";
     }
 
     // Denoms queries all the denoms
     rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
-      option (google.api.http).get = "/irismod/nft/denoms";
+      option (google.api.http).get = "/irismod/nft/nfts/denoms";
     }
 
     // NFT queries the NFT for the given denom and token ID
