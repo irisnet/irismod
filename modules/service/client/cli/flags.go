@@ -67,7 +67,7 @@ func init() {
 	FsCallService.StringSlice(FlagProviders, []string{}, "provider list to request")
 	FsCallService.String(FlagServiceFeeCap, "", "maximum service fee to pay for a single request")
 	FsCallService.String(FlagData, "", "content or file path of the request input, which is an Input JSON schema instance")
-	FsCallService.Uint64(FlagTimeout, 0, "request timeout")
+	FsCallService.Int64(FlagTimeout, 0, "request timeout")
 	FsCallService.Bool(FlagSuperMode, false, "indicate if the signer is a super user")
 	FsCallService.Bool(FlagRepeated, false, "indicate if the request is repetitive")
 	FsCallService.Uint64(FlagFrequency, 0, "request frequency when repeated, default to timeout")
@@ -79,7 +79,7 @@ func init() {
 
 	FsUpdateRequestContext.StringSlice(FlagProviders, []string{}, "provider list to request, not updated if empty")
 	FsUpdateRequestContext.String(FlagServiceFeeCap, "", "maximum service fee to pay for a single request, not updated if empty")
-	FsUpdateRequestContext.Uint64(FlagTimeout, 0, "request timeout, not updated if set to 0")
+	FsUpdateRequestContext.Int64(FlagTimeout, 0, "request timeout, not updated if set to 0")
 	FsUpdateRequestContext.Uint64(FlagFrequency, 0, "request frequency, not updated if set to 0")
 	FsUpdateRequestContext.Int64(FlagTotal, 0, "request count, not updated if set to 0")
 

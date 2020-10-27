@@ -7,6 +7,7 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
+	abci "github.com/tendermint/tendermint/abci/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
@@ -255,9 +256,8 @@ func (suite *KeeperTestSuite) TestKeeperRequestContext() {
 	suite.setServiceDefinition()
 
 	blockHeight := int64(1000)
-	ctx := suite.ctx.WithBlockHeight(blockHeight).
-		WithTxBytes([]byte("tx_bytes")).
-		WithValue(types.InternalCounterKey, types.NewInternalCounter())
+	ctx := suite.ctx.WithBlockHeight(blockHeight)
+	suite.app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
 	// create
 	requestContextID, err := suite.keeper.CreateRequestContext(
@@ -344,9 +344,8 @@ func (suite *KeeperTestSuite) TestKeeperRequestService() {
 	}
 
 	blockHeight := int64(1000)
-	ctx := suite.ctx.WithBlockHeight(blockHeight).
-		WithTxBytes([]byte("tx_bytes")).
-		WithValue(types.InternalCounterKey, types.NewInternalCounter())
+	ctx := suite.ctx.WithBlockHeight(blockHeight)
+	suite.app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
 	requestContextID, requestContext := suite.setRequestContext(ctx, consumer, providers, types.RUNNING, 0, "")
 
@@ -410,7 +409,7 @@ func (suite *KeeperTestSuite) TestKeeperRequestService() {
 }
 
 func (suite *KeeperTestSuite) TestKeeper_Respond_Service() {
-	ctx := suite.ctx.WithTxBytes([]byte("tx_bytes"))
+	ctx := suite.ctx
 
 	provider := testProvider
 	consumer := testConsumer
@@ -475,7 +474,7 @@ func (suite *KeeperTestSuite) TestKeeper_Respond_Service() {
 }
 
 func (suite *KeeperTestSuite) TestRequestServiceFromModule() {
-	ctx := suite.ctx.WithTxBytes([]byte("tx_bytes"))
+	ctx := suite.ctx
 
 	provider1 := testProvider
 	provider2 := testProvider1

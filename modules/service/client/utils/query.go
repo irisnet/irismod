@@ -57,19 +57,25 @@ func QueryRequestContextByTxQuery(cliCtx client.Context, queryRoute string, para
 	}
 
 	var msgIndex int
+	var found bool
 I:
 	for i, log := range txInfo.Logs {
 		for _, event := range log.Events {
 			if event.Type == sdk.EventTypeMessage {
 				for _, attribute := range event.Attributes {
 					if attribute.Key == types.AttributeKeyRequestContextID &&
-						attribute.Value == string(params.RequestContextId) {
+						attribute.Value == params.RequestContextId.String() {
 						msgIndex = i
+						found = true
 						break I
 					}
 				}
 			}
 		}
+	}
+
+	if !found {
+		return requestContext, fmt.Errorf("unknown request context: %s", hex.EncodeToString(params.RequestContextId))
 	}
 
 	if len(txInfo.GetTx().GetMsgs()) > msgIndex {

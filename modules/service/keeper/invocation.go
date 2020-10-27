@@ -117,9 +117,7 @@ func (k Keeper) CreateRequestContext(
 		batchState, state, responseThreshold, moduleName,
 	)
 
-	internalCounter := ctx.Context().Value(types.InternalCounterKey).(*types.InternalCounter)
-	requestContextID := types.GenerateRequestContextID(TxHash(ctx), internalCounter.Count())
-	internalCounter.Incr()
+	requestContextID := types.GenerateRequestContextID(TxHash(ctx), k.GetInternalIndex(ctx))
 	k.SetRequestContext(ctx, requestContextID, requestContext)
 
 	if requestContext.State == types.RUNNING {
@@ -1156,4 +1154,28 @@ func (k Keeper) validateServiceFeeCap(ctx sdk.Context, serviceFeeCap sdk.Coins) 
 
 func TxHash(ctx sdk.Context) []byte {
 	return tmhash.Sum(ctx.TxBytes())
+}
+
+//  GetInternalIndex sets the internal index
+func (k Keeper) SetInternalIndex(ctx sdk.Context, index int64) {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := k.cdc.MustMarshalBinaryBare(&gogotypes.Int64Value{
+		Value: index,
+	})
+	store.Set(types.InternalCounterKey, bz)
+}
+
+// GetInternalIndex returns the internal index and increases the internal index + 1
+func (k Keeper) GetInternalIndex(ctx sdk.Context) int64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.InternalCounterKey)
+	if bz == nil {
+		return 0
+	}
+
+	var index gogotypes.Int64Value
+	k.cdc.MustUnmarshalBinaryBare(bz, &index)
+	k.SetInternalIndex(ctx, index.Value+1)
+	return index.Value
 }

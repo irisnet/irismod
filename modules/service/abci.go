@@ -15,7 +15,7 @@ import (
 // BeginBlocker handles block beginning logic for service
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	ctx = ctx.WithLogger(ctx.Logger().With("handler", "endBlock").With("module", "irismod/service"))
-	ctx = ctx.WithValue(types.InternalCounterKey, types.NewInternalCounter())
+	k.SetInternalIndex(ctx, 0)
 }
 
 // EndBlocker handles block ending logic for service

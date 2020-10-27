@@ -25,9 +25,6 @@ const (
 
 	// RequestAccName is the root string for the service request account address
 	RequestAccName = "service_request_account"
-
-	// InternalCounterKey is the internal counter key for service request context counter
-	InternalCounterKey = "service_internal_counter"
 )
 
 var (
@@ -54,6 +51,7 @@ var (
 	RequestVolumeKey             = []byte{0x17} // prefix for request volume
 	EarnedFeesKey                = []byte{0x18} // prefix for provider earned fees
 	OwnerEarnedFeesKey           = []byte{0x19} // prefix for owner earned fees
+	InternalCounterKey           = []byte{0x20} // prefix for internal counter key
 )
 
 // GetServiceDefinitionKey gets the key for the service definition with the specified service name
