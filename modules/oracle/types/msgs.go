@@ -205,8 +205,10 @@ func (msg MsgEditFeed) ValidateBasic() error {
 	if msg.ServiceFeeCap != nil && !msg.ServiceFeeCap.IsValid() {
 		return sdkerrors.Wrapf(ErrInvalidServiceFeeCap, msg.ServiceFeeCap.String())
 	}
-	if err := validateTimeout(msg.Timeout, msg.RepeatedFrequency); err != nil {
-		return err
+	if msg.Timeout != 0 && msg.RepeatedFrequency != 0 {
+		if err := validateTimeout(msg.Timeout, msg.RepeatedFrequency); err != nil {
+			return err
+		}
 	}
 	if msg.ResponseThreshold != 0 {
 		if err := validateResponseThreshold(msg.ResponseThreshold, len(msg.Providers)); err != nil {
