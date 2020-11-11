@@ -49,6 +49,7 @@ func handleIssueToken(ctx sdk.Context, k keeper.Keeper, msg *types.MsgIssueToken
 		sdk.NewEvent(
 			types.EventTypeIssueToken,
 			sdk.NewAttribute(types.AttributeKeySymbol, msg.Symbol),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -69,6 +70,7 @@ func handleMsgEditToken(ctx sdk.Context, k keeper.Keeper, msg *types.MsgEditToke
 		sdk.NewEvent(
 			types.EventTypeEditToken,
 			sdk.NewAttribute(types.AttributeKeySymbol, msg.Symbol),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -89,6 +91,8 @@ func handleMsgTransferTokenOwner(ctx sdk.Context, k keeper.Keeper, msg *types.Ms
 		sdk.NewEvent(
 			types.EventTypeTransferTokenOwner,
 			sdk.NewAttribute(types.AttributeKeySymbol, msg.Symbol),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.SrcOwner),
+			sdk.NewAttribute(types.AttributeKeyDstOwner, msg.DstOwner),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -119,6 +123,8 @@ func handleMsgMintToken(ctx sdk.Context, k keeper.Keeper, msg *types.MsgMintToke
 			types.EventTypeMintToken,
 			sdk.NewAttribute(types.AttributeKeySymbol, msg.Symbol),
 			sdk.NewAttribute(types.AttributeKeyAmount, strconv.FormatUint(msg.Amount, 10)),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+			sdk.NewAttribute(types.AttributeKeyTo, msg.To),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

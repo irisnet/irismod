@@ -36,9 +36,15 @@ func handleMsgCreateFeed(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCreateF
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeCreateFeed,
+			sdk.NewAttribute(types.AttributeKeyFeedName, msg.FeedName),
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator.String()),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
 		),
 	})
 	return &sdk.Result{Events: ctx.EventManager().ABCIEvents()}, nil
@@ -51,9 +57,14 @@ func handleMsgStartFeed(ctx sdk.Context, k keeper.Keeper, msg *types.MsgStartFee
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeStartFeed,
+			sdk.NewAttribute(types.AttributeKeyFeedName, msg.FeedName),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator.String()),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
 		),
 	})
 	return &sdk.Result{Events: ctx.EventManager().ABCIEvents()}, nil
@@ -66,9 +77,14 @@ func handleMsgPauseFeed(ctx sdk.Context, k keeper.Keeper, msg *types.MsgPauseFee
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeStartFeed,
+			sdk.NewAttribute(types.AttributeKeyFeedName, msg.FeedName),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator.String()),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
 		),
 	})
 	return &sdk.Result{Events: ctx.EventManager().ABCIEvents()}, nil
@@ -81,9 +97,14 @@ func handleMsgEditFeed(ctx sdk.Context, k keeper.Keeper, msg *types.MsgEditFeed)
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeStartFeed,
+			sdk.NewAttribute(types.AttributeKeyFeedName, msg.FeedName),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator.String()),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
 		),
 	})
 	return &sdk.Result{Events: ctx.EventManager().ABCIEvents()}, nil

@@ -11,7 +11,6 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	github_com_tendermint_tendermint_libs_bytes "github.com/tendermint/tendermint/libs/bytes"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -32,19 +31,19 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateFeed defines an sdk.Msg type that supports creating a feed
 type MsgCreateFeed struct {
-	FeedName          string                                          `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
-	LatestHistory     uint64                                          `protobuf:"varint,2,opt,name=latest_history,json=latestHistory,proto3" json:"latest_history,omitempty" yaml:"latest_history"`
-	Description       string                                          `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Creator           github_com_cosmos_cosmos_sdk_types.AccAddress   `protobuf:"bytes,4,opt,name=creator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"creator,omitempty"`
-	ServiceName       string                                          `protobuf:"bytes,5,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty" yaml:"service_name"`
-	Providers         []github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,rep,name=providers,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"providers,omitempty"`
-	Input             string                                          `protobuf:"bytes,7,opt,name=input,proto3" json:"input,omitempty"`
-	Timeout           int64                                           `protobuf:"varint,8,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	ServiceFeeCap     github_com_cosmos_cosmos_sdk_types.Coins        `protobuf:"bytes,9,rep,name=service_fee_cap,json=serviceFeeCap,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"service_fee_cap" yaml:"service_fee_cap"`
-	RepeatedFrequency uint64                                          `protobuf:"varint,10,opt,name=repeated_frequency,json=repeatedFrequency,proto3" json:"repeated_frequency,omitempty" yaml:"repeated_frequency"`
-	AggregateFunc     string                                          `protobuf:"bytes,11,opt,name=aggregate_func,json=aggregateFunc,proto3" json:"aggregate_func,omitempty" yaml:"aggregate_func"`
-	ValueJsonPath     string                                          `protobuf:"bytes,12,opt,name=value_json_path,json=valueJsonPath,proto3" json:"value_json_path,omitempty" yaml:"value_json_path"`
-	ResponseThreshold uint32                                          `protobuf:"varint,13,opt,name=response_threshold,json=responseThreshold,proto3" json:"response_threshold,omitempty" yaml:"response_threshold"`
+	FeedName          string                                   `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
+	LatestHistory     uint64                                   `protobuf:"varint,2,opt,name=latest_history,json=latestHistory,proto3" json:"latest_history,omitempty" yaml:"latest_history"`
+	Description       string                                   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Creator           string                                   `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	ServiceName       string                                   `protobuf:"bytes,5,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty" yaml:"service_name"`
+	Providers         []string                                 `protobuf:"bytes,6,rep,name=providers,proto3" json:"providers,omitempty"`
+	Input             string                                   `protobuf:"bytes,7,opt,name=input,proto3" json:"input,omitempty"`
+	Timeout           int64                                    `protobuf:"varint,8,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	ServiceFeeCap     github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,9,rep,name=service_fee_cap,json=serviceFeeCap,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"service_fee_cap" yaml:"service_fee_cap"`
+	RepeatedFrequency uint64                                   `protobuf:"varint,10,opt,name=repeated_frequency,json=repeatedFrequency,proto3" json:"repeated_frequency,omitempty" yaml:"repeated_frequency"`
+	AggregateFunc     string                                   `protobuf:"bytes,11,opt,name=aggregate_func,json=aggregateFunc,proto3" json:"aggregate_func,omitempty" yaml:"aggregate_func"`
+	ValueJsonPath     string                                   `protobuf:"bytes,12,opt,name=value_json_path,json=valueJsonPath,proto3" json:"value_json_path,omitempty" yaml:"value_json_path"`
+	ResponseThreshold uint32                                   `protobuf:"varint,13,opt,name=response_threshold,json=responseThreshold,proto3" json:"response_threshold,omitempty" yaml:"response_threshold"`
 }
 
 func (m *MsgCreateFeed) Reset()         { *m = MsgCreateFeed{} }
@@ -101,11 +100,11 @@ func (m *MsgCreateFeed) GetDescription() string {
 	return ""
 }
 
-func (m *MsgCreateFeed) GetCreator() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgCreateFeed) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
-	return nil
+	return ""
 }
 
 func (m *MsgCreateFeed) GetServiceName() string {
@@ -115,7 +114,7 @@ func (m *MsgCreateFeed) GetServiceName() string {
 	return ""
 }
 
-func (m *MsgCreateFeed) GetProviders() []github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgCreateFeed) GetProviders() []string {
 	if m != nil {
 		return m.Providers
 	}
@@ -173,8 +172,8 @@ func (m *MsgCreateFeed) GetResponseThreshold() uint32 {
 
 // MsgPauseFeed defines an sdk.Msg type that supports stating a feed
 type MsgStartFeed struct {
-	FeedName string                                        `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
-	Creator  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,4,opt,name=creator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"creator,omitempty"`
+	FeedName string `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
+	Creator  string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (m *MsgStartFeed) Reset()         { *m = MsgStartFeed{} }
@@ -217,17 +216,17 @@ func (m *MsgStartFeed) GetFeedName() string {
 	return ""
 }
 
-func (m *MsgStartFeed) GetCreator() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgStartFeed) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
-	return nil
+	return ""
 }
 
 // MsgPauseFeed defines an sdk.Msg type that supports pausing a feed
 type MsgPauseFeed struct {
-	FeedName string                                        `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
-	Creator  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,4,opt,name=creator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"creator,omitempty"`
+	FeedName string `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
+	Creator  string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (m *MsgPauseFeed) Reset()         { *m = MsgPauseFeed{} }
@@ -270,24 +269,24 @@ func (m *MsgPauseFeed) GetFeedName() string {
 	return ""
 }
 
-func (m *MsgPauseFeed) GetCreator() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgPauseFeed) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
-	return nil
+	return ""
 }
 
 // MsgEditFeed defines an sdk.Msg type that supports editing a feed
 type MsgEditFeed struct {
-	FeedName          string                                          `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
-	Description       string                                          `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	LatestHistory     uint64                                          `protobuf:"varint,3,opt,name=latest_history,json=latestHistory,proto3" json:"latest_history,omitempty" yaml:"latest_history"`
-	Providers         []github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,4,rep,name=providers,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"providers,omitempty"`
-	Timeout           int64                                           `protobuf:"varint,5,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	ServiceFeeCap     github_com_cosmos_cosmos_sdk_types.Coins        `protobuf:"bytes,6,rep,name=service_fee_cap,json=serviceFeeCap,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"service_fee_cap" yaml:"service_fee_cap"`
-	RepeatedFrequency uint64                                          `protobuf:"varint,7,opt,name=repeated_frequency,json=repeatedFrequency,proto3" json:"repeated_frequency,omitempty" yaml:"repeated_frequency"`
-	ResponseThreshold uint32                                          `protobuf:"varint,8,opt,name=response_threshold,json=responseThreshold,proto3" json:"response_threshold,omitempty" yaml:"response_threshold"`
-	Creator           github_com_cosmos_cosmos_sdk_types.AccAddress   `protobuf:"bytes,9,opt,name=creator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"creator,omitempty"`
+	FeedName          string                                   `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
+	Description       string                                   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	LatestHistory     uint64                                   `protobuf:"varint,3,opt,name=latest_history,json=latestHistory,proto3" json:"latest_history,omitempty" yaml:"latest_history"`
+	Providers         []string                                 `protobuf:"bytes,4,rep,name=providers,proto3" json:"providers,omitempty"`
+	Timeout           int64                                    `protobuf:"varint,5,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	ServiceFeeCap     github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=service_fee_cap,json=serviceFeeCap,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"service_fee_cap" yaml:"service_fee_cap"`
+	RepeatedFrequency uint64                                   `protobuf:"varint,7,opt,name=repeated_frequency,json=repeatedFrequency,proto3" json:"repeated_frequency,omitempty" yaml:"repeated_frequency"`
+	ResponseThreshold uint32                                   `protobuf:"varint,8,opt,name=response_threshold,json=responseThreshold,proto3" json:"response_threshold,omitempty" yaml:"response_threshold"`
+	Creator           string                                   `protobuf:"bytes,9,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (m *MsgEditFeed) Reset()         { *m = MsgEditFeed{} }
@@ -344,7 +343,7 @@ func (m *MsgEditFeed) GetLatestHistory() uint64 {
 	return 0
 }
 
-func (m *MsgEditFeed) GetProviders() []github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgEditFeed) GetProviders() []string {
 	if m != nil {
 		return m.Providers
 	}
@@ -379,22 +378,22 @@ func (m *MsgEditFeed) GetResponseThreshold() uint32 {
 	return 0
 }
 
-func (m *MsgEditFeed) GetCreator() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgEditFeed) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
-	return nil
+	return ""
 }
 
 // Feed defines the feed standard
 type Feed struct {
-	FeedName         string                                               `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
-	Description      string                                               `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	AggregateFunc    string                                               `protobuf:"bytes,3,opt,name=aggregate_func,json=aggregateFunc,proto3" json:"aggregate_func,omitempty" yaml:"aggregate_func"`
-	ValueJsonPath    string                                               `protobuf:"bytes,4,opt,name=value_json_path,json=valueJsonPath,proto3" json:"value_json_path,omitempty" yaml:"value_json_path"`
-	LatestHistory    uint64                                               `protobuf:"varint,5,opt,name=latest_history,json=latestHistory,proto3" json:"latest_history,omitempty" yaml:"latest_history"`
-	RequestContextID github_com_tendermint_tendermint_libs_bytes.HexBytes `protobuf:"bytes,6,opt,name=request_context_id,json=requestContextId,proto3,casttype=github.com/tendermint/tendermint/libs/bytes.HexBytes" json:"request_context_id,omitempty" yaml:"request_context_id"`
-	Creator          github_com_cosmos_cosmos_sdk_types.AccAddress        `protobuf:"bytes,7,opt,name=creator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"creator,omitempty"`
+	FeedName         string `protobuf:"bytes,1,opt,name=feed_name,json=feedName,proto3" json:"feed_name,omitempty" yaml:"feed_name"`
+	Description      string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	AggregateFunc    string `protobuf:"bytes,3,opt,name=aggregate_func,json=aggregateFunc,proto3" json:"aggregate_func,omitempty" yaml:"aggregate_func"`
+	ValueJsonPath    string `protobuf:"bytes,4,opt,name=value_json_path,json=valueJsonPath,proto3" json:"value_json_path,omitempty" yaml:"value_json_path"`
+	LatestHistory    uint64 `protobuf:"varint,5,opt,name=latest_history,json=latestHistory,proto3" json:"latest_history,omitempty" yaml:"latest_history"`
+	RequestContextID string `protobuf:"bytes,6,opt,name=request_context_id,json=requestContextId,proto3" json:"request_context_id,omitempty" yaml:"request_context_id"`
+	Creator          string `protobuf:"bytes,7,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (m *Feed) Reset()         { *m = Feed{} }
@@ -465,18 +464,18 @@ func (m *Feed) GetLatestHistory() uint64 {
 	return 0
 }
 
-func (m *Feed) GetRequestContextID() github_com_tendermint_tendermint_libs_bytes.HexBytes {
+func (m *Feed) GetRequestContextID() string {
 	if m != nil {
 		return m.RequestContextID
 	}
-	return nil
+	return ""
 }
 
-func (m *Feed) GetCreator() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *Feed) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
-	return nil
+	return ""
 }
 
 // FeedValue defines the feed result standard
@@ -544,61 +543,57 @@ func init() {
 func init() { proto.RegisterFile("oracle/oracle.proto", fileDescriptor_dc470b50b143d488) }
 
 var fileDescriptor_dc470b50b143d488 = []byte{
-	// 856 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0x4f, 0x6f, 0xdb, 0x36,
-	0x14, 0x8f, 0xea, 0x7f, 0x31, 0x1d, 0xb7, 0x99, 0x9a, 0xad, 0x4a, 0x80, 0x59, 0x82, 0x4e, 0xbe,
-	0x54, 0x42, 0xba, 0x9d, 0x7a, 0x5a, 0x95, 0x2d, 0x68, 0xbb, 0x65, 0x2b, 0xb4, 0x62, 0x87, 0x5d,
-	0x04, 0x5a, 0x7a, 0x96, 0xb9, 0x49, 0xa2, 0x4a, 0x52, 0x41, 0xfd, 0x0d, 0x86, 0x01, 0x1b, 0x7a,
-	0xdb, 0x77, 0xd8, 0x27, 0xe9, 0xb1, 0xc7, 0x9d, 0xd4, 0xc1, 0xf9, 0x06, 0x3e, 0xf6, 0x34, 0x48,
-	0xb4, 0x1c, 0xd9, 0x1e, 0xb0, 0xc5, 0x69, 0x81, 0x9c, 0x48, 0xbe, 0xf7, 0x48, 0xbe, 0x1f, 0xf9,
-	0xfb, 0x3d, 0x3c, 0x74, 0x97, 0x32, 0xec, 0x47, 0x60, 0xcb, 0xc1, 0x4a, 0x19, 0x15, 0x54, 0xbd,
-	0x4d, 0x18, 0xe1, 0x31, 0x0d, 0x2c, 0x69, 0x3d, 0x3a, 0x08, 0x69, 0x48, 0x4b, 0x97, 0x5d, 0xcc,
-	0x64, 0xd4, 0xd1, 0x3d, 0x9f, 0xf2, 0x98, 0x72, 0x4f, 0x3a, 0x7c, 0x4a, 0x92, 0x85, 0x43, 0x0f,
-	0x29, 0x0d, 0x23, 0xb0, 0xcb, 0xd5, 0x28, 0x1b, 0xdb, 0x82, 0xc4, 0xc0, 0x05, 0x8e, 0x53, 0x19,
-	0x60, 0xce, 0xda, 0xa8, 0x7f, 0xc6, 0xc3, 0x13, 0x06, 0x58, 0xc0, 0x29, 0x40, 0xa0, 0x1e, 0xa3,
-	0xee, 0x18, 0x20, 0xf0, 0x12, 0x1c, 0x83, 0xa6, 0x18, 0xca, 0xb0, 0xeb, 0x1c, 0xcc, 0x73, 0x7d,
-	0x7f, 0x8a, 0xe3, 0xe8, 0xa1, 0xb9, 0x74, 0x99, 0xee, 0x6e, 0x31, 0xff, 0x16, 0xc7, 0xa0, 0x7e,
-	0x81, 0x6e, 0x47, 0x58, 0x00, 0x17, 0xde, 0x84, 0x70, 0x41, 0xd9, 0x54, 0xbb, 0x65, 0x28, 0xc3,
-	0xa6, 0x73, 0x38, 0xcf, 0xf5, 0x8f, 0xe5, 0xbe, 0x55, 0xbf, 0xe9, 0xf6, 0xa5, 0xe1, 0xb1, 0x5c,
-	0xab, 0x06, 0xea, 0x05, 0xc0, 0x7d, 0x46, 0x52, 0x41, 0x68, 0xa2, 0x35, 0x8a, 0x6b, 0xdd, 0xba,
-	0x49, 0xfd, 0x1a, 0x75, 0xfc, 0x22, 0x49, 0xca, 0xb4, 0xa6, 0xa1, 0x0c, 0xf7, 0x9c, 0xe3, 0x77,
-	0xb9, 0x7e, 0x3f, 0x24, 0x62, 0x92, 0x8d, 0x2c, 0x9f, 0xc6, 0xb6, 0x7c, 0x82, 0xc5, 0x70, 0x9f,
-	0x07, 0x3f, 0xdb, 0x62, 0x9a, 0x02, 0xb7, 0x1e, 0xf9, 0xfe, 0xa3, 0x20, 0x60, 0xc0, 0xb9, 0x5b,
-	0x9d, 0xa0, 0x3e, 0x44, 0x7b, 0x1c, 0xd8, 0x39, 0xf1, 0x41, 0xc2, 0x6c, 0x95, 0x30, 0xef, 0xcd,
-	0x73, 0xfd, 0xae, 0x4c, 0xb7, 0xee, 0x35, 0xdd, 0xde, 0x62, 0x59, 0x82, 0xfd, 0x0e, 0x75, 0x53,
-	0x46, 0xcf, 0x49, 0x00, 0x8c, 0x6b, 0x6d, 0xa3, 0xb1, 0x5d, 0x2a, 0x97, 0x67, 0xa8, 0x07, 0xa8,
-	0x45, 0x92, 0x34, 0x13, 0x5a, 0xa7, 0x44, 0x2d, 0x17, 0xaa, 0x86, 0x3a, 0xc5, 0x5f, 0xd1, 0x4c,
-	0x68, 0xbb, 0x86, 0x32, 0x6c, 0xb8, 0xd5, 0x52, 0xfd, 0x4d, 0x41, 0x77, 0xaa, 0xfc, 0xc6, 0x00,
-	0x9e, 0x8f, 0x53, 0xad, 0x6b, 0x34, 0x86, 0xbd, 0x07, 0x87, 0x96, 0xbc, 0xd2, 0x1a, 0x61, 0x0e,
-	0xd6, 0xf9, 0xf1, 0x08, 0x04, 0x3e, 0xb6, 0x4e, 0x28, 0x49, 0x9c, 0xa7, 0xaf, 0x73, 0x7d, 0x67,
-	0x9e, 0xeb, 0x9f, 0xac, 0xe2, 0x5b, 0xec, 0x37, 0xff, 0x7c, 0xab, 0x0f, 0xff, 0x07, 0x80, 0xe2,
-	0x28, 0xee, 0xf6, 0x17, 0xbb, 0x4f, 0x01, 0x4e, 0x70, 0xaa, 0x7e, 0x83, 0x54, 0x06, 0x69, 0xc1,
-	0x9f, 0xc0, 0x1b, 0x33, 0x78, 0x91, 0x41, 0xe2, 0x4f, 0x35, 0x54, 0x32, 0xe0, 0xd3, 0x79, 0xae,
-	0x1f, 0xca, 0x2b, 0x37, 0x63, 0x4c, 0xf7, 0xa3, 0xca, 0x78, 0x5a, 0xd9, 0x0a, 0x2e, 0xe1, 0x30,
-	0x64, 0x10, 0x62, 0x01, 0xde, 0x38, 0x4b, 0x7c, 0xad, 0x57, 0x7e, 0x4e, 0x8d, 0x4b, 0xab, 0x7e,
-	0xd3, 0xed, 0x2f, 0x0d, 0xa7, 0x59, 0xe2, 0xab, 0x0e, 0xba, 0x73, 0x8e, 0xa3, 0x0c, 0xbc, 0x9f,
-	0x38, 0x4d, 0xbc, 0x14, 0x8b, 0x89, 0xb6, 0x57, 0x1e, 0x71, 0x74, 0x89, 0x7f, 0x2d, 0xc0, 0x74,
-	0xfb, 0xa5, 0xe5, 0x29, 0xa7, 0xc9, 0x33, 0x2c, 0x26, 0x12, 0x13, 0x4f, 0x69, 0xc2, 0xc1, 0x13,
-	0x13, 0x06, 0x7c, 0x42, 0xa3, 0x40, 0xeb, 0x1b, 0xca, 0xb0, 0xbf, 0x8a, 0x69, 0x3d, 0xa6, 0xc4,
-	0x24, 0x8d, 0xcf, 0x97, 0xb6, 0xdf, 0x15, 0xb4, 0x77, 0xc6, 0xc3, 0xef, 0x05, 0x66, 0x62, 0x5b,
-	0x8d, 0xbd, 0x4f, 0xfe, 0x57, 0x09, 0x3d, 0xc3, 0x19, 0x87, 0x1b, 0x91, 0xd0, 0x2f, 0x2d, 0xd4,
-	0x3b, 0xe3, 0xe1, 0x57, 0x01, 0xd9, 0xfa, 0x81, 0xd6, 0x4a, 0xc8, 0xad, 0xcd, 0x12, 0xb2, 0x59,
-	0xa6, 0x1a, 0x57, 0x2c, 0x53, 0x2b, 0xda, 0x6f, 0xbe, 0x07, 0xed, 0xd7, 0x54, 0xde, 0xfa, 0x6f,
-	0x95, 0xb7, 0x6f, 0x9c, 0xca, 0x3b, 0x5b, 0xaa, 0xfc, 0xdf, 0xf5, 0xb5, 0xbb, 0x9d, 0xbe, 0xea,
-	0x54, 0xec, 0x5e, 0x9b, 0x8a, 0xbf, 0x36, 0x51, 0xf3, 0x83, 0x72, 0x70, 0xad, 0xbc, 0x35, 0xae,
-	0x5f, 0xde, 0x9a, 0x57, 0x2d, 0x6f, 0x9b, 0x4a, 0x68, 0x5d, 0x51, 0x09, 0x7f, 0x28, 0xc5, 0x0f,
-	0xbe, 0xc8, 0x8a, 0x18, 0x9f, 0x26, 0x02, 0x5e, 0x0a, 0x8f, 0x04, 0x5a, 0xbb, 0x7c, 0x7e, 0x32,
-	0xcb, 0xf5, 0x7d, 0x57, 0x7a, 0x4f, 0xa4, 0xf3, 0xc9, 0x97, 0xf5, 0x5f, 0x5d, 0xdf, 0x67, 0xbe,
-	0xcb, 0xf5, 0xcf, 0x6b, 0xff, 0x25, 0x20, 0x09, 0x80, 0xc5, 0x24, 0x11, 0xf5, 0x69, 0x44, 0x46,
-	0xdc, 0x1e, 0x4d, 0x05, 0x70, 0xeb, 0x31, 0xbc, 0x74, 0x8a, 0x89, 0xbb, 0xcf, 0x56, 0xaf, 0x59,
-	0x21, 0x43, 0xe7, 0xda, 0x64, 0xf0, 0x51, 0xb7, 0xe0, 0xc2, 0x0f, 0xc5, 0xeb, 0xa9, 0x2a, 0x6a,
-	0x06, 0x58, 0x60, 0xc9, 0x05, 0xb7, 0x9c, 0xab, 0x0e, 0xea, 0x2e, 0x5b, 0xaa, 0x12, 0x7d, 0xef,
-	0xc1, 0x91, 0x25, 0x9b, 0x2e, 0xab, 0x6a, 0xba, 0xac, 0xe7, 0x55, 0x84, 0xb3, 0x5b, 0x08, 0xf4,
-	0xd5, 0x5b, 0x5d, 0x71, 0x2f, 0xb7, 0x39, 0x4f, 0x5e, 0xcf, 0x06, 0xca, 0x9b, 0xd9, 0x40, 0xf9,
-	0x7b, 0x36, 0x50, 0x5e, 0x5d, 0x0c, 0x76, 0xde, 0x5c, 0x0c, 0x76, 0xfe, 0xba, 0x18, 0xec, 0xfc,
-	0x68, 0xd7, 0xd2, 0x2e, 0x1a, 0xc1, 0x04, 0x84, 0xbd, 0x68, 0x08, 0xed, 0x98, 0x06, 0x59, 0x04,
-	0x7c, 0xd1, 0x2e, 0x4a, 0x0c, 0xa3, 0x76, 0x79, 0xe7, 0x67, 0xff, 0x04, 0x00, 0x00, 0xff, 0xff,
-	0x97, 0xdb, 0xe1, 0xf3, 0x4c, 0x0a, 0x00, 0x00,
+	// 798 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0x4f, 0x8f, 0xe3, 0x34,
+	0x14, 0x6f, 0xb6, 0x7f, 0xe3, 0x4e, 0x77, 0x87, 0xec, 0xc0, 0x66, 0x2a, 0x68, 0xaa, 0x9c, 0x7a,
+	0x21, 0x51, 0x97, 0xdb, 0x9e, 0x50, 0x0b, 0x15, 0xbb, 0x62, 0xd0, 0x2a, 0x8c, 0x38, 0xc0, 0x21,
+	0x72, 0x93, 0xd7, 0x34, 0xd0, 0xc4, 0x19, 0xdb, 0xa9, 0xe8, 0x87, 0x40, 0x9a, 0x4f, 0xc0, 0x81,
+	0x23, 0x9f, 0x64, 0x8e, 0x73, 0xe4, 0xd4, 0x41, 0x9d, 0x6f, 0xd0, 0x33, 0x07, 0x14, 0x3b, 0xed,
+	0x34, 0x2d, 0x08, 0x4d, 0x01, 0x69, 0x4f, 0xf1, 0x7b, 0xbf, 0x67, 0xbf, 0xe7, 0xfc, 0xde, 0xcf,
+	0x36, 0x7a, 0x4e, 0x28, 0xf6, 0x66, 0x60, 0xcb, 0x8f, 0x95, 0x50, 0xc2, 0x89, 0xf6, 0x34, 0xa4,
+	0x21, 0x8b, 0x88, 0x6f, 0x49, 0x6f, 0xfb, 0x2c, 0x20, 0x01, 0x11, 0x90, 0x9d, 0x8d, 0x64, 0x54,
+	0xfb, 0x85, 0x47, 0x58, 0x44, 0x98, 0x2b, 0x01, 0x8f, 0x84, 0x71, 0x0e, 0x18, 0x01, 0x21, 0xc1,
+	0x0c, 0x6c, 0x61, 0x8d, 0xd3, 0x89, 0xcd, 0xc3, 0x08, 0x18, 0xc7, 0x51, 0x22, 0x03, 0xcc, 0x3f,
+	0xaa, 0xa8, 0x75, 0xc1, 0x82, 0x21, 0x05, 0xcc, 0x61, 0x04, 0xe0, 0x6b, 0x7d, 0xa4, 0x4e, 0x00,
+	0x7c, 0x37, 0xc6, 0x11, 0xe8, 0x4a, 0x57, 0xe9, 0xa9, 0x83, 0xb3, 0xf5, 0xd2, 0x38, 0x5d, 0xe0,
+	0x68, 0xf6, 0xca, 0xdc, 0x42, 0xa6, 0xd3, 0xc8, 0xc6, 0x5f, 0xe1, 0x08, 0xb4, 0x4f, 0xd1, 0xd3,
+	0x19, 0xe6, 0xc0, 0xb8, 0x3b, 0x0d, 0x19, 0x27, 0x74, 0xa1, 0x3f, 0xe9, 0x2a, 0xbd, 0xca, 0xe0,
+	0x7c, 0xbd, 0x34, 0xde, 0x97, 0xf3, 0x8a, 0xb8, 0xe9, 0xb4, 0xa4, 0xe3, 0x0b, 0x69, 0x6b, 0x5d,
+	0xd4, 0xf4, 0x81, 0x79, 0x34, 0x4c, 0x78, 0x48, 0x62, 0xbd, 0x9c, 0xa5, 0x75, 0x76, 0x5d, 0x9a,
+	0x8e, 0xea, 0x5e, 0x56, 0x24, 0xa1, 0x7a, 0x45, 0xa0, 0x1b, 0x53, 0x7b, 0x85, 0x4e, 0x18, 0xd0,
+	0x79, 0xe8, 0x81, 0xac, 0xb9, 0x2a, 0x6a, 0x7e, 0xb1, 0x5e, 0x1a, 0xcf, 0x65, 0xee, 0x5d, 0xd4,
+	0x74, 0x9a, 0xb9, 0x29, 0x2a, 0xff, 0x10, 0xa9, 0x09, 0x25, 0xf3, 0xd0, 0x07, 0xca, 0xf4, 0x5a,
+	0xb7, 0xdc, 0x53, 0x9d, 0x07, 0x87, 0x76, 0x86, 0xaa, 0x61, 0x9c, 0xa4, 0x5c, 0xaf, 0x8b, 0x8c,
+	0xd2, 0xc8, 0x2a, 0xc9, 0xfe, 0x22, 0x49, 0xb9, 0xde, 0xe8, 0x2a, 0xbd, 0xb2, 0xb3, 0x31, 0xb5,
+	0x9f, 0x14, 0xf4, 0x6c, 0x93, 0x6c, 0x02, 0xe0, 0x7a, 0x38, 0xd1, 0xd5, 0x6e, 0xb9, 0xd7, 0x7c,
+	0x79, 0x6e, 0x49, 0x86, 0xac, 0x31, 0x66, 0x60, 0xcd, 0xfb, 0x63, 0xe0, 0xb8, 0x6f, 0x0d, 0x49,
+	0x18, 0x0f, 0xde, 0xdc, 0x2c, 0x8d, 0xd2, 0x7a, 0x69, 0x7c, 0x50, 0x2c, 0x36, 0x9f, 0x6f, 0xfe,
+	0x7a, 0x67, 0xf4, 0x82, 0x90, 0x4f, 0xd3, 0xb1, 0xe5, 0x91, 0xc8, 0x96, 0xcb, 0xe4, 0x9f, 0x8f,
+	0x99, 0xff, 0x83, 0xcd, 0x17, 0x09, 0x30, 0xb1, 0x14, 0x73, 0x5a, 0xf9, 0xec, 0x11, 0xc0, 0x10,
+	0x27, 0xda, 0x97, 0x48, 0xa3, 0x90, 0x64, 0xcc, 0xfa, 0xee, 0x84, 0xc2, 0x55, 0x0a, 0xb1, 0xb7,
+	0xd0, 0x91, 0xe0, 0xe6, 0xa3, 0xf5, 0xd2, 0x38, 0x97, 0x29, 0x0f, 0x63, 0x4c, 0xe7, 0xbd, 0x8d,
+	0x73, 0xb4, 0xf1, 0x65, 0x2c, 0xe3, 0x20, 0xa0, 0x10, 0x60, 0x0e, 0xee, 0x24, 0x8d, 0x3d, 0xbd,
+	0x29, 0xfe, 0xf4, 0x0e, 0xcb, 0x45, 0xdc, 0x74, 0x5a, 0x5b, 0xc7, 0x28, 0x8d, 0x3d, 0x6d, 0x80,
+	0x9e, 0xcd, 0xf1, 0x2c, 0x05, 0xf7, 0x7b, 0x46, 0x62, 0x37, 0xc1, 0x7c, 0xaa, 0x9f, 0x88, 0x25,
+	0xda, 0x0f, 0xfb, 0xdf, 0x0b, 0x30, 0x9d, 0x96, 0xf0, 0xbc, 0x61, 0x24, 0x7e, 0x8b, 0xf9, 0x54,
+	0xee, 0x89, 0x25, 0x24, 0x66, 0xe0, 0xf2, 0x29, 0x05, 0x36, 0x25, 0x33, 0x5f, 0x6f, 0x75, 0x95,
+	0x5e, 0xab, 0xb8, 0xa7, 0xfd, 0x18, 0xb1, 0x27, 0xe9, 0xbc, 0xdc, 0xfa, 0xbe, 0x43, 0x27, 0x17,
+	0x2c, 0xf8, 0x9a, 0x63, 0xca, 0x8f, 0x6d, 0xfe, 0xbf, 0x6d, 0xcc, 0x7c, 0xf1, 0xb7, 0x38, 0x65,
+	0xf0, 0xdf, 0x2f, 0xfe, 0x4b, 0x05, 0x35, 0x2f, 0x58, 0xf0, 0xb9, 0x1f, 0x1e, 0x5d, 0xf9, 0x9e,
+	0xe8, 0x9e, 0x1c, 0x8a, 0xee, 0x50, 0xd8, 0xe5, 0x47, 0x0a, 0xbb, 0x20, 0xb0, 0xca, 0xbe, 0xc0,
+	0x76, 0xa4, 0x54, 0xfd, 0x67, 0x29, 0xd5, 0xde, 0x39, 0x29, 0xd5, 0x8f, 0x94, 0xd2, 0x5f, 0x37,
+	0x71, 0xe3, 0xb8, 0x26, 0xde, 0x6d, 0x12, 0xb5, 0xd8, 0x24, 0x3f, 0x97, 0x51, 0xe5, 0x7f, 0xed,
+	0x8e, 0xbd, 0x03, 0xa1, 0xfc, 0xef, 0x0f, 0x84, 0xca, 0x63, 0x0f, 0x84, 0xc3, 0x1e, 0xad, 0x3e,
+	0xb2, 0x47, 0xdd, 0x8c, 0x8d, 0xab, 0x34, 0x0b, 0xf1, 0x48, 0xcc, 0xe1, 0x47, 0xee, 0x86, 0xbe,
+	0x5e, 0x13, 0x85, 0xf4, 0x57, 0x4b, 0xe3, 0xd4, 0x91, 0xe8, 0x50, 0x82, 0xaf, 0x3f, 0xdb, 0x65,
+	0x68, 0x7f, 0x9e, 0xe9, 0x9c, 0xd2, 0x62, 0x78, 0x81, 0xa0, 0x7a, 0x91, 0x20, 0x0f, 0xa9, 0x19,
+	0x3f, 0xdf, 0x64, 0x3b, 0xd2, 0x34, 0x54, 0xf1, 0x31, 0xc7, 0x92, 0x1f, 0x47, 0x8c, 0xb5, 0x01,
+	0x52, 0xb7, 0x57, 0xb6, 0x28, 0xa9, 0xf9, 0xb2, 0x6d, 0xc9, 0x4b, 0xdd, 0xda, 0x5c, 0xea, 0xd6,
+	0xe5, 0x26, 0x62, 0xd0, 0xc8, 0x14, 0x70, 0x7d, 0x67, 0x28, 0xce, 0xc3, 0xb4, 0xc1, 0xeb, 0x9b,
+	0x55, 0x47, 0xb9, 0x5d, 0x75, 0x94, 0xdf, 0x57, 0x1d, 0xe5, 0xfa, 0xbe, 0x53, 0xba, 0xbd, 0xef,
+	0x94, 0x7e, 0xbb, 0xef, 0x94, 0xbe, 0xb5, 0x77, 0xe4, 0x90, 0x3d, 0x34, 0x62, 0xe0, 0x76, 0xfe,
+	0xe0, 0xb0, 0x23, 0xe2, 0xa7, 0x33, 0x60, 0xf9, 0x73, 0x44, 0x6a, 0x63, 0x5c, 0x13, 0x39, 0x3f,
+	0xf9, 0x33, 0x00, 0x00, 0xff, 0xff, 0xf7, 0x29, 0x3e, 0xd7, 0xac, 0x08, 0x00, 0x00,
 }
 
 func (m *MsgCreateFeed) Marshal() (dAtA []byte, err error) {
@@ -1022,8 +1017,8 @@ func (m *MsgCreateFeed) Size() (n int) {
 		n += 1 + l + sovOracle(uint64(l))
 	}
 	if len(m.Providers) > 0 {
-		for _, b := range m.Providers {
-			l = len(b)
+		for _, s := range m.Providers {
+			l = len(s)
 			n += 1 + l + sovOracle(uint64(l))
 		}
 	}
@@ -1109,8 +1104,8 @@ func (m *MsgEditFeed) Size() (n int) {
 		n += 1 + sovOracle(uint64(m.LatestHistory))
 	}
 	if len(m.Providers) > 0 {
-		for _, b := range m.Providers {
-			l = len(b)
+		for _, s := range m.Providers {
+			l = len(s)
 			n += 1 + l + sovOracle(uint64(l))
 		}
 	}
@@ -1309,7 +1304,7 @@ func (m *MsgCreateFeed) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -1319,25 +1314,23 @@ func (m *MsgCreateFeed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Creator = append(m.Creator[:0], dAtA[iNdEx:postIndex]...)
-			if m.Creator == nil {
-				m.Creator = []byte{}
-			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
@@ -1375,7 +1368,7 @@ func (m *MsgCreateFeed) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Providers", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -1385,23 +1378,23 @@ func (m *MsgCreateFeed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Providers = append(m.Providers, make([]byte, postIndex-iNdEx))
-			copy(m.Providers[len(m.Providers)-1], dAtA[iNdEx:postIndex])
+			m.Providers = append(m.Providers, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
@@ -1679,7 +1672,7 @@ func (m *MsgStartFeed) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -1689,25 +1682,23 @@ func (m *MsgStartFeed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Creator = append(m.Creator[:0], dAtA[iNdEx:postIndex]...)
-			if m.Creator == nil {
-				m.Creator = []byte{}
-			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1798,7 +1789,7 @@ func (m *MsgPauseFeed) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -1808,25 +1799,23 @@ func (m *MsgPauseFeed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Creator = append(m.Creator[:0], dAtA[iNdEx:postIndex]...)
-			if m.Creator == nil {
-				m.Creator = []byte{}
-			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1968,7 +1957,7 @@ func (m *MsgEditFeed) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Providers", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -1978,23 +1967,23 @@ func (m *MsgEditFeed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Providers = append(m.Providers, make([]byte, postIndex-iNdEx))
-			copy(m.Providers[len(m.Providers)-1], dAtA[iNdEx:postIndex])
+			m.Providers = append(m.Providers, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 5:
 			if wireType != 0 {
@@ -2091,7 +2080,7 @@ func (m *MsgEditFeed) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -2101,25 +2090,23 @@ func (m *MsgEditFeed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Creator = append(m.Creator[:0], dAtA[iNdEx:postIndex]...)
-			if m.Creator == nil {
-				m.Creator = []byte{}
-			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2325,7 +2312,7 @@ func (m *Feed) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RequestContextID", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -2335,31 +2322,29 @@ func (m *Feed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RequestContextID = append(m.RequestContextID[:0], dAtA[iNdEx:postIndex]...)
-			if m.RequestContextID == nil {
-				m.RequestContextID = []byte{}
-			}
+			m.RequestContextID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowOracle
@@ -2369,25 +2354,23 @@ func (m *Feed) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthOracle
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthOracle
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Creator = append(m.Creator[:0], dAtA[iNdEx:postIndex]...)
-			if m.Creator == nil {
-				m.Creator = []byte{}
-			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

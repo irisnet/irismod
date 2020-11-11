@@ -81,6 +81,11 @@ func handleMsgDefineService(ctx sdk.Context, k keeper.Keeper, msg *types.MsgDefi
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeCreateDefinition,
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.Name),
+			sdk.NewAttribute(types.AttributeKeyAuthor, msg.Author),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Author),
@@ -113,6 +118,12 @@ func handleMsgBindService(ctx sdk.Context, k keeper.Keeper, msg *types.MsgBindSe
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeCreateBinding,
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Owner),
@@ -141,6 +152,12 @@ func handleMsgUpdateServiceBinding(ctx sdk.Context, k keeper.Keeper, msg *types.
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeUpdateBinding,
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Owner),
@@ -163,6 +180,11 @@ func handleMsgSetWithdrawAddress(ctx sdk.Context, k keeper.Keeper, msg *types.Ms
 	k.SetWithdrawAddress(ctx, owner, withdrawAddress)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeSetWithdrawAddress,
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+			sdk.NewAttribute(types.AttributeKeyWithdrawAddress, msg.WithdrawAddress),
+		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
@@ -189,6 +211,12 @@ func handleMsgDisableServiceBinding(ctx sdk.Context, k keeper.Keeper, msg *types
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeUpdateBinding,
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Owner),
@@ -214,6 +242,12 @@ func handleMsgEnableServiceBinding(ctx sdk.Context, k keeper.Keeper, msg *types.
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeEnableBinding,
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Owner),
@@ -238,6 +272,12 @@ func handleMsgRefundServiceDeposit(ctx sdk.Context, k keeper.Keeper, msg *types.
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRefundDeposit,
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
@@ -292,10 +332,15 @@ func handleMsgCallService(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCallSe
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeCreateContext,
+			sdk.NewAttribute(types.AttributeKeyRequestContextID, reqContextID.String()),
+			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Consumer),
-			sdk.NewAttribute(types.AttributeKeyRequestContextID, reqContextID.String()),
 		),
 	})
 
@@ -321,13 +366,17 @@ func handleMsgRespondService(ctx sdk.Context, k keeper.Keeper, msg *types.MsgRes
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Provider),
+			types.EventTypeRespondService,
 			sdk.NewAttribute(types.AttributeKeyRequestContextID, request.RequestContextId),
 			sdk.NewAttribute(types.AttributeKeyRequestID, msg.RequestId),
 			sdk.NewAttribute(types.AttributeKeyServiceName, request.ServiceName),
+			sdk.NewAttribute(types.AttributeKeyProvider, request.Provider),
 			sdk.NewAttribute(types.AttributeKeyConsumer, request.Consumer),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Provider),
 		),
 	})
 
@@ -353,6 +402,11 @@ func handleMsgPauseRequestContext(ctx sdk.Context, k keeper.Keeper, msg *types.M
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypePauseContext,
+			sdk.NewAttribute(types.AttributeKeyRequestContextID, msg.RequestContextId),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
@@ -384,6 +438,11 @@ func handleMsgStartRequestContext(ctx sdk.Context, k keeper.Keeper, msg *types.M
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeStartContext,
+			sdk.NewAttribute(types.AttributeKeyRequestContextID, msg.RequestContextId),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Consumer),
@@ -413,6 +472,11 @@ func handleMsgKillRequestContext(ctx sdk.Context, k keeper.Keeper, msg *types.Ms
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeKillContext,
+			sdk.NewAttribute(types.AttributeKeyRequestContextID, msg.RequestContextId),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
@@ -456,6 +520,11 @@ func handleMsgUpdateRequestContext(ctx sdk.Context, k keeper.Keeper, msg *types.
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
+			types.EventTypeUpdateContext,
+			sdk.NewAttribute(types.AttributeKeyRequestContextID, msg.RequestContextId),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+		),
+		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Consumer),
@@ -481,6 +550,11 @@ func handleMsgWithdrawEarnedFees(ctx sdk.Context, k keeper.Keeper, msg *types.Ms
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeWithdrawEarnedFees,
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
