@@ -41,7 +41,7 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 			types.EventTypeIssueDenom,
 			sdk.NewAttribute(types.AttributeKeyDenomID, denomID),
 			sdk.NewAttribute(types.AttributeKeyDenomName, denomID),
-			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Sender),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -80,7 +80,6 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 			sdk.NewAttribute(types.AttributeKeyDenomID, denomID),
 			sdk.NewAttribute(types.AttributeKeyTokenURI, msg.URI),
 			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),
-			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -118,7 +117,7 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 			sdk.NewAttribute(types.AttributeKeyTokenID, tokenID),
 			sdk.NewAttribute(types.AttributeKeyDenomID, denomID),
 			sdk.NewAttribute(types.AttributeKeyTokenURI, msg.URI),
-			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Sender),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -193,7 +192,7 @@ func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 			types.EventTypeBurnNFT,
 			sdk.NewAttribute(types.AttributeKeyDenomID, denomID),
 			sdk.NewAttribute(types.AttributeKeyTokenID, tokenID),
-			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Sender),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

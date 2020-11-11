@@ -9,9 +9,10 @@ const (
 
 	AttributeValueCategory = ModuleName
 
-	AttributeKeySymbol   = "symbol"
-	AttributeKeyAmount   = "amount"
-	AttributeKeyOwner    = "owner"
-	AttributeKeyDstOwner = "dst_owner"
-	AttributeKeyTo       = "to"
+	AttributeKeyCreator   = "creator"
+	AttributeKeySymbol    = "symbol"
+	AttributeKeyAmount    = "amount"
+	AttributeKeyOwner     = "owner"
+	AttributeKeyDstOwner  = "dst_owner"
+	AttributeKeyRecipient = "recipient"
 )

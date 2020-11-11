@@ -42,7 +42,7 @@ func (m msgServer) IssueToken(goCtx context.Context, msg *types.MsgIssueToken) (
 		sdk.NewEvent(
 			types.EventTypeIssueToken,
 			sdk.NewAttribute(types.AttributeKeySymbol, msg.Symbol),
-			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Owner),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -96,8 +96,7 @@ func (m msgServer) MintToken(goCtx context.Context, msg *types.MsgMintToken) (*t
 			types.EventTypeMintToken,
 			sdk.NewAttribute(types.AttributeKeySymbol, msg.Symbol),
 			sdk.NewAttribute(types.AttributeKeyAmount, strconv.FormatUint(msg.Amount, 10)),
-			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
-			sdk.NewAttribute(types.AttributeKeyTo, msg.To),
+			sdk.NewAttribute(types.AttributeKeyRecipient, msg.To),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
