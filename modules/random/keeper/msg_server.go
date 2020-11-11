@@ -7,13 +7,13 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/irisnet/irismod/modules/random/types"
 )
 
 type msgServer struct {
 	Keeper
 }
-
 
 var _ types.MsgServer = msgServer{}
 
@@ -48,5 +48,5 @@ func (m msgServer) RequestRandom(goCtx context.Context, msg *types.MsgRequestRan
 		},
 	)
 
-	return &types.MsgRequestRandomResponse{},nil
+	return &types.MsgRequestRandomResponse{}, nil
 }

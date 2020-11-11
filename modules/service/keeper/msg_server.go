@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/hex"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/irisnet/irismod/modules/service/types"
 )
 
