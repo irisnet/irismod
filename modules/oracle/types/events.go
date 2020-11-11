@@ -4,7 +4,7 @@ package types
 const (
 	EventTypeCreateFeed   = "create_feed"
 	EventTypeStartFeed    = "start_feed"
-	EventTypePauseFeed    = "start_feed"
+	EventTypePauseFeed    = "pause_feed"
 	EventTypeEditFeed     = "edit_feed"
 	EventTypeSetFeedValue = "set_feed_value"
 
