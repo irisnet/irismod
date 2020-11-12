@@ -2,14 +2,20 @@ package rest_test
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	codectype "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/bank/types"
+	coinrest "github.com/irisnet/irismod/modules/coinswap/client/rest"
+	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
 	tokentestutil "github.com/irisnet/irismod/modules/token/client/testutil"
-	coinrest "github.com/irisnet/irismod/modules/coinswap/client/rest"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	codectype "github.com/cosmos/cosmos-sdk/codec/types"
-	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
-
 	"strings"
 	"testing"
 
@@ -146,5 +152,44 @@ func (s *IntegrationTestSuite) TestHtlc() {
 	s.Require().NoError(err)
 	res, err := rest.PostRequest(url, "application/json", reqBz)
 	s.Require().NoError(err)
+	println(string(res))
+
+	txConfig := legacytx.StdTxConfig{Cdc: s.cfg.LegacyAmino}
+	msg := &types.MsgSend{
+		FromAddress: val.Address.String(),
+		ToAddress:   val.Address.String(),
+		Amount:      sdk.Coins{sdk.NewInt64Coin(fmt.Sprintf("%stoken", val.Moniker), 100)},
+	}
+
+	// prepare txBuilder with msg
+	txBuilder := txConfig.NewTxBuilder()
+	feeAmount := sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	gasLimit := testdata.NewTestGasLimit()
+	txBuilder.SetMsgs(msg)
+	txBuilder.SetFeeAmount(feeAmount)
+	txBuilder.SetGasLimit(gasLimit)
+	txBuilder.SetMemo("kitty")
+
+	// setup txFactory
+	txFactory := tx.Factory{}.
+		WithChainID(val.ClientCtx.ChainID).
+		WithKeybase(val.ClientCtx.Keyring).
+		WithTxConfig(txConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithSequence(account.GetSequence()+1)
+
+
+	// sign Tx (offline mode so we can manually set sequence number)
+	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, true)
+	s.Require().NoError(err)
+
+	stdTx := txBuilder.GetTx().(legacytx.StdTx)
+	req := authrest.BroadcastReq{
+		Tx:   stdTx,
+		Mode: "sync",
+	}
+	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
+	s.Require().NoError(err)
+	res,err = rest.PostRequest(fmt.Sprintf("%s/txs", val.APIAddress), "application/json", reqBz)
 	println(string(res))
 }
