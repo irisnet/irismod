@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	s.Require().Equal(stateCompleted, htlcItem.State.String())
 
 	coinType := proto.Message(&sdk.Coin{})
-	out, err := simapp.QueryBalancesExec(val.ClientCtx, to.String(), sdk.DefaultBondDenom)
+	out, err := simapp.QueryBalanceExec(val.ClientCtx, to.String(), sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), coinType))
 	balance := coinType.(*sdk.Coin)

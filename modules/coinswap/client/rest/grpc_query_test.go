@@ -20,6 +20,7 @@ import (
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
@@ -69,6 +70,8 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	initialSupply := int64(100000000)
 	maxSupply := int64(200000000)
 	mintable := true
+	baseURL := val.APIAddress
+	uniKitty := "uni%3Akitty"
 
 	//------test GetCmdIssueToken()-------------
 	args := []string{
@@ -93,11 +96,13 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err := simapp.QueryBalancesExec(clientCtx, from.String())
 	s.Require().NoError(err)
-	println("--------------------------------")
-	println(string(out.Bytes()))
-	println("--------------------------------")
+	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
+	balances := respType.(*banktypes.QueryAllBalancesResponse)
+	initKittyAmount := balances.Balances[0].Amount
+	initStakeAmount := balances.Balances[2].Amount
 
 	var account authtypes.AccountI
 	respType = proto.Message(&codectype.Any{})
@@ -120,7 +125,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 		ExactStandardAmt: sdk.NewInt(1000),
 		MinLiquidity:     sdk.NewInt(1000),
 		Deadline:         deadline.Unix(),
-		Sender:           val.Address.String(),
+		Sender:           from.String(),
 	}
 
 	// prepare txBuilder with msg
@@ -150,13 +155,23 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	}
 	reqBz, err := val.ClientCtx.LegacyAmino.MarshalJSON(req)
 	s.Require().NoError(err)
-	res, err := rest.PostRequest(fmt.Sprintf("%s/txs", val.APIAddress), "application/json", reqBz)
-	s.Require().NoError(err)
-	println(string(res))
+	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
 
+	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
 	s.Require().NoError(err)
-	println("--------------------------------")
-	println(string(out.Bytes()))
-	println("--------------------------------")
+	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
+	balances = respType.(*banktypes.QueryAllBalancesResponse)
+	s.Require().Equal(initKittyAmount.Int64()- 1000 , balances.Balances[0].Amount.Int64())
+	s.Require().Equal(initStakeAmount.Int64()- 1010 , balances.Balances[2].Amount.Int64())
+
+	url := fmt.Sprintf("%s/irismod/coinswap/liquidities/%s", baseURL, uniKitty)
+	println(url)
+	resp, err := rest.GetRequest(url)
+	respType = proto.Message(&coinswaptypes.QueryLiquidityResponse{})
+	s.Require().NoError(err)
+	println(string(resp))
+	//s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(resp, respType))
+	//liquidityResp := respType.(*coinswaptypes.QueryLiquidityResponse)
+	//s.Require().Equal(1, len(liquidityResp.Liquidity))
 }
