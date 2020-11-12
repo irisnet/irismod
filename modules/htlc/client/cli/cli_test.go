@@ -7,6 +7,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
+
 	"github.com/tendermint/tendermint/crypto"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -48,7 +49,7 @@ func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
 }
 
-func (s *IntegrationTestSuite) TestHtlc() {
+func (s *IntegrationTestSuite) TestHTLC() {
 	val := s.network.Validators[0]
 
 	//------test GetCmdCreateHTLC()-------------
