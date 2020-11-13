@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tidwall/gjson"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 
@@ -71,7 +73,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	maxSupply := int64(200000000)
 	mintable := true
 	baseURL := val.APIAddress
-	uniKitty := "uni%3Akitty"
+	uniKitty := "uni:kitty"
 
 	//------test GetCmdIssueToken()-------------
 	args := []string{
@@ -101,8 +103,8 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 	balances := respType.(*banktypes.QueryAllBalancesResponse)
-	initKittyAmount := balances.Balances[0].Amount
-	initStakeAmount := balances.Balances[2].Amount
+	s.Require().Equal("100000000", balances.Balances[0].Amount.String())
+	s.Require().Equal("399986975", balances.Balances[2].Amount.String())
 
 	var account authtypes.AccountI
 	respType = proto.Message(&codectype.Any{})
@@ -115,6 +117,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	coinswaptypes.RegisterLegacyAminoCodec(clientCtx.LegacyAmino)
 	coinswaptypes.RegisterInterfaces(clientCtx.InterfaceRegistry)
 
+	// test add liquidity (poor not exist)
 	status, err := clientCtx.Client.Status(context.Background())
 	s.Require().NoError(err)
 	deadline := status.SyncInfo.LatestBlockTime.Add(time.Minute)
@@ -162,16 +165,299 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 	balances = respType.(*banktypes.QueryAllBalancesResponse)
-	s.Require().Equal(initKittyAmount.Int64()- 1000 , balances.Balances[0].Amount.Int64())
-	s.Require().Equal(initStakeAmount.Int64()- 1010 , balances.Balances[2].Amount.Int64())
+	s.Require().Equal("99999000", balances.Balances[0].Amount.String())
+	s.Require().Equal("399985965", balances.Balances[2].Amount.String())
+	s.Require().Equal("1000", balances.Balances[3].Amount.String())
 
-	url := fmt.Sprintf("%s/irismod/coinswap/liquidities/%s", baseURL, uniKitty)
-	println(url)
+	url := fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
 	resp, err := rest.GetRequest(url)
-	respType = proto.Message(&coinswaptypes.QueryLiquidityResponse{})
 	s.Require().NoError(err)
-	println(string(resp))
-	//s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(resp, respType))
-	//liquidityResp := respType.(*coinswaptypes.QueryLiquidityResponse)
-	//s.Require().Equal(1, len(liquidityResp.Liquidity))
+	s.Require().Equal("1000", gjson.Get(string(resp), "result.standard.amount").String())
+	s.Require().Equal("1000", gjson.Get(string(resp), "result.token.amount").String())
+	s.Require().Equal("1000", gjson.Get(string(resp), "result.liquidity.amount").String())
+
+	// test add liquidity (poor exist)
+	status, err = clientCtx.Client.Status(context.Background())
+	s.Require().NoError(err)
+	deadline = status.SyncInfo.LatestBlockTime.Add(time.Minute)
+
+	txConfig = legacytx.StdTxConfig{Cdc: s.cfg.LegacyAmino}
+	msgAddLiquidity = &coinswaptypes.MsgAddLiquidity{
+		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(2001)),
+		ExactStandardAmt: sdk.NewInt(2000),
+		MinLiquidity:     sdk.NewInt(2000),
+		Deadline:         deadline.Unix(),
+		Sender:           from.String(),
+	}
+
+	// prepare txBuilder with msg
+	txBuilder = txConfig.NewTxBuilder()
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	err = txBuilder.SetMsgs(msgAddLiquidity)
+	s.Require().NoError(err)
+	txBuilder.SetFeeAmount(feeAmount)
+	txBuilder.SetGasLimit(1000000)
+
+	// setup txFactory
+	txFactory = tx.Factory{}.
+		WithChainID(val.ClientCtx.ChainID).
+		WithKeybase(val.ClientCtx.Keyring).
+		WithTxConfig(txConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithSequence(account.GetSequence() + 1)
+
+	// sign Tx (offline mode so we can manually set sequence number)
+	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, true)
+	s.Require().NoError(err)
+
+	stdTx = txBuilder.GetTx().(legacytx.StdTx)
+	req = authrest.BroadcastReq{
+		Tx:   stdTx,
+		Mode: "block",
+	}
+	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
+	s.Require().NoError(err)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+
+	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
+	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
+	balances = respType.(*banktypes.QueryAllBalancesResponse)
+	s.Require().Equal("99996999", balances.Balances[0].Amount.String())
+	s.Require().Equal("399983955", balances.Balances[2].Amount.String())
+	s.Require().Equal("3000", balances.Balances[3].Amount.String())
+
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	resp, err = rest.GetRequest(url)
+	s.Require().NoError(err)
+	s.Require().Equal("3000", gjson.Get(string(resp), "result.standard.amount").String())
+	s.Require().Equal("3001", gjson.Get(string(resp), "result.token.amount").String())
+	s.Require().Equal("3000", gjson.Get(string(resp), "result.liquidity.amount").String())
+
+	// test sell order
+	msgSellOrder := &coinswaptypes.MsgSwapOrder{
+		Input: coinswaptypes.Input{
+			Address: from.String(),
+			Coin:    sdk.NewCoin(symbol, sdk.NewInt(1000)),
+		},
+		Output: coinswaptypes.Output{
+			Address: from.String(),
+			Coin:    sdk.NewInt64Coin(s.cfg.BondDenom, 748),
+		},
+		Deadline:   deadline.Unix(),
+		IsBuyOrder: false,
+	}
+
+	// prepare txBuilder with msg
+	txBuilder = txConfig.NewTxBuilder()
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	err = txBuilder.SetMsgs(msgSellOrder)
+	s.Require().NoError(err)
+	txBuilder.SetFeeAmount(feeAmount)
+	txBuilder.SetGasLimit(1000000)
+
+	// setup txFactory
+	txFactory = tx.Factory{}.
+		WithChainID(val.ClientCtx.ChainID).
+		WithKeybase(val.ClientCtx.Keyring).
+		WithTxConfig(txConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithSequence(account.GetSequence() + 2)
+
+	// sign Tx (offline mode so we can manually set sequence number)
+	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, true)
+	s.Require().NoError(err)
+
+	stdTx = txBuilder.GetTx().(legacytx.StdTx)
+	req = authrest.BroadcastReq{
+		Tx:   stdTx,
+		Mode: "block",
+	}
+	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
+	s.Require().NoError(err)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+
+	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
+	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
+	balances = respType.(*banktypes.QueryAllBalancesResponse)
+	s.Require().Equal("99995999", balances.Balances[0].Amount.String())
+	s.Require().Equal("399984693", balances.Balances[2].Amount.String())
+	s.Require().Equal("3000", balances.Balances[3].Amount.String())
+
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	resp, err = rest.GetRequest(url)
+	s.Require().NoError(err)
+	s.Require().Equal("2252", gjson.Get(string(resp), "result.standard.amount").String())
+	s.Require().Equal("4001", gjson.Get(string(resp), "result.token.amount").String())
+	s.Require().Equal("3000", gjson.Get(string(resp), "result.liquidity.amount").String())
+
+	// test buy order
+	msgBuyOrder := &coinswaptypes.MsgSwapOrder{
+		Input: coinswaptypes.Input{
+			Address: from.String(),
+			Coin:    sdk.NewInt64Coin(s.cfg.BondDenom, 753),
+		},
+		Output: coinswaptypes.Output{
+			Address: from.String(),
+			Coin:    sdk.NewCoin(symbol, sdk.NewInt(1000)),
+		},
+		Deadline:   deadline.Unix(),
+		IsBuyOrder: true,
+	}
+
+	// prepare txBuilder with msg
+	txBuilder = txConfig.NewTxBuilder()
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	err = txBuilder.SetMsgs(msgBuyOrder)
+	s.Require().NoError(err)
+	txBuilder.SetFeeAmount(feeAmount)
+	txBuilder.SetGasLimit(1000000)
+
+	// setup txFactory
+	txFactory = tx.Factory{}.
+		WithChainID(val.ClientCtx.ChainID).
+		WithKeybase(val.ClientCtx.Keyring).
+		WithTxConfig(txConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithSequence(account.GetSequence() + 3)
+
+	// sign Tx (offline mode so we can manually set sequence number)
+	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, true)
+	s.Require().NoError(err)
+
+	stdTx = txBuilder.GetTx().(legacytx.StdTx)
+	req = authrest.BroadcastReq{
+		Tx:   stdTx,
+		Mode: "block",
+	}
+	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
+	s.Require().NoError(err)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+
+	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
+	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
+	balances = respType.(*banktypes.QueryAllBalancesResponse)
+	s.Require().Equal("99996999", balances.Balances[0].Amount.String())
+	s.Require().Equal("399983930", balances.Balances[2].Amount.String())
+	s.Require().Equal("3000", balances.Balances[3].Amount.String())
+
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	resp, err = rest.GetRequest(url)
+	s.Require().NoError(err)
+	s.Require().Equal("3005", gjson.Get(string(resp), "result.standard.amount").String())
+	s.Require().Equal("3001", gjson.Get(string(resp), "result.token.amount").String())
+	s.Require().Equal("3000", gjson.Get(string(resp), "result.liquidity.amount").String())
+
+	// Test remove liquidity (remove part)
+	msgRemoveLiquidity := &coinswaptypes.MsgRemoveLiquidity{
+		WithdrawLiquidity: sdk.NewCoin(uniKitty, sdk.NewInt(2000)),
+		MinToken:          sdk.NewInt(2000),
+		MinStandardAmt:    sdk.NewInt(2000),
+		Deadline:          deadline.Unix(),
+		Sender:            from.String(),
+	}
+
+	// prepare txBuilder with msg
+	txBuilder = txConfig.NewTxBuilder()
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	err = txBuilder.SetMsgs(msgRemoveLiquidity)
+	s.Require().NoError(err)
+	txBuilder.SetFeeAmount(feeAmount)
+	txBuilder.SetGasLimit(1000000)
+
+	// setup txFactory
+	txFactory = tx.Factory{}.
+		WithChainID(val.ClientCtx.ChainID).
+		WithKeybase(val.ClientCtx.Keyring).
+		WithTxConfig(txConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithSequence(account.GetSequence() + 4)
+
+	// sign Tx (offline mode so we can manually set sequence number)
+	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, true)
+	s.Require().NoError(err)
+
+	stdTx = txBuilder.GetTx().(legacytx.StdTx)
+	req = authrest.BroadcastReq{
+		Tx:   stdTx,
+		Mode: "block",
+	}
+	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
+	s.Require().NoError(err)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+
+	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
+	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
+	balances = respType.(*banktypes.QueryAllBalancesResponse)
+	s.Require().Equal("99998999", balances.Balances[0].Amount.String())
+	s.Require().Equal("399985923", balances.Balances[2].Amount.String())
+	s.Require().Equal("1000", balances.Balances[3].Amount.String())
+
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	resp, err = rest.GetRequest(url)
+	s.Require().NoError(err)
+	s.Require().Equal("1002", gjson.Get(string(resp), "result.standard.amount").String())
+	s.Require().Equal("1001", gjson.Get(string(resp), "result.token.amount").String())
+	s.Require().Equal("1000", gjson.Get(string(resp), "result.liquidity.amount").String())
+
+	// Test remove liquidity (remove all)
+	msgRemoveLiquidity = &coinswaptypes.MsgRemoveLiquidity{
+		WithdrawLiquidity: sdk.NewCoin(uniKitty, sdk.NewInt(1000)),
+		MinToken:          sdk.NewInt(1000),
+		MinStandardAmt:    sdk.NewInt(1000),
+		Deadline:          deadline.Unix(),
+		Sender:            from.String(),
+	}
+
+	// prepare txBuilder with msg
+	txBuilder = txConfig.NewTxBuilder()
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	err = txBuilder.SetMsgs(msgRemoveLiquidity)
+	s.Require().NoError(err)
+	txBuilder.SetFeeAmount(feeAmount)
+	txBuilder.SetGasLimit(1000000)
+
+	// setup txFactory
+	txFactory = tx.Factory{}.
+		WithChainID(val.ClientCtx.ChainID).
+		WithKeybase(val.ClientCtx.Keyring).
+		WithTxConfig(txConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithSequence(account.GetSequence() + 5)
+
+	// sign Tx (offline mode so we can manually set sequence number)
+	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, true)
+	s.Require().NoError(err)
+
+	stdTx = txBuilder.GetTx().(legacytx.StdTx)
+	req = authrest.BroadcastReq{
+		Tx:   stdTx,
+		Mode: "block",
+	}
+	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
+	s.Require().NoError(err)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+
+	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
+	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
+	balances = respType.(*banktypes.QueryAllBalancesResponse)
+	s.Require().Equal("100000000", balances.Balances[0].Amount.String())
+	s.Require().Equal("399986915", balances.Balances[2].Amount.String())
+	s.Require().Equal("0", balances.Balances[3].Amount.String())
+
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	resp, err = rest.GetRequest(url)
+	s.Require().NoError(err)
+	s.Require().Equal("0", gjson.Get(string(resp), "result.standard.amount").String())
+	s.Require().Equal("0", gjson.Get(string(resp), "result.token.amount").String())
+	s.Require().Equal("0", gjson.Get(string(resp), "result.liquidity.amount").String())
 }
