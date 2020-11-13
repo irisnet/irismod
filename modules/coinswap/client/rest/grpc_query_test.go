@@ -159,6 +159,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	reqBz, err := val.ClientCtx.LegacyAmino.MarshalJSON(req)
 	s.Require().NoError(err)
 	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -218,6 +219,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
 	s.Require().NoError(err)
 	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -277,6 +279,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
 	s.Require().NoError(err)
 	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -336,6 +339,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
 	s.Require().NoError(err)
 	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -390,6 +394,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
 	s.Require().NoError(err)
 	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -444,6 +449,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	reqBz, err = val.ClientCtx.LegacyAmino.MarshalJSON(req)
 	s.Require().NoError(err)
 	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
