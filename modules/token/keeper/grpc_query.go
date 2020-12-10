@@ -3,6 +3,9 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/types/query"
+	gogotypes "github.com/gogo/protobuf/types"
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
@@ -55,8 +58,41 @@ func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types
 		}
 	}
 
-	tokens := k.GetTokens(ctx, owner)
-
+	var tokens []types.TokenI
+	var pageRes *query.PageResponse
+	store := ctx.KVStore(k.storeKey)
+	if owner == nil {
+		tokenStore := prefix.NewStore(store, types.PrefixTokenForSymbol)
+		pageRes, err = query.Paginate(tokenStore, req.Pagination, func(key []byte, value []byte) error {
+			var token types.Token
+			err := k.cdc.UnmarshalBinaryBare(value, &token)
+			if err != nil {
+				return err
+			}
+			tokens = append(tokens, &token)
+			return nil
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
+		}
+	}else{
+		tokenStore := prefix.NewStore(store, types.KeyTokens(owner, ""))
+		pageRes, err = query.Paginate(tokenStore, req.Pagination, func(key []byte, value []byte) error {
+			var symbol gogotypes.StringValue
+			err := k.cdc.UnmarshalBinaryBare(value, &symbol)
+			if err != nil {
+				return err
+			}
+			token, err := k.GetToken(ctx, symbol.Value)
+			if err == nil {
+				tokens = append(tokens, token)
+			}
+			return nil
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
+		}
+	}
 	result := make([]*codectypes.Any, len(tokens))
 	for i, token := range tokens {
 		msg, ok := token.(proto.Message)
@@ -70,7 +106,8 @@ func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types
 		}
 	}
 
-	return &types.QueryTokensResponse{Tokens: result}, nil
+
+	return &types.QueryTokensResponse{Tokens: result, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Fees(c context.Context, req *types.QueryFeesRequest) (*types.QueryFeesResponse, error) {
