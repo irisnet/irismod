@@ -1,8 +1,11 @@
 package keeper
 
 import (
+	"bytes"
 	"context"
 	"encoding/hex"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -58,25 +61,46 @@ func (k Keeper) Bindings(c context.Context, req *types.QueryBindingsRequest) (*t
 
 	ctx := sdk.UnwrapSDKContext(c)
 	bindings := make([]*types.ServiceBinding, 0)
+	store := ctx.KVStore(k.storeKey)
+	var pageRes *query.PageResponse
+	var err error
 	if len(req.Owner) == 0 {
-		iterator := k.ServiceBindingsIterator(ctx, req.ServiceName)
-		defer iterator.Close()
-
-		for ; iterator.Valid(); iterator.Next() {
+		bindingStore := prefix.NewStore(store, types.GetBindingsSubspace(req.ServiceName))
+		pageRes, err = query.Paginate(bindingStore, req.Pagination, func(key []byte, value []byte) error {
 			var binding types.ServiceBinding
-			k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &binding)
-
+			err := k.cdc.UnmarshalBinaryBare(value, &binding)
+			if err != nil {
+				return err
+			}
 			bindings = append(bindings, &binding)
+			return nil
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 		}
 	} else {
 		owner, err := sdk.AccAddressFromBech32(req.Owner)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 		}
-		bindings = k.GetOwnerServiceBindings(ctx, owner, req.ServiceName)
+		bindingStore := prefix.NewStore(store, types.GetOwnerBindingsSubspace(owner, req.ServiceName))
+		pageRes, err = query.Paginate(bindingStore, req.Pagination, func(key []byte, value []byte) error {
+			bindingKey := key[sdk.AddrLen+1:]
+			sepIndex := bytes.Index(bindingKey, types.EmptyByte)
+			serviceName := string(bindingKey[0:sepIndex])
+			provider := sdk.AccAddress(bindingKey[sepIndex+1:])
+
+			if binding, found := k.GetServiceBinding(ctx, serviceName, provider); found {
+				bindings = append(bindings, &binding)
+			}
+			return nil
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
+		}
 	}
 
-	return &types.QueryBindingsResponse{ServiceBindings: bindings}, nil
+	return &types.QueryBindingsResponse{ServiceBindings: bindings, Pagination: pageRes}, nil
 }
 
 func (k Keeper) WithdrawAddress(c context.Context, req *types.QueryWithdrawAddressRequest) (*types.QueryWithdrawAddressResponse, error) {
@@ -151,22 +175,24 @@ func (k Keeper) Requests(c context.Context, req *types.QueryRequestsRequest) (*t
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-
-	iterator := k.ActiveRequestsIterator(ctx, req.ServiceName, provider)
-	defer iterator.Close()
-
 	requests := make([]*types.Request, 0)
-
-	for ; iterator.Valid(); iterator.Next() {
+	store := ctx.KVStore(k.storeKey)
+	requestStore := prefix.NewStore(store, types.GetActiveRequestSubspace(req.ServiceName, provider))
+	pageRes, err := query.Paginate(requestStore, req.Pagination, func(key []byte, value []byte) error {
 		var requestID gogotypes.BytesValue
-
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &requestID)
-
+		err := k.cdc.UnmarshalBinaryBare(value, &requestID)
+		if err != nil {
+			return err
+		}
 		request, _ := k.GetRequest(ctx, requestID.Value)
 		requests = append(requests, &request)
+		return nil
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 	}
 
-	return &types.QueryRequestsResponse{Requests: requests}, nil
+	return &types.QueryRequestsResponse{Requests: requests, Pagination: pageRes}, nil
 }
 
 func (k Keeper) RequestsByReqCtx(c context.Context, req *types.QueryRequestsByReqCtxRequest) (*types.QueryRequestsByReqCtxResponse, error) {
@@ -183,19 +209,20 @@ func (k Keeper) RequestsByReqCtx(c context.Context, req *types.QueryRequestsByRe
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-
-	iterator := k.RequestsIteratorByReqCtx(ctx, requestContextId, req.BatchCounter)
-	defer iterator.Close()
-
 	requests := make([]*types.Request, 0)
-	for ; iterator.Valid(); iterator.Next() {
-		requestID := iterator.Key()[1:]
+	store := ctx.KVStore(k.storeKey)
+	requestStore := prefix.NewStore(store, types.GetRequestSubspaceByReqCtx(requestContextId, req.BatchCounter))
+	pageRes, err := query.Paginate(requestStore, req.Pagination, func(key []byte, value []byte) error {
+		requestID := key[1:]
 		request, _ := k.GetRequest(ctx, requestID)
-
 		requests = append(requests, &request)
+		return nil
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 	}
 
-	return &types.QueryRequestsByReqCtxResponse{Requests: requests}, nil
+	return &types.QueryRequestsByReqCtxResponse{Requests: requests,Pagination: pageRes}, nil
 }
 
 func (k Keeper) Response(c context.Context, req *types.QueryResponseRequest) (*types.QueryResponseResponse, error) {
@@ -235,18 +262,24 @@ func (k Keeper) Responses(c context.Context, req *types.QueryResponsesRequest) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	iterator := k.ResponsesIteratorByReqCtx(ctx, requestContextId, req.BatchCounter)
-	defer iterator.Close()
-
 	responses := make([]*types.Response, 0)
-	for ; iterator.Valid(); iterator.Next() {
-		var response types.Response
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &response)
+	store := ctx.KVStore(k.storeKey)
 
+	responseStore := prefix.NewStore(store, types.GetResponseSubspaceByReqCtx(requestContextId, req.BatchCounter))
+	pageRes, err := query.Paginate(responseStore, req.Pagination, func(key []byte, value []byte) error {
+		var response types.Response
+		err := k.cdc.UnmarshalBinaryBare(value, &response)
+		if err != nil {
+			return err
+		}
 		responses = append(responses, &response)
+		return nil
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 	}
 
-	return &types.QueryResponsesResponse{Responses: responses}, nil
+	return &types.QueryResponsesResponse{Responses: responses, Pagination: pageRes}, nil
 }
 
 func (k Keeper) EarnedFees(c context.Context, req *types.QueryEarnedFeesRequest) (*types.QueryEarnedFeesResponse, error) {
