@@ -172,8 +172,12 @@ func GetCmdQueryDenoms() *cobra.Command {
 				return err
 			}
 
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.Denoms(context.Background(), &types.QueryDenomsRequest{})
+			resp, err := queryClient.Denoms(context.Background(), &types.QueryDenomsRequest{Pagination: pageReq})
 			if err != nil {
 				return err
 			}
@@ -181,7 +185,7 @@ func GetCmdQueryDenoms() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-
+	flags.AddPaginationFlagsToCmd(cmd, "all denoms")
 	return cmd
 }
 

@@ -4,6 +4,7 @@ package irismod.nft;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "nft/nft.proto";
+import "cosmos/query/pagination.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/nft/types";
 
@@ -84,11 +85,15 @@ message QueryDenomResponse {
 
 // QueryDenomsRequest is the request type for the Query/Denoms RPC method
 message QueryDenomsRequest {
+    // pagination defines an optional pagination for the request.
+    cosmos.query.PageRequest pagination = 1;
 }
 
 // QueryDenomsResponse is the response type for the Query/Denoms RPC method
 message QueryDenomsResponse {
     repeated Denom denoms = 1 [ (gogoproto.nullable) = false ];
+
+    cosmos.query.PageResponse pagination = 2;
 }
 
 // QueryNFTRequest is the request type for the Query/NFT RPC method
