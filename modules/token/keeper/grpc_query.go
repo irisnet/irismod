@@ -3,9 +3,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	gogotypes "github.com/gogo/protobuf/types"
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
@@ -13,7 +10,11 @@ import (
 	"google.golang.org/grpc/status"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
+
+	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/irisnet/irismod/modules/token/types"
 )
@@ -75,7 +76,7 @@ func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 		}
-	}else{
+	} else {
 		tokenStore := prefix.NewStore(store, types.KeyTokens(owner, ""))
 		pageRes, err = query.Paginate(tokenStore, req.Pagination, func(key []byte, value []byte) error {
 			var symbol gogotypes.StringValue
@@ -105,7 +106,6 @@ func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types
 			return nil, status.Error(codes.Internal, err.Error())
 		}
 	}
-
 
 	return &types.QueryTokensResponse{Tokens: result, Pagination: pageRes}, nil
 }

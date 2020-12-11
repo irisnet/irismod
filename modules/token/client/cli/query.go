@@ -98,7 +98,7 @@ func GetCmdQueryTokens() *cobra.Command {
 			res, err := queryClient.Tokens(
 				context.Background(),
 				&types.QueryTokensRequest{
-					Owner: owner.String(),
+					Owner:      owner.String(),
 					Pagination: pageReq,
 				},
 			)
