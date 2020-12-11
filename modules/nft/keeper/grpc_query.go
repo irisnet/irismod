@@ -7,8 +7,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/irisnet/irismod/modules/nft/types"
 )
@@ -68,11 +70,28 @@ func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*typ
 	return &types.QueryDenomResponse{Denom: &denomObject}, nil
 }
 
-func (k Keeper) Denoms(c context.Context, request *types.QueryDenomsRequest) (*types.QueryDenomsResponse, error) {
+func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types.QueryDenomsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	denoms := k.GetDenoms(ctx)
+
+	var denoms []types.Denom
+	store := ctx.KVStore(k.storeKey)
+	denomStore := prefix.NewStore(store, types.KeyDenomID(""))
+	pageRes, err := query.Paginate(denomStore, req.Pagination, func(key []byte, value []byte) error {
+		var denom types.Denom
+		err := k.cdc.UnmarshalBinaryBare(value, &denom)
+		if err != nil {
+			return err
+		}
+		denoms = append(denoms, denom)
+		return nil
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
+	}
+
 	return &types.QueryDenomsResponse{
-		Denoms: denoms,
+		Denoms:     denoms,
+		Pagination: pageRes,
 	}, nil
 }
 
