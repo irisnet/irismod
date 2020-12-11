@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"context"
 	"encoding/hex"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/irisnet/irismod/modules/service/types"
@@ -222,7 +223,7 @@ func (k Keeper) RequestsByReqCtx(c context.Context, req *types.QueryRequestsByRe
 		return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 	}
 
-	return &types.QueryRequestsByReqCtxResponse{Requests: requests,Pagination: pageRes}, nil
+	return &types.QueryRequestsByReqCtxResponse{Requests: requests, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Response(c context.Context, req *types.QueryResponseRequest) (*types.QueryResponseResponse, error) {

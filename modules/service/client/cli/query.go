@@ -170,7 +170,7 @@ func GetCmdQueryServiceBindings() *cobra.Command {
 				&types.QueryBindingsRequest{
 					ServiceName: args[0],
 					Owner:       owner.String(),
-					Pagination: pageReq,
+					Pagination:  pageReq,
 				},
 			)
 			if err != nil {
@@ -310,7 +310,7 @@ func GetCmdQueryServiceRequests() *cobra.Command {
 				res, err := queryClient.Requests(context.Background(), &types.QueryRequestsRequest{
 					ServiceName: args[0],
 					Provider:    provider.String(),
-					Pagination: pageReq,
+					Pagination:  pageReq,
 				})
 				if err != nil {
 					return err
@@ -333,7 +333,7 @@ func GetCmdQueryServiceRequests() *cobra.Command {
 				&types.QueryRequestsByReqCtxRequest{
 					RequestContextId: tmbytes.HexBytes(requestContextID).String(),
 					BatchCounter:     batchCounter,
-					Pagination: pageReq,
+					Pagination:       pageReq,
 				},
 			)
 			if err != nil {
@@ -435,7 +435,7 @@ func GetCmdQueryServiceResponses() *cobra.Command {
 				&types.QueryResponsesRequest{
 					RequestContextId: tmbytes.HexBytes(requestContextID).String(),
 					BatchCounter:     batchCounter,
-					Pagination: pageReq,
+					Pagination:       pageReq,
 				},
 			)
 			if err != nil {
