@@ -101,7 +101,10 @@ func GetCmdQueryOwner() *cobra.Command {
 			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
 				return err
 			}
-
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			denomID, err := cmd.Flags().GetString(FlagDenomID)
 			if err != nil {
 				return err
@@ -110,16 +113,17 @@ func GetCmdQueryOwner() *cobra.Command {
 			resp, err := queryClient.Owner(context.Background(), &types.QueryOwnerRequest{
 				DenomId: denomID,
 				Owner:   args[0],
+				Pagination: pageReq,
 			})
 			if err != nil {
 				return err
 			}
-
-			return clientCtx.PrintOutput(resp.Owner)
+			return clientCtx.PrintOutput(resp)
 		},
 	}
 	cmd.Flags().AddFlagSet(FsQueryOwner)
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "nfts")
 
 	return cmd
 }

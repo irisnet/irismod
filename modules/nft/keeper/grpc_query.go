@@ -43,8 +43,35 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 		return nil, status.Errorf(codes.InvalidArgument, "invalid owner address %s", request.Owner)
 	}
 
-	owner := k.GetOwner(ctx, ownerAddress, request.DenomId)
-	return &types.QueryOwnerResponse{Owner: &owner}, nil
+	owner := types.Owner{
+		Address:       ownerAddress.String(),
+		IDCollections: types.IDCollections{},
+	}
+	idsMap := make(map[string][]string)
+	store := ctx.KVStore(k.storeKey)
+	nftStore := prefix.NewStore(store, types.KeyOwner(ownerAddress, request.DenomId, ""))
+	pageRes, err := query.Paginate(nftStore, request.Pagination, func(key []byte, value []byte) error {
+		println(request.DenomId)
+		denomID := request.DenomId
+		tokenID := string(key)
+		if(len(request.DenomId)==0){
+			denomID, tokenID, _ = types.SplitKeyDenom(key)
+		}
+		if ids, ok := idsMap[denomID]; ok {
+			idsMap[denomID] = append(ids, tokenID)
+		} else {
+			idsMap[denomID] = []string{tokenID}
+			owner.IDCollections = append(
+				owner.IDCollections,
+				types.IDCollection{DenomId: denomID},
+			)
+		}
+		return nil
+	})
+	for i := 0; i < len(owner.IDCollections); i++ {
+		owner.IDCollections[i].TokenIds = idsMap[owner.IDCollections[i].DenomId]
+	}
+	return &types.QueryOwnerResponse{Owner: &owner, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequest) (*types.QueryCollectionResponse, error) {
