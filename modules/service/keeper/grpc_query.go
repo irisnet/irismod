@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"bytes"
 	"context"
 	"encoding/hex"
 	"strings"
@@ -83,12 +82,9 @@ func (k Keeper) Bindings(c context.Context, req *types.QueryBindingsRequest) (*t
 		}
 		bindingStore := prefix.NewStore(store, types.GetOwnerBindingsSubspace(owner, req.ServiceName))
 		pageRes, err = query.Paginate(bindingStore, req.Pagination, func(key []byte, value []byte) error {
-			bindingKey := key[sdk.AddrLen+1:]
-			sepIndex := bytes.Index(bindingKey, types.EmptyByte)
-			serviceName := string(bindingKey[0:sepIndex])
-			provider := sdk.AccAddress(bindingKey[sepIndex+1:])
+			provider := sdk.AccAddress(key)
 
-			if binding, found := k.GetServiceBinding(ctx, serviceName, provider); found {
+			if binding, found := k.GetServiceBinding(ctx, req.ServiceName, provider); found {
 				bindings = append(bindings, &binding)
 			}
 			return nil
@@ -208,7 +204,7 @@ func (k Keeper) RequestsByReqCtx(c context.Context, req *types.QueryRequestsByRe
 	store := ctx.KVStore(k.storeKey)
 	requestStore := prefix.NewStore(store, types.GetRequestSubspaceByReqCtx(requestContextId, req.BatchCounter))
 	pageRes, err := query.Paginate(requestStore, req.Pagination, func(key []byte, value []byte) error {
-		requestID := key[1:]
+		requestID := append(append(requestContextId, sdk.Uint64ToBigEndian(req.BatchCounter)...),key...)
 		request, _ := k.GetRequest(ctx, requestID)
 		requests = append(requests, &request)
 		return nil
