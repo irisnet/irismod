@@ -49,10 +49,7 @@ func (k Keeper) Feeds(c context.Context, req *types.QueryFeedsRequest) (*types.Q
 		feedStore := prefix.NewStore(store, types.GetFeedPrefixKey())
 		pageRes, err = query.Paginate(feedStore, req.Pagination, func(key []byte, value []byte) error {
 			var feed types.Feed
-			err := k.cdc.UnmarshalBinaryBare(value, &feed)
-			if err != nil {
-				return err
-			}
+			k.cdc.MustUnmarshalBinaryBare(value, &feed)
 			result = append(result, BuildFeedContext(ctx, k, feed))
 			return nil
 		})
@@ -68,10 +65,7 @@ func (k Keeper) Feeds(c context.Context, req *types.QueryFeedsRequest) (*types.Q
 		feedStore := prefix.NewStore(store, types.GetFeedStatePrefixKey(state))
 		pageRes, err = query.Paginate(feedStore, req.Pagination, func(key []byte, value []byte) error {
 			var feedName gogotypes.StringValue
-			err := k.cdc.UnmarshalBinaryBare(value, &feedName)
-			if err != nil {
-				return err
-			}
+			k.cdc.MustUnmarshalBinaryBare(value, &feedName)
 			if feed, found := k.GetFeed(ctx, feedName.Value); found {
 				result = append(result, BuildFeedContext(ctx, k, feed))
 			}

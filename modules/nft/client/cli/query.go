@@ -142,19 +142,26 @@ func GetCmdQueryCollection() *cobra.Command {
 			if err := types.ValidateDenomID(denomID); err != nil {
 				return err
 			}
-
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.Collection(
 				context.Background(),
-				&types.QueryCollectionRequest{DenomId: denomID},
+				&types.QueryCollectionRequest{
+					DenomId: denomID,
+					Pagination: pageReq,
+				},
 			)
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintOutput(resp.Collection)
+			return clientCtx.PrintOutput(resp)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "nfts")
 
 	return cmd
 }

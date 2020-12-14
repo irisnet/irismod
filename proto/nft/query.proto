@@ -66,11 +66,14 @@ message QueryOwnerResponse {
 // QueryCollectionRequest is the request type for the Query/Collection RPC method
 message QueryCollectionRequest {
     string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    // pagination defines an optional pagination for the request.
+    cosmos.query.PageRequest pagination = 2;
 }
 
 // QueryCollectionResponse is the response type for the Query/Collection RPC method
 message QueryCollectionResponse {
     Collection collection = 1;
+    cosmos.query.PageResponse pagination = 2;
 }
 
 // QueryDenomRequest is the request type for the Query/Denom RPC method

@@ -51,11 +51,11 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 	denom := strings.ToLower(strings.TrimSpace(request.DenomId))
 	ctx := sdk.UnwrapSDKContext(c)
 
-	collection, err := k.GetCollection(ctx, denom)
+	collection, pageRes, err := k.GetPaginateCollection(ctx, request, denom)
 	if err != nil {
 		return nil, err
 	}
-	return &types.QueryCollectionResponse{Collection: &collection}, nil
+	return &types.QueryCollectionResponse{Collection: &collection, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*types.QueryDenomResponse, error) {
@@ -78,10 +78,7 @@ func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types
 	denomStore := prefix.NewStore(store, types.KeyDenomID(""))
 	pageRes, err := query.Paginate(denomStore, req.Pagination, func(key []byte, value []byte) error {
 		var denom types.Denom
-		err := k.cdc.UnmarshalBinaryBare(value, &denom)
-		if err != nil {
-			return err
-		}
+		k.cdc.MustUnmarshalBinaryBare(value, &denom)
 		denoms = append(denoms, denom)
 		return nil
 	})
