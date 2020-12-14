@@ -111,8 +111,8 @@ func GetCmdQueryOwner() *cobra.Command {
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.Owner(context.Background(), &types.QueryOwnerRequest{
-				DenomId: denomID,
-				Owner:   args[0],
+				DenomId:    denomID,
+				Owner:      args[0],
 				Pagination: pageReq,
 			})
 			if err != nil {
@@ -154,7 +154,7 @@ func GetCmdQueryCollection() *cobra.Command {
 			resp, err := queryClient.Collection(
 				context.Background(),
 				&types.QueryCollectionRequest{
-					DenomId: denomID,
+					DenomId:    denomID,
 					Pagination: pageReq,
 				},
 			)

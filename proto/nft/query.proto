@@ -17,7 +17,7 @@ service Query {
 
     // Owner queries the NFTs of the specified owner
     rpc Owner(QueryOwnerRequest) returns (QueryOwnerResponse) {
-        option (google.api.http).get = "/irismod/nft/nfts/{owner}";
+        option (google.api.http).get = "/irismod/nft/nfts";
     }
 
     // Collection queries the NFTs of the specified denom
@@ -55,7 +55,7 @@ message QuerySupplyResponse {
 // QueryOwnerRequest is the request type for the Query/Owner RPC method
 message QueryOwnerRequest {
     string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-    string owner = 2;
+    string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
     // pagination defines an optional pagination for the request.
     cosmos.query.PageRequest pagination = 3;
 }

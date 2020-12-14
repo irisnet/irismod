@@ -51,10 +51,9 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 	store := ctx.KVStore(k.storeKey)
 	nftStore := prefix.NewStore(store, types.KeyOwner(ownerAddress, request.DenomId, ""))
 	pageRes, err := query.Paginate(nftStore, request.Pagination, func(key []byte, value []byte) error {
-		println(request.DenomId)
 		denomID := request.DenomId
 		tokenID := string(key)
-		if(len(request.DenomId)==0){
+		if len(request.DenomId) == 0 {
 			denomID, tokenID, _ = types.SplitKeyDenom(key)
 		}
 		if ids, ok := idsMap[denomID]; ok {

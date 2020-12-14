@@ -10,9 +10,9 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 
 	gogotypes "github.com/gogo/protobuf/types"
 
