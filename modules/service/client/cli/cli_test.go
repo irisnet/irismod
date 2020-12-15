@@ -307,7 +307,7 @@ func (s *IntegrationTestSuite) TestService() {
 
 	//------test GetCmdQueryServiceRequests()-------------
 	respType = proto.Message(&servicetypes.QueryRequestsResponse{})
-	bz, err = servicetestutil.QueryServiceRequestsExec2(val.ClientCtx, requests[0].RequestContextId, fmt.Sprint(requests[0].RequestContextBatchCounter))
+	bz, err = servicetestutil.QueryServiceRequestsByReqCtx(val.ClientCtx, requests[0].RequestContextId, fmt.Sprint(requests[0].RequestContextBatchCounter))
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(bz.Bytes(), respType))
 	requests = respType.(*servicetypes.QueryRequestsResponse).Requests

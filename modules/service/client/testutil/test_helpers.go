@@ -153,10 +153,10 @@ func QueryServiceRequestsExec(clientCtx client.Context, serviceName, provider st
 	return clitestutil.ExecTestCLICmd(clientCtx, servicecli.GetCmdQueryServiceRequests(), args)
 }
 
-func QueryServiceRequestsExec2(clientCtx client.Context, requestcontextid, batchcounter string, extraArgs ...string) (testutil.BufferWriter, error) {
+func QueryServiceRequestsByReqCtx(clientCtx client.Context, requestContextID, batchCounter string, extraArgs ...string) (testutil.BufferWriter, error) {
 	args := []string{
-		requestcontextid,
-		batchcounter,
+		requestContextID,
+		batchCounter,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
