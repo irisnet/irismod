@@ -18,6 +18,7 @@ func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 	if err := types.CheckUniDenom(req.Id); err != nil {
 		return nil, err
