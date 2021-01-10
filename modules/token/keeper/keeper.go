@@ -189,3 +189,28 @@ func (k Keeper) MintToken(ctx sdk.Context, msg types.MsgMintToken) error {
 	// sent coins to owner's account
 	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, mintAcc, mintCoins)
 }
+
+// BurnToken burns specified amount token
+func (k Keeper) BurnToken(ctx sdk.Context, msg types.MsgBurnToken) error {
+	tokenI, err := k.GetToken(ctx, msg.Symbol)
+	if err != nil {
+		return err
+	}
+
+	token := tokenI.(*types.Token)
+
+	burnCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntWithDecimal(int64(msg.Amount), int(token.Scale)))
+	burnCoins := sdk.NewCoins(burnCoin)
+
+	burnAcc, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return err
+	}
+
+	// burn coins
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, burnAcc, types.ModuleName, burnCoins); err != nil {
+		return err
+	}
+
+	return k.bankKeeper.BurnCoins(ctx, types.ModuleName, burnCoins)
+}
