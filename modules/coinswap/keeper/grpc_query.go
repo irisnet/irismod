@@ -13,6 +13,7 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
+// Liquidity return the liquidity pool information of the denom
 func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (*types.QueryLiquidityResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
@@ -31,7 +32,7 @@ func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (
 
 	reservePool := k.GetReservePool(ctx, req.Id)
 
-	standardDenom := k.GetParams(ctx).StandardDenom
+	standardDenom := k.GetStandardDenom(ctx)
 	standard := sdk.NewCoin(standardDenom, reservePool.AmountOf(standardDenom))
 	token := sdk.NewCoin(tokenDenom, reservePool.AmountOf(tokenDenom))
 	liquidity := sdk.NewCoin(uniDenom, k.bk.GetSupply(ctx).GetTotal().AmountOf(uniDenom))
