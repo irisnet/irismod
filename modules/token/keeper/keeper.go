@@ -146,19 +146,17 @@ func (k Keeper) MintToken(ctx sdk.Context, msg types.MsgMintToken) error {
 		return err
 	}
 
-	token := tokenI.(*types.Token)
-
-	if msg.Owner != token.Owner {
+	if msg.Owner != tokenI.GetOwner().String() {
 		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", msg.Owner, msg.Symbol)
 	}
 
-	if !token.Mintable {
+	if !tokenI.GetMintable() {
 		return sdkerrors.Wrapf(types.ErrNotMintable, "the token %s is set to be non-mintable", msg.Symbol)
 	}
 
-	issuedAmt := k.getTokenSupply(ctx, token.MinUnit)
-	mintableMaxAmt := sdk.NewIntWithDecimal(int64(token.MaxSupply), int(token.Scale)).Sub(issuedAmt)
-	mintableMaxMainUnitAmt := uint64(mintableMaxAmt.Quo(sdk.NewIntWithDecimal(1, int(token.Scale))).Int64())
+	issuedAmt := k.getTokenSupply(ctx, tokenI.GetMinUnit())
+	mintableMaxAmt := sdk.NewIntWithDecimal(int64(tokenI.GetMaxSupply()), int(tokenI.GetScale())).Sub(issuedAmt)
+	mintableMaxMainUnitAmt := uint64(mintableMaxAmt.Quo(sdk.NewIntWithDecimal(1, int(tokenI.GetScale()))).Int64())
 
 	if msg.Amount > mintableMaxMainUnitAmt {
 		return sdkerrors.Wrapf(
@@ -168,7 +166,7 @@ func (k Keeper) MintToken(ctx sdk.Context, msg types.MsgMintToken) error {
 		)
 	}
 
-	mintCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntWithDecimal(int64(msg.Amount), int(token.Scale)))
+	mintCoin := sdk.NewCoin(tokenI.GetMinUnit(), sdk.NewIntWithDecimal(int64(msg.Amount), int(tokenI.GetScale())))
 	mintCoins := sdk.NewCoins(mintCoin)
 
 	// mint coins
@@ -178,7 +176,7 @@ func (k Keeper) MintToken(ctx sdk.Context, msg types.MsgMintToken) error {
 
 	mintAddr := msg.To
 	if len(mintAddr) == 0 {
-		mintAddr = token.Owner
+		mintAddr = tokenI.GetOwner().String()
 	}
 
 	mintAcc, err := sdk.AccAddressFromBech32(mintAddr)
@@ -197,9 +195,7 @@ func (k Keeper) BurnToken(ctx sdk.Context, msg types.MsgBurnToken) error {
 		return err
 	}
 
-	token := tokenI.(*types.Token)
-
-	burnCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntWithDecimal(int64(msg.Amount), int(token.Scale)))
+	burnCoin := sdk.NewCoin(tokenI.GetMinUnit(), sdk.NewIntWithDecimal(int64(msg.Amount), int(tokenI.GetScale())))
 	burnCoins := sdk.NewCoins(burnCoin)
 
 	burnAcc, err := sdk.AccAddressFromBech32(msg.Sender)
