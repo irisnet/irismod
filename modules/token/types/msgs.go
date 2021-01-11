@@ -17,22 +17,34 @@ const (
 	TypeMsgBurnToken          = "burn_token"
 	TypeMsgTransferTokenOwner = "transfer_token_owner"
 
-	// constant used to indicate that some field should not be updated
+	// DoNotModify used to indicate that some field should not be updated
 	DoNotModify = "[do-not-modify]"
 
 	MaximumMaxSupply  = uint64(1000000000000) // maximal limitation for token max supply，1000 billion
 	MaximumInitSupply = uint64(100000000000)  // maximal limitation for token initial supply，100 billion
 	MaximumScale      = uint32(9)             // maximal limitation for token decimal
 	MinimumSymbolLen  = 3                     // minimal limitation for the length of the token's symbol / canonical_symbol
-	MaximumSymbolLen  = 20                    // maximal limitation for the length of the token's symbol / canonical_symbol
+	MaximumSymbolLen  = 64                    // maximal limitation for the length of the token's symbol / canonical_symbol
 	MaximumNameLen    = 32                    // maximal limitation for the length of the token's name
 	MinimumMinUnitLen = 3                     // minimal limitation for the length of the token's min_unit
-	MaximumMinUnitLen = 20                    // maximal limitation for the length of the token's min_unit
+	MaximumMinUnitLen = 64                    // maximal limitation for the length of the token's min_unit
 )
 
 var (
-	IsAlphaNumericDash = regexp.MustCompile(`^[a-zA-Z0-9-]+$`).MatchString // only accepts alphanumeric characters
-	IsBeginWithAlpha   = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
+	// IsAlphaNumericDash only accepts alphanumeric characters
+	IsAlphaNumericDash = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
+	// IsBeginWithAlpha only begin with chars [a-zA-Z]
+	IsBeginWithAlpha = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
+	keywords         = map[string]bool{
+		"btc":   true,
+		"eth":   true,
+		"atom":  true,
+		"uatom": true,
+		"link":  true,
+		"dot":   true,
+		"bch":   true,
+		"uni":   true,
+	}
 )
 
 var (
@@ -70,6 +82,12 @@ func (msg MsgIssueToken) ValidateBasic() error {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+	}
+	if ContainKeyword(msg.Symbol) {
+		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid symbol: %s, can't contain some keyword", msg.Symbol)
+	}
+	if ContainKeyword(msg.MinUnit) {
+		return sdkerrors.Wrapf(ErrInvalidMinUnit, "invalid minUnit: %s, can't contain some keyword", msg.MinUnit)
 	}
 	return ValidateToken(
 		NewToken(
