@@ -35,16 +35,6 @@ var (
 	IsAlphaNumericDash = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
 	// IsBeginWithAlpha only begin with chars [a-zA-Z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
-	keywords         = map[string]bool{
-		"btc":   true,
-		"eth":   true,
-		"atom":  true,
-		"uatom": true,
-		"link":  true,
-		"dot":   true,
-		"bch":   true,
-		"uni":   true,
-	}
 )
 
 var (
