@@ -168,7 +168,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("399985965", balances.Balances[2].Amount.String())
 	s.Require().Equal("1000", balances.Balances[3].Amount.String())
 
-	url := fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	url := fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, symbol)
 	resp, err := rest.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().Equal("1000", gjson.Get(string(resp), "result.standard.amount").String())
@@ -228,7 +228,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("399983955", balances.Balances[2].Amount.String())
 	s.Require().Equal("3000", balances.Balances[3].Amount.String())
 
-	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, symbol)
 	resp, err = rest.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().Equal("3000", gjson.Get(string(resp), "result.standard.amount").String())
@@ -288,7 +288,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("399984693", balances.Balances[2].Amount.String())
 	s.Require().Equal("3000", balances.Balances[3].Amount.String())
 
-	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, symbol)
 	resp, err = rest.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().Equal("2252", gjson.Get(string(resp), "result.standard.amount").String())
@@ -348,7 +348,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("399983930", balances.Balances[2].Amount.String())
 	s.Require().Equal("3000", balances.Balances[3].Amount.String())
 
-	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, symbol)
 	resp, err = rest.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().Equal("3005", gjson.Get(string(resp), "result.standard.amount").String())
@@ -403,7 +403,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("399985923", balances.Balances[2].Amount.String())
 	s.Require().Equal("1000", balances.Balances[3].Amount.String())
 
-	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, symbol)
 	resp, err = rest.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().Equal("1002", gjson.Get(string(resp), "result.standard.amount").String())
@@ -458,7 +458,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("399986915", balances.Balances[2].Amount.String())
 	s.Require().Equal("0", balances.Balances[3].Amount.String())
 
-	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, uniKitty)
+	url = fmt.Sprintf("%s/coinswap/liquidities/%s", baseURL, symbol)
 	resp, err = rest.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().Equal("0", gjson.Get(string(resp), "result.standard.amount").String())

@@ -19,19 +19,14 @@ func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	ctx := sdk.UnwrapSDKContext(c)
-	if err := types.CheckUniDenom(req.Id); err != nil {
-		return nil, err
-	}
-
-	uniDenom := req.Id
-
-	tokenDenom, err := types.GetCoinDenomFromUniDenom(uniDenom)
+	tokenDenom := req.Denom
+	uniDenom, err := types.GetUniDenomFromDenom(tokenDenom)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
-	reservePool := k.GetReservePool(ctx, req.Id)
+	ctx := sdk.UnwrapSDKContext(c)
+	reservePool := k.GetReservePool(ctx, uniDenom)
 
 	standardDenom := k.GetStandardDenom(ctx)
 	standard := sdk.NewCoin(standardDenom, reservePool.AmountOf(standardDenom))
