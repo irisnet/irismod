@@ -83,12 +83,6 @@ func (msg MsgIssueToken) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	if ContainKeyword(msg.Symbol) {
-		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid symbol: %s, can't contain some keyword", msg.Symbol)
-	}
-	if ContainKeyword(msg.MinUnit) {
-		return sdkerrors.Wrapf(ErrInvalidMinUnit, "invalid minUnit: %s, can't contain some keyword", msg.MinUnit)
-	}
 	return ValidateToken(
 		NewToken(
 			msg.Symbol,

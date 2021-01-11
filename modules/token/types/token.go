@@ -210,12 +210,6 @@ func CheckSymbol(symbol string) error {
 	return nil
 }
 
-//ContainKeyword check whether symbol is a keyword
-func ContainKeyword(word string) bool {
-	word = strings.ToLower(word)
-	return keywords[word]
-}
-
 type Bool string
 
 const (
