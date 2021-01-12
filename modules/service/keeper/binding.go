@@ -69,7 +69,7 @@ func (k Keeper) AddServiceBinding(
 		}
 	}
 
-	minDeposit, err := k.getMinDeposit(ctx, parsedPricing)
+	minDeposit, err := k.GetMinDeposit(ctx, parsedPricing)
 	if err != nil {
 		return sdkerrors.Wrapf(types.ErrInvalidMinDeposit, "%s", err)
 	}
@@ -220,7 +220,7 @@ func (k Keeper) UpdateServiceBinding(
 
 	// only check deposit when the binding is available and updated
 	if binding.Available && updated {
-		minDeposit, err := k.getMinDeposit(ctx, parsedPricing)
+		minDeposit, err := k.GetMinDeposit(ctx, parsedPricing)
 		if err != nil {
 			return sdkerrors.Wrapf(types.ErrInvalidMinDeposit, "%s", err)
 		}
@@ -316,7 +316,7 @@ func (k Keeper) EnableServiceBinding(
 		binding.Deposit = binding.Deposit.Add(deposit...)
 	}
 
-	minDeposit, err := k.getMinDeposit(ctx, k.GetPricing(ctx, serviceName, provider))
+	minDeposit, err := k.GetMinDeposit(ctx, k.GetPricing(ctx, serviceName, provider))
 	if err != nil {
 		return sdkerrors.Wrapf(types.ErrInvalidMinDeposit, "%s", err)
 	}
@@ -619,8 +619,8 @@ func (k Keeper) IterateServiceBindings(
 	}
 }
 
-// getMinDeposit gets the minimum deposit required for the service binding
-func (k Keeper) getMinDeposit(ctx sdk.Context, pricing types.Pricing) (sdk.Coins, error) {
+// GetMinDeposit gets the minimum deposit required for the service binding
+func (k Keeper) GetMinDeposit(ctx sdk.Context, pricing types.Pricing) (sdk.Coins, error) {
 	minDepositMultiple := sdk.NewInt(k.MinDepositMultiple(ctx))
 	minDepositParam := k.MinDeposit(ctx)
 	baseDenom := k.BaseDenom(ctx)
@@ -644,7 +644,7 @@ func (k Keeper) getMinDeposit(ctx sdk.Context, pricing types.Pricing) (sdk.Coins
 
 	// minimum deposit = max(price * minDepositMultiple, minDepositParam)
 	minDeposit := sdk.NewCoins(sdk.NewCoin(baseDenom, basePrice.Mul(minDepositMultiple)))
-	if minDeposit.IsAllLT(minDepositParam) {
+	if !minDeposit.IsZero() && minDeposit.IsAllLT(minDepositParam) {
 		minDeposit = minDepositParam
 	}
 
