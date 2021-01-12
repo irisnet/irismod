@@ -1089,7 +1089,11 @@ func (k Keeper) Slash(ctx sdk.Context, requestID tmbytes.HexBytes) error {
 
 	binding.Deposit = deposit
 	if binding.Available {
-		minDeposit := k.getMinDeposit(ctx, k.GetPricing(ctx, binding.ServiceName, provider))
+		minDeposit, err := k.getMinDeposit(ctx, k.GetPricing(ctx, binding.ServiceName, provider))
+		if err != nil {
+			return sdkerrors.Wrapf(types.ErrInvalidMinDeposit, "%s", err)
+		}
+
 		if !binding.Deposit.IsAllGTE(minDeposit) {
 			binding.Available = false
 			binding.DisabledTime = ctx.BlockHeader().Time

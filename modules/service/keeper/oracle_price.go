@@ -11,7 +11,7 @@ import (
 	"github.com/irisnet/irismod/modules/service/types"
 )
 
-// GetPrice gets the current price for the specified consumer and binding
+// GetExchangedPrice gets the exchanged price for the specified consumer and binding
 // Note: ensure that the binding is valid
 func (k Keeper) GetExchangedPrice(
 	ctx sdk.Context, consumer sdk.AccAddress, binding types.ServiceBinding,
@@ -35,34 +35,50 @@ func (k Keeper) GetExchangedPrice(
 
 	realPrice := price
 	if baseDenom != rawDenom {
-		exchangeRateSvc, exist := k.GetModuleServiceByModuleName(types.RegisterModuleName)
-		if !exist {
-			return nil, rawDenom, sdkerrors.Wrapf(types.ErrInvalidModuleService, "module service not exist: %s", types.RegisterModuleName)
-		}
-		inputBody := fmt.Sprintf(`{"pair":"%s-%s"}`, rawDenom, baseDenom)
-		input := fmt.Sprintf(`{"header":{},"body":%s`, inputBody)
-		if err := types.ValidateRequestInputBody(types.OraclePriceSchemas, inputBody); err != nil {
-			return nil, rawDenom, err
-		}
-		result, output := exchangeRateSvc.ReuquestService(ctx, input)
-		if code, msg := CheckResult(result); code != "200" {
-			return nil, rawDenom, sdkerrors.Wrapf(types.ErrInvalidModuleService, msg)
-		}
-		outputBody := gjson.Get(output, types.PATH_BODY).String()
-		if err := types.ValidateResponseOutputBody(types.OraclePriceSchemas, outputBody); err != nil {
-			return nil, rawDenom, err
-		}
-		rate, err := GetExchangeRate(outputBody)
+		rate, err := k.GetExchangeRate(ctx, rawDenom, baseDenom)
 		if err != nil {
 			return nil, rawDenom, err
 		}
-		if rate.IsZero() {
-			return nil, rawDenom, sdkerrors.Wrapf(types.ErrInvalidResponseOutputBody, "rate can not be zero")
-		}
+
 		realPrice = price.Mul(rate)
 	}
 
 	return sdk.NewCoins(sdk.NewCoin(baseDenom, realPrice.TruncateInt())), rawDenom, nil
+}
+
+// GetExchangeRate retrieves the exchange rate of the given pair by the oracle module service
+func (k Keeper) GetExchangeRate(ctx sdk.Context, baseDenom, quoteDenom string) (sdk.Dec, error) {
+	exchangeRateSvc, exist := k.GetModuleServiceByModuleName(types.RegisterModuleName)
+	if !exist {
+		return sdk.Dec{}, sdkerrors.Wrapf(types.ErrInvalidModuleService, "module service does not exist: %s", types.RegisterModuleName)
+	}
+
+	inputBody := fmt.Sprintf(`{"pair":"%s-%s"}`, baseDenom, quoteDenom)
+	input := fmt.Sprintf(`{"header":{},"body":%s`, inputBody)
+	if err := types.ValidateRequestInputBody(types.OraclePriceSchemas, inputBody); err != nil {
+		return sdk.Dec{}, err
+	}
+
+	result, output := exchangeRateSvc.ReuquestService(ctx, input)
+	if code, msg := CheckResult(result); code != "200" {
+		return sdk.Dec{}, sdkerrors.Wrapf(types.ErrInvalidModuleService, msg)
+	}
+
+	outputBody := gjson.Get(output, types.PATH_BODY).String()
+	if err := types.ValidateResponseOutputBody(types.OraclePriceSchemas, outputBody); err != nil {
+		return sdk.Dec{}, err
+	}
+
+	rate, err := GetExchangeRateFromJSON(outputBody)
+	if err != nil {
+		return sdk.Dec{}, err
+	}
+
+	if rate.IsZero() {
+		return sdk.Dec{}, sdkerrors.Wrapf(types.ErrInvalidResponseOutputBody, "rate can not be zero")
+	}
+
+	return rate, nil
 }
 
 func CheckResult(jsonStr string) (string, string) {
@@ -71,7 +87,7 @@ func CheckResult(jsonStr string) (string, string) {
 	return code, msg
 }
 
-func GetExchangeRate(jsonStr string) (sdk.Dec, error) {
+func GetExchangeRateFromJSON(jsonStr string) (sdk.Dec, error) {
 	result := gjson.Get(jsonStr, types.OraclePriceValueJSONPath)
 	return sdk.NewDecFromStr(result.String())
 }

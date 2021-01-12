@@ -69,7 +69,11 @@ func (k Keeper) AddServiceBinding(
 		}
 	}
 
-	minDeposit := k.getMinDeposit(ctx, parsedPricing)
+	minDeposit, err := k.getMinDeposit(ctx, parsedPricing)
+	if err != nil {
+		return sdkerrors.Wrapf(types.ErrInvalidMinDeposit, "%s", err)
+	}
+
 	if !deposit.IsAllGTE(minDeposit) {
 		return sdkerrors.Wrapf(
 			types.ErrInvalidDeposit,
@@ -216,7 +220,11 @@ func (k Keeper) UpdateServiceBinding(
 
 	// only check deposit when the binding is available and updated
 	if binding.Available && updated {
-		minDeposit := k.getMinDeposit(ctx, parsedPricing)
+		minDeposit, err := k.getMinDeposit(ctx, parsedPricing)
+		if err != nil {
+			return sdkerrors.Wrapf(types.ErrInvalidMinDeposit, "%s", err)
+		}
+
 		if !binding.Deposit.IsAllGTE(minDeposit) {
 			return sdkerrors.Wrapf(
 				types.ErrInvalidDeposit,
@@ -308,7 +316,11 @@ func (k Keeper) EnableServiceBinding(
 		binding.Deposit = binding.Deposit.Add(deposit...)
 	}
 
-	minDeposit := k.getMinDeposit(ctx, k.GetPricing(ctx, serviceName, provider))
+	minDeposit, err := k.getMinDeposit(ctx, k.GetPricing(ctx, serviceName, provider))
+	if err != nil {
+		return sdkerrors.Wrapf(types.ErrInvalidMinDeposit, "%s", err)
+	}
+
 	if !binding.Deposit.IsAllGTE(minDeposit) {
 		return sdkerrors.Wrapf(
 			types.ErrInvalidDeposit,
@@ -608,20 +620,35 @@ func (k Keeper) IterateServiceBindings(
 }
 
 // getMinDeposit gets the minimum deposit required for the service binding
-func (k Keeper) getMinDeposit(ctx sdk.Context, pricing types.Pricing) sdk.Coins {
+func (k Keeper) getMinDeposit(ctx sdk.Context, pricing types.Pricing) (sdk.Coins, error) {
 	minDepositMultiple := sdk.NewInt(k.MinDepositMultiple(ctx))
 	minDepositParam := k.MinDeposit(ctx)
 	baseDenom := k.BaseDenom(ctx)
 
-	price := pricing.Price.AmountOf(baseDenom)
+	priceDenom := pricing.Price.GetDenomByIndex(0)
+	price := pricing.Price.AmountOf(priceDenom)
+
+	basePrice := price
+
+	if priceDenom != baseDenom && !price.IsZero() {
+		rate, err := k.GetExchangeRate(ctx, priceDenom, baseDenom)
+		if err != nil {
+			return nil, err
+		}
+
+		basePrice = sdk.NewDecFromInt(price).Mul(rate).TruncateInt()
+		if basePrice.IsZero() {
+			basePrice = sdk.OneInt()
+		}
+	}
 
 	// minimum deposit = max(price * minDepositMultiple, minDepositParam)
-	minDeposit := sdk.NewCoins(sdk.NewCoin(baseDenom, price.Mul(minDepositMultiple)))
+	minDeposit := sdk.NewCoins(sdk.NewCoin(baseDenom, basePrice.Mul(minDepositMultiple)))
 	if minDeposit.IsAllLT(minDepositParam) {
 		minDeposit = minDepositParam
 	}
 
-	return minDeposit
+	return minDeposit, nil
 }
 
 // validateDeposit validates the given deposit
