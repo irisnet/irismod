@@ -23,7 +23,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	}
 
 	for _, coin := range data.BurnCoins {
-		k.AddBurnCoin(ctx, *coin)
+		k.AddBurnCoin(ctx, coin)
 	}
 }
 

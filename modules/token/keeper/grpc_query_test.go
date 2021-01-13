@@ -82,5 +82,5 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalBurn() {
 	resp, err := queryClient.TotalBurn(gocontext.Background(), &types.QueryTotalBurnRequest{})
 	suite.Require().NoError(err)
 	suite.Len(resp.BurnCoins, 1)
-	suite.EqualValues(expCoin, *resp.BurnCoins[0])
+	suite.EqualValues(expCoin, resp.BurnCoins[0])
 }

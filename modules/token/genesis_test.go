@@ -38,7 +38,7 @@ func TestInitGenesis(t *testing.T) {
 	addr := sdk.AccAddress(tmhash.SumTruncated([]byte("addr1")))
 	ft := types.NewToken("btc", "Bitcoin Network", "satoshi", 1, 1, 1, true, addr)
 
-	burnCoins := []*sdk.Coin{
+	burnCoins := []sdk.Coin{
 		{Denom: ft.MinUnit, Amount: sdk.NewInt(1000)},
 	}
 	genesis := types.GenesisState{

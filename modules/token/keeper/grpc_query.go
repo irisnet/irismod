@@ -139,19 +139,19 @@ func (k Keeper) TotalBurn(c context.Context, req *types.QueryTotalBurnRequest) (
 	ctx := sdk.UnwrapSDKContext(c)
 	burnCoins := k.GetAllBurnCoin(ctx)
 
-	coins := make([]*sdk.DecCoin, len(burnCoins))
+	coins := make([]sdk.DecCoin, len(burnCoins))
 	for i, coin := range burnCoins {
 		token, err := k.GetToken(ctx, coin.Denom)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
 
-		mainCoin, err := token.ToMainCoin(*coin)
+		mainCoin, err := token.ToMainCoin(coin)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
 
-		coins[i] = &mainCoin
+		coins[i] = mainCoin
 	}
 	return &types.QueryTotalBurnResponse{BurnCoins: coins}, nil
 }

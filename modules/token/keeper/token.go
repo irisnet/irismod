@@ -140,15 +140,15 @@ func (k Keeper) GetBurnCoin(ctx sdk.Context, minUint string) (sdk.Coin, error) {
 }
 
 // GetAllBurnCoin return all the total amount of tokens burned
-func (k Keeper) GetAllBurnCoin(ctx sdk.Context) []*sdk.Coin {
+func (k Keeper) GetAllBurnCoin(ctx sdk.Context) []sdk.Coin {
 	store := ctx.KVStore(k.storeKey)
 
-	var coins []*sdk.Coin
+	var coins []sdk.Coin
 	it := sdk.KVStorePrefixIterator(store, types.PeffixBurnTokenAmt)
 	for ; it.Valid(); it.Next() {
 		var coin sdk.Coin
 		k.cdc.MustUnmarshalBinaryBare(it.Value(), &coin)
-		coins = append(coins, &coin)
+		coins = append(coins, coin)
 	}
 	return coins
 }
