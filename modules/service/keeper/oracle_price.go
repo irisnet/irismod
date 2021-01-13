@@ -60,7 +60,7 @@ func (k Keeper) GetExchangeRate(ctx sdk.Context, baseDenom, quoteDenom string) (
 	}
 
 	result, output := exchangeRateSvc.ReuquestService(ctx, input)
-	if code, msg := CheckResult(result); code != "200" {
+	if code, msg := CheckResult(result); code != types.ResultOK {
 		return sdk.Dec{}, sdkerrors.Wrapf(types.ErrInvalidModuleService, msg)
 	}
 
@@ -81,10 +81,10 @@ func (k Keeper) GetExchangeRate(ctx sdk.Context, baseDenom, quoteDenom string) (
 	return rate, nil
 }
 
-func CheckResult(jsonStr string) (string, string) {
-	code := gjson.Get(jsonStr, "code").String()
-	msg := gjson.Get(jsonStr, "message").String()
-	return code, msg
+func CheckResult(jsonStr string) (code types.ResultCode, msg string) {
+	code = types.ResultCode(gjson.Get(jsonStr, "code").Uint())
+	msg = gjson.Get(jsonStr, "message").String()
+	return
 }
 
 func GetExchangeRateFromJSON(jsonStr string) (sdk.Dec, error) {
