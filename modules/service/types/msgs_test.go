@@ -162,7 +162,7 @@ func TestMsgBindServiceValidation(t *testing.T) {
 	invalidQoS := uint64(0)
 
 	invalidPricing := `{"price":"1stake","other":"notallowedfield"}`
-	invalidSymbolPricing := `{"price":"0.5invalidsymbol"}`
+	invalidSymbolPricing := `{"price":"0.5invalid#symbol"}`
 	invalidPromotionTimePricing := `{"price":"1stake","promotions_by_time":[{"start_time":"2018-10-10T13:30:30","end_time":"2019-10-10T13:30:30Z","discount":"0.8"}]}`
 	invalidPromotionVolPricing := `{"price":"1stake","promotions_by_volume":[{"volume":0,"discount":"0.7"}]}`
 	invalidOptions := ""
@@ -248,7 +248,7 @@ func TestMsgUpdateServiceBindingValidation(t *testing.T) {
 	invalidLongName := strings.Repeat("s", MaxNameLength+1)
 
 	invalidPricing := `{"price":"1stake","other":"notallowedfield"}`
-	invalidSymbolPricing := `{"price":"1invalidsymbol"}`
+	invalidSymbolPricing := `{"price":"1invalidsymbol*"}`
 	invalidPromotionTimePricing := `{"price":"1stake","promotions_by_time":[{"start_time":"2018-10-10T13:30:30","end_time":"2019-10-10T13:30:30Z","discount":"0.8"}]}`
 	invalidPromotionVolPricing := `{"price":"1stake","promotions_by_volume":[{"volume":0,"discount":"0.7"}]}`
 	invalidOptions := ""

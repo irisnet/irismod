@@ -256,7 +256,7 @@ const (
 			"price": {
 				"description": "base price in main unit, e.g. 0.5iris",
 				"type": "string",
-				"pattern": "^\\d+(\\.\\d+)?[a-z][a-z0-9]{2,7}$"
+				"pattern": "^\\d+(\\.\\d+)?[a-z][a-z0-9/]{2,127}$"
 			},
 			"promotions_by_time": {
 				"description": "promotions by time, in ascending order",
