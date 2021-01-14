@@ -27,9 +27,11 @@ var (
 	testCoin2   = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
 	testCoin3   = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(2))
 
-	testDenom1 = "testdenom1"
-	testDenom2 = "testdenom2"
-	testDenom3 = "testdenom3"
+	testDenom1 = "testdenom1"                                                           // testing the normal cases
+	testDenom2 = "testdenom2"                                                           // testing the case in which the feed value is 0
+	testDenom3 = "testdenom3"                                                           // testing the case in which the feed is not existent
+	testDenom4 = "ibc/9ebf7ebe6f8ffd34617809f3cf00e04a10d8b7226048f68866371fb9dad8a25d" // testing the ibc case
+	testDenom5 = "peggy/0xdac17f958d2ee523a2206206994597c13d831ec7"                     // testing the ethpeg case
 
 	testAuthor    sdk.AccAddress
 	testOwner     sdk.AccAddress
@@ -538,6 +540,8 @@ func (suite *KeeperTestSuite) TestGetMinDeposit() {
 		feeds: map[string]string{
 			fmt.Sprintf("%s-%s", testDenom1, sdk.DefaultBondDenom): "0.5",
 			fmt.Sprintf("%s-%s", testDenom2, sdk.DefaultBondDenom): "0",
+			fmt.Sprintf("%s-%s", testDenom4, sdk.DefaultBondDenom): "50",
+			fmt.Sprintf("%s-%s", testDenom5, sdk.DefaultBondDenom): "20",
 		},
 	}
 
@@ -550,6 +554,8 @@ func (suite *KeeperTestSuite) TestGetMinDeposit() {
 	testPricing3 := fmt.Sprintf(`{"price":"0%s"}`, testDenom1)
 	testPricing4 := fmt.Sprintf(`{"price":"1%s"}`, testDenom2)
 	testPricing5 := fmt.Sprintf(`{"price":"1%s"}`, testDenom3)
+	testPricing6 := fmt.Sprintf(`{"price":"10%s"}`, testDenom4)
+	testPricing7 := fmt.Sprintf(`{"price":"5%s"}`, testDenom5)
 
 	pricing, err := suite.keeper.ParsePricing(suite.ctx, testPricing)
 	suite.NoError(err)
@@ -586,6 +592,18 @@ func (suite *KeeperTestSuite) TestGetMinDeposit() {
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing5)
 	suite.NotNil(err, "should error when the feed does not exist")
+
+	pricing6, err := suite.keeper.ParsePricing(suite.ctx, testPricing6)
+	suite.NoError(err)
+
+	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing6)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000))), minDeposit)
+
+	pricing7, err := suite.keeper.ParsePricing(suite.ctx, testPricing7)
+	suite.NoError(err)
+
+	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing7)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(20000))), minDeposit)
 }
 
 func callback(ctx sdk.Context, requestContextID tmbytes.HexBytes, responses []string, err error) {
