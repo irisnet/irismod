@@ -195,7 +195,7 @@ func CheckMinUnit(minUnit string) error {
 	if minUnitLen < MinimumMinUnitLen || minUnitLen > MaximumMinUnitLen || !IsAlphaNumeric(minUnit) || !IsBeginWithAlpha(minUnit) {
 		return sdkerrors.Wrapf(ErrInvalidMinUnit, "invalid token min_unit %s, only accepts alphanumeric characters, and begin with an english letter, length [%d, %d]", minUnit, MinimumMinUnitLen, MaximumMinUnitLen)
 	}
-	return nil
+	return CheckKeywords(minUnit)
 }
 
 // CheckSymbol checks if the given symbol is valid
@@ -206,6 +206,16 @@ func CheckSymbol(symbol string) error {
 
 	if !IsBeginWithAlpha(symbol) || !IsAlphaNumeric(symbol) {
 		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid symbol: %s, only accepts alphanumeric characters, and begin with an english letter", symbol)
+	}
+	return CheckKeywords(symbol)
+}
+
+// CheckKeywords checks if the given denom begin with `TokenKeywords`
+func CheckKeywords(denom string) error {
+	for _, keyword := range TokenKeywords {
+		if strings.HasPrefix(denom, keyword) {
+			return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid token: %s, should not begin with keyword: %s", denom, keyword)
+		}
 	}
 	return nil
 }

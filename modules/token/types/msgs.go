@@ -28,6 +28,7 @@ const (
 	MaximumNameLen    = 32                    // maximal limitation for the length of the token's name
 	MinimumMinUnitLen = 3                     // minimal limitation for the length of the token's min_unit
 	MaximumMinUnitLen = 64                    // maximal limitation for the length of the token's min_unit
+
 )
 
 var (
@@ -35,6 +36,8 @@ var (
 	IsAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
 	// IsBeginWithAlpha only begin with chars [a-zA-Z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
+	// TokenKeywords define a group of keywords and denom shoule not begin with it
+	TokenKeywords = []string{"peg"}
 )
 
 var (
