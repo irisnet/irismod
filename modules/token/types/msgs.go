@@ -36,8 +36,8 @@ var (
 	IsAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
 	// IsBeginWithAlpha only begin with chars [a-zA-Z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
-	// TokenKeywords define a group of keywords and denom shoule not begin with it
-	TokenKeywords = []string{"peg"}
+	// TokenKeywords define a group of keyword and denom shoule not begin with it
+	TokenKeywords = []string{"peg", "ibc", "swap"}
 )
 
 var (
