@@ -212,10 +212,8 @@ func CheckSymbol(symbol string) error {
 
 // CheckKeywords checks if the given denom begin with `TokenKeywords`
 func CheckKeywords(denom string) error {
-	for _, keyword := range TokenKeywords {
-		if strings.HasPrefix(denom, keyword) {
-			return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid token: %s, should not begin with keyword: %s", denom, keyword)
-		}
+	if IsBeginWithKeyword(denom) {
+		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid token: %s, should not begin with keyword", denom)
 	}
 	return nil
 }
