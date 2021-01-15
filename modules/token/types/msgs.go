@@ -1,7 +1,9 @@
 package types
 
 import (
+	"fmt"
 	"regexp"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -28,16 +30,20 @@ const (
 	MaximumNameLen    = 32                    // maximal limitation for the length of the token's name
 	MinimumMinUnitLen = 3                     // minimal limitation for the length of the token's min_unit
 	MaximumMinUnitLen = 64                    // maximal limitation for the length of the token's min_unit
-
 )
 
 var (
+	keywords = strings.Join([]string{
+		"peg", "ibc", "swap",
+	}, "|")
+	keywordsRegex = fmt.Sprintf("^(%s).*", keywords)
+
 	// IsAlphaNumeric only accepts alphanumeric characters
 	IsAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
 	// IsBeginWithAlpha only begin with chars [a-zA-Z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
 	// IsBeginWithKeyword define a group of keyword and denom shoule not begin with it
-	IsBeginWithKeyword = regexp.MustCompile(`^(peg|ibc|swap).*`).MatchString
+	IsBeginWithKeyword = regexp.MustCompile(keywordsRegex).MatchString
 )
 
 var (
