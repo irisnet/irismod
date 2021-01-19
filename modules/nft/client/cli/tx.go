@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -64,6 +65,10 @@ func GetCmdIssueDenom() *cobra.Command {
 			schema, err := cmd.Flags().GetString(FlagSchema)
 			if err != nil {
 				return err
+			}
+			optionsContent, err := ioutil.ReadFile(schema)
+			if err == nil {
+				schema = string(optionsContent)
 			}
 
 			msg := types.NewMsgIssueDenom(
