@@ -46,7 +46,7 @@ func GetCmdIssueDenom() *cobra.Command {
 			"$ %s tx nft issue <denom-id> "+
 				"--from=<key-name> "+
 				"--name=<denom-name> "+
-				"--schema=<schema> "+
+				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
 			version.AppName,
