@@ -62,6 +62,10 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 	standardDenom := k.GetStandardDenom(ctx)
 	isDoubleSwap := (msg.Input.Coin.Denom != standardDenom) && (msg.Output.Coin.Denom != standardDenom)
 
+	if len(msg.Output.Address) == 0 {
+		msg.Output.Address = msg.Input.Address
+	}
+
 	if msg.IsBuyOrder && isDoubleSwap {
 		amount, err = k.doubleTradeInputForExactOutput(ctx, msg.Input, msg.Output)
 	} else if msg.IsBuyOrder && !isDoubleSwap {
