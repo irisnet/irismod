@@ -82,7 +82,7 @@ func (suite *TestSuite) TestSwap() {
 	// swap buy order msg
 	msg := types.NewMsgSwapOrder(
 		types.Input{Coin: sdk.NewCoin(denomStandard, sdk.NewInt(1000)), Address: sender.String()},
-		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(100))},
+		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(100)), Address: sender.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		true,
 	)
@@ -106,7 +106,7 @@ func (suite *TestSuite) TestSwap() {
 	// swap sell order msg
 	msg = types.NewMsgSwapOrder(
 		types.Input{Coin: sdk.NewCoin(denomStandard, sdk.NewInt(1000)), Address: sender.String()},
-		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(100))},
+		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(100)), Address: sender.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		false,
 	)
@@ -135,7 +135,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 	// swap buy order msg
 	msg := types.NewMsgSwapOrder(
 		types.Input{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(1000)), Address: sender1.String()},
-		types.Output{Coin: sdk.NewCoin(denomETH, sdk.NewInt(100))},
+		types.Output{Coin: sdk.NewCoin(denomETH, sdk.NewInt(100)), Address: sender1.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		true,
 	)
@@ -163,7 +163,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 	// swap sell order msg
 	msg = types.NewMsgSwapOrder(
 		types.Input{Coin: sdk.NewCoin(denomETH, sdk.NewInt(1000)), Address: sender2.String()},
-		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(80))},
+		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(80)), Address: sender2.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		false,
 	)
