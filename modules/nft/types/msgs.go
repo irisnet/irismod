@@ -72,7 +72,6 @@ func (msg *MsgIssueDenom) Normalize() *MsgIssueDenom {
 	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.Schema = strings.TrimSpace(msg.Schema)
-	msg.Sender = strings.TrimSpace(msg.Sender)
 	return msg
 }
 
@@ -133,8 +132,6 @@ func (msg *MsgTransferNFT) Normalize() *MsgTransferNFT {
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.URI = strings.TrimSpace(msg.URI)
 	msg.Data = strings.TrimSpace(msg.Data)
-	msg.Sender = strings.TrimSpace(msg.Sender)
-	msg.Recipient = strings.TrimSpace(msg.Recipient)
 	return msg
 }
 
@@ -194,7 +191,6 @@ func (msg *MsgEditNFT) Normalize() *MsgEditNFT {
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.URI = strings.TrimSpace(msg.URI)
 	msg.Data = strings.TrimSpace(msg.Data)
-	msg.Sender = strings.TrimSpace(msg.Sender)
 	return msg
 }
 
@@ -258,8 +254,6 @@ func (msg *MsgMintNFT) Normalize() *MsgMintNFT {
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.URI = strings.TrimSpace(msg.URI)
 	msg.Data = strings.TrimSpace(msg.Data)
-	msg.Sender = strings.TrimSpace(msg.Sender)
-	msg.Recipient = strings.TrimSpace(msg.Recipient)
 	return msg
 }
 
@@ -308,7 +302,6 @@ func (msg MsgBurnNFT) ValidateBasic() error {
 func (msg *MsgBurnNFT) Normalize() *MsgBurnNFT {
 	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
 	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
-	msg.Sender = strings.TrimSpace(msg.Sender)
 	return msg
 }
 

@@ -97,8 +97,6 @@ func (msg MsgSwapOrder) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg *MsgSwapOrder) Normalize() *MsgSwapOrder {
-	msg.Input.Address = strings.TrimSpace(msg.Input.Address)
-	msg.Output.Address = strings.TrimSpace(msg.Output.Address)
 	return msg
 }
 
@@ -177,7 +175,6 @@ func (msg MsgAddLiquidity) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg *MsgAddLiquidity) Normalize() *MsgAddLiquidity {
-	msg.Sender = strings.TrimSpace(msg.Sender)
 	return msg
 }
 
@@ -252,7 +249,6 @@ func (msg MsgRemoveLiquidity) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg *MsgRemoveLiquidity) Normalize() *MsgRemoveLiquidity {
-	msg.Sender = strings.TrimSpace(msg.Sender)
 	return msg
 }
 

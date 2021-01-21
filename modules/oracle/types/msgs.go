@@ -96,7 +96,6 @@ func (msg *MsgCreateFeed) Normalize() *MsgCreateFeed {
 	msg.Input = strings.TrimSpace(msg.Input)
 	msg.AggregateFunc = strings.ToLower(strings.TrimSpace(msg.AggregateFunc))
 	msg.ValueJsonPath = strings.TrimSpace(msg.ValueJsonPath)
-	msg.Creator = strings.TrimSpace(msg.Creator)
 	return msg
 }
 
@@ -143,7 +142,6 @@ func (msg MsgStartFeed) ValidateBasic() error {
 // Normalize return a string with spaces removed and lowercase
 func (msg *MsgStartFeed) Normalize() *MsgStartFeed {
 	msg.FeedName = strings.TrimSpace(msg.FeedName)
-	msg.Creator = strings.TrimSpace(msg.Creator)
 	return msg
 }
 
@@ -184,7 +182,6 @@ func (msg MsgPauseFeed) ValidateBasic() error {
 // Normalize return a string with spaces removed and lowercase
 func (msg *MsgPauseFeed) Normalize() *MsgPauseFeed {
 	msg.FeedName = strings.TrimSpace(msg.FeedName)
-	msg.Creator = strings.TrimSpace(msg.Creator)
 	return msg
 }
 
@@ -246,7 +243,6 @@ func (msg MsgEditFeed) ValidateBasic() error {
 // Normalize return a string with spaces removed and lowercase
 func (msg *MsgEditFeed) Normalize() *MsgEditFeed {
 	msg.FeedName = strings.TrimSpace(msg.FeedName)
-	msg.Creator = strings.TrimSpace(msg.Creator)
 	return msg
 }
 
