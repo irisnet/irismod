@@ -181,16 +181,16 @@ func (k Keeper) MintToken(
 		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", owner, symbol)
 	}
 
-	if !token.GetMintable() {
+	if !token.Mintable {
 		return sdkerrors.Wrapf(types.ErrNotMintable, "%s", symbol)
 	}
 
-	supply := k.getTokenSupply(ctx, token.GetMinUnit())
-	maxSupply := token.GetMaxSupply()
+	supply := k.getTokenSupply(ctx, token.MinUnit)
+	maxSupply := token.MaxSupply
 
 	if maxSupply > 0 {
-		mintableAmt := sdk.NewIntWithDecimal(int64(maxSupply), int(token.GetScale())).Sub(supply)
-		mintableMainAmt := uint64(mintableAmt.Quo(sdk.NewIntWithDecimal(1, int(token.GetScale()))).Int64())
+		mintableAmt := sdk.NewIntWithDecimal(int64(maxSupply), int(token.Scale)).Sub(supply)
+		mintableMainAmt := uint64(mintableAmt.Quo(sdk.NewIntWithDecimal(1, int(token.Scale))).Int64())
 
 		if amount > mintableMainAmt {
 			return sdkerrors.Wrapf(
@@ -201,7 +201,7 @@ func (k Keeper) MintToken(
 		}
 	}
 
-	mintCoin := sdk.NewCoin(token.GetMinUnit(), sdk.NewIntWithDecimal(int64(amount), int(token.GetScale())))
+	mintCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntWithDecimal(int64(amount), int(token.Scale)))
 	mintCoins := sdk.NewCoins(mintCoin)
 
 	// mint coins
