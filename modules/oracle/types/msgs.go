@@ -301,7 +301,7 @@ func ValidateAggregateFunc(aggregateFunc string) error {
 
 // ValidateValueJSONPath verify that the valueJsonPath is legal
 func ValidateValueJSONPath(valueJSONPath string) error {
-	valueJSONPath = strings.ToLower(strings.TrimSpace(valueJSONPath))
+	valueJSONPath = strings.TrimSpace(valueJSONPath)
 	if len(valueJSONPath) == 0 || len(valueJSONPath) > MaxValueJsonPath {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "the length of valueJson path func must less than %d, got: %d", MaxAggregateFuncLen, len(valueJSONPath))
 	}
