@@ -1,6 +1,8 @@
 package types
 
 import (
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -40,6 +42,12 @@ func (msg MsgRequestRandom) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid consumer address (%s)", err)
 	}
 	return nil
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgRequestRandom) Normalize() *MsgRequestRandom {
+	msg.Consumer = strings.TrimSpace(msg.Consumer)
+	return msg
 }
 
 // GetSignBytes implements Msg.

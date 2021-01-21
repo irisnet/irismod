@@ -17,23 +17,23 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 		switch msg := msg.(type) {
 		case *types.MsgIssueDenom:
-			res, err := msgServer.IssueDenom(sdk.WrapSDKContext(ctx), msg)
+			res, err := msgServer.IssueDenom(sdk.WrapSDKContext(ctx), msg.Normalize())
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *types.MsgMintNFT:
-			res, err := msgServer.MintNFT(sdk.WrapSDKContext(ctx), msg)
+			res, err := msgServer.MintNFT(sdk.WrapSDKContext(ctx), msg.Normalize())
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *types.MsgTransferNFT:
-			res, err := msgServer.TransferNFT(sdk.WrapSDKContext(ctx), msg)
+			res, err := msgServer.TransferNFT(sdk.WrapSDKContext(ctx), msg.Normalize())
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *types.MsgEditNFT:
-			res, err := msgServer.EditNFT(sdk.WrapSDKContext(ctx), msg)
+			res, err := msgServer.EditNFT(sdk.WrapSDKContext(ctx), msg.Normalize())
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *types.MsgBurnNFT:
-			res, err := msgServer.BurnNFT(sdk.WrapSDKContext(ctx), msg)
+			res, err := msgServer.BurnNFT(sdk.WrapSDKContext(ctx), msg.Normalize())
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		default:

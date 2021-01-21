@@ -61,31 +61,45 @@ func (msg MsgSwapOrder) Type() string { return TypeMsgSwapOrder }
 
 // ValidateBasic implements Msg.
 func (msg MsgSwapOrder) ValidateBasic() error {
-	if !(msg.Input.Coin.IsValid() && msg.Input.Coin.IsPositive()) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("input coin is invalid: %s", msg.Input.Coin.String()))
+	if err := msg.Input.Coin.Validate(); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid input (%s)", err.Error())
 	}
+
 	if strings.HasPrefix(msg.Input.Coin.Denom, FormatUniABSPrefix) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported input coin type: %s", msg.Input.Coin.String()))
 	}
-	if !(msg.Output.Coin.IsValid() && msg.Output.Coin.IsPositive()) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("output coin is invalid: %s", msg.Output.Coin.String()))
+
+	if err := msg.Output.Coin.Validate(); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid output (%s)", err.Error())
 	}
+
 	if strings.HasPrefix(msg.Output.Coin.Denom, FormatUniABSPrefix) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported output coin type: %s", msg.Output.Coin.String()))
 	}
+
 	if msg.Input.Coin.Denom == msg.Output.Coin.Denom {
-		return ErrEqualDenom
+		return sdkerrors.Wrap(ErrEqualDenom, "invalid swap")
 	}
+
 	if msg.Deadline <= 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("deadline %d must be greater than 0", msg.Deadline))
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Input.Address); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid input address (%s)", err)
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Output.Address); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid output address (%s)", err)
 	}
 	return nil
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgSwapOrder) Normalize() *MsgSwapOrder {
+	msg.Input.Address = strings.TrimSpace(msg.Input.Address)
+	msg.Output.Address = strings.TrimSpace(msg.Output.Address)
+	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -131,28 +145,40 @@ func (msg MsgAddLiquidity) Type() string { return TypeMsgAddLiquidity }
 
 // ValidateBasic implements Msg.
 func (msg MsgAddLiquidity) ValidateBasic() error {
-	if !(msg.MaxToken.IsValid() && msg.MaxToken.IsPositive()) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("max token is invalid: %s", msg.MaxToken.String()))
+	if err := msg.MaxToken.Validate(); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid maxToken (%s)", err.Error())
 	}
+
 	if msg.MaxToken.Denom == StandardDenom {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("max token must not be standard token: %s", StandardDenom))
 	}
+
 	if strings.HasPrefix(msg.MaxToken.Denom, FormatUniABSPrefix) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max token must be non-liquidity token")
 	}
+
 	if !msg.ExactStandardAmt.IsPositive() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "standard token amount must be positive")
 	}
+
 	if msg.MinLiquidity.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "minimum liquidity can not be negative")
 	}
+
 	if msg.Deadline <= 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("deadline %d must be greater than 0", msg.Deadline))
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 	return nil
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgAddLiquidity) Normalize() *MsgAddLiquidity {
+	msg.Sender = strings.TrimSpace(msg.Sender)
+	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -201,22 +227,33 @@ func (msg MsgRemoveLiquidity) ValidateBasic() error {
 	if msg.MinToken.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "minimum token amount can not be negative")
 	}
-	if !msg.WithdrawLiquidity.IsValid() || !msg.WithdrawLiquidity.IsPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("withdraw liquidity %s is not valid", msg.WithdrawLiquidity.String()))
+
+	if err := msg.WithdrawLiquidity.Validate(); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid withdrawLiquidity (%s)", err.Error())
 	}
+
 	if err := CheckUniDenom(msg.WithdrawLiquidity.Denom); err != nil {
 		return err
 	}
+
 	if msg.MinStandardAmt.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("minimum standard token amount %s can not be negative", msg.MinStandardAmt.String()))
 	}
+
 	if msg.Deadline <= 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("deadline %d must be greater than 0", msg.Deadline))
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 	return nil
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgRemoveLiquidity) Normalize() *MsgRemoveLiquidity {
+	msg.Sender = strings.TrimSpace(msg.Sender)
+	return msg
 }
 
 // GetSignBytes implements Msg.

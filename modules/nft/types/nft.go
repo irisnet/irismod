@@ -12,33 +12,38 @@ import (
 var _ exported.NFT = BaseNFT{}
 
 // NewBaseNFT creates a new NFT instance
-func NewBaseNFT(id, name string, owner sdk.AccAddress, tokenURI, tokenData string) BaseNFT {
+func NewBaseNFT(id, name string, owner sdk.AccAddress, uri, data string) BaseNFT {
 	return BaseNFT{
-		Id:    strings.ToLower(strings.TrimSpace(id)),
-		Name:  strings.TrimSpace(name),
+		Id:    id,
+		Name:  name,
 		Owner: owner.String(),
-		URI:   strings.TrimSpace(tokenURI),
-		Data:  strings.TrimSpace(tokenData),
+		URI:   uri,
+		Data:  data,
 	}
 }
 
+// GetID return the id of BaseNFT
 func (bnft BaseNFT) GetID() string {
 	return bnft.Id
 }
 
+// GetName return the name of BaseNFT
 func (bnft BaseNFT) GetName() string {
-	return bnft.Id
+	return bnft.Name
 }
 
+// GetOwner return the owner of BaseNFT
 func (bnft BaseNFT) GetOwner() sdk.AccAddress {
 	owner, _ := sdk.AccAddressFromBech32(bnft.Owner)
 	return owner
 }
 
+// GetURI return the URI of BaseNFT
 func (bnft BaseNFT) GetURI() string {
 	return bnft.URI
 }
 
+// GetData return the Data of BaseNFT
 func (bnft BaseNFT) GetData() string {
 	return bnft.Data
 }
@@ -57,6 +62,7 @@ func NewNFTs(nfts ...exported.NFT) NFTs {
 	return NFTs(nfts)
 }
 
+// ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
 	tokenID = strings.TrimSpace(tokenID)
 	if len(tokenID) < MinDenomLen || len(tokenID) > MaxDenomLen {
@@ -68,6 +74,7 @@ func ValidateTokenID(tokenID string) error {
 	return nil
 }
 
+// ValidateTokenURI verify that the tokenURI is legal
 func ValidateTokenURI(tokenURI string) error {
 	if len(tokenURI) > MaxTokenURILen {
 		return sdkerrors.Wrapf(ErrInvalidTokenURI, "invalid tokenURI %s, only accepts value [0, %d]", tokenURI, MaxTokenURILen)

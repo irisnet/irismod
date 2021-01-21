@@ -74,7 +74,7 @@ func (msg MsgCreateFeed) ValidateBasic() error {
 		return err
 	}
 
-	if err := ValidateValueJsonPath(msg.ValueJsonPath); err != nil {
+	if err := ValidateValueJSONPath(msg.ValueJsonPath); err != nil {
 		return err
 	}
 
@@ -87,6 +87,17 @@ func (msg MsgCreateFeed) ValidateBasic() error {
 	}
 
 	return validateResponseThreshold(msg.ResponseThreshold, len(msg.Providers))
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgCreateFeed) Normalize() *MsgCreateFeed {
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
+	msg.Input = strings.TrimSpace(msg.Input)
+	msg.AggregateFunc = strings.ToLower(strings.TrimSpace(msg.AggregateFunc))
+	msg.ValueJsonPath = strings.TrimSpace(msg.ValueJsonPath)
+	msg.Creator = strings.TrimSpace(msg.Creator)
+	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -129,6 +140,13 @@ func (msg MsgStartFeed) ValidateBasic() error {
 	return ValidateFeedName(msg.FeedName)
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgStartFeed) Normalize() *MsgStartFeed {
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
+	msg.Creator = strings.TrimSpace(msg.Creator)
+	return msg
+}
+
 // GetSignBytes implements Msg.
 func (msg MsgStartFeed) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
@@ -161,6 +179,13 @@ func (msg MsgPauseFeed) ValidateBasic() error {
 		return err
 	}
 	return ValidateFeedName(msg.FeedName)
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgPauseFeed) Normalize() *MsgPauseFeed {
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
+	msg.Creator = strings.TrimSpace(msg.Creator)
+	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -218,6 +243,13 @@ func (msg MsgEditFeed) ValidateBasic() error {
 	return ValidateCreator(msg.Creator)
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgEditFeed) Normalize() *MsgEditFeed {
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
+	msg.Creator = strings.TrimSpace(msg.Creator)
+	return msg
+}
+
 // GetSignBytes implements Msg.
 func (msg MsgEditFeed) GetSignBytes() []byte {
 	if len(msg.Providers) == 0 {
@@ -238,6 +270,7 @@ func (msg MsgEditFeed) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
+// ValidateFeedName verify that the feedName is legal
 func ValidateFeedName(feedName string) error {
 	feedName = strings.TrimSpace(feedName)
 	if len(feedName) == 0 || len(feedName) > MaxNameLen {
@@ -249,6 +282,7 @@ func ValidateFeedName(feedName string) error {
 	return nil
 }
 
+// ValidateDescription verify that the desc is legal
 func ValidateDescription(desc string) error {
 	desc = strings.TrimSpace(desc)
 	if len(desc) > MaxDescriptionLen {
@@ -257,6 +291,7 @@ func ValidateDescription(desc string) error {
 	return nil
 }
 
+// ValidateAggregateFunc verify that the aggregateFunc is legal
 func ValidateAggregateFunc(aggregateFunc string) error {
 	aggregateFunc = strings.TrimSpace(aggregateFunc)
 	if len(aggregateFunc) == 0 || len(aggregateFunc) > MaxAggregateFuncLen {
@@ -268,14 +303,16 @@ func ValidateAggregateFunc(aggregateFunc string) error {
 	return nil
 }
 
-func ValidateValueJsonPath(valueJsonPath string) error {
-	valueJsonPath = strings.TrimSpace(valueJsonPath)
-	if len(valueJsonPath) == 0 || len(valueJsonPath) > MaxValueJsonPath {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "the length of valueJson path func must less than %d, got: %d", MaxAggregateFuncLen, len(valueJsonPath))
+// ValidateValueJSONPath verify that the valueJsonPath is legal
+func ValidateValueJSONPath(valueJSONPath string) error {
+	valueJSONPath = strings.ToLower(strings.TrimSpace(valueJSONPath))
+	if len(valueJSONPath) == 0 || len(valueJSONPath) > MaxValueJsonPath {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "the length of valueJson path func must less than %d, got: %d", MaxAggregateFuncLen, len(valueJSONPath))
 	}
 	return nil
 }
 
+// ValidateLatestHistory verify that the latestHistory is legal
 func ValidateLatestHistory(latestHistory uint64) error {
 	if latestHistory < 1 || latestHistory > MaxLatestHistory {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "latest history is invalid, should be between 1 and %d", MaxLatestHistory)
@@ -283,6 +320,7 @@ func ValidateLatestHistory(latestHistory uint64) error {
 	return nil
 }
 
+// ValidateCreator verify that the creator is legal
 func ValidateCreator(creator string) error {
 	if _, err := sdk.AccAddressFromBech32(creator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator")

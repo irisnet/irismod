@@ -27,7 +27,7 @@ func (k Keeper) Token(c context.Context, req *types.QueryTokenRequest) (*types.Q
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	token, err := k.GetToken(ctx, strings.ToLower(req.Denom))
+	token, err := k.GetToken(ctx, strings.ToLower(strings.TrimSpace(req.Denom)))
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "token %s not found", req.Denom)
 	}

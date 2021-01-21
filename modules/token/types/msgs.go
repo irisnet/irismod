@@ -72,11 +72,13 @@ func NewMsgIssueToken(
 	}
 }
 
-// Implements Msg.
+// Route Implements Msg.
 func (msg MsgIssueToken) Route() string { return MsgRoute }
-func (msg MsgIssueToken) Type() string  { return TypeMsgIssueToken }
 
-// Implements Msg.
+// Type Implements Msg.
+func (msg MsgIssueToken) Type() string { return TypeMsgIssueToken }
+
+// ValidateBasic Implements Msg.
 func (msg MsgIssueToken) ValidateBasic() error {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
@@ -96,7 +98,15 @@ func (msg MsgIssueToken) ValidateBasic() error {
 	)
 }
 
-// Implements Msg.
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgIssueToken) Normalize() *MsgIssueToken {
+	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	msg.Name = strings.TrimSpace(msg.Name)
+	msg.MinUnit = strings.ToLower(strings.TrimSpace(msg.MinUnit))
+	return msg
+}
+
+// GetSignBytes Implements Msg.
 func (msg MsgIssueToken) GetSignBytes() []byte {
 	b, err := ModuleCdc.MarshalJSON(&msg)
 	if err != nil {
@@ -105,7 +115,7 @@ func (msg MsgIssueToken) GetSignBytes() []byte {
 	return sdk.MustSortJSON(b)
 }
 
-// Implements Msg.
+// GetSigners Implements Msg.
 func (msg MsgIssueToken) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
@@ -114,6 +124,7 @@ func (msg MsgIssueToken) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
+// NewMsgTransferTokenOwner return a instance of MsgTransferTokenOwner
 func NewMsgTransferTokenOwner(srcOwner, dstOwner, symbol string) *MsgTransferTokenOwner {
 	return &MsgTransferTokenOwner{
 		SrcOwner: srcOwner,
@@ -141,6 +152,7 @@ func (msg MsgTransferTokenOwner) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
+// ValidateBasic implements Msg
 func (msg MsgTransferTokenOwner) ValidateBasic() error {
 	srcOwner, err := sdk.AccAddressFromBech32(msg.SrcOwner)
 	if err != nil {
@@ -163,6 +175,12 @@ func (msg MsgTransferTokenOwner) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgTransferTokenOwner) Normalize() *MsgTransferTokenOwner {
+	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	return msg
 }
 
 // Route implements Msg
@@ -227,6 +245,13 @@ func (msg MsgEditToken) ValidateBasic() error {
 	return CheckSymbol(msg.Symbol)
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgEditToken) Normalize() *MsgEditToken {
+	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	msg.Name = strings.TrimSpace(msg.Name)
+	return msg
+}
+
 // NewMsgMintToken creates a MsgMintToken
 func NewMsgMintToken(symbol, owner, to string, amount uint64) *MsgMintToken {
 	return &MsgMintToken{
@@ -282,6 +307,12 @@ func (msg MsgMintToken) ValidateBasic() error {
 	return CheckSymbol(msg.Symbol)
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgMintToken) Normalize() *MsgMintToken {
+	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	return msg
+}
+
 // NewMsgBurnToken creates a MsgMintToken
 func NewMsgBurnToken(symbol string, owner string, amount uint64) *MsgBurnToken {
 	return &MsgBurnToken{
@@ -327,4 +358,10 @@ func (msg MsgBurnToken) ValidateBasic() error {
 	}
 
 	return CheckSymbol(msg.Symbol)
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgBurnToken) Normalize() *MsgBurnToken {
+	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	return msg
 }

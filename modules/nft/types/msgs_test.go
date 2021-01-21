@@ -18,6 +18,7 @@ func TestNewMsgTransferNFT(t *testing.T) {
 		fmt.Sprintf("     %s     ", id),
 		tokenURI, tokenData, address.String(), address2.String(),
 	)
+	newMsgTransferNFT.Normalize()
 	require.Equal(t, newMsgTransferNFT.Sender, address.String())
 	require.Equal(t, newMsgTransferNFT.Recipient, address2.String())
 	require.Equal(t, newMsgTransferNFT.DenomId, denom)
@@ -64,7 +65,7 @@ func TestNewMsgEditNFT(t *testing.T) {
 		fmt.Sprintf("     %s     ", tokenURI),
 		tokenData, address.String(),
 	)
-
+	newMsgEditNFT.Normalize()
 	require.Equal(t, newMsgEditNFT.Sender, address.String())
 	require.Equal(t, newMsgEditNFT.Id, id)
 	require.Equal(t, newMsgEditNFT.DenomId, denom)
@@ -112,7 +113,7 @@ func TestNewMsgMintNFT(t *testing.T) {
 		fmt.Sprintf("     %s     ", tokenURI),
 		tokenData, address.String(), address2.String(),
 	)
-
+	newMsgMintNFT.Normalize()
 	require.Equal(t, newMsgMintNFT.Sender, address.String())
 	require.Equal(t, newMsgMintNFT.Recipient, address2.String())
 	require.Equal(t, newMsgMintNFT.Id, id)
@@ -151,7 +152,7 @@ func TestNewMsgBurnNFT(t *testing.T) {
 		fmt.Sprintf("     %s     ", id),
 		fmt.Sprintf("     %s     ", denom),
 	)
-
+	newMsgBurnNFT.Normalize()
 	require.Equal(t, newMsgBurnNFT.Sender, address.String())
 	require.Equal(t, newMsgBurnNFT.Id, id)
 	require.Equal(t, newMsgBurnNFT.DenomId, denom)

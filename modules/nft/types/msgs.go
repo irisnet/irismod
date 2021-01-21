@@ -40,9 +40,9 @@ var _ sdk.Msg = &MsgBurnNFT{}
 func NewMsgIssueDenom(denomID, denomName, schema, sender string) *MsgIssueDenom {
 	return &MsgIssueDenom{
 		Sender: sender,
-		Id:     strings.ToLower(strings.TrimSpace(denomID)),
-		Name:   strings.TrimSpace(denomName),
-		Schema: strings.TrimSpace(schema),
+		Id:     denomID,
+		Name:   denomName,
+		Schema: schema,
 	}
 }
 
@@ -67,6 +67,15 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 	return nil
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgIssueDenom) Normalize() *MsgIssueDenom {
+	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
+	msg.Name = strings.TrimSpace(msg.Name)
+	msg.Schema = strings.TrimSpace(msg.Schema)
+	msg.Sender = strings.TrimSpace(msg.Sender)
+	return msg
+}
+
 // GetSignBytes Implements Msg.
 func (msg MsgIssueDenom) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
@@ -87,11 +96,11 @@ func NewMsgTransferNFT(
 	tokenID, denomID, tokenName, tokenURI, tokenData, sender, recipient string,
 ) *MsgTransferNFT {
 	return &MsgTransferNFT{
-		Id:        strings.ToLower(strings.TrimSpace(tokenID)),
-		DenomId:   strings.TrimSpace(denomID),
-		Name:      strings.TrimSpace(tokenName),
-		URI:       strings.TrimSpace(tokenURI),
-		Data:      strings.TrimSpace(tokenData),
+		Id:        tokenID,
+		DenomId:   denomID,
+		Name:      tokenName,
+		URI:       tokenURI,
+		Data:      tokenData,
 		Sender:    sender,
 		Recipient: recipient,
 	}
@@ -117,6 +126,18 @@ func (msg MsgTransferNFT) ValidateBasic() error {
 	return ValidateTokenID(msg.Id)
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgTransferNFT) Normalize() *MsgTransferNFT {
+	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
+	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Name = strings.TrimSpace(msg.Name)
+	msg.URI = strings.TrimSpace(msg.URI)
+	msg.Data = strings.TrimSpace(msg.Data)
+	msg.Sender = strings.TrimSpace(msg.Sender)
+	msg.Recipient = strings.TrimSpace(msg.Recipient)
+	return msg
+}
+
 // GetSignBytes Implements Msg.
 func (msg MsgTransferNFT) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
@@ -137,11 +158,11 @@ func NewMsgEditNFT(
 	tokenID, denomID, tokenName, tokenURI, tokenData, sender string,
 ) *MsgEditNFT {
 	return &MsgEditNFT{
-		Id:      strings.ToLower(strings.TrimSpace(tokenID)),
-		DenomId: strings.TrimSpace(denomID),
-		Name:    strings.TrimSpace(tokenName),
-		URI:     strings.TrimSpace(tokenURI),
-		Data:    strings.TrimSpace(tokenData),
+		Id:      tokenID,
+		DenomId: denomID,
+		Name:    tokenName,
+		URI:     tokenURI,
+		Data:    tokenData,
 		Sender:  sender,
 	}
 }
@@ -166,6 +187,17 @@ func (msg MsgEditNFT) ValidateBasic() error {
 	return ValidateTokenID(msg.Id)
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgEditNFT) Normalize() *MsgEditNFT {
+	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
+	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Name = strings.TrimSpace(msg.Name)
+	msg.URI = strings.TrimSpace(msg.URI)
+	msg.Data = strings.TrimSpace(msg.Data)
+	msg.Sender = strings.TrimSpace(msg.Sender)
+	return msg
+}
+
 // GetSignBytes Implements Msg.
 func (msg MsgEditNFT) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
@@ -186,11 +218,11 @@ func NewMsgMintNFT(
 	tokenID, denomID, tokenName, tokenURI, tokenData, sender, recipient string,
 ) *MsgMintNFT {
 	return &MsgMintNFT{
-		Id:        strings.ToLower(strings.TrimSpace(tokenID)),
-		DenomId:   strings.TrimSpace(denomID),
-		Name:      strings.TrimSpace(tokenName),
-		URI:       strings.TrimSpace(tokenURI),
-		Data:      strings.TrimSpace(tokenData),
+		Id:        tokenID,
+		DenomId:   denomID,
+		Name:      tokenName,
+		URI:       tokenURI,
+		Data:      tokenData,
 		Sender:    sender,
 		Recipient: recipient,
 	}
@@ -219,6 +251,18 @@ func (msg MsgMintNFT) ValidateBasic() error {
 	return ValidateTokenID(msg.Id)
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgMintNFT) Normalize() *MsgMintNFT {
+	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
+	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Name = strings.TrimSpace(msg.Name)
+	msg.URI = strings.TrimSpace(msg.URI)
+	msg.Data = strings.TrimSpace(msg.Data)
+	msg.Sender = strings.TrimSpace(msg.Sender)
+	msg.Recipient = strings.TrimSpace(msg.Recipient)
+	return msg
+}
+
 // GetSignBytes Implements Msg.
 func (msg MsgMintNFT) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
@@ -238,8 +282,8 @@ func (msg MsgMintNFT) GetSigners() []sdk.AccAddress {
 func NewMsgBurnNFT(sender, tokenID, denomID string) *MsgBurnNFT {
 	return &MsgBurnNFT{
 		Sender:  sender,
-		Id:      strings.ToLower(strings.TrimSpace(tokenID)),
-		DenomId: strings.TrimSpace(denomID),
+		Id:      tokenID,
+		DenomId: denomID,
 	}
 }
 
@@ -258,6 +302,14 @@ func (msg MsgBurnNFT) ValidateBasic() error {
 		return err
 	}
 	return ValidateTokenID(msg.Id)
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgBurnNFT) Normalize() *MsgBurnNFT {
+	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
+	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Sender = strings.TrimSpace(msg.Sender)
+	return msg
 }
 
 // GetSignBytes Implements Msg.

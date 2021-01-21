@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/hex"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -83,6 +84,13 @@ func (msg MsgCreateHTLC) ValidateBasic() error {
 	return nil
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgCreateHTLC) Normalize() *MsgCreateHTLC {
+	msg.HashLock = strings.TrimSpace(msg.HashLock)
+	msg.ReceiverOnOtherChain = strings.TrimSpace(msg.ReceiverOnOtherChain)
+	return msg
+}
+
 // GetSignBytes implements Msg
 func (msg MsgCreateHTLC) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
@@ -139,6 +147,13 @@ func (msg MsgClaimHTLC) ValidateBasic() error {
 	return nil
 }
 
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgClaimHTLC) Normalize() *MsgClaimHTLC {
+	msg.HashLock = strings.TrimSpace(msg.HashLock)
+	msg.Secret = strings.TrimSpace(msg.Secret)
+	return msg
+}
+
 // GetSignBytes implements Msg
 func (msg MsgClaimHTLC) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
@@ -185,6 +200,12 @@ func (msg MsgRefundHTLC) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidHashLock, "length of the hash lock must be %d", HashLockLength)
 	}
 	return nil
+}
+
+// Normalize return a string with spaces removed and lowercase
+func (msg *MsgRefundHTLC) Normalize() *MsgRefundHTLC {
+	msg.HashLock = strings.TrimSpace(msg.HashLock)
+	return msg
 }
 
 // GetSignBytes implements Msg
