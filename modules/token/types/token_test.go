@@ -44,13 +44,10 @@ func TestCheckKeywords(t *testing.T) {
 	}{
 		{name: "right case", args: args{denom: "stake"}, wantErr: false},
 		{name: "denom is peg", args: args{denom: "peg"}, wantErr: true},
-		{name: "denom is Peg", args: args{denom: "Peg"}, wantErr: true},
 		{name: "denom begin with peg", args: args{denom: "pegtoken"}, wantErr: true},
 		{name: "denom is ibc", args: args{denom: "ibc"}, wantErr: true},
-		{name: "denom is IBC", args: args{denom: "Peg"}, wantErr: true},
 		{name: "denom begin with ibc", args: args{denom: "ibctoken"}, wantErr: true},
 		{name: "denom is swap", args: args{denom: "swap"}, wantErr: true},
-		{name: "denom is SWAP", args: args{denom: "SWAP"}, wantErr: true},
 		{name: "denom begin with swap", args: args{denom: "swaptoken"}, wantErr: true},
 	}
 	for _, tt := range tests {
