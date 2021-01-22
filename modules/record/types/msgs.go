@@ -38,25 +38,20 @@ func (msg MsgCreateRecord) GetSignBytes() []byte {
 
 // ValidateBasic implements Msg.
 func (msg MsgCreateRecord) ValidateBasic() error {
+	msg = msg.Normalize()
 	if len(msg.Contents) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "contents missing")
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	for i, content := range msg.Contents {
-		if len(content.Digest) == 0 {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "content[%d] digest missing", i)
-		}
-		if len(content.DigestAlgo) == 0 {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "content[%d] digest algo missing", i)
-		}
-	}
-	return nil
+
+	return ValidateContents(msg.Contents...)
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgCreateRecord) Normalize() *MsgCreateRecord {
+func (msg MsgCreateRecord) Normalize() MsgCreateRecord {
 	for i, ctx := range msg.Contents {
 		ctx.Digest = strings.TrimSpace(ctx.Digest)
 		ctx.DigestAlgo = strings.ToLower(strings.TrimSpace(ctx.DigestAlgo))

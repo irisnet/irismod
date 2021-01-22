@@ -1,10 +1,7 @@
 package types
 
 import (
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/irisnet/irismod/modules/nft/exported"
 )
@@ -60,24 +57,4 @@ func NewNFTs(nfts ...exported.NFT) NFTs {
 		return NFTs{}
 	}
 	return NFTs(nfts)
-}
-
-// ValidateTokenID verify that the tokenID is legal
-func ValidateTokenID(tokenID string) error {
-	tokenID = strings.TrimSpace(tokenID)
-	if len(tokenID) < MinDenomLen || len(tokenID) > MaxDenomLen {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "invalid tokenID %s, only accepts value [%d, %d]", tokenID, MinDenomLen, MaxDenomLen)
-	}
-	if !IsBeginWithAlpha(tokenID) || !IsAlphaNumeric(tokenID) {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "invalid tokenID %s, only accepts alphanumeric characters,and begin with an english letter", tokenID)
-	}
-	return nil
-}
-
-// ValidateTokenURI verify that the tokenURI is legal
-func ValidateTokenURI(tokenURI string) error {
-	if len(tokenURI) > MaxTokenURILen {
-		return sdkerrors.Wrapf(ErrInvalidTokenURI, "invalid tokenURI %s, only accepts value [0, %d]", tokenURI, MaxTokenURILen)
-	}
-	return nil
 }

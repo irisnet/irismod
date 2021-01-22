@@ -1,9 +1,6 @@
 package types
 
 import (
-	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -61,28 +58,21 @@ func (msg MsgSwapOrder) Type() string { return TypeMsgSwapOrder }
 
 // ValidateBasic implements Msg.
 func (msg MsgSwapOrder) ValidateBasic() error {
-	if err := msg.Input.Coin.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid input (%s)", err.Error())
+	msg = msg.Normalize()
+	if err := ValidateInput(msg.Input); err != nil {
+		return err
 	}
 
-	if strings.HasPrefix(msg.Input.Coin.Denom, FormatUniABSPrefix) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported input coin type: %s", msg.Input.Coin.String()))
-	}
-
-	if err := msg.Output.Coin.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid output (%s)", err.Error())
-	}
-
-	if strings.HasPrefix(msg.Output.Coin.Denom, FormatUniABSPrefix) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported output coin type: %s", msg.Output.Coin.String()))
+	if err := ValidateOutput(msg.Output); err != nil {
+		return err
 	}
 
 	if msg.Input.Coin.Denom == msg.Output.Coin.Denom {
 		return sdkerrors.Wrap(ErrEqualDenom, "invalid swap")
 	}
 
-	if msg.Deadline <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("deadline %d must be greater than 0", msg.Deadline))
+	if err := ValidateDeadline(msg.Deadline); err != nil {
+		return err
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Input.Address); err != nil {
@@ -96,7 +86,7 @@ func (msg MsgSwapOrder) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgSwapOrder) Normalize() *MsgSwapOrder {
+func (msg MsgSwapOrder) Normalize() MsgSwapOrder {
 	return msg
 }
 
@@ -143,28 +133,21 @@ func (msg MsgAddLiquidity) Type() string { return TypeMsgAddLiquidity }
 
 // ValidateBasic implements Msg.
 func (msg MsgAddLiquidity) ValidateBasic() error {
-	if err := msg.MaxToken.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid maxToken (%s)", err.Error())
+	msg = msg.Normalize()
+	if err := ValidateMaxToken(msg.MaxToken); err != nil {
+		return err
 	}
 
-	if msg.MaxToken.Denom == StandardDenom {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("max token must not be standard token: %s", StandardDenom))
+	if err := ValidateExactStandardAmt(msg.ExactStandardAmt); err != nil {
+		return err
 	}
 
-	if strings.HasPrefix(msg.MaxToken.Denom, FormatUniABSPrefix) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max token must be non-liquidity token")
+	if err := ValidateMinLiquidity(msg.MinLiquidity); err != nil {
+		return err
 	}
 
-	if !msg.ExactStandardAmt.IsPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "standard token amount must be positive")
-	}
-
-	if msg.MinLiquidity.IsNegative() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "minimum liquidity can not be negative")
-	}
-
-	if msg.Deadline <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("deadline %d must be greater than 0", msg.Deadline))
+	if err := ValidateDeadline(msg.Deadline); err != nil {
+		return err
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
@@ -174,7 +157,7 @@ func (msg MsgAddLiquidity) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgAddLiquidity) Normalize() *MsgAddLiquidity {
+func (msg MsgAddLiquidity) Normalize() MsgAddLiquidity {
 	return msg
 }
 
@@ -221,24 +204,21 @@ func (msg MsgRemoveLiquidity) Type() string { return TypeMsgRemoveLiquidity }
 
 // ValidateBasic implements Msg.
 func (msg MsgRemoveLiquidity) ValidateBasic() error {
-	if msg.MinToken.IsNegative() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "minimum token amount can not be negative")
-	}
-
-	if err := msg.WithdrawLiquidity.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid withdrawLiquidity (%s)", err.Error())
-	}
-
-	if err := CheckUniDenom(msg.WithdrawLiquidity.Denom); err != nil {
+	msg = msg.Normalize()
+	if err := ValidateMinToken(msg.MinToken); err != nil {
 		return err
 	}
 
-	if msg.MinStandardAmt.IsNegative() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("minimum standard token amount %s can not be negative", msg.MinStandardAmt.String()))
+	if err := ValidateWithdrawLiquidity(msg.WithdrawLiquidity); err != nil {
+		return err
 	}
 
-	if msg.Deadline <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("deadline %d must be greater than 0", msg.Deadline))
+	if err := ValidateMinStandardAmt(msg.MinStandardAmt); err != nil {
+		return err
+	}
+
+	if err := ValidateDeadline(msg.Deadline); err != nil {
+		return err
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
@@ -248,7 +228,7 @@ func (msg MsgRemoveLiquidity) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgRemoveLiquidity) Normalize() *MsgRemoveLiquidity {
+func (msg MsgRemoveLiquidity) Normalize() MsgRemoveLiquidity {
 	return msg
 }
 

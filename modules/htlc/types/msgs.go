@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/hex"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,32 +59,35 @@ func (msg MsgCreateHTLC) Type() string { return TypeMsgCreateHTLC }
 
 // ValidateBasic implements Msg
 func (msg MsgCreateHTLC) ValidateBasic() error {
+	msg = msg.Normalize()
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.To); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
-	if len(msg.ReceiverOnOtherChain) > MaxLengthForAddressOnOtherChain {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "length of the receiver on other chain must be between [0,%d]", MaxLengthForAddressOnOtherChain)
+
+	if err := ValidateReceiverOnOtherChain(msg.ReceiverOnOtherChain); err != nil {
+		return err
 	}
-	if !msg.Amount.IsValid() || !msg.Amount.IsAllPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "the transferred amount must be valid")
+
+	if err := ValidateAmount(msg.Amount); err != nil {
+		return err
 	}
-	if _, err := hex.DecodeString(msg.HashLock); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidHashLock, "hash lock must be a hex encoded string")
+
+	if err := ValidateHashLock(msg.HashLock); err != nil {
+		return err
 	}
-	if len(msg.HashLock) != HashLockLength {
-		return sdkerrors.Wrapf(ErrInvalidHashLock, "length of the hash lock must be %d", HashLockLength)
-	}
-	if msg.TimeLock < MinTimeLock || msg.TimeLock > MaxTimeLock {
-		return sdkerrors.Wrapf(ErrInvalidTimeLock, "the time lock must be between [%d,%d]", MinTimeLock, MaxTimeLock)
+
+	if err := ValidateTimeLock(msg.TimeLock); err != nil {
+		return err
 	}
 	return nil
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgCreateHTLC) Normalize() *MsgCreateHTLC {
+func (msg MsgCreateHTLC) Normalize() MsgCreateHTLC {
 	msg.HashLock = strings.TrimSpace(msg.HashLock)
 	msg.ReceiverOnOtherChain = strings.TrimSpace(msg.ReceiverOnOtherChain)
 	return msg
@@ -129,26 +131,23 @@ func (msg MsgClaimHTLC) Type() string { return TypeMsgClaimHTLC }
 
 // ValidateBasic implements Msg.
 func (msg MsgClaimHTLC) ValidateBasic() error {
+	msg = msg.Normalize()
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
-	if _, err := hex.DecodeString(msg.HashLock); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidHashLock, "hash lock must be a hex encoded string")
+
+	if err := ValidateHashLock(msg.HashLock); err != nil {
+		return err
 	}
-	if len(msg.HashLock) != HashLockLength {
-		return sdkerrors.Wrapf(ErrInvalidHashLock, "length of the hash lock must be %d", HashLockLength)
-	}
-	if _, err := hex.DecodeString(msg.Secret); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidSecret, "secret must be a hex encoded string")
-	}
-	if len(msg.Secret) != SecretLength {
-		return sdkerrors.Wrapf(ErrInvalidSecret, "length of the secret must be %d", SecretLength)
+
+	if err := ValidateSecret(msg.Secret); err != nil {
+		return err
 	}
 	return nil
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgClaimHTLC) Normalize() *MsgClaimHTLC {
+func (msg MsgClaimHTLC) Normalize() MsgClaimHTLC {
 	msg.HashLock = strings.TrimSpace(msg.HashLock)
 	msg.Secret = strings.TrimSpace(msg.Secret)
 	return msg
@@ -190,20 +189,19 @@ func (msg MsgRefundHTLC) Type() string { return TypeMsgRefundHTLC }
 
 // ValidateBasic implements Msg
 func (msg MsgRefundHTLC) ValidateBasic() error {
+	msg.Normalize()
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
-	if _, err := hex.DecodeString(msg.HashLock); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidHashLock, "hash lock must be a hex encoded string")
-	}
-	if len(msg.HashLock) != HashLockLength {
-		return sdkerrors.Wrapf(ErrInvalidHashLock, "length of the hash lock must be %d", HashLockLength)
+
+	if err := ValidateHashLock(msg.HashLock); err != nil {
+		return err
 	}
 	return nil
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgRefundHTLC) Normalize() *MsgRefundHTLC {
+func (msg MsgRefundHTLC) Normalize() MsgRefundHTLC {
 	msg.HashLock = strings.TrimSpace(msg.HashLock)
 	return msg
 }

@@ -55,7 +55,7 @@ func TestCheckKeywords(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := CheckKeywords(tt.args.denom); (err != nil) != tt.wantErr {
+			if err := ValidateKeywords(tt.args.denom); (err != nil) != tt.wantErr {
 				t.Errorf("CheckKeywords() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

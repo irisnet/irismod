@@ -3,7 +3,6 @@ package types
 import (
 	"regexp"
 	"strings"
-	"unicode/utf8"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -54,13 +53,15 @@ func (msg MsgIssueDenom) Type() string { return TypeMsgIssueDenom }
 
 // ValidateBasic Implements Msg.
 func (msg MsgIssueDenom) ValidateBasic() error {
+	msg = msg.Normalize()
 	if err := ValidateDenomID(msg.Id); err != nil {
 		return err
 	}
-	name := strings.TrimSpace(msg.Name)
-	if len(name) > 0 && !utf8.ValidString(name) {
-		return sdkerrors.Wrap(ErrInvalidDenom, "denom name is invalid")
+
+	if err := ValidateDenomName(msg.Name); err != nil {
+		return err
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -68,7 +69,7 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgIssueDenom) Normalize() *MsgIssueDenom {
+func (msg MsgIssueDenom) Normalize() MsgIssueDenom {
 	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.Schema = strings.TrimSpace(msg.Schema)
@@ -113,12 +114,15 @@ func (msg MsgTransferNFT) Type() string { return TypeMsgTransferNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgTransferNFT) ValidateBasic() error {
+	msg = msg.Normalize()
 	if err := ValidateDenomID(msg.DenomId); err != nil {
 		return err
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
@@ -126,7 +130,7 @@ func (msg MsgTransferNFT) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgTransferNFT) Normalize() *MsgTransferNFT {
+func (msg MsgTransferNFT) Normalize() MsgTransferNFT {
 	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
 	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
 	msg.Name = strings.TrimSpace(msg.Name)
@@ -172,12 +176,15 @@ func (msg MsgEditNFT) Type() string { return TypeMsgEditNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgEditNFT) ValidateBasic() error {
+	msg = msg.Normalize()
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
+
 	if err := ValidateDenomID(msg.DenomId); err != nil {
 		return err
 	}
+
 	if err := ValidateTokenURI(msg.URI); err != nil {
 		return err
 	}
@@ -185,7 +192,7 @@ func (msg MsgEditNFT) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgEditNFT) Normalize() *MsgEditNFT {
+func (msg MsgEditNFT) Normalize() MsgEditNFT {
 	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
 	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
 	msg.Name = strings.TrimSpace(msg.Name)
@@ -232,6 +239,7 @@ func (msg MsgMintNFT) Type() string { return TypeMsgMintNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgMintNFT) ValidateBasic() error {
+	msg = msg.Normalize()
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -248,7 +256,7 @@ func (msg MsgMintNFT) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgMintNFT) Normalize() *MsgMintNFT {
+func (msg MsgMintNFT) Normalize() MsgMintNFT {
 	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
 	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
 	msg.Name = strings.TrimSpace(msg.Name)
@@ -289,6 +297,7 @@ func (msg MsgBurnNFT) Type() string { return TypeMsgBurnNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgBurnNFT) ValidateBasic() error {
+	msg = msg.Normalize()
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -299,7 +308,7 @@ func (msg MsgBurnNFT) ValidateBasic() error {
 }
 
 // Normalize return a string with spaces removed and lowercase
-func (msg *MsgBurnNFT) Normalize() *MsgBurnNFT {
+func (msg MsgBurnNFT) Normalize() MsgBurnNFT {
 	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
 	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
 	return msg

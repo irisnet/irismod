@@ -111,7 +111,7 @@ func (k Keeper) Fees(c context.Context, req *types.QueryFeesRequest) (*types.Que
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	if err := types.CheckSymbol(req.Symbol); err != nil {
+	if err := types.ValidateSymbol(req.Symbol); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
