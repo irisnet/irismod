@@ -94,7 +94,7 @@ func ValidateMaxSupply(maxSupply uint64) error {
 
 // ValidateName verifies whether the  parameters are legal
 func ValidateName(name string) error {
-	if DoNotModify != name && len(name) > MaximumNameLen {
+	if len(name) > MaximumNameLen {
 		return sdkerrors.Wrapf(ErrInvalidName, "invalid token name %s, only accepts length (0, %d]", name, MaximumNameLen)
 	}
 	return nil
@@ -135,7 +135,6 @@ func ValidateSymbol(symbol string) error {
 
 // ValidateKeywords checks if the given denom begin with `TokenKeywords`
 func ValidateKeywords(denom string) error {
-	denom = strings.ToLower(strings.TrimSpace(denom))
 	if IsBeginWithKeyword(denom) {
 		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid token: %s, can not begin with keyword: (%s)", denom, keywords)
 	}
