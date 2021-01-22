@@ -55,6 +55,6 @@ func ValidateTokenURI(tokenURI string) error {
 }
 
 // Modified returns whether the field is modified
-func Modified(param string) bool {
-	return param != types.DoNotModify
+func Modified(target string) bool {
+	return target != types.DoNotModify
 }
