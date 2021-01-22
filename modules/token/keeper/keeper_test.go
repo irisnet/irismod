@@ -64,7 +64,11 @@ func TestKeeperSuite(t *testing.T) {
 }
 
 func (suite *KeeperTestSuite) TestIssueToken() {
-	msg := types.NewMsgIssueToken("btc", "satoshi", "Bitcoin Network", 18, 21000000, 21000000, false, owner.String())
+	symbol := "btc"
+	minUnit := "satoshi"
+	name := "Bitcoin Network"
+	scale := uint32(18)
+	msg := types.NewMsgIssueToken(symbol, minUnit, name, scale, 21000000, 21000000, false, owner.String())
 
 	err := suite.keeper.IssueToken(suite.ctx, *msg)
 	require.NoError(suite.T(), err)
@@ -80,6 +84,14 @@ func (suite *KeeperTestSuite) TestIssueToken() {
 	ftJson, _ := json.Marshal(msg)
 	tokenJson, _ := json.Marshal(token)
 	suite.Equal(ftJson, tokenJson)
+
+	metadata := suite.bk.GetDenomMetaData(suite.ctx, symbol)
+	suite.Equal(metadata.Base, symbol)
+	suite.Equal(metadata.Description, name)
+	suite.Equal(metadata.Display, symbol)
+	suite.Len(metadata.DenomUnits, 1)
+	suite.Equal(metadata.DenomUnits[0].Denom, minUnit)
+	suite.Equal(metadata.DenomUnits[0].Exponent, scale)
 }
 
 func (suite *KeeperTestSuite) TestEditToken() {
