@@ -3,7 +3,6 @@ package types
 import (
 	"regexp"
 	"strings"
-	"unicode/utf8"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/irisnet/irismod/modules/token/types"
@@ -26,20 +25,11 @@ var (
 
 // ValidateDenomID verifies whether the  parameters are legal
 func ValidateDenomID(denomID string) error {
-	denomID = strings.TrimSpace(denomID)
 	if len(denomID) < MinDenomLen || len(denomID) > MaxDenomLen {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "invalid denom %s, only accepts value [%d, %d]", denomID, MinDenomLen, MaxDenomLen)
 	}
 	if !IsBeginWithAlpha(denomID) || !IsAlphaNumeric(denomID) {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "invalid denom %s, only accepts alphanumeric characters,and begin with an english letter", denomID)
-	}
-	return nil
-}
-
-// ValidateDenomName verifies whether the  parameters are legal
-func ValidateDenomName(denomName string) error {
-	if len(denomName) > 0 && !utf8.ValidString(denomName) {
-		return sdkerrors.Wrap(ErrInvalidDenom, "denom name is invalid")
 	}
 	return nil
 }

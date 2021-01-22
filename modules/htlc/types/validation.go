@@ -11,7 +11,7 @@ const (
 	// SecretLength ength for the secret in hex string
 	SecretLength = 64
 	// HashLockLength for the hash lock in hex string
-	HashLockLength = 64 // length for the hash lock in hex string
+	HashLockLength = 64
 	// MaxLengthForAddressOnOtherChain length for the address on other chains
 	MaxLengthForAddressOnOtherChain = 128
 	// MinTimeLock time span for HTLC
@@ -30,7 +30,7 @@ func ValidateReceiverOnOtherChain(receiverOnOtherChain string) error {
 
 // ValidateAmount verifies whether the  parameters are legal
 func ValidateAmount(amount sdk.Coins) error {
-	if !amount.IsValid() || !amount.IsAllPositive() {
+	if !(amount.IsValid() && amount.IsAllPositive()) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "the transferred amount must be valid")
 	}
 	return nil
@@ -38,12 +38,12 @@ func ValidateAmount(amount sdk.Coins) error {
 
 // ValidateHashLock verifies whether the  parameters are legal
 func ValidateHashLock(hashLock string) error {
-	if _, err := hex.DecodeString(hashLock); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidHashLock, "hash lock must be a hex encoded string")
-	}
-
 	if len(hashLock) != HashLockLength {
 		return sdkerrors.Wrapf(ErrInvalidHashLock, "length of the hash lock must be %d", HashLockLength)
+	}
+
+	if _, err := hex.DecodeString(hashLock); err != nil {
+		return sdkerrors.Wrapf(ErrInvalidHashLock, "hash lock must be a hex encoded string")
 	}
 	return nil
 }
@@ -58,12 +58,12 @@ func ValidateTimeLock(timeLock uint64) error {
 
 // ValidateSecret verifies whether the  parameters are legal
 func ValidateSecret(secret string) error {
-	if _, err := hex.DecodeString(secret); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidSecret, "secret must be a hex encoded string")
-	}
-
 	if len(secret) != SecretLength {
 		return sdkerrors.Wrapf(ErrInvalidSecret, "length of the secret must be %d", SecretLength)
+	}
+
+	if _, err := hex.DecodeString(secret); err != nil {
+		return sdkerrors.Wrapf(ErrInvalidSecret, "secret must be a hex encoded string")
 	}
 	return nil
 }

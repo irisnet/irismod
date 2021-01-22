@@ -38,8 +38,8 @@ func (h HTLC) Validate() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 
-	if len(h.To) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "recipient missing")
+	if _, err := sdk.AccAddressFromBech32(h.To); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
 
 	if err := ValidateReceiverOnOtherChain(h.ReceiverOnOtherChain); err != nil {

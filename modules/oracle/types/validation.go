@@ -7,6 +7,14 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+const (
+	MaxLatestHistory    = 100
+	MaxNameLen          = 70
+	MaxAggregateFuncLen = 10
+	MaxValueJsonPath    = 70
+	MaxDescriptionLen   = 280
+)
+
 // ValidateFeedName verify that the feedName is legal
 func ValidateFeedName(feedName string) error {
 	if len(feedName) == 0 || len(feedName) > MaxNameLen {
@@ -21,7 +29,6 @@ func ValidateFeedName(feedName string) error {
 
 // ValidateDescription verify that the desc is legal
 func ValidateDescription(desc string) error {
-	desc = strings.TrimSpace(desc)
 	if len(desc) > MaxDescriptionLen {
 		return sdkerrors.Wrap(ErrInvalidDescription, desc)
 	}
@@ -94,7 +101,7 @@ func ValidateTimeout(timeout int64, frequency uint64) error {
 
 // ValidateServiceFeeCap verifies whether the  parameters are legal
 func ValidateServiceFeeCap(serviceFeeCap sdk.Coins) error {
-	if serviceFeeCap != nil && !serviceFeeCap.IsValid() {
+	if !serviceFeeCap.IsValid() {
 		return sdkerrors.Wrapf(ErrInvalidServiceFeeCap, serviceFeeCap.String())
 	}
 	return nil

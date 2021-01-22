@@ -78,9 +78,9 @@ func (msg MsgIssueToken) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgIssueToken) Normalize() MsgIssueToken {
-	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	msg.Symbol = strings.TrimSpace(msg.Symbol)
 	msg.Name = strings.TrimSpace(msg.Name)
-	msg.MinUnit = strings.ToLower(strings.TrimSpace(msg.MinUnit))
+	msg.MinUnit = strings.TrimSpace(msg.MinUnit)
 	return msg
 }
 
@@ -159,7 +159,7 @@ func (msg MsgTransferTokenOwner) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgTransferTokenOwner) Normalize() MsgTransferTokenOwner {
-	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	msg.Symbol = strings.TrimSpace(msg.Symbol)
 	return msg
 }
 
@@ -228,7 +228,7 @@ func (msg MsgEditToken) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgEditToken) Normalize() MsgEditToken {
-	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	msg.Symbol = strings.TrimSpace(msg.Symbol)
 	msg.Name = strings.TrimSpace(msg.Name)
 	return msg
 }
@@ -292,7 +292,7 @@ func (msg MsgMintToken) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgMintToken) Normalize() MsgMintToken {
-	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	msg.Symbol = strings.TrimSpace(msg.Symbol)
 	return msg
 }
 
@@ -347,6 +347,6 @@ func (msg MsgBurnToken) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgBurnToken) Normalize() MsgBurnToken {
-	msg.Symbol = strings.ToLower(strings.TrimSpace(msg.Symbol))
+	msg.Symbol = strings.TrimSpace(msg.Symbol)
 	return msg
 }

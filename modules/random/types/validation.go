@@ -7,7 +7,7 @@ import (
 
 // ValidateServiceFeeCap verifies whether the  parameters are legal
 func ValidateServiceFeeCap(serviceFeeCap sdk.Coins) error {
-	if serviceFeeCap != nil && !serviceFeeCap.IsValid() {
+	if !serviceFeeCap.IsValid() {
 		return sdkerrors.Wrapf(ErrInvalidServiceFeeCap, serviceFeeCap.String())
 	}
 	return nil

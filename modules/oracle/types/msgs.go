@@ -9,12 +9,6 @@ import (
 )
 
 const (
-	MaxLatestHistory    = 100
-	MaxNameLen          = 70
-	MaxAggregateFuncLen = 10
-	MaxValueJsonPath    = 70
-	MaxDescriptionLen   = 200
-
 	TypeMsgCreateFeed = "create_feed" // type for MsgCreateFeed
 	TypeMsgStartFeed  = "start_feed"  // type for MsgStartFeed
 	TypeMsgPauseFeed  = "pause_feed"  // type for MsgPauseFeed
@@ -92,10 +86,10 @@ func (msg MsgCreateFeed) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgCreateFeed) Normalize() MsgCreateFeed {
-	msg.FeedName = strings.ToLower(strings.TrimSpace(msg.FeedName))
-	msg.ServiceName = strings.ToLower(strings.TrimSpace(msg.ServiceName))
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
 	msg.Input = strings.TrimSpace(msg.Input)
-	msg.AggregateFunc = strings.ToLower(strings.TrimSpace(msg.AggregateFunc))
+	msg.AggregateFunc = strings.TrimSpace(msg.AggregateFunc)
 	msg.ValueJsonPath = strings.TrimSpace(msg.ValueJsonPath)
 	return msg
 }
@@ -143,7 +137,7 @@ func (msg MsgStartFeed) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgStartFeed) Normalize() MsgStartFeed {
-	msg.FeedName = strings.ToLower(strings.TrimSpace(msg.FeedName))
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
 	return msg
 }
 
@@ -184,7 +178,7 @@ func (msg MsgPauseFeed) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgPauseFeed) Normalize() MsgPauseFeed {
-	msg.FeedName = strings.ToLower(strings.TrimSpace(msg.FeedName))
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
 	return msg
 }
 
@@ -251,7 +245,7 @@ func (msg MsgEditFeed) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgEditFeed) Normalize() MsgEditFeed {
-	msg.FeedName = strings.ToLower(strings.TrimSpace(msg.FeedName))
+	msg.FeedName = strings.TrimSpace(msg.FeedName)
 	return msg
 }
 

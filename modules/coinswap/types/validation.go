@@ -10,8 +10,8 @@ import (
 
 // ValidateInput verifies whether the  parameters are legal
 func ValidateInput(input Input) error {
-	if err := input.Coin.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid input (%s)", err.Error())
+	if !(input.Coin.IsValid() && input.Coin.IsPositive()) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid input (%s)", input.Coin.String())
 	}
 
 	if strings.HasPrefix(input.Coin.Denom, FormatUniABSPrefix) {
@@ -26,8 +26,8 @@ func ValidateInput(input Input) error {
 
 // ValidateOutput verifies whether the  parameters are legal
 func ValidateOutput(output Output) error {
-	if err := output.Coin.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid output (%s)", err.Error())
+	if !(output.Coin.IsValid() && output.Coin.IsPositive()) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid output (%s)", output.Coin.String())
 	}
 
 	if strings.HasPrefix(output.Coin.Denom, FormatUniABSPrefix) {
@@ -50,8 +50,8 @@ func ValidateDeadline(deadline int64) error {
 
 // ValidateMaxToken verifies whether the  parameters are legal
 func ValidateMaxToken(maxToken sdk.Coin) error {
-	if err := maxToken.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid maxToken (%s)", err.Error())
+	if !(maxToken.IsValid() && maxToken.IsPositive()) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid maxToken (%s)", maxToken.String())
 	}
 
 	if maxToken.Denom == StandardDenom {
@@ -90,11 +90,11 @@ func ValidateMinToken(minToken sdk.Int) error {
 
 // ValidateWithdrawLiquidity verifies whether the  parameters are legal
 func ValidateWithdrawLiquidity(liquidity sdk.Coin) error {
-	if err := liquidity.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid withdrawLiquidity (%s)", err.Error())
+	if !liquidity.IsValid() || !liquidity.IsPositive() {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid withdrawLiquidity (%s)", liquidity.String())
 	}
 
-	if err := CheckUniDenom(liquidity.Denom); err != nil {
+	if err := ValidateUniDenom(liquidity.Denom); err != nil {
 		return err
 	}
 	return nil
@@ -104,6 +104,14 @@ func ValidateWithdrawLiquidity(liquidity sdk.Coin) error {
 func ValidateMinStandardAmt(minStandardAmt sdk.Int) error {
 	if minStandardAmt.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("minimum standard token amount %s can not be negative", minStandardAmt.String()))
+	}
+	return nil
+}
+
+// ValidateUniDenom returns nil if the uni denom is valid
+func ValidateUniDenom(uniDenom string) error {
+	if !strings.HasPrefix(uniDenom, FormatUniABSPrefix) {
+		return sdkerrors.Wrap(ErrInvalidDenom, uniDenom)
 	}
 	return nil
 }
