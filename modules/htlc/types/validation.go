@@ -7,6 +7,19 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+const (
+	// SecretLength ength for the secret in hex string
+	SecretLength = 64
+	// HashLockLength for the hash lock in hex string
+	HashLockLength = 64 // length for the hash lock in hex string
+	// MaxLengthForAddressOnOtherChain length for the address on other chains
+	MaxLengthForAddressOnOtherChain = 128
+	// MinTimeLock time span for HTLC
+	MinTimeLock = 50
+	// MaxTimeLock time span for HTLC
+	MaxTimeLock = 25480
+)
+
 // ValidateReceiverOnOtherChain verifies whether the  parameters are legal
 func ValidateReceiverOnOtherChain(receiverOnOtherChain string) error {
 	if len(receiverOnOtherChain) > MaxLengthForAddressOnOtherChain {

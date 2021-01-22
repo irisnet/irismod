@@ -34,10 +34,10 @@ var (
 	}, "|")
 	keywordsRegex = fmt.Sprintf("^(%s).*", keywords)
 
-	// IsAlphaNumeric only accepts alphanumeric characters
-	IsAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
-	// IsBeginWithAlpha only begin with chars [a-zA-Z]
-	IsBeginWithAlpha = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
+	// IsAlphaNumeric only accepts [a-z0-9]
+	IsAlphaNumeric = regexp.MustCompile(`^[a-z0-9]+$`).MatchString
+	// IsBeginWithAlpha only begin with chars [a-z]
+	IsBeginWithAlpha = regexp.MustCompile(`^[a-z].*`).MatchString
 	// IsBeginWithKeyword define a group of keyword and denom shoule not begin with it
 	IsBeginWithKeyword = regexp.MustCompile(keywordsRegex).MatchString
 )

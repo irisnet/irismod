@@ -71,18 +71,7 @@ func (msg MsgSwapOrder) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEqualDenom, "invalid swap")
 	}
 
-	if err := ValidateDeadline(msg.Deadline); err != nil {
-		return err
-	}
-
-	if _, err := sdk.AccAddressFromBech32(msg.Input.Address); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid input address (%s)", err)
-	}
-
-	if _, err := sdk.AccAddressFromBech32(msg.Output.Address); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid output address (%s)", err)
-	}
-	return nil
+	return ValidateDeadline(msg.Deadline)
 }
 
 // Normalize return a string with spaces removed and lowercase

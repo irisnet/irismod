@@ -1,7 +1,6 @@
 package types
 
 import (
-	"regexp"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,12 +9,6 @@ import (
 
 // constant used to indicate that some field should not be updated
 const (
-	DoNotModify = "[do-not-modify]"
-	MinDenomLen = 3
-	MaxDenomLen = 64
-
-	MaxTokenURILen = 256
-
 	TypeMsgIssueDenom  = "issue_denom"
 	TypeMsgTransferNFT = "transfer_nft"
 	TypeMsgEditNFT     = "edit_nft"
@@ -24,16 +17,12 @@ const (
 )
 
 var (
-	// IsAlphaNumeric only accepts alphanumeric characters
-	IsAlphaNumeric   = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
-	IsBeginWithAlpha = regexp.MustCompile(`^[a-zA-Z].*`).MatchString
+	_ sdk.Msg = &MsgIssueDenom{}
+	_ sdk.Msg = &MsgTransferNFT{}
+	_ sdk.Msg = &MsgEditNFT{}
+	_ sdk.Msg = &MsgMintNFT{}
+	_ sdk.Msg = &MsgBurnNFT{}
 )
-
-var _ sdk.Msg = &MsgIssueDenom{}
-var _ sdk.Msg = &MsgTransferNFT{}
-var _ sdk.Msg = &MsgEditNFT{}
-var _ sdk.Msg = &MsgMintNFT{}
-var _ sdk.Msg = &MsgBurnNFT{}
 
 // NewMsgIssueDenom is a constructor function for MsgSetName
 func NewMsgIssueDenom(denomID, denomName, schema, sender string) *MsgIssueDenom {
@@ -70,7 +59,7 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgIssueDenom) Normalize() MsgIssueDenom {
-	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
+	msg.Id = strings.TrimSpace(msg.Id)
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.Schema = strings.TrimSpace(msg.Schema)
 	return msg
@@ -131,8 +120,8 @@ func (msg MsgTransferNFT) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgTransferNFT) Normalize() MsgTransferNFT {
-	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
-	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Id = strings.TrimSpace(msg.Id)
+	msg.DenomId = strings.TrimSpace(msg.DenomId)
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.URI = strings.TrimSpace(msg.URI)
 	msg.Data = strings.TrimSpace(msg.Data)
@@ -193,8 +182,8 @@ func (msg MsgEditNFT) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgEditNFT) Normalize() MsgEditNFT {
-	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
-	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Id = strings.TrimSpace(msg.Id)
+	msg.DenomId = strings.TrimSpace(msg.DenomId)
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.URI = strings.TrimSpace(msg.URI)
 	msg.Data = strings.TrimSpace(msg.Data)
@@ -257,8 +246,8 @@ func (msg MsgMintNFT) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgMintNFT) Normalize() MsgMintNFT {
-	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
-	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Id = strings.TrimSpace(msg.Id)
+	msg.DenomId = strings.TrimSpace(msg.DenomId)
 	msg.Name = strings.TrimSpace(msg.Name)
 	msg.URI = strings.TrimSpace(msg.URI)
 	msg.Data = strings.TrimSpace(msg.Data)
@@ -309,8 +298,8 @@ func (msg MsgBurnNFT) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgBurnNFT) Normalize() MsgBurnNFT {
-	msg.Id = strings.ToLower(strings.TrimSpace(msg.Id))
-	msg.DenomId = strings.ToLower(strings.TrimSpace(msg.DenomId))
+	msg.Id = strings.TrimSpace(msg.Id)
+	msg.DenomId = strings.TrimSpace(msg.DenomId)
 	return msg
 }
 

@@ -96,7 +96,7 @@ func (msg MsgDefineService) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgDefineService) Normalize() MsgDefineService {
-	msg.Name = strings.ToLower(strings.TrimSpace(msg.Name))
+	msg.Name = strings.TrimSpace(msg.Name)
 	msg.Schemas = strings.TrimSpace(msg.Schemas)
 	return msg
 }
@@ -191,7 +191,7 @@ func (msg MsgBindService) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgBindService) Normalize() MsgBindService {
-	msg.ServiceName = strings.ToLower(strings.TrimSpace(msg.ServiceName))
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
 	msg.Pricing = strings.TrimSpace(msg.Pricing)
 	msg.Options = strings.TrimSpace(msg.Options)
 	return msg
@@ -281,7 +281,7 @@ func (msg MsgUpdateServiceBinding) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgUpdateServiceBinding) Normalize() MsgUpdateServiceBinding {
-	msg.ServiceName = strings.ToLower(strings.TrimSpace(msg.ServiceName))
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
 	msg.Pricing = strings.TrimSpace(msg.Pricing)
 	msg.Options = strings.TrimSpace(msg.Options)
 	return msg
@@ -382,7 +382,7 @@ func (msg MsgDisableServiceBinding) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgDisableServiceBinding) Normalize() MsgDisableServiceBinding {
-	msg.ServiceName = strings.ToLower(strings.TrimSpace(msg.ServiceName))
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
 	return msg
 }
 
@@ -454,7 +454,7 @@ func (msg MsgEnableServiceBinding) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgEnableServiceBinding) Normalize() MsgEnableServiceBinding {
-	msg.ServiceName = strings.ToLower(strings.TrimSpace(msg.ServiceName))
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
 	return msg
 }
 
@@ -506,7 +506,7 @@ func (msg MsgRefundServiceDeposit) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgRefundServiceDeposit) Normalize() MsgRefundServiceDeposit {
-	msg.ServiceName = strings.ToLower(strings.TrimSpace(msg.ServiceName))
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
 	return msg
 }
 
@@ -600,7 +600,7 @@ func (msg MsgCallService) ValidateBasic() error {
 
 // Normalize return a string with spaces removed and lowercase
 func (msg MsgCallService) Normalize() MsgCallService {
-	msg.ServiceName = strings.ToLower(strings.TrimSpace(msg.ServiceName))
+	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
 	msg.Input = strings.TrimSpace(msg.Input)
 	return msg
 }

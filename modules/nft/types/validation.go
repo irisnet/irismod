@@ -1,10 +1,27 @@
 package types
 
 import (
+	"regexp"
 	"strings"
 	"unicode/utf8"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/irisnet/irismod/modules/token/types"
+)
+
+const (
+	DoNotModify = "[do-not-modify]"
+	MinDenomLen = 3
+	MaxDenomLen = 64
+
+	MaxTokenURILen = 256
+)
+
+var (
+	// IsAlphaNumeric only accepts [a-z0-9]
+	IsAlphaNumeric = regexp.MustCompile(`^[a-z0-9]+$`).MatchString
+	// IsBeginWithAlpha only begin with [a-z]
+	IsBeginWithAlpha = regexp.MustCompile(`^[a-z].*`).MatchString
 )
 
 // ValidateDenomID verifies whether the  parameters are legal
@@ -45,4 +62,9 @@ func ValidateTokenURI(tokenURI string) error {
 		return sdkerrors.Wrapf(ErrInvalidTokenURI, "invalid tokenURI %s, only accepts value [0, %d]", tokenURI, MaxTokenURILen)
 	}
 	return nil
+}
+
+// Modified returns whether the field is modified
+func Modified(param string) bool {
+	return param != types.DoNotModify
 }

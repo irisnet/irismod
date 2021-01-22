@@ -42,12 +42,12 @@ func (h HTLC) Validate() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "recipient missing")
 	}
 
-	if len(h.ReceiverOnOtherChain) > MaxLengthForAddressOnOtherChain {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "length of the receiver on other chain must be between [0,%d]", MaxLengthForAddressOnOtherChain)
+	if err := ValidateReceiverOnOtherChain(h.ReceiverOnOtherChain); err != nil {
+		return err
 	}
 
-	if !h.Amount.IsValid() || !h.Amount.IsAllPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "the transferred amount must be valid")
+	if err := ValidateAmount(h.Amount); err != nil {
+		return err
 	}
 
 	if h.State != Completed && len(h.Secret) > 0 {

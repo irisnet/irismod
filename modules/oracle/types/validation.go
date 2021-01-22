@@ -100,8 +100,7 @@ func ValidateServiceFeeCap(serviceFeeCap sdk.Coins) error {
 	return nil
 }
 
-// IsModified verifies whether the  parameters are modified
-func IsModified(target string) bool {
-	target = strings.TrimSpace(target)
+// Modified return whether the  parameters are modified
+func Modified(target string) bool {
 	return target != DoNotModify
 }

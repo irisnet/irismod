@@ -15,7 +15,11 @@ func ValidateInput(input Input) error {
 	}
 
 	if strings.HasPrefix(input.Coin.Denom, FormatUniABSPrefix) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid input denom,shoule begin with (%s)", FormatUniABSPrefix)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid input denom,shoule not be begin with (%s)", FormatUniABSPrefix)
+	}
+
+	if _, err := sdk.AccAddressFromBech32(input.Address); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid input address (%s)", err)
 	}
 	return nil
 }
@@ -27,7 +31,11 @@ func ValidateOutput(output Output) error {
 	}
 
 	if strings.HasPrefix(output.Coin.Denom, FormatUniABSPrefix) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid output denom,shoule begin with (%s)", FormatUniABSPrefix)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid output denom,shoule not be begin with (%s)", FormatUniABSPrefix)
+	}
+
+	if _, err := sdk.AccAddressFromBech32(output.Address); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid output address (%s)", err)
 	}
 	return nil
 }
