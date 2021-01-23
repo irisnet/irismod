@@ -100,19 +100,23 @@ func (suite *KeeperTestSuite) TestEditToken() {
 
 	suite.TestIssueToken()
 
+	name := "Bitcoin Token Network"
 	mintable := types.True
-	msgEditToken := types.NewMsgEditToken("Bitcoin Token", "btc", 22000000, mintable, owner.String())
+	msgEditToken := types.NewMsgEditToken(name, "btc", 22000000, mintable, owner.String())
 	err := suite.keeper.EditToken(suite.ctx, *msgEditToken)
 	require.NoError(suite.T(), err)
 
 	token2, err := suite.keeper.GetToken(suite.ctx, msgEditToken.Symbol)
 	require.NoError(suite.T(), err)
 
-	expToken := types.NewToken("btc", "Bitcoin Token", "satoshi", 18, 21000000, 22000000, mintable.ToBool(), owner)
+	expToken := types.NewToken("btc", name, "satoshi", 18, 21000000, 22000000, mintable.ToBool(), owner)
 
 	expJson, _ := json.Marshal(expToken)
 	actJson, _ := json.Marshal(token2)
 	suite.Equal(expJson, actJson)
+
+	metadata := suite.app.BankKeeper.GetDenomMetaData(suite.ctx, "satoshi")
+	suite.Equal(metadata.Description, name)
 
 }
 
