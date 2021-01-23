@@ -17,3 +17,4 @@ The service module contains the following parameters:
 | ArbitrationTimeLimit | string (time ns) | "172800000000000"                    |
 | TxSizeLimit          | uint64           | 4000                                 |
 | BaseDenom            | string           | "stake"                              |
+| RestrictedServiceFeeDenom            | bool           | false                              |
