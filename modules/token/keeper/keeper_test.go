@@ -85,13 +85,15 @@ func (suite *KeeperTestSuite) TestIssueToken() {
 	tokenJson, _ := json.Marshal(token)
 	suite.Equal(ftJson, tokenJson)
 
-	metadata := suite.bk.GetDenomMetaData(suite.ctx, symbol)
-	suite.Equal(metadata.Base, symbol)
+	metadata := suite.bk.GetDenomMetaData(suite.ctx, minUnit)
+	suite.Equal(metadata.Base, minUnit)
 	suite.Equal(metadata.Description, name)
 	suite.Equal(metadata.Display, symbol)
-	suite.Len(metadata.DenomUnits, 1)
-	suite.Equal(metadata.DenomUnits[0].Denom, minUnit)
-	suite.Equal(metadata.DenomUnits[0].Exponent, scale)
+	suite.Len(metadata.DenomUnits, 2)
+	suite.EqualValues(metadata.DenomUnits[0].Denom, minUnit)
+	suite.EqualValues(metadata.DenomUnits[0].Exponent, 0)
+	suite.EqualValues(metadata.DenomUnits[1].Denom, symbol)
+	suite.EqualValues(metadata.DenomUnits[1].Exponent, scale)
 }
 
 func (suite *KeeperTestSuite) TestEditToken() {

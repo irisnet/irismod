@@ -91,10 +91,11 @@ func (k Keeper) AddToken(ctx sdk.Context, token types.Token) error {
 
 	denomMetaData := banktypes.Metadata{
 		Description: token.Name,
-		Base:        token.Symbol,
+		Base:        token.MinUnit,
 		Display:     token.Symbol,
 		DenomUnits: []*banktypes.DenomUnit{
-			{Denom: token.MinUnit, Exponent: token.Scale},
+			{Denom: token.MinUnit, Exponent: 0},
+			{Denom: token.Symbol, Exponent: token.Scale},
 		},
 	}
 	k.bankKeeper.SetDenomMetaData(ctx, denomMetaData)
