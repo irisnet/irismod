@@ -149,4 +149,5 @@ message Params {
     google.protobuf.Duration arbitration_time_limit = 7 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true, (gogoproto.moretags) = "yaml:\"arbitration_time_limit\""];
     uint64 tx_size_limit = 8 [(gogoproto.moretags) = "yaml:\"tx_size_limit\""];
     string base_denom = 9 [(gogoproto.moretags) = "yaml:\"base_denom\""];
+    bool restricted_service_fee_denom = 10 [(gogoproto.moretags) = "yaml:\"restricted_service_fee_denom\""];
 }
