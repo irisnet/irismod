@@ -180,7 +180,7 @@ func (msg MsgBindService) ValidateBasic() error {
 	if err := ValidateOptions(msg.Options); err != nil {
 		return err
 	}
-	return ValidateBindingPricing(msg.Pricing)
+	return ValidatePricing(msg.Pricing)
 }
 
 // GetSigners implements Msg.
@@ -253,7 +253,7 @@ func (msg MsgUpdateServiceBinding) ValidateBasic() error {
 		}
 	}
 	if len(msg.Pricing) != 0 {
-		return ValidateBindingPricing(msg.Pricing)
+		return ValidatePricing(msg.Pricing)
 	}
 	return nil
 }
@@ -893,6 +893,19 @@ func ValidateServiceDeposit(deposit sdk.Coins) error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "invalid deposit")
 	}
 	return nil
+}
+
+func ValidatePricing(pricing string) error {
+	if err := ValidateBindingPricing(pricing); err != nil {
+		return err
+	}
+
+	parsedPricing, err := ParsePricing(pricing)
+	if err != nil {
+		return err
+	}
+
+	return CheckPricing(parsedPricing)
 }
 
 func ValidateQoS(qos uint64) error {

@@ -114,7 +114,9 @@ func (suite *KeeperTestSuite) setServiceBinding(available bool, disabledTime tim
 	suite.keeper.SetOwner(suite.ctx, provider, owner)
 	suite.keeper.SetOwnerProvider(suite.ctx, owner, provider)
 
-	pricing, _ := suite.keeper.ParsePricing(suite.ctx, testPricing)
+	pricing, err := suite.keeper.ParsePricing(suite.ctx, testPricing)
+	suite.NoError(err)
+
 	suite.keeper.SetPricing(suite.ctx, testServiceName, provider, pricing)
 }
 
