@@ -10,8 +10,8 @@ The service module contains the following parameters:
 | -------------------- | ---------------- | ------------------------------------ |
 | MaxRequestTimeout    | int64            | 100                                  |
 | MinDepositMultiple   | int64            | 1000                                 |
-| MinDeposit           | array (coins)    | [{"denom":"stake","amount":"10000"}] |
-| ServiceFeeTax        | string (dec)     | "0.01"                               |
+| MinDeposit           | array (coins)    | [{"denom":"stake","amount":"5000"}] |
+| ServiceFeeTax        | string (dec)     | "0.05"                               |
 | SlashFraction        | string (dec)     | "0.001"                              |
 | ComplaintRetrospect  | string (time ns) | "172800000000000"                    |
 | ArbitrationTimeLimit | string (time ns) | "172800000000000"                    |
