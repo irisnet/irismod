@@ -1,8 +1,6 @@
 package types
 
 import (
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -49,7 +47,6 @@ func ValidateAggregateFunc(aggregateFunc string) error {
 
 // ValidateValueJSONPath verify that the valueJsonPath is legal
 func ValidateValueJSONPath(valueJSONPath string) error {
-	valueJSONPath = strings.TrimSpace(valueJSONPath)
 	if len(valueJSONPath) == 0 || len(valueJSONPath) > MaxValueJsonPath {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "the length of valueJson path func must less than %d, got: %d", MaxAggregateFuncLen, len(valueJSONPath))
 	}

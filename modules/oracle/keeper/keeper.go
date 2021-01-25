@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/tidwall/gjson"
@@ -210,7 +209,7 @@ func (k Keeper) EditFeed(ctx sdk.Context, msg *types.MsgEditFeed) error {
 	}
 
 	if types.Modified(msg.Description) {
-		feed.Description = strings.TrimSpace(msg.Description)
+		feed.Description = msg.Description
 	}
 
 	k.SetFeed(ctx, feed)
