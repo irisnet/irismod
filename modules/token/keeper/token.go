@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/irisnet/irismod/modules/token/types"
 )
@@ -89,6 +90,20 @@ func (k Keeper) AddToken(ctx sdk.Context, token types.Token) error {
 		// set token to be prefixed with owner
 		k.setWithOwner(ctx, token.GetOwner(), token.Symbol)
 	}
+
+	denomMetaData := banktypes.Metadata{
+		Description: token.Name,
+		Base:        token.MinUnit,
+		Display:     token.Symbol,
+		DenomUnits: []*banktypes.DenomUnit{
+			{Denom: token.MinUnit, Exponent: 0},
+			{Denom: token.Symbol, Exponent: token.Scale},
+		},
+	}
+	k.bankKeeper.SetDenomMetaData(ctx, denomMetaData)
+
+	// Set token to be prefixed with min_unit
+	k.setWithMinUnit(ctx, token.MinUnit, token.Symbol)
 
 	return nil
 }

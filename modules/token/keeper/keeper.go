@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -120,7 +119,12 @@ func (k Keeper) EditToken(
 	}
 
 	if name != types.DoNotModify {
-		token.Name = strings.TrimSpace(name)
+		token.Name = name
+
+		metadata := k.bankKeeper.GetDenomMetaData(ctx, token.MinUnit)
+		metadata.Description = name
+
+		k.bankKeeper.SetDenomMetaData(ctx, metadata)
 	}
 
 	if mintable != types.Nil {

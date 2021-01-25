@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"math"
 	"strconv"
-	"strings"
 
 	"github.com/gogo/protobuf/proto"
 	"gopkg.in/yaml.v2"
@@ -40,10 +39,6 @@ func NewToken(
 	mintable bool,
 	owner sdk.AccAddress,
 ) Token {
-	symbol = strings.ToLower(strings.TrimSpace(symbol))
-	minUnit = strings.ToLower(strings.TrimSpace(minUnit))
-	name = strings.TrimSpace(name)
-
 	if maxSupply == 0 {
 		if mintable {
 			maxSupply = MaximumMaxSupply
@@ -152,70 +147,6 @@ func (t Token) ToMinCoin(coin sdk.DecCoin) (newCoin sdk.Coin, err error) {
 	// dest amount = src amount * 10^(dest scale)
 	amount := coin.Amount.Mul(precisionDec)
 	return sdk.NewCoin(t.MinUnit, amount.TruncateInt()), nil
-}
-
-// ValidateToken checks if the given token is valid
-func ValidateToken(token Token) error {
-	_, err := sdk.AccAddressFromBech32(token.Owner)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-	}
-
-	nameLen := len(strings.TrimSpace(token.Name))
-	if nameLen == 0 || nameLen > MaximumNameLen {
-		return sdkerrors.Wrapf(ErrInvalidName, "invalid token name %s, only accepts length (0, %d]", token.Name, MaximumNameLen)
-	}
-
-	if err := CheckSymbol(token.Symbol); err != nil {
-		return err
-	}
-
-	if err := CheckMinUnit(token.MinUnit); err != nil {
-		return err
-	}
-
-	if token.InitialSupply > MaximumInitSupply {
-		return sdkerrors.Wrapf(ErrInvalidInitSupply, "invalid token initial supply %d, only accepts value [0, %d]", token.InitialSupply, MaximumInitSupply)
-	}
-
-	if token.MaxSupply < token.InitialSupply || token.MaxSupply > MaximumMaxSupply {
-		return sdkerrors.Wrapf(ErrInvalidMaxSupply, "invalid token max supply %d, only accepts value [%d, %d]", token.MaxSupply, token.InitialSupply, MaximumMaxSupply)
-	}
-
-	if token.Scale > MaximumScale {
-		return sdkerrors.Wrapf(ErrInvalidScale, "invalid token scale %d, only accepts value [0, %d]", token.Scale, MaximumScale)
-	}
-
-	return nil
-}
-
-// CheckMinUnit checks if the given minUnit is valid
-func CheckMinUnit(minUnit string) error {
-	minUnitLen := len(strings.TrimSpace(minUnit))
-	if minUnitLen < MinimumMinUnitLen || minUnitLen > MaximumMinUnitLen || !IsAlphaNumeric(minUnit) || !IsBeginWithAlpha(minUnit) {
-		return sdkerrors.Wrapf(ErrInvalidMinUnit, "invalid token min_unit %s, only accepts alphanumeric characters, and begin with an english letter, length [%d, %d]", minUnit, MinimumMinUnitLen, MaximumMinUnitLen)
-	}
-	return CheckKeywords(minUnit)
-}
-
-// CheckSymbol checks if the given symbol is valid
-func CheckSymbol(symbol string) error {
-	if len(symbol) < MinimumSymbolLen || len(symbol) > MaximumSymbolLen {
-		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid symbol: %s,  only accepts length [%d, %d]", symbol, MinimumSymbolLen, MaximumSymbolLen)
-	}
-
-	if !IsBeginWithAlpha(symbol) || !IsAlphaNumeric(symbol) {
-		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid symbol: %s, only accepts alphanumeric characters, and begin with an english letter", symbol)
-	}
-	return CheckKeywords(symbol)
-}
-
-// CheckKeywords checks if the given denom begin with `TokenKeywords`
-func CheckKeywords(denom string) error {
-	if IsBeginWithKeyword(denom) {
-		return sdkerrors.Wrapf(ErrInvalidSymbol, "invalid token: %s, can not begin with keyword: (%s)", denom, keywords)
-	}
-	return nil
 }
 
 type Bool string
