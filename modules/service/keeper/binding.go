@@ -107,15 +107,15 @@ func (k Keeper) SetServiceBindingForGenesis(
 		return err
 	}
 
-	k.SetServiceBinding(ctx, svcBinding)
-	k.SetOwnerServiceBinding(ctx, svcBinding)
-	k.SetOwner(ctx, provider, owner)
-	k.SetOwnerProvider(ctx, owner, provider)
-
 	pricing, err := types.ParsePricing(svcBinding.Pricing)
 	if err != nil {
 		return err
 	}
+
+	k.SetServiceBinding(ctx, svcBinding)
+	k.SetOwnerServiceBinding(ctx, svcBinding)
+	k.SetOwner(ctx, provider, owner)
+	k.SetOwnerProvider(ctx, owner, provider)
 
 	k.SetPricing(ctx, svcBinding.ServiceName, provider, pricing)
 
