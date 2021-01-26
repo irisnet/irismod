@@ -139,7 +139,7 @@ func TestToken_ToMainCoin(t *testing.T) {
 				wantErr: false,
 				args:    args{coin: sdk.NewCoin(token.MinUnit, sdk.NewInt(10))},
 				want: sdk.NewDecCoinFromDec(token.Symbol,
-					sdk.NewDecWithPrec(1, int64(token.Scale)).MulInt64(10)),
+					sdk.NewDecWithPrec(10, int64(token.Scale))),
 				success: true,
 			},
 		}
