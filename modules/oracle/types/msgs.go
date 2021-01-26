@@ -1,8 +1,6 @@
 package types
 
 import (
-	"regexp"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -21,9 +19,6 @@ var (
 	_ sdk.Msg = &MsgStartFeed{}
 	_ sdk.Msg = &MsgPauseFeed{}
 	_ sdk.Msg = &MsgEditFeed{}
-
-	// the feed/service name only accepts alphanumeric characters, _ and -
-	regPlainText = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`)
 )
 
 // ______________________________________________________________________

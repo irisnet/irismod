@@ -1,6 +1,8 @@
 package types
 
 import (
+	"regexp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -13,12 +15,13 @@ const (
 	MaxDescriptionLen   = 280
 )
 
+var (
+	// the feed/service name only accepts alphanumeric characters, _ and -
+	regPlainText = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`)
+)
+
 // ValidateFeedName verify that the feedName is legal
 func ValidateFeedName(feedName string) error {
-	if len(feedName) == 0 || len(feedName) > MaxNameLen {
-		return sdkerrors.Wrap(ErrInvalidFeedName, feedName)
-	}
-
 	if !regPlainText.MatchString(feedName) {
 		return sdkerrors.Wrap(ErrInvalidFeedName, feedName)
 	}
