@@ -43,10 +43,9 @@ func querySupply(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerier
 	}
 
 	var supply uint64
-	switch {
-	case params.Owner.Empty() && len(params.Denom) > 0:
+	if params.Owner.Empty() && len(params.Denom) > 0 {
 		supply = k.GetTotalSupply(ctx, params.Denom)
-	default:
+	} else {
 		supply = k.GetTotalSupplyOfOwner(ctx, params.Denom, params.Owner)
 	}
 

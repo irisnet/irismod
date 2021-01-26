@@ -5,24 +5,25 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/irisnet/irismod/modules/service/exported"
 )
 
 const (
 	MaxLatestHistory    = 100
-	MaxNameLen          = 70
 	MaxAggregateFuncLen = 10
 	MaxValueJsonPath    = 70
 	MaxDescriptionLen   = 280
 )
 
 var (
-	// the feed/service name only accepts alphanumeric characters, _ and -
-	regPlainText = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`)
+	// the feed name only accepts alphanumeric characters, _ and -
+	regexpFeedName = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`)
 )
 
 // ValidateFeedName verify that the feedName is legal
 func ValidateFeedName(feedName string) error {
-	if !regPlainText.MatchString(feedName) {
+	if !regexpFeedName.MatchString(feedName) {
 		return sdkerrors.Wrap(ErrInvalidFeedName, feedName)
 	}
 	return nil
@@ -74,13 +75,7 @@ func ValidateCreator(creator string) error {
 
 // ValidateServiceName verifies whether the  parameters are legal
 func ValidateServiceName(serviceName string) error {
-	if len(serviceName) == 0 || len(serviceName) > MaxNameLen {
-		return sdkerrors.Wrapf(ErrInvalidServiceName, serviceName)
-	}
-	if !regPlainText.MatchString(serviceName) {
-		return sdkerrors.Wrapf(ErrInvalidServiceName, serviceName)
-	}
-	return nil
+	return exported.ValidateServiceName(serviceName)
 }
 
 // ValidateResponseThreshold verifies whether the  parameters are legal
