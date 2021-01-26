@@ -16,7 +16,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/irisnet/irismod/modules/oracle/types"
-	"github.com/irisnet/irismod/modules/service/exported"
+	serviceexported "github.com/irisnet/irismod/modules/service/exported"
 )
 
 // Keeper define a struct for oracle keeper
@@ -44,10 +44,10 @@ func NewKeeper(
 	_ = sk.RegisterResponseCallback(types.ModuleName, keeper.HandlerResponse)
 	_ = sk.RegisterStateCallback(types.ModuleName, keeper.HandlerStateChanged)
 	_ = sk.RegisterModuleService(
-		exported.RegisterModuleName,
-		&exported.ModuleService{
-			ServiceName:     exported.OraclePriceServiceName,
-			Provider:        exported.OraclePriceServiceProvider,
+		serviceexported.RegisterModuleName,
+		&serviceexported.ModuleService{
+			ServiceName:     serviceexported.OraclePriceServiceName,
+			Provider:        serviceexported.OraclePriceServiceProvider,
 			ReuquestService: keeper.ModuleServiceRequest,
 		},
 	)
@@ -80,7 +80,7 @@ func (k Keeper) CreateFeed(ctx sdk.Context, msg *types.MsgCreateFeed) error {
 		true,
 		msg.RepeatedFrequency,
 		-1,
-		exported.PAUSED,
+		serviceexported.PAUSED,
 		msg.ResponseThreshold,
 		types.ModuleName,
 	)
@@ -97,7 +97,7 @@ func (k Keeper) CreateFeed(ctx sdk.Context, msg *types.MsgCreateFeed) error {
 		Description:      msg.Description,
 		Creator:          msg.Creator,
 	})
-	k.Enqueue(ctx, msg.FeedName, exported.PAUSED)
+	k.Enqueue(ctx, msg.FeedName, serviceexported.PAUSED)
 
 	return nil
 }
@@ -122,7 +122,7 @@ func (k Keeper) StartFeed(ctx sdk.Context, msg *types.MsgStartFeed) error {
 	}
 
 	// Can not start feed in "running" state
-	if reqCtx.State == exported.RUNNING {
+	if reqCtx.State == serviceexported.RUNNING {
 		return sdkerrors.Wrapf(types.ErrInvalidFeedState, msg.FeedName)
 	}
 
@@ -130,7 +130,7 @@ func (k Keeper) StartFeed(ctx sdk.Context, msg *types.MsgStartFeed) error {
 		return err
 	}
 
-	k.dequeueAndEnqueue(ctx, msg.FeedName, exported.PAUSED, exported.RUNNING)
+	k.dequeueAndEnqueue(ctx, msg.FeedName, serviceexported.PAUSED, serviceexported.RUNNING)
 	return nil
 }
 
@@ -154,7 +154,7 @@ func (k Keeper) PauseFeed(ctx sdk.Context, msg *types.MsgPauseFeed) error {
 	}
 
 	// Can only pause feed in "running" state
-	if reqCtx.State != exported.RUNNING {
+	if reqCtx.State != serviceexported.RUNNING {
 		return sdkerrors.Wrapf(types.ErrInvalidFeedState, msg.FeedName)
 	}
 
@@ -162,7 +162,7 @@ func (k Keeper) PauseFeed(ctx sdk.Context, msg *types.MsgPauseFeed) error {
 		return err
 	}
 
-	k.dequeueAndEnqueue(ctx, msg.FeedName, exported.RUNNING, exported.PAUSED)
+	k.dequeueAndEnqueue(ctx, msg.FeedName, serviceexported.RUNNING, serviceexported.PAUSED)
 	return nil
 }
 
@@ -259,7 +259,7 @@ func (k Keeper) HandlerResponse(
 
 	var data []types.ArgsType
 	for _, jsonStr := range responseOutput {
-		result := gjson.Get(jsonStr, exported.PATH_BODY).Get(feed.ValueJsonPath)
+		result := gjson.Get(jsonStr, serviceexported.PATH_BODY).Get(feed.ValueJsonPath)
 		data = append(data, result)
 	}
 
@@ -299,13 +299,13 @@ func (k Keeper) HandlerStateChanged(ctx sdk.Context, requestContextID tmbytes.He
 		return
 	}
 
-	var oldState exported.RequestContextState
+	var oldState serviceexported.RequestContextState
 	switch reqCtx.State {
-	case exported.PAUSED:
-		oldState = exported.RUNNING
-	case exported.RUNNING:
-		oldState = exported.PAUSED
-	case exported.COMPLETED:
+	case serviceexported.PAUSED:
+		oldState = serviceexported.RUNNING
+	case serviceexported.RUNNING:
+		oldState = serviceexported.PAUSED
+	case serviceexported.COMPLETED:
 		ctx.Logger().Error(
 			"Feed state invalid",
 			"requestContextID", requestContextID.String(),
@@ -323,12 +323,12 @@ func (k Keeper) HandlerStateChanged(ctx sdk.Context, requestContextID tmbytes.He
 	k.dequeueAndEnqueue(ctx, feed.FeedName, oldState, reqCtx.State)
 }
 
-func (k Keeper) GetRequestContext(ctx sdk.Context, requestContextID tmbytes.HexBytes) (exported.RequestContext, bool) {
+func (k Keeper) GetRequestContext(ctx sdk.Context, requestContextID tmbytes.HexBytes) (serviceexported.RequestContext, bool) {
 	return k.sk.GetRequestContext(ctx, requestContextID)
 }
 
 func (k Keeper) ModuleServiceRequest(ctx sdk.Context, input string) (result string, output string) {
-	feedName := gjson.Get(input, exported.PATH_BODY).Get("pair").String()
+	feedName := gjson.Get(input, serviceexported.PATH_BODY).Get("pair").String()
 	if _, found := k.GetFeed(ctx, feedName); !found {
 		result = `{"code":"400","message":"feed not found"}`
 		return
