@@ -177,7 +177,7 @@ func (k Keeper) UpdateServiceBinding(
 
 	// update the pricing
 	if len(pricing) != 0 {
-		parsedPricing, err := types.ParsePricing(pricing)
+		parsedPricing, err := k.ParsePricing(ctx, pricing)
 		if err != nil {
 			return err
 		}
