@@ -21,35 +21,6 @@ var (
 	}
 )
 
-func TestCheckKeywords(t *testing.T) {
-	type args struct {
-		denom string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{name: "right case", args: args{denom: "stake"}, wantErr: false},
-		{name: "denom is peg", args: args{denom: "peg"}, wantErr: true},
-		{name: "denom is Peg", args: args{denom: "Peg"}, wantErr: false},
-		{name: "denom begin with peg", args: args{denom: "pegtoken"}, wantErr: true},
-		{name: "denom is ibc", args: args{denom: "ibc"}, wantErr: true},
-		{name: "denom is IBC", args: args{denom: "Peg"}, wantErr: false},
-		{name: "denom begin with ibc", args: args{denom: "ibctoken"}, wantErr: true},
-		{name: "denom is swap", args: args{denom: "swap"}, wantErr: true},
-		{name: "denom is SWAP", args: args{denom: "SWAP"}, wantErr: false},
-		{name: "denom begin with swap", args: args{denom: "swaptoken"}, wantErr: true},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := ValidateKeywords(tt.args.denom); (err != nil) != tt.wantErr {
-				t.Errorf("CheckKeywords() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
 func TestToken_ToMinCoin(t *testing.T) {
 	type args struct {
 		coin sdk.DecCoin
