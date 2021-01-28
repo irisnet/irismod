@@ -50,7 +50,7 @@ func (k Keeper) GetTokens(ctx sdk.Context, owner sdk.AccAddress) (tokens []types
 func (k Keeper) GetToken(ctx sdk.Context, denom string) (types.TokenI, error) {
 	store := ctx.KVStore(k.storeKey)
 
-	if token, err := k.getTokenBySymbol(ctx, denom); err == nil {
+	if token, err := k.getToken(ctx, denom); err == nil {
 		return &token, nil
 	}
 
@@ -62,7 +62,7 @@ func (k Keeper) GetToken(ctx sdk.Context, denom string) (types.TokenI, error) {
 	var symbol gogotypes.StringValue
 	k.cdc.MustUnmarshalBinaryBare(bz, &symbol)
 
-	token, err := k.getTokenBySymbol(ctx, symbol.Value)
+	token, err := k.getToken(ctx, symbol.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +208,7 @@ func (k Keeper) setToken(ctx sdk.Context, token types.Token) {
 	store.Set(types.KeySymbol(token.Symbol), bz)
 }
 
-func (k Keeper) getTokenBySymbol(ctx sdk.Context, symbol string) (token types.Token, err error) {
+func (k Keeper) getToken(ctx sdk.Context, symbol string) (token types.Token, err error) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.KeySymbol(symbol))
