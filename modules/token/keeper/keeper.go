@@ -184,19 +184,15 @@ func (k Keeper) MintToken(
 	}
 
 	supply := k.getTokenSupply(ctx, token.MinUnit)
-	maxSupply := token.MaxSupply
+	mintableAmt := sdk.NewIntWithDecimal(int64(token.MaxSupply), int(token.Scale)).Sub(supply)
+	mintableMainAmt := uint64(mintableAmt.Quo(sdk.NewIntWithDecimal(1, int(token.Scale))).Int64())
 
-	if maxSupply > 0 {
-		mintableAmt := sdk.NewIntWithDecimal(int64(maxSupply), int(token.Scale)).Sub(supply)
-		mintableMainAmt := uint64(mintableAmt.Quo(sdk.NewIntWithDecimal(1, int(token.Scale))).Int64())
-
-		if amount > mintableMainAmt {
-			return sdkerrors.Wrapf(
-				types.ErrInvalidAmount,
-				"the amount exceeds the mintable token amount; expected (0, %d], got %d",
-				mintableMainAmt, amount,
-			)
-		}
+	if amount > mintableMainAmt {
+		return sdkerrors.Wrapf(
+			types.ErrInvalidAmount,
+			"the amount exceeds the mintable token amount; expected (0, %d], got %d",
+			mintableMainAmt, amount,
+		)
 	}
 
 	mintCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntWithDecimal(int64(amount), int(token.Scale)))
