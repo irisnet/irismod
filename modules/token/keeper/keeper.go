@@ -70,9 +70,10 @@ func (k Keeper) IssueToken(
 		return err
 	}
 
+	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
 	initialCoin := sdk.NewCoin(
 		token.MinUnit,
-		sdk.NewIntWithDecimal(int64(token.InitialSupply), int(token.Scale)),
+		sdk.NewIntFromUint64(token.InitialSupply).Mul(precision),
 	)
 
 	mintCoins := sdk.NewCoins(initialCoin)
@@ -184,8 +185,9 @@ func (k Keeper) MintToken(
 	}
 
 	supply := k.getTokenSupply(ctx, token.MinUnit)
-	mintableAmt := sdk.NewIntWithDecimal(int64(token.MaxSupply), int(token.Scale)).Sub(supply)
-	mintableMainAmt := uint64(mintableAmt.Quo(sdk.NewIntWithDecimal(1, int(token.Scale))).Int64())
+	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
+	mintableAmt := sdk.NewIntFromUint64(token.MaxSupply).Mul(precision).Sub(supply)
+	mintableMainAmt := mintableAmt.Quo(precision).Uint64()
 
 	if amount > mintableMainAmt {
 		return sdkerrors.Wrapf(
@@ -195,7 +197,7 @@ func (k Keeper) MintToken(
 		)
 	}
 
-	mintCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntWithDecimal(int64(amount), int(token.Scale)))
+	mintCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntFromUint64(amount).Mul(precision))
 	mintCoins := sdk.NewCoins(mintCoin)
 
 	// mint coins
@@ -223,7 +225,8 @@ func (k Keeper) BurnToken(
 		return err
 	}
 
-	burnCoin := sdk.NewCoin(token.GetMinUnit(), sdk.NewIntWithDecimal(int64(amount), int(token.GetScale())))
+	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
+	burnCoin := sdk.NewCoin(token.GetMinUnit(), sdk.NewIntFromUint64(amount).Mul(precision))
 	burnCoins := sdk.NewCoins(burnCoin)
 
 	// burn coins
