@@ -4,7 +4,6 @@ import (
 	fmt "fmt"
 	"math"
 	"regexp"
-	"strconv"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -69,7 +68,7 @@ func ValidateToken(token Token) error {
 	}
 
 	if token.MaxSupply < token.InitialSupply {
-		return sdkerrors.Wrapf(ErrInvalidMaxSupply, "invalid token max supply %d, only accepts value [%d, %s]", token.MaxSupply, token.InitialSupply, strconv.FormatUint(MaximumMaxSupply, 10))
+		return sdkerrors.Wrapf(ErrInvalidMaxSupply, "invalid token max supply %d, only accepts value [%d, %d]", token.MaxSupply, token.InitialSupply, uint64(MaximumMaxSupply))
 	}
 	return ValidateScale(token.Scale)
 }
@@ -125,7 +124,7 @@ func ValidateKeywords(denom string) error {
 // ValidateAmount checks if the given denom begin with `TokenKeywords`
 func ValidateAmount(amount uint64) error {
 	if amount == 0 {
-		return sdkerrors.Wrapf(ErrInvalidMaxSupply, "invalid token amount %d, only accepts value (0, %s]", amount, strconv.FormatUint(MaximumMaxSupply, 10))
+		return sdkerrors.Wrapf(ErrInvalidMaxSupply, "invalid token amount %d, only accepts value (0, %d]", amount, uint64(MaximumMaxSupply))
 	}
 	return nil
 }
