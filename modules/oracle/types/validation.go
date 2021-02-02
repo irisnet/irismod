@@ -12,8 +12,8 @@ import (
 const (
 	//MaxLatestHistory define the the maximum number of feed value saved
 	MaxLatestHistory = 100
-	//MaxAggregateFunNmLen define the the maximum lenght of the ggregate function name
-	MaxAggregateFunNmLen = 10
+	//MaxAggregateFuncNameLen define the the maximum lenght of the ggregate function name
+	MaxAggregateFuncNameLen = 10
 	//MaxDescriptionLen define the the maximum lenght of the description
 	MaxDescriptionLen = 280
 )
@@ -41,8 +41,8 @@ func ValidateDescription(desc string) error {
 
 // ValidateAggregateFunc verify that the aggregateFunc is legal
 func ValidateAggregateFunc(aggregateFunc string) error {
-	if len(aggregateFunc) == 0 || len(aggregateFunc) > MaxAggregateFunNmLen {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "aggregate func must between [1, %d], got: %d", MaxAggregateFunNmLen, len(aggregateFunc))
+	if len(aggregateFunc) == 0 || len(aggregateFunc) > MaxAggregateFuncNameLen {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "aggregate func must between [1, %d], got: %d", MaxAggregateFuncNameLen, len(aggregateFunc))
 	}
 
 	if _, err := GetAggregateFunc(aggregateFunc); err != nil {
