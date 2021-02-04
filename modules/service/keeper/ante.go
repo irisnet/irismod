@@ -32,7 +32,7 @@ func (vsad ValidateServiceAuthDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, 
 
 				if !vsad.ak.Authorized(ctx, consumer) {
 					return ctx, sdkerrors.Wrap(
-						sdkerrors.ErrUnauthorized, "authentication failed, only super accounts can create repeated service invocation")
+						sdkerrors.ErrUnauthorized, "authentication failed, only super accounts can create repeated service invocation or create service invocation with superMode")
 				}
 			}
 		}
