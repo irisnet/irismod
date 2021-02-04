@@ -52,7 +52,7 @@ func ValidateToken(token Token) error {
 	}
 
 	if err := ValidateName(token.Name); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidName, "invalid token name %s, only accepts length (0, %d]", token.Name, MaximumNameLen)
+		return err
 	}
 
 	if err := ValidateSymbol(token.Symbol); err != nil {
