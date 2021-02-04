@@ -23,7 +23,7 @@ const (
 
 var (
 	// Keys for store prefixes
-	delimiter                 = []byte("/")
+	delimiter                 = []byte{0x00}
 	PrefixFeedKey             = []byte{0x01}
 	PrefixReqCtxIdKey         = []byte{0x02}
 	PrefixFeedValueKey        = []byte{0x03}
