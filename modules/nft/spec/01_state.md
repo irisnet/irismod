@@ -7,11 +7,11 @@ Nft defines the tokenData of non-fungible tokens, mainly including ID, owner, an
 ```go
 // NFT non fungible token interface
 type NFT interface {
-  GetID() string                    // unique identifier of the NFT
-  GetOwner() sdk.AccAddress         // gets owner account of the NFT
-  GetTokenURI() string              // tokenData field: URI to retrieve the of chain tokenData of the NFT
-  GetTokenData() string
-  String() string                   // string representation of the NFT object
+	GetID() string                    // unique identifier of the NFT
+	GetName() string                  // return the name of BaseNFT
+	GetOwner() sdk.AccAddress         // gets owner account of the NFT
+	GetURI() string                   // tokenData field: URI to retrieve the of chain tokenData of the NFT
+	GetData() string                  // return the Data of BaseNFT
 }
 ```
 
@@ -22,8 +22,8 @@ As all NFTs belong to a specific `Collection`, However, considering the performa
 ```go
 // Collection of non fungible tokens
 type Collection struct {
-  Denom string `json:"denom"` // name of the collection; not exported to clients
-  NFTs  []NFT   `json:"nfts"`            // NFTs that belongs to a collection
+  Denom Denom `json:"denom"`               // Denom of the collection; not exported to clients
+  NFTs  []BaseNFT   `json:"nfts"`          // NFTs that belongs to a collection
 }
 ```
 
@@ -34,8 +34,8 @@ Owner is a data structure specifically designed for nft owned by statistical mod
 ```go
 // Owner of non fungible tokens
 type Owner struct {
-  Address       sdk.AccAddress `json:"address"`
-  IDCollections IDCollections  `json:"IDCollections"`
+  Address       string `json:"address"`
+  IDCollections []IDCollection  `json:"id_collections"`
 }
 ```
 
@@ -44,8 +44,8 @@ An `IDCollection` is similar to a `Collection` except instead of containing NFTs
 ```go
 // IDCollection of non fungible tokens
 type IDCollection struct {
-  Denom string   `json:"denom"`
-  IDs   []string `json:"IDs"`
+  DenomId string   `json:"denom_id"`
+  TokenIds []string `json:"token_ids"`
 }
 
 ```
