@@ -51,7 +51,7 @@ func ValidateToken(token Token) error {
 		}
 	}
 
-	if len(token.Name) == 0 || len(token.Name) > MaximumNameLen {
+	if err := ValidateName(token.Name); err != nil {
 		return sdkerrors.Wrapf(ErrInvalidName, "invalid token name %s, only accepts length (0, %d]", token.Name, MaximumNameLen)
 	}
 
@@ -83,7 +83,7 @@ func ValidateInitialSupply(initialSupply uint64) error {
 
 // ValidateName verifies whether the  parameters are legal
 func ValidateName(name string) error {
-	if len(name) > MaximumNameLen {
+	if len(name) == 0 || len(name) > MaximumNameLen {
 		return sdkerrors.Wrapf(ErrInvalidName, "invalid token name %s, only accepts length (0, %d]", name, MaximumNameLen)
 	}
 	return nil
