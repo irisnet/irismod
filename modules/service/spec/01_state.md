@@ -88,11 +88,12 @@ type RequestContext struct {
 
 ```go
 type CompactRequest struct {
-    RequestContextID           tmbytes.HexBytes  // ID of the request context from which the request is initiated
+    RequestContextId           string  // ID of the request context from which the request is initiated
     RequestContextBatchCounter uint64            // the batch number of the request
-    Provider                   sdk.AccAddress    // provider address
+    Provider                   string    // provider address
     ServiceFee                 sdk.Coins         // service fee
     RequestHeight              int64             // block number at which the request is initiated
+  	ExpirationHeight           int64             // block number at which the request is expired
 }
 ```
 
@@ -100,11 +101,11 @@ type CompactRequest struct {
 
 ```go
 type Response struct {
-    Provider                   sdk.AccAddress    // provicer address
-    Consumer                   sdk.AccAddress    // consumer address
+    Provider                   string            // provicer address
+    Consumer                   string            // consumer address
     Result                     string            // response result according with the result schema
     Output                     string           // response output according with the service output schema
-    RequestContextID           tmbytes.HexBytes // ID of the request context to which the response belongs
+    RequestContextID           string            // ID of the request context to which the response belongs
     RequestContextBatchCounter uint64           // the batch number of the response
 }
 ```

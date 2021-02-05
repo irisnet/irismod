@@ -6,29 +6,24 @@ order: 3
 
 The service module emits the following events:
 
-## EndBlocker
-
-| Type                       | Attribute Key      | Attribute Value    |
-| -------------------------- | ------------------ | ------------------ |
-| new_batch                  | request_context_id | {requestContextID} |
-| new_batch_request_provider | requests           | {requests}         |
-| complete_batch             | batch_state        | {batchState}       |
-| pause_context              | request_context_id | {requestContextID} |
-| service_slash              | slashed_coins      | {slashedCoins}     |
-
 ## Handlers
 
 ### MsgDefineService
 
-| Type    | Attribute Key | Attribute Value |
-| ------- | ------------- | --------------- |
-| message | module        | service         |
-| message | sender        | {senderAddress} |
+| Type              | Attribute Key          | Attribute Value |
+| ----------------- | ---------------------- | --------------- |
+| create_definition | service_name           | service         |
+| create_definition | author                 | {senderAddress} |
+| message           | module                 | service         |
+| message           | sender                 | {senderAddress} |
 
 ### MsgBindService
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| create_binding | service_name        | service         |
+| create_binding | provider        | {senderAddress} |
+| create_binding | owner        | {senderAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -36,6 +31,9 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| update_binding | service_name        | service         |
+| update_binding | provider        | {senderAddress} |
+| update_binding | owner        | {senderAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -43,6 +41,9 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| enable_binding | service_name        | service         |
+| enable_binding | provider        | {senderAddress} |
+| enable_binding | owner        | {senderAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -50,6 +51,9 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| enable_binding | service_name        | service         |
+| enable_binding | provider        | {senderAddress} |
+| enable_binding | owner        | {senderAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -64,6 +68,8 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| set_withdraw_address | withdraw_address        | {senderAddress} |
+| set_withdraw_address | owner        | {senderAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
