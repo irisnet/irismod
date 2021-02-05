@@ -70,9 +70,10 @@ func (k Keeper) IssueToken(
 		return err
 	}
 
+	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
 	initialCoin := sdk.NewCoin(
 		token.MinUnit,
-		sdk.NewIntWithDecimal(int64(token.InitialSupply), int(token.Scale)),
+		sdk.NewIntFromUint64(token.InitialSupply).Mul(precision),
 	)
 
 	mintCoins := sdk.NewCoins(initialCoin)
@@ -96,12 +97,10 @@ func (k Keeper) EditToken(
 	owner sdk.AccAddress,
 ) error {
 	// get the destination token
-	tokenI, err := k.GetToken(ctx, symbol)
+	token, err := k.getTokenBySymbol(ctx, symbol)
 	if err != nil {
 		return err
 	}
-
-	token := tokenI.(*types.Token)
 
 	if owner.String() != token.Owner {
 		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", owner, symbol)
@@ -131,7 +130,7 @@ func (k Keeper) EditToken(
 		token.Mintable = mintable.ToBool()
 	}
 
-	k.setToken(ctx, *token)
+	k.setToken(ctx, token)
 
 	return nil
 }
@@ -143,12 +142,10 @@ func (k Keeper) TransferTokenOwner(
 	srcOwner sdk.AccAddress,
 	dstOwner sdk.AccAddress,
 ) error {
-	tokenI, err := k.GetToken(ctx, symbol)
+	token, err := k.getTokenBySymbol(ctx, symbol)
 	if err != nil {
 		return err
 	}
-
-	token := tokenI.(*types.Token)
 
 	if srcOwner.String() != token.Owner {
 		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", srcOwner, symbol)
@@ -157,7 +154,7 @@ func (k Keeper) TransferTokenOwner(
 	token.Owner = dstOwner.String()
 
 	// update token
-	k.setToken(ctx, *token)
+	k.setToken(ctx, token)
 
 	// reset all indices
 	k.resetStoreKeyForQueryToken(ctx, token.Symbol, srcOwner, dstOwner)
@@ -174,12 +171,10 @@ func (k Keeper) MintToken(
 	recipient sdk.AccAddress,
 	owner sdk.AccAddress,
 ) error {
-	tokenI, err := k.GetToken(ctx, symbol)
+	token, err := k.getTokenBySymbol(ctx, symbol)
 	if err != nil {
 		return err
 	}
-
-	token := tokenI.(*types.Token)
 
 	if owner.String() != token.Owner {
 		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", owner, symbol)
@@ -190,22 +185,19 @@ func (k Keeper) MintToken(
 	}
 
 	supply := k.getTokenSupply(ctx, token.MinUnit)
-	maxSupply := token.MaxSupply
+	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
+	mintableAmt := sdk.NewIntFromUint64(token.MaxSupply).Mul(precision).Sub(supply)
+	mintableMainAmt := mintableAmt.Quo(precision).Uint64()
 
-	if maxSupply > 0 {
-		mintableAmt := sdk.NewIntWithDecimal(int64(maxSupply), int(token.Scale)).Sub(supply)
-		mintableMainAmt := uint64(mintableAmt.Quo(sdk.NewIntWithDecimal(1, int(token.Scale))).Int64())
-
-		if amount > mintableMainAmt {
-			return sdkerrors.Wrapf(
-				types.ErrInvalidAmount,
-				"the amount exceeds the mintable token amount; expected (0, %d], got %d",
-				mintableMainAmt, amount,
-			)
-		}
+	if amount > mintableMainAmt {
+		return sdkerrors.Wrapf(
+			types.ErrInvalidAmount,
+			"the amount exceeds the mintable token amount; expected (0, %d], got %d",
+			mintableMainAmt, amount,
+		)
 	}
 
-	mintCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntWithDecimal(int64(amount), int(token.Scale)))
+	mintCoin := sdk.NewCoin(token.MinUnit, sdk.NewIntFromUint64(amount).Mul(precision))
 	mintCoins := sdk.NewCoins(mintCoin)
 
 	// mint coins
@@ -228,12 +220,13 @@ func (k Keeper) BurnToken(
 	amount uint64,
 	owner sdk.AccAddress,
 ) error {
-	token, err := k.GetToken(ctx, symbol)
+	token, err := k.getTokenBySymbol(ctx, symbol)
 	if err != nil {
 		return err
 	}
 
-	burnCoin := sdk.NewCoin(token.GetMinUnit(), sdk.NewIntWithDecimal(int64(amount), int(token.GetScale())))
+	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
+	burnCoin := sdk.NewCoin(token.GetMinUnit(), sdk.NewIntFromUint64(amount).Mul(precision))
 	burnCoins := sdk.NewCoins(burnCoin)
 
 	// burn coins

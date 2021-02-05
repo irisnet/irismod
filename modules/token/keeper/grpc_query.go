@@ -114,8 +114,15 @@ func (k Keeper) Fees(c context.Context, req *types.QueryFeesRequest) (*types.Que
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
-	issueFee := k.GetTokenIssueFee(ctx, req.Symbol)
-	mintFee := k.GetTokenMintFee(ctx, req.Symbol)
+	issueFee, err := k.GetTokenIssueFee(ctx, req.Symbol)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	mintFee, err := k.GetTokenMintFee(ctx, req.Symbol)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
 	return &types.QueryFeesResponse{
 		Exist:    k.HasToken(ctx, req.Symbol),
@@ -135,21 +142,7 @@ func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types
 // TotalBurn return the all burn coin
 func (k Keeper) TotalBurn(c context.Context, req *types.QueryTotalBurnRequest) (*types.QueryTotalBurnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	burnCoins := k.GetAllBurnCoin(ctx)
-
-	coins := make([]sdk.DecCoin, len(burnCoins))
-	for i, coin := range burnCoins {
-		token, err := k.GetToken(ctx, coin.Denom)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
-		}
-
-		mainCoin, err := token.ToMainCoin(coin)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
-		}
-
-		coins[i] = mainCoin
-	}
-	return &types.QueryTotalBurnResponse{BurnedCoins: coins}, nil
+	return &types.QueryTotalBurnResponse{
+		BurnedCoins: k.GetAllBurnCoin(ctx),
+	}, nil
 }
