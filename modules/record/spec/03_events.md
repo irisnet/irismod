@@ -15,5 +15,4 @@ The record module emits the following events:
 | create_record | creator       | {creatorAddress} |
 | create_record | record_id     | {recordId}       |
 | message       | module        | record           |
-| message       | action        | create_validator |
 | message       | sender        | {creatorAddress} |
