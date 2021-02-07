@@ -30,7 +30,7 @@ func ValidateDenomID(denomID string) error {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "the lenght of denom(%s) only accepts value [%d, %d]", denomID, MinDenomLen, MaxDenomLen)
 	}
 	if !IsBeginWithAlpha(denomID) || !IsAlphaNumeric(denomID) {
-		return sdkerrors.Wrapf(ErrInvalidDenom, "%denom(%s) only accepts alphanumeric characters, and begin with an english letter", denomID)
+		return sdkerrors.Wrapf(ErrInvalidDenom, "the denom(%s) only accepts alphanumeric characters, and begin with an english letter", denomID)
 	}
 	return nil
 }
