@@ -212,7 +212,7 @@ func (m msgServer) DisableServiceBinding(goCtx context.Context, msg *types.MsgDi
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeUpdateBinding,
+			types.EventTypeDisableBinding,
 			sdk.NewAttribute(types.AttributeKeyServiceName, msg.ServiceName),
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
 			sdk.NewAttribute(types.AttributeKeyOwner, msg.Owner),
@@ -285,7 +285,7 @@ func (m msgServer) CallService(goCtx context.Context, msg *types.MsgCallService)
 		if reqContextID, err = m.Keeper.CreateRequestContext(
 			ctx, msg.ServiceName, pds, consumer,
 			msg.Input, msg.ServiceFeeCap, msg.Timeout,
-			msg.SuperMode, msg.Repeated, msg.RepeatedFrequency,
+			msg.Repeated, msg.RepeatedFrequency,
 			msg.RepeatedTotal, types.RUNNING, 0, "",
 		); err != nil {
 			return nil, err
@@ -293,7 +293,7 @@ func (m msgServer) CallService(goCtx context.Context, msg *types.MsgCallService)
 	} else {
 		if reqContextID, err = m.Keeper.CreateRequestContext(
 			ctx, msg.ServiceName, []sdk.AccAddress{moduleService.Provider}, consumer,
-			msg.Input, msg.ServiceFeeCap, 1, false, false, 0, 0, types.RUNNING, 0, "",
+			msg.Input, msg.ServiceFeeCap, 1, false, 0, 0, types.RUNNING, 0, "",
 		); err != nil {
 			return nil, err
 		}
