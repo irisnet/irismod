@@ -41,8 +41,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Bug Fixes
 
-* (modules/service)[\#120](https://github.com/irisnet/irismod/pull/120) Fix DisableServiceBinding event type
-* [\#116](https://github.com/irisnet/irismod/pull/116) Adjust ante check logic
+* (modules/service) [\#123](https://github.com/irisnet/irismod/pull/123) Fix the key path for owner service fees.
+* (modules/service) [\#120](https://github.com/irisnet/irismod/pull/120) Fix DisableServiceBinding event type.
+* [\#116](https://github.com/irisnet/irismod/pull/116) Adjust ante check logic.
 * (modules/token) [\#102](https://github.com/irisnet/irismod/issues/102) Return error if token baseFee is not a native token.
 * (modules/token) [\#100](https://github.com/irisnet/irismod/issues/100) Mint&Edit&Burn only accept symbol as denom.
 * (modules/token) [\#99](https://github.com/irisnet/irismod/issues/99) Fix incorrect calculation of deduction amount for burning token.
@@ -50,7 +51,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * [\#111](https://github.com/irisnet/irismod/pull/111) Bump cosmos-sdk version to [v0.41.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0).
-* [\#118](https://github.com/irisnet/irismod/pull/118) Remove super mode from service.
+* (modules/service) [\#118](https://github.com/irisnet/irismod/pull/118) Remove super mode from service.
 * [\#115](https://github.com/irisnet/irismod/pull/115) Normalize key path
 * (modules/oracle) [\#109](https://github.com/irisnet/irismod/pull/109) Adjust oracle FeedName and ValueJsonPath validation.
 * (modules/token) [\#107](https://github.com/irisnet/irismod/issues/107) Use symbol to calculate the default amount of IssueTokenBaseFee.
