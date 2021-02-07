@@ -14,12 +14,12 @@ A token is created using the `MsgIssueToken` message.
 type MsgIssueToken struct {
   Symbol        string
   Name          string
-  Scale         uint8
+  Scale         uint32
   MinUnit       string
   InitialSupply uint64
   MaxSupply     uint64
   Mintable      bool
-  Owner         sdk.AccAddress
+  Owner         string
 }
 ```
 
@@ -53,7 +53,7 @@ The `MaxSupply`, `Mintable` , `Name` of a token can be updated using the
 ```go
 type MsgEditToken struct {
   Symbol    string
-  Owner     sdk.AccAddress
+  Owner     string
   MaxSupply uint64
   Mintable  Bool
   Name      string
@@ -79,8 +79,8 @@ The owner of the token can mint some tokens to the specified account
 ```go
 type MsgMintToken struct {
   Symbol string
-  Owner  sdk.AccAddress
-  To     sdk.AccAddress
+  Owner  string
+  To     string
   Amount uint64
 ```
 
@@ -98,7 +98,7 @@ The owner of the token can mint some tokens to the specified account
 ```go
 type MsgBurnToken struct {
   Symbol string
-  Sender sdk.AccAddress
+  Sender string
   Amount uint64
 ```
 
@@ -113,8 +113,8 @@ The ownership of the `token` can be transferred to others
 
 ```go
 type MsgTransferTokenOwner struct {
-  SrcOwner sdk.AccAddress
-  DstOwner sdk.AccAddress
+  SrcOwner string
+  DstOwner string
   Symbol   string
 }
 ```
