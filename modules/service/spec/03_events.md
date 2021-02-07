@@ -10,20 +10,20 @@ The service module emits the following events:
 
 ### MsgDefineService
 
-| Type              | Attribute Key          | Attribute Value |
-| ----------------- | ---------------------- | --------------- |
-| create_definition | service_name           | service         |
-| create_definition | author                 | {senderAddress} |
-| message           | module                 | service         |
-| message           | sender                 | {senderAddress} |
+| Type              | Attribute Key | Attribute Value |
+| ----------------- | ------------- | --------------- |
+| create_definition | service_name  | {serviceName}   |
+| create_definition | author        | {authorAddress} |
+| message           | module        | service         |
+| message           | sender        | {senderAddress} |
 
 ### MsgBindService
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
-| create_binding | service_name        | service         |
-| create_binding | provider        | {senderAddress} |
-| create_binding | owner        | {senderAddress} |
+| create_binding | service_name        | {serviceName} |
+| create_binding | provider        | {providerAddress} |
+| create_binding | owner        | {ownerAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -31,9 +31,9 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
-| update_binding | service_name        | service         |
-| update_binding | provider        | {senderAddress} |
-| update_binding | owner        | {senderAddress} |
+| update_binding | service_name        | {serviceName} |
+| update_binding | provider        | {providerAddress} |
+| update_binding | owner        | {ownerAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -41,9 +41,9 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
-| enable_binding | service_name        | service         |
-| enable_binding | provider        | {senderAddress} |
-| enable_binding | owner        | {senderAddress} |
+| enable_binding | service_name        | {serviceName} |
+| enable_binding | provider        | {providerAddress} |
+| enable_binding | owner        | {ownerAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -51,9 +51,9 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
-| enable_binding | service_name        | service         |
-| enable_binding | provider        | {senderAddress} |
-| enable_binding | owner        | {senderAddress} |
+| enable_binding | service_name        | {serviceName} |
+| enable_binding | provider        | {providerAddress} |
+| enable_binding | owner        | {ownerAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -61,6 +61,9 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| refund_deposit | service_name        | {serviceName} |
+| refund_deposit | provider        | {providerAddress} |
+| refund_deposit | owner        | {ownerAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -68,8 +71,8 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
-| set_withdraw_address | withdraw_address        | {senderAddress} |
-| set_withdraw_address | owner        | {senderAddress} |
+| set_withdraw_address | withdraw_address        | {withdrawAddress} |
+| set_withdraw_address | owner        | {ownerAddress} |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -78,6 +81,8 @@ The service module emits the following events:
 | Type           | Attribute Key      | Attribute Value    |
 | -------------- | ------------------ | ------------------ |
 | create_context | request_context_id | {requestContextID} |
+| create_context | service_name        | {serviceName} |
+| create_context | consumer        | {consumerAddress} |
 | message        | module             | service            |
 | message        | sender             | {senderAddress}    |
 
@@ -85,7 +90,11 @@ The service module emits the following events:
 
 | Type            | Attribute Key | Attribute Value |
 | --------------- | ------------- | --------------- |
-| respond_service | request_id    | {requestID}     |
+| respond_service | request_context_id    | {requestContextID}     |
+| respond_service | request_id | {requestID} |
+| respond_service | service_name        | {serviceName}   |
+| respond_service | provider        | {providerAddress} |
+| respond_service | consumer    | {consumerAddress}     |
 | message         | module        | service         |
 | message         | sender        | {senderAddress} |
 
@@ -93,6 +102,8 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| update_context | request_context_id        | {requestContextID} |
+| update_context | consumer    | {consumerAddress}     |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -100,6 +111,8 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| pause_context | request_context_id        | {requestContextID} |
+| pause_context | consumer    | {consumerAddress}     |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -107,6 +120,8 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| start_context | request_context_id        | {requestContextID} |
+| start_context | consumer    | {consumerAddress}     |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -114,6 +129,8 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| kill_context | request_context_id        | {requestContextID} |
+| kill_context | consumer    | {consumerAddress}     |
 | message | module        | service         |
 | message | sender        | {senderAddress} |
 
@@ -121,5 +138,7 @@ The service module emits the following events:
 
 | Type    | Attribute Key | Attribute Value |
 | ------- | ------------- | --------------- |
+| withdraw_earned_fees | provider        | {providerAddress} |
+| withdraw_earned_fees | owner    | {ownerAddress}     |
 | message | module        | service         |
 | message | sender        | {senderAddress} |

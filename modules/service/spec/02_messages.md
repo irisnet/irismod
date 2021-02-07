@@ -14,7 +14,7 @@ type MsgDefineService struct {
     Name              string
     Description       string
     Tags              []string
-    Author            sdk.AccAddress
+    Author            string
     AuthorDescription string
     Schemas           string
 }
@@ -52,12 +52,12 @@ An owner can set an address to withdraw fees earned by its providers. The corres
 ```go
 type MsgBindService struct {
     ServiceName string
-    Provider    sdk.AccAddress
+    Provider    string
     Deposit     sdk.Coins
     Pricing     string
     QoS         uint64
     Options     string
-    Owner       sdk.AccAddress
+    Owner       string
 }
 ```
 
@@ -81,12 +81,12 @@ This message is expected to fail if:
 ```go
 type MsgUpdateServiceBinding struct {
     ServiceName string
-    Provider    sdk.AccAddress
+    Provider    string
     Deposit     sdk.Coins
     Pricing     string
     QoS         uint64
     Options     string
-    Owner       sdk.AccAddress
+    Owner       string
 }
 ```
 
@@ -110,8 +110,8 @@ This message is expected to fail if:
 ```go
 type MsgDisableServiceBinding struct {
     ServiceName string
-    Provider    sdk.AccAddress
-    Owner       sdk.AccAddress
+    Provider    string
+    Owner       string
 }
 ```
 
@@ -132,9 +132,9 @@ This message is expected to fail if:
 ```go
 type MsgEnableServiceBinding struct {
     ServiceName string
-    Provider    sdk.AccAddress
+    Provider    string
     Deposit     sdk.Coins
-    Owner       sdk.AccAddress
+    Owner       string
 }
 ```
 
@@ -157,8 +157,8 @@ This message is expected to fail if:
 ```go
 type MsgRefundServiceDeposit struct {
     ServiceName string
-    Provider    sdk.AccAddress
-    Owner       sdk.AccAddress
+    Provider    string
+    Owner       string
 }
 ```
 
@@ -187,8 +187,8 @@ This message is expected to fail if:
 
 ```go
 type MsgSetWithdrawAddress struct {
-    Owner           sdk.AccAddress
-    WithdrawAddress sdk.AccAddress
+    Owner           string
+    WithdrawAddress string
 }
 ```
 
@@ -207,8 +207,8 @@ A consumer can initiate a service invocation via `MsgCallService`, and the targe
 ```go
 type MsgCallService struct {
     ServiceName       string
-    Providers         []sdk.AccAddress
-    Consumer          sdk.AccAddress
+    Providers         []string
+    Consumer          string
     Input             string
     ServiceFeeCap     sdk.Coins
     Timeout           int64
@@ -238,10 +238,10 @@ This message is expected to fail if:
 
 ```go
 type MsgRespondService struct {
-    RequestID tmbytes.HexBytes `json:"request_id"`
-    Provider  sdk.AccAddress   `json:"provider"`
-    Result    string           `json:"result"`
-    Output    string           `json:"output"`
+    RequestID string   `json:"request_id"`
+    Provider  string   `json:"provider"`
+    Result    string   `json:"result"`
+    Output    string   `json:"output"`
 }
 ```
 
@@ -261,13 +261,13 @@ This message is expected to fail if:
 
 ```go
 type MsgUpdateRequestContext struct {
-    RequestContextID  tmbytes.HexBytes
-    Providers         []sdk.AccAddress
+    RequestContextID  string
+    Providers         []string
     ServiceFeeCap     sdk.Coins
     Timeout           int64
     RepeatedFrequency uint64
     RepeatedTotal     int64
-    Consumer          sdk.AccAddress
+    Consumer          string
 }
 ```
 
@@ -291,8 +291,8 @@ This message is expected to fail if:
 
 ```go
 type MsgPauseRequestContext struct {
-    RequestContextID tmbytes.HexBytes
-    Consumer         sdk.AccAddress
+    RequestContextID string
+    Consumer         string
 }
 ```
 
@@ -308,8 +308,8 @@ This message is expected to fail if:
 
 ```go
 type MsgStartRequestContext struct {
-    RequestContextID tmbytes.HexBytes
-    Consumer         sdk.AccAddress
+    RequestContextID string
+    Consumer         string
 }
 ```
 
@@ -325,8 +325,8 @@ This message is expected to fail if:
 
 ```go
 type MsgKillRequestContext struct {
-    RequestContextID tmbytes.HexBytes
-    Consumer         sdk.AccAddress
+    RequestContextID string
+    Consumer         string
 }
 ```
 
@@ -341,8 +341,8 @@ This message is expected to fail if:
 
 ```go
 type MsgWithdrawEarnedFees struct {
-    Owner    sdk.AccAddress
-    Provider sdk.AccAddress
+    Owner    string
+    Provider string
 }
 ```
 
