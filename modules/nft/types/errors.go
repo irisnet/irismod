@@ -15,4 +15,5 @@ var (
 	ErrInvalidDenom      = sdkerrors.Register(ModuleName, 9, "invalid denom")
 	ErrInvalidTokenID    = sdkerrors.Register(ModuleName, 10, "invalid tokenID")
 	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 11, "invalid tokenURI")
+	ErrInvalidDenomName  = sdkerrors.Register(ModuleName, 12, "invalid denom name")
 )

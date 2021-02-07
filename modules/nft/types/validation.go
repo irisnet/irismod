@@ -2,6 +2,7 @@ package types
 
 import (
 	"regexp"
+	"strings"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -30,6 +31,15 @@ func ValidateDenomID(denomID string) error {
 	}
 	if !IsBeginWithAlpha(denomID) || !IsAlphaNumeric(denomID) {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "invalid denom %s, only accepts alphanumeric characters, and begin with an english letter", denomID)
+	}
+	return nil
+}
+
+// ValidateDenomName verifies whether the  parameters are legal
+func ValidateDenomName(denomName string) error {
+	denomName = strings.TrimSpace(denomName)
+	if len(denomName) == 0 {
+		return sdkerrors.Wrapf(ErrInvalidDenomName, "invalid denom %s, can not be space", denomName)
 	}
 	return nil
 }
