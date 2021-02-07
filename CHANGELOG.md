@@ -41,6 +41,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Bug Fixes
 
+* (modules/token) [\#129](https://github.com/irisnet/irismod/pull/129) Fix incorrect calculation for minting token
 * (modules/service) [\#123](https://github.com/irisnet/irismod/pull/123) Fix the key path for owner service fees.
 * (modules/service) [\#120](https://github.com/irisnet/irismod/pull/120) Fix DisableServiceBinding event type.
 * [\#116](https://github.com/irisnet/irismod/pull/116) Adjust ante check logic.
