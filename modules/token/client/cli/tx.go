@@ -106,7 +106,7 @@ func GetCmdIssueToken() *cobra.Command {
 				return err
 			}
 
-			var prompt = "The token issurance transaction will consume extra fee"
+			var prompt = "The token issuance transaction will consume extra fee"
 
 			generateOnly, err := cmd.Flags().GetBool(flags.FlagGenerateOnly)
 			if err != nil {
@@ -116,10 +116,10 @@ func GetCmdIssueToken() *cobra.Command {
 				// query fee
 				fee, err1 := queryTokenFees(clientCtx, msg.Symbol)
 				if err1 != nil {
-					return fmt.Errorf("failed to query token issurance fee: %s", err1.Error())
+					return fmt.Errorf("failed to query token issuance fee: %s", err1.Error())
 				}
 
-				// append issurance fee to prompt
+				// append issuance fee to prompt
 				issueFeeMainUnit := sdk.Coins{fee.IssueFee}.String()
 				prompt += fmt.Sprintf(": %s", issueFeeMainUnit)
 			}
