@@ -72,7 +72,7 @@ func ValidateExactStandardAmt(standardAmt sdk.Int) error {
 	return nil
 }
 
-// ValidateMinLiquidity verifies whether the mininum liquidity is legal
+// ValidateMinLiquidity verifies whether the minimum liquidity is legal
 func ValidateMinLiquidity(minLiquidity sdk.Int) error {
 	if minLiquidity.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "minimum liquidity can not be negative")
