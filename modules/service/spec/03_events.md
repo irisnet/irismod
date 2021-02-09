@@ -6,6 +6,30 @@ order: 3
 
 The service module emits the following events:
 
+## EndBlocker
+
+| Type                       | Attribute Key         | Attribute Value       |
+|:---------------------------|:----------------------|:----------------------|
+| new_batch                  | request_context_id    | {requestContextID}    |
+| new_batch                  | request_context_state | {requestContextState} |
+| new_batch_request_provider | service_name          | {serviceName}         |
+| new_batch_request_provider | provider              | {providerAddress}     |
+| new_batch_request_provider | requests              | {requests}            |
+| new_batch_request          | service_name          | {serviceName}         |
+| new_batch_request          | request_context_id    | {requestContextID}    |
+| new_batch_request          | requests              | {requests}            |
+| complete_batch             | request_context_id    | {requestContextID}    |
+| complete_batch             | request_context_state | {requestContextState} |
+| service_slash              | slashed_coins         | {slashedCoins}        |
+| service_slash              | provider              | {providerAddress}     |
+| service_slash              | requests              | {requests}            |
+| pause_context              | request_context_id    | {requestContextID}    |
+| complete_context           | request_context_id    | {requestContextID}    |
+| no_exchange_rate           | price_denom           | {priceDenom}          |
+| no_exchange_rate           | request_context_id    | {requestContextID}    |
+| no_exchange_rate           | service_name          | {serviceName}         |
+| no_exchange_rate           | consumer              | {consumerAddress}     |
+
 ## Handlers
 
 ### MsgDefineService
@@ -39,13 +63,13 @@ The service module emits the following events:
 
 ### MsgDisableServiceBinding
 
-| Type           | Attribute Key | Attribute Value   |
-|:---------------|:--------------|:------------------|
-| enable_binding | service_name  | {serviceName}     |
-| enable_binding | provider      | {providerAddress} |
-| enable_binding | owner         | {ownerAddress}    |
-| message        | module        | service           |
-| message        | sender        | {senderAddress}   |
+| Type            | Attribute Key | Attribute Value   |
+|:----------------|:--------------|:------------------|
+| disable_binding | service_name  | {serviceName}     |
+| disable_binding | provider      | {providerAddress} |
+| disable_binding | owner         | {ownerAddress}    |
+| message         | module        | service           |
+| message         | sender        | {senderAddress}   |
 
 ### MsgEnableServiceBinding
 

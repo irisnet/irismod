@@ -79,7 +79,6 @@ type RequestContext struct {
     BatchResponseCount     uint32                   // response count for the current batch
     BatchResponseThreshold uint32                   // response threshold for the current batch
     ResponseThreshold      uint32                   // initial response threshold for the request context
-    SuperMode              bool                     // indicate if the initiator is a super user
     Repeated               bool                     // indicate if the request context is repetitive
     BatchState             RequestContextBatchState // state for the current batch
     State                  RequestContextState      // state for the request context
