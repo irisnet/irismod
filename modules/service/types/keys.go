@@ -163,13 +163,13 @@ func GetRequestSubspaceByReqCtx(requestContextID []byte, batchCounter uint64) []
 
 // GetActiveRequestKey returns the key for the active request with the specified request ID in the given height
 func GetActiveRequestKey(serviceName string, provider sdk.AccAddress, expirationHeight int64, requestID []byte) []byte {
-	activeRequest := append(append(getStringsKey([]string{serviceName, provider.String()}), sdk.Uint64ToBigEndian(uint64(expirationHeight))...), requestID...)
+	activeRequest := append(append(append(getStringsKey([]string{serviceName, provider.String()}), Delimiter...), sdk.Uint64ToBigEndian(uint64(expirationHeight))...), requestID...)
 	return append(ActiveRequestKey, activeRequest...)
 }
 
 // GetActiveRequestSubspace returns the key prefix for iterating through the active requests for the specified provider
 func GetActiveRequestSubspace(serviceName string, provider sdk.AccAddress) []byte {
-	return append(ActiveRequestKey, getStringsKey([]string{serviceName, provider.String()})...)
+	return append(append(ActiveRequestKey, getStringsKey([]string{serviceName, provider.String()})...), Delimiter...)
 }
 
 // GetActiveRequestKeyByID returns the key for the active request with the specified request ID
@@ -212,7 +212,7 @@ func GetOwnerEarnedFeesKey(owner sdk.AccAddress, denom string) []byte {
 	return append(append(OwnerEarnedFeesKey, owner.Bytes()...), []byte(denom)...)
 }
 
-// GetOwnerEarnedFeesSubspace gets the subspace for the earned fees of the specified provider
+// GetOwnerEarnedFeesSubspace gets the subspace for the earned fees of the specified owner
 func GetOwnerEarnedFeesSubspace(owner sdk.AccAddress) []byte {
 	return append(OwnerEarnedFeesKey, owner.Bytes()...)
 }
