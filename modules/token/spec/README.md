@@ -17,12 +17,11 @@ This specification describes the management of Fungible Token on the chain, Anyo
     - [Token](01_state.md#token)
     - [Params](01_state.md#params)
 2. **[Messages](02_messages.md)**
-    - [MsgIssueToken](02_messages.md#msgIssueToken)
-    - [MsgEditToken](02_messages.md#msgEditToken)
-    - [MsgMintToken](02_messages.md#msgMintToken)
-    - [MsgBurnToken](02_messages.md#msgBurnToken)
-    - [MsgTransferTokenOwner](02_messages.md#msgTransferTokenOwner)
-    - [MsgBeginRedelegate](02_messages.md#msgbeginredelegate)
+    - [MsgIssueToken](02_messages.md#msgissuetoken)
+    - [MsgEditToken](02_messages.md#msgedittoken)
+    - [MsgMintToken](02_messages.md#msgminttoken)
+    - [MsgBurnToken](02_messages.md#msgburntoken)
+    - [MsgTransferTokenOwner](02_messages.md#msgtransfertokenowner)
 3. **[Events](03_events.md)**
     - [Handlers](03_events.md#handlers)
 4. **[Parameters](04_params.md)**
