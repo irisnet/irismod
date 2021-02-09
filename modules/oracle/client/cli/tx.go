@@ -21,7 +21,7 @@ import (
 func NewTxCmd() *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "oracle transaction subcommands",
+		Short:                      "Oracle transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -177,7 +177,7 @@ func GetCmdCreateFeed() *cobra.Command {
 	return cmd
 }
 
-// GetCmdStartFeed implements start a feed command
+// GetCmdStartFeed implements starting a feed command
 func GetCmdStartFeed() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start [feed-name]",
@@ -210,7 +210,7 @@ func GetCmdStartFeed() *cobra.Command {
 	return cmd
 }
 
-// GetCmdPauseFeed implements pause a running feed command
+// GetCmdPauseFeed implements pausing a running feed command
 func GetCmdPauseFeed() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pause [feed-name]",
@@ -243,21 +243,21 @@ func GetCmdPauseFeed() *cobra.Command {
 	return cmd
 }
 
-// GetCmdEditFeed implements edit a feed command
+// GetCmdEditFeed implements editing a feed command
 func GetCmdEditFeed() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "edit [feed-name]",
 		Short: "Modify the feed information and update service invocation parameters by feed creator.",
 		Args:  cobra.ExactArgs(1),
 		Example: fmt.Sprintf(
-			`%s tx oracle edit <feed-name> --chain-id=<chain-id> --from=<key-name> --fees=0.3iris ` +
-				`--latest-history=10 ` +
-				`--providers=<provide1_address>,<provider2_address> ` +
-				`--service-fee-cap=1iris ` +
-				`--timeout=2 ` +
-				`--frequency=10 ` +
+			`%s tx oracle edit <feed-name> --chain-id=<chain-id> --from=<key-name> --fees=0.3iris `+
+				`--latest-history=10 `+
+				`--providers=<provide1_address>,<provider2_address> `+
+				`--service-fee-cap=1iris `+
+				`--timeout=2 `+
+				`--frequency=10 `+
 				`--threshold=5 `,
-				version.AppName,
+			version.AppName,
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

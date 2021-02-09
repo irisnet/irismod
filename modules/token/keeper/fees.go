@@ -36,7 +36,7 @@ func (k Keeper) DeductMintTokenFee(ctx sdk.Context, owner sdk.AccAddress, symbol
 	return feeHandler(ctx, k, owner, fee)
 }
 
-// GetTokenIssueFee returns the token issurance fee
+// GetTokenIssueFee returns the token issuance fee
 func (k Keeper) GetTokenIssueFee(ctx sdk.Context, symbol string) (sdk.Coin, error) {
 	fee, _ := k.calcTokenIssueFee(ctx, symbol)
 	token, err := k.GetToken(ctx, fee.Denom)
@@ -54,8 +54,8 @@ func (k Keeper) GetTokenMintFee(ctx sdk.Context, symbol string) (sdk.Coin, error
 		return sdk.Coin{}, err
 	}
 
-	mintFee := sdk.NewDecFromInt(fee.Amount).Mul(params.MintTokenFeeRatio)
-	return token.ToMinCoin(sdk.NewDecCoinFromDec(params.IssueTokenBaseFee.Denom, mintFee))
+	mintFee := sdk.NewDecFromInt(fee.Amount).Mul(params.MintTokenFeeRatio).TruncateInt()
+	return token.ToMinCoin(sdk.NewDecCoinFromDec(params.IssueTokenBaseFee.Denom, sdk.NewDecFromInt(mintFee)))
 }
 
 func (k Keeper) calcTokenIssueFee(ctx sdk.Context, symbol string) (sdk.Coin, types.Params) {

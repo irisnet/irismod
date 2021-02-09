@@ -45,7 +45,7 @@ func ValidateServiceName(name string) error {
 	return nil
 }
 
-// ValidateTags verifies whether the  parameters are legal
+// ValidateTags verifies whether the given tags are legal
 func ValidateTags(tags []string) error {
 	if len(tags) > MaxTagsNum {
 		return sdkerrors.Wrap(ErrInvalidTags, fmt.Sprintf("invalid tags size; got: %d, max: %d", len(tags), MaxTagsNum))
@@ -55,7 +55,7 @@ func ValidateTags(tags []string) error {
 	}
 	for i, tag := range tags {
 		if !regexpTag.MatchString(tag) {
-			return sdkerrors.Wrapf(ErrInvalidTags, "invalid tag[%d], must match regexp: %s", i, regexpTag.String())
+			return sdkerrors.Wrapf(ErrInvalidTags, "tag [%d] is invalid, must match regexp: %s", i, regexpTag.String())
 		}
 	}
 	return nil
