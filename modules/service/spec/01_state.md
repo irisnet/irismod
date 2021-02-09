@@ -24,7 +24,7 @@ type Params struct {
 
 Parameters are stored in a global GlobalParams KVStore.
 
-## Service Definition
+## ServiceDefinition
 
 `ServiceDefinition` represents a service definiton object
 
@@ -33,13 +33,13 @@ type ServiceDefinition struct {
     Name              string         // service name
     Description       string         // service description
     Tags              []string       // service tags
-    Author            sdk.AccAddress // service creator
+    Author            string         // service creator
     AuthorDescription string         // author description
     Schemas           string         // service interface schemas
 }
 ```
 
-## Service Binding
+## ServiceBinding
 
 `ServiceBinding` is intended for storing the service binding
 
@@ -57,7 +57,7 @@ type ServiceBinding struct {
 }
 ```
 
-## Service Invocation
+## ServiceInvocation
 
 The `RequestContext` object represents a basic context in which the requests are initiated.
 

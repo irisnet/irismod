@@ -2,7 +2,7 @@
 order: 0
 title: Service Overview
 parent:
-  title: "Service"
+title: "Service"
 -->
 
 # `service`
@@ -14,26 +14,25 @@ The service module implements the IRIS Service model, which bridges the gap betw
 ## Contents
 
 1. **[State](01_state.md)**
-    - [ServiceDefinition](01_state.md#servicedefinition)
-    - [ServiceBinding](01_state.md#servicebinding)
-    - [ServiceInvocation](01_state.md#serviceinvocation)
-    - [Params](01_state.md#parameters)
+   - [ServiceDefinition](01_state.md#servicedefinition)
+   - [ServiceBinding](01_state.md#servicebinding)
+   - [ServiceInvocation](01_state.md#serviceinvocation)
+   - [Params](01_state.md#parameters)
 2. **[Messages](02_messages.md)**
-    - [MsgDefineService](02_messages.md#MsgDefineService)
-    - [MsgBindService](02_messages.md#MsgBindService)
-    - [MsgUpdateServiceBinding](02_messages.md#MsgUpdateServiceBinding)
-    - [MsgDiableServiceBinding](02_messages.md#MsgDiableServiceBinding)
-    - [MsgEnableServiceBinding](02_messages.md#MsgEnableServiceBinding)
-    - [MsgRefundServiceDeposit](02_messages.md#MsgRefundServiceDeposit)
-    - [MsgSetWithdrawAddress](02_messages.md#MsgSetWithdrawAddress)
-    - [MsgCallService](02_messages.md#MsgCallService)
-    - [MsgRespondService](02_messages.md#MsgRespondService)
-    - [MsgUpdateRequestContext](02_messages.md#MsgUpdateRequestContext)
-    - [MsgPauseRequestContext](02_messages.md#MsgPauseRequestContext)
-    - [MsgStartRequestContext](02_messages.md#MsgStartRequestContext)
-    - [MsgKillRequestContext](02_messages.md#MsgKillRequestContext)
-    - [MsgWithdrawEarnedFees](02_messages.md#MsgWithdrawEarnedFees)
+   - [MsgDefineService](02_messages.md#msgdefineservice)
+   - [MsgBindService](02_messages.md#msgbindservice)
+   - [MsgUpdateServiceBinding](02_messages.md#msgupdateservicebinding)
+   - [MsgDiableServiceBinding](02_messages.md#msgdisableservicebinding)
+   - [MsgEnableServiceBinding](02_messages.md#msgenableservicebinding)
+   - [MsgRefundServiceDeposit](02_messages.md#msgrefundservicedeposit)
+   - [MsgSetWithdrawAddress](02_messages.md#msgsetwithdrawaddress)
+   - [MsgCallService](02_messages.md#msgcallservice)
+   - [MsgRespondService](02_messages.md#msgrespondservice)
+   - [MsgUpdateRequestContext](02_messages.md#msgupdaterequestcontext)
+   - [MsgPauseRequestContext](02_messages.md#msgpauserequestcontext)
+   - [MsgStartRequestContext](02_messages.md#msgstartrequestcontext)
+   - [MsgKillRequestContext](02_messages.md#msgkillrequestcontext)
+   - [MsgWithdrawEarnedFees](02_messages.md#msgwithdrawearnedfees)
 3. **[Events](03_events.md)**
-    - [EndBlocker](03_events.md#handlers)
-    - [Handlers](03_events.md#handlers)
+   - [Handlers](03_events.md#handlers)
 4. **[Parameters](04_params.md)**

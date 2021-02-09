@@ -4,7 +4,7 @@ order: 2
 
 # Messages
 
-## Service Definition
+## MsgDefineService
 
 The service definition can be created by any user via a `MsgDefineService`
 message.
@@ -41,13 +41,9 @@ This message is expected to fail if:
   - contains the input and output object which are both valid JSON Schema
 - the service definition with the `Name` already exists
 
-## Service Binding
+## MsgBindService
 
-Any user who wants to provide a service can create a service binding via `MsgBindService`. Later, the service binding can be updated via `MsgUpdateServiceBinding`, diabled via `MsgDisableServiceBinding`, and enabled via `MsgEnableServiceBinding`.
-
-The owner can refund deposit from an unavailable service binding after a period of time since disabled. The operation is via `MsgRefundServiceDeposit`
-
-An owner can set an address to withdraw fees earned by its providers. The corresponding message is `MsgSetWithdrawAddress`
+Any user who wants to provide a service can create a service binding via `MsgBindService`.
 
 ```go
 type MsgBindService struct {
@@ -78,6 +74,10 @@ This message is expected to fail if:
 - the service definition with the `ServiceName` does not exist
 - the service binding with the `ServiceName` and `Provider` already exists
 
+## MsgUpdateServiceBinding
+
+The service binding can be updated via `MsgUpdateServiceBinding`
+
 ```go
 type MsgUpdateServiceBinding struct {
     ServiceName string
@@ -107,6 +107,10 @@ This message is expected to fail if:
 - the service binding with the `ServiceName` and `Provider` does not exist
 - owner of the servic binding is not `Owner`
 
+## MsgDisableServiceBinding
+
+The service binding can be diabled via `MsgDisableServiceBinding`
+
 ```go
 type MsgDisableServiceBinding struct {
     ServiceName string
@@ -128,6 +132,10 @@ This message is expected to fail if:
 - the service binding with the `ServiceName` and `Provider` does not exist
 - owner of the servic binding is not `Owner`
 - the service binding is unvailable
+
+## MsgEnableServiceBinding
+
+The service binding can be enabled via `MsgEnableServiceBinding`
 
 ```go
 type MsgEnableServiceBinding struct {
@@ -154,6 +162,10 @@ This message is expected to fail if:
 - owner of the servic binding is not `Owner`
 - the service binding is available
 
+## MsgRefundServiceDeposit
+
+The owner can refund deposit from an unavailable service binding after a period of time since disabled. The operation is via `MsgRefundServiceDeposit`
+
 ```go
 type MsgRefundServiceDeposit struct {
     ServiceName string
@@ -178,12 +190,9 @@ This message is expected to fail if:
 - the deposit is zero
 - the block time is earlier than the refundable time
 
-This message is expected to fail if:
+## MsgSetWithdrawAddress
 
-- `ServiceName` does not satisfy the following:
-  - begins with alphabetic charactors
-  - consists of only alphanumerics, - and _
-  - length ranges in (0,70]
+An owner can set an address to withdraw fees earned by its providers. The corresponding message is `MsgSetWithdrawAddress`
 
 ```go
 type MsgSetWithdrawAddress struct {
@@ -200,9 +209,9 @@ This message is expected to fail if:
 
 - `WithdrawAddress` is empty
 
-## Service Invocation
+## MsgCallService
 
-A consumer can initiate a service invocation via `MsgCallService`, and the targeting provider can respond to the request via `MsgRespondService`. After invocation, the consumer can update the created request context via `MsgUpdateRequestContext`. The request context can be paused via `MsgPauseRequestContext`, started via `MsgStartRequestContext`, terminated via `MsgKillReqeustContext` as well. The owner of the provider can withdraw the earned fees via `MsgWithdrawEarnedFees`
+A consumer can initiate a service invocation via `MsgCallService`.
 
 ```go
 type MsgCallService struct {
@@ -235,6 +244,10 @@ This message is expected to fail if:
 - `RepeatedFrequency` is less than `Timeout` if `Repeated` is true
 - `RepeatedTotal` is less than -1 if `Repeated` is true
 
+## MsgRespondService
+
+The targeting provider can respond to the request via `MsgRespondService`
+
 ```go
 type MsgRespondService struct {
     RequestID string   `json:"request_id"`
@@ -257,6 +270,10 @@ This message is expected to fail if:
 - `Result` does not conform to the result schema
 - `Output` is not provided if the `Result` code is 200
 - `Output` does not conform to the service output schema when required
+
+## MsgUpdateRequestContext
+
+After invocation, the consumer can update the created request context via `MsgUpdateRequestContext`.
 
 ```go
 type MsgUpdateRequestContext struct {
@@ -288,6 +305,10 @@ This message is expected to fail if:
 - `RepeatedFrequency` is less than the timeout if non zero
 - `RepeatedTotal` is less than -1 if non zero
 
+## MsgPauseRequestContext
+
+The request context can be paused via `MsgPauseRequestContext`
+
 ```go
 type MsgPauseRequestContext struct {
     RequestContextID string
@@ -304,6 +325,10 @@ This message is expected to fail if:
 - `RequestContextID` is invalid
 - the request context does not exist
 - the request context is not running
+
+## MsgStartRequestContext
+
+The request context can be started via `MsgStartRequestContext`
 
 ```go
 type MsgStartRequestContext struct {
@@ -322,6 +347,10 @@ This message is expected to fail if:
 - the request context does not exist
 - the request context is not paused
 
+## MsgKillRequestContext
+
+The request context can be terminated via `MsgKillReqeustContext`
+
 ```go
 type MsgKillRequestContext struct {
     RequestContextID string
@@ -337,6 +366,10 @@ This message is expected to fail if:
 
 - `RequestContextID` is invalid
 - the request context does not exist
+
+## MsgWithdrawEarnedFees
+
+The owner of the provider can withdraw the earned fees via `MsgWithdrawEarnedFees`
 
 ```go
 type MsgWithdrawEarnedFees struct {
