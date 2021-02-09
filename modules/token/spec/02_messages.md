@@ -4,7 +4,8 @@ order: 2
 
 # Messages
 
-In this section we describe the processing of the token messages and the corresponding updates to the state.
+In this section we describe the processing of the token messages and the
+corresponding updates to the state.
 
 ## MsgIssueToken
 
@@ -43,12 +44,13 @@ This message is expected to fail if:
 - the `InitialSupply` is greater than `100000000000`
 - the `MaxSupply` > `1000000000000` or `MaxSupply` < `InitialSupply`
 
-This message creates and stores the `Token` object at appropriate indexes.
+This message creates and stores the `Token` object at appropriate
+indexes.
 
 ## MsgEditToken
 
 The `MaxSupply`, `Mintable` , `Name` of a token can be updated using the
-`MsgEditToken`.  
+`MsgEditToken`.
 
 ```go
 type MsgEditToken struct {
@@ -89,7 +91,8 @@ This message is expected to fail if:
 - the `Symbol` is not existed
 - the `Mintable` of the token is false
 - the `Owner` is not the token owner
-- the `Amount` `Coin` has exceeded the number of additional issuances（**MaxSupply - Issued**）
+- the `Amount` `Coin` has exceeded the number of additional
+  issuances（**MaxSupply - Issued**）
 
 ## MsgBurnToken
 
@@ -123,3 +126,4 @@ This message is expected to fail if:
 
 - the token is not existed
 - the `Owner` is not the token owner
+

@@ -25,8 +25,8 @@ type Token struct {
 
 ## Params
 
-Params is a module-wide configuration structure that stores system parameters
-and defines overall functioning of the token module.
+Params is a module-wide configuration structure that stores system
+parameters and defines overall functioning of the token module.
 
 - Params: `Paramsspace("token") -> amino(params)`
 
@@ -37,3 +37,4 @@ type Params struct {
   MintTokenFeeRatio sdk.Dec
 }
 ```
+
