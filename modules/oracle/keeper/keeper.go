@@ -19,7 +19,7 @@ import (
 	serviceexported "github.com/irisnet/irismod/modules/service/exported"
 )
 
-// Keeper define a struct for oracle keeper
+// Keeper defines a struct for the oracle keeper
 type Keeper struct {
 	cdc        codec.Marshaler
 	storeKey   sdk.StoreKey
@@ -27,7 +27,7 @@ type Keeper struct {
 	paramSpace paramtypes.Subspace
 }
 
-// NewKeeper return a instance of oracle Keeper
+// NewKeeper returns an instance of the oracle Keeper
 func NewKeeper(
 	cdc codec.Marshaler,
 	storeKey sdk.StoreKey,
@@ -55,7 +55,7 @@ func NewKeeper(
 	return keeper
 }
 
-// CreateFeed create a stopped feed
+// CreateFeed creates a stopped feed
 func (k Keeper) CreateFeed(ctx sdk.Context, msg *types.MsgCreateFeed) error {
 	if _, found := k.GetFeed(ctx, msg.FeedName); found {
 		return sdkerrors.Wrapf(types.ErrExistedFeedName, msg.FeedName)
@@ -101,7 +101,7 @@ func (k Keeper) CreateFeed(ctx sdk.Context, msg *types.MsgCreateFeed) error {
 	return nil
 }
 
-// StartFeed start a stopped feed
+// StartFeed starts a stopped feed
 func (k Keeper) StartFeed(ctx sdk.Context, msg *types.MsgStartFeed) error {
 	feed, found := k.GetFeed(ctx, msg.FeedName)
 	if !found {
@@ -133,7 +133,7 @@ func (k Keeper) StartFeed(ctx sdk.Context, msg *types.MsgStartFeed) error {
 	return nil
 }
 
-// PauseFeed pause a running feed
+// PauseFeed pauses a running feed
 func (k Keeper) PauseFeed(ctx sdk.Context, msg *types.MsgPauseFeed) error {
 	feed, found := k.GetFeed(ctx, msg.FeedName)
 	if !found {
@@ -165,7 +165,7 @@ func (k Keeper) PauseFeed(ctx sdk.Context, msg *types.MsgPauseFeed) error {
 	return nil
 }
 
-// EditFeed edit a feed
+// EditFeed edits a feed
 func (k Keeper) EditFeed(ctx sdk.Context, msg *types.MsgEditFeed) error {
 	feed, found := k.GetFeed(ctx, msg.FeedName)
 	if !found {
@@ -215,8 +215,8 @@ func (k Keeper) EditFeed(ctx sdk.Context, msg *types.MsgEditFeed) error {
 	return nil
 }
 
-// HandlerResponse is responsible for processing the data returned from the servicetypes module,
-// processed by the aggregate function, and then saved
+// HandlerResponse is responsible for processing the data returned from the service module,
+// processed by the aggregation function, and then saved
 func (k Keeper) HandlerResponse(
 	ctx sdk.Context,
 	requestContextID tmbytes.HexBytes,
@@ -224,7 +224,7 @@ func (k Keeper) HandlerResponse(
 	err error,
 ) {
 	if len(responseOutput) == 0 || err != nil {
-		ctx.Logger().Error(
+		ctx.Logger().Info(
 			"Oracle feed failed",
 			"requestContextID", requestContextID.String(),
 			"err", err.Error(),
