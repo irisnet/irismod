@@ -9,7 +9,12 @@ title: "Service"
 
 ## Abstract
 
-The service module implements the IRIS Service model, which bridges the gap between the blockchain world and the conventional application world. It formalizes off-chain service definition and binding (provider registration), facilitates invocation and interaction with those services, and mediates service governance process (profiling and dispute resolution).
+The service module implements the IRIS Service model, which bridges the
+gap between the blockchain world and the conventional application world.
+It formalizes off-chain service definition and binding (provider
+registration), facilitates invocation and interaction with those
+services, and mediates service governance process (profiling and dispute
+resolution).
 
 ## Contents
 
@@ -36,3 +41,4 @@ The service module implements the IRIS Service model, which bridges the gap betw
 3. **[Events](03_events.md)**
    - [Handlers](03_events.md#handlers)
 4. **[Parameters](04_params.md)**
+

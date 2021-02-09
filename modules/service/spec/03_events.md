@@ -142,3 +142,4 @@ The service module emits the following events:
 | withdraw_earned_fees | owner         | {ownerAddress}    |
 | message              | module        | service           |
 | message              | sender        | {senderAddress}   |
+
