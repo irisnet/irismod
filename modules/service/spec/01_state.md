@@ -6,7 +6,7 @@ order: 1
 
 ## Parameters
 
-`Parameters` define the rules on which the service module depends to guarantee the interaction between the consumer and provider.
+`Params` defines the rules on which the service module depends to guarantee the interaction between the consumer and provider.
 
 ```go
 type Params struct {
@@ -59,7 +59,7 @@ type ServiceBinding struct {
 
 ## ServiceInvocation
 
-The `RequestContext` object represents a basic context in which the requests are initiated.
+`RequestContext` represents a basic context in which the requests are initiated.
 
 ```go
 type RequestContext struct {

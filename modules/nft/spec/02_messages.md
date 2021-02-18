@@ -13,10 +13,10 @@ This message defines a type of nft, there can be multiple nft of the same type
 
 ```go
 type MsgIssueDenom struct {
-    Id     string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-    Name   string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-    Schema string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
-    Sender string `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
+    Id     string
+    Name   string
+    Schema string
+    Sender string
 }
 ```
 
@@ -37,13 +37,13 @@ This is the most commonly expected MsgType to be supported across chains. While 
 ```go
 // MsgTransferNFT defines an SDK message for transferring an NFT to recipient.
 type MsgTransferNFT struct {
-    Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-    DenomId   string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-    Name      string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-    URI       string `protobuf:"bytes,4,opt,name=uri,proto3" json:"uri,omitempty"`
-    Data      string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-    Sender    string `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
-    Recipient string `protobuf:"bytes,7,opt,name=recipient,proto3" json:"recipient,omitempty"`
+    Id        string
+    DenomId   string
+    Name      string
+    URI       string
+    Data      string
+    Sender    string
+    Recipient string
 }
 ```
 
@@ -63,12 +63,12 @@ This message type allows the `TokenURI` to be updated. By default anyone can exe
 ```go
 // MsgEditNFT defines an SDK message for editing a nft.
 type MsgEditNFT struct {
-    Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-    DenomId string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-    Name    string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-    URI     string `protobuf:"bytes,4,opt,name=uri,proto3" json:"uri,omitempty"`
-    Data    string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-    Sender  string `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
+    Id      string
+    DenomId string
+    Name    string
+    URI     string
+    Data    string
+    Sender  string
 }
 ```
 
@@ -78,7 +78,7 @@ This message type is used for minting new tokens. If a new `NFT` is minted under
 
 | **Field** | **Type** | **Description**                                                                            |
 | :-------- | :------- | :----------------------------------------------------------------------------------------- |
-| ID        | `string` | The unique ID of the NFT being minted                                                      |
+| Id        | `string` | The unique ID of the NFT being minted                                                      |
 | DenomId   | `string` | The unique ID of the denomination.                                                         |
 | Name      | `string` | The name of the NFT being minted.                                                          |
 | URI       | `string` | The URI pointing to a JSON object that contains subsequent tokenData information off-chain |
@@ -89,13 +89,13 @@ This message type is used for minting new tokens. If a new `NFT` is minted under
 ```go
 // MsgMintNFT defines an SDK message for creating a new NFT.
 type MsgMintNFT struct {
-    Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-    DenomId   string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-    Name      string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-    URI       string `protobuf:"bytes,4,opt,name=uri,proto3" json:"uri,omitempty"`
-    Data      string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-    Sender    string `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
-    Recipient string `protobuf:"bytes,7,opt,name=recipient,proto3" json:"recipient,omitempty"`
+    Id        string
+    DenomId   string
+    Name      string
+    URI       string
+    Data      string
+    Sender    string
+    Recipient string
 }
 ```
 
@@ -105,15 +105,15 @@ This message type is used for burning tokens which destroys and deletes them. By
 
 | **Field** | **Type** | **Description**                                    |
 | :-------- | :------- | :------------------------------------------------- |
-| ID        | `string` | The ID of the Token.                               |
-| DenomId   | `string` | The Denom of the Token.                            |
+| Id        | `string` | The ID of the Token.                               |
+| DenomId   | `string` | The Denom ID of the Token.                         |
 | Sender    | `string` | The account address of the user burning the token. |
 
 ```go
 // MsgBurnNFT defines an SDK message for burning a NFT.
 type MsgBurnNFT struct {
-    Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-    DenomId string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-    Sender  string `protobuf:"bytes,3,opt,name=sender,proto3" json:"sender,omitempty"`
+    Id      string
+    DenomId string
+    Sender  string
 }
 ```

@@ -34,5 +34,6 @@ The service module implements the IRIS Service model, which bridges the gap betw
    - [MsgKillRequestContext](02_messages.md#msgkillrequestcontext)
    - [MsgWithdrawEarnedFees](02_messages.md#msgwithdrawearnedfees)
 1. **[Events](03_events.md)**
+   - [EndBlocker](03_events.md#endblocker)
    - [Handlers](03_events.md#handlers)
 1. **[Parameters](04_params.md)**

@@ -4,8 +4,6 @@ order: 2
 
 # Messages
 
-In this section we describe the processing of the record messages and the corresponding updates to the state.
-
 ## MsgCreateRecord
 
 A record is created using the `MsgCreateRecord` message.

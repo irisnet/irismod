@@ -6,7 +6,7 @@ order: 3
 
 The record module emits the following events:
 
-## handlers
+## Handlers
 
 ### MsgCreateRecord
 
