@@ -6,8 +6,7 @@ order: 1
 
 ## Parameters
 
-`Parameters` define the rules on which the service module depends to
-guarantee the interaction between the consumer and provider.
+`Parameters` define the rules on which the service module depends to guarantee the interaction between the consumer and provider.
 
 ```go
 type Params struct {
@@ -60,8 +59,7 @@ type ServiceBinding struct {
 
 ## ServiceInvocation
 
-The `RequestContext` object represents a basic context in which the
-requests are initiated.
+The `RequestContext` object represents a basic context in which the requests are initiated.
 
 ```go
 type RequestContext struct {
@@ -85,31 +83,29 @@ type RequestContext struct {
 }
 ```
 
-`CompactRequest` is used to store the compact request which contains the
-ID of the request context to which the request belongs.
+`CompactRequest` is used to store the compact request which contains the ID of the request context to which the request belongs.
 
 ```go
 type CompactRequest struct {
-    RequestContextId           string  // ID of the request context from which the request is initiated
-    RequestContextBatchCounter uint64            // the batch number of the request
-    Provider                   string    // provider address
-    ServiceFee                 sdk.Coins         // service fee
-    RequestHeight              int64             // block number at which the request is initiated
-  	ExpirationHeight           int64             // block number at which the request is expired
+    RequestContextId           string       // ID of the request context from which the request is initiated
+    RequestContextBatchCounter uint64       // the batch number of the request
+    Provider                   string       // provider address
+    ServiceFee                 sdk.Coins    // service fee
+    RequestHeight              int64        // block number at which the request is initiated
+    ExpirationHeight           int64        // block number at which the request is expired
 }
 ```
 
-`Response` is an object which is a response to a request targeting the
-provider
+`Response` is an object which is a response to a request targeting the provider
 
 ```go
 type Response struct {
-    Provider                   string            // provicer address
-    Consumer                   string            // consumer address
-    Result                     string            // response result according with the result schema
-    Output                     string           // response output according with the service output schema
-    RequestContextID           string            // ID of the request context to which the response belongs
-    RequestContextBatchCounter uint64           // the batch number of the response
+    Provider                   string   // provicer address
+    Consumer                   string   // consumer address
+    Result                     string   // response result according with the result schema
+    Output                     string   // response output according with the service output schema
+    RequestContextID           string   // ID of the request context to which the response belongs
+    RequestContextBatchCounter uint64   // the batch number of the response
 }
 ```
 
@@ -117,11 +113,7 @@ type Response struct {
 
 _Stores are KVStores in the multi-store.
 
-For pseudocode purposes, here are the two function we will use to read
-or write in stores:
+For pseudocode purposes, here are the two function we will use to read or write in stores:
 
-- `load(StoreKey, Key)`: Retrieve item stored at key `Key` in store
-  found at key `StoreKey` in the multistore
-- `store(StoreKey, Key, value)`: Write value `Value` at key `Key` in
-  store found at key `StoreKey` in the multistore
-
+- `load(StoreKey, Key)`: Retrieve item stored at key `Key` in store found at key `StoreKey` in the multistore
+- `store(StoreKey, Key, value)`: Write value `Value` at key `Key` in store found at key `StoreKey` in the multistore

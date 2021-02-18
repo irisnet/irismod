@@ -4,8 +4,7 @@ order: 2
 
 # Messages
 
-In this section we describe the processing of the token messages and the
-corresponding updates to the state.
+In this section we describe the processing of the token messages and the corresponding updates to the state.
 
 ## MsgIssueToken
 
@@ -13,14 +12,14 @@ A token is created using the `MsgIssueToken` message.
 
 ```go
 type MsgIssueToken struct {
-  Symbol        string
-  Name          string
-  Scale         uint32
-  MinUnit       string
-  InitialSupply uint64
-  MaxSupply     uint64
-  Mintable      bool
-  Owner         string
+    Symbol        string
+    Name          string
+    Scale         uint32
+    MinUnit       string
+    InitialSupply uint64
+    MaxSupply     uint64
+    Mintable      bool
+    Owner         string
 }
 ```
 
@@ -49,16 +48,15 @@ indexes.
 
 ## MsgEditToken
 
-The `MaxSupply`, `Mintable` , `Name` of a token can be updated using the
-`MsgEditToken`.
+The `MaxSupply`, `Mintable` , `Name` of a token can be updated using the `MsgEditToken`.
 
 ```go
 type MsgEditToken struct {
-  Symbol    string
-  Owner     string
-  MaxSupply uint64
-  Mintable  Bool
-  Name      string
+    Symbol    string
+    Owner     string
+    MaxSupply uint64
+    Mintable  Bool
+    Name      string
 }
 ```
 
@@ -80,10 +78,10 @@ The owner of the token can mint some tokens to the specified account
 
 ```go
 type MsgMintToken struct {
-  Symbol string
-  Owner  string
-  To     string
-  Amount uint64
+    Symbol string
+    Owner  string
+    To     string
+    Amount uint64
 ```
 
 This message is expected to fail if:
@@ -100,9 +98,9 @@ The owner of the token can mint some tokens to the specified account
 
 ```go
 type MsgBurnToken struct {
-  Symbol string
-  Sender string
-  Amount uint64
+    Symbol string
+    Sender string
+    Amount uint64
 ```
 
 This message is expected to fail if:
@@ -116,9 +114,9 @@ The ownership of the `token` can be transferred to others
 
 ```go
 type MsgTransferTokenOwner struct {
-  SrcOwner string
-  DstOwner string
-  Symbol   string
+    SrcOwner string
+    DstOwner string
+    Symbol   string
 }
 ```
 
@@ -126,4 +124,3 @@ This message is expected to fail if:
 
 - the token is not existed
 - the `Owner` is not the token owner
-

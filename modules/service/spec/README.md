@@ -2,19 +2,14 @@
 order: 0
 title: Service Overview
 parent:
-title: "Service"
+  title: "Service"
 -->
 
-# `service`
+# Service Specification
 
 ## Abstract
 
-The service module implements the IRIS Service model, which bridges the
-gap between the blockchain world and the conventional application world.
-It formalizes off-chain service definition and binding (provider
-registration), facilitates invocation and interaction with those
-services, and mediates service governance process (profiling and dispute
-resolution).
+The service module implements the IRIS Service model, which bridges the gap between the blockchain world and the conventional application world. It formalizes off-chain service definition and binding (provider registration), facilitates invocation and interaction with those services, and mediates service governance process (profiling and dispute resolution).
 
 ## Contents
 
@@ -23,7 +18,7 @@ resolution).
    - [ServiceBinding](01_state.md#servicebinding)
    - [ServiceInvocation](01_state.md#serviceinvocation)
    - [Params](01_state.md#parameters)
-2. **[Messages](02_messages.md)**
+1. **[Messages](02_messages.md)**
    - [MsgDefineService](02_messages.md#msgdefineservice)
    - [MsgBindService](02_messages.md#msgbindservice)
    - [MsgUpdateServiceBinding](02_messages.md#msgupdateservicebinding)
@@ -38,7 +33,6 @@ resolution).
    - [MsgStartRequestContext](02_messages.md#msgstartrequestcontext)
    - [MsgKillRequestContext](02_messages.md#msgkillrequestcontext)
    - [MsgWithdrawEarnedFees](02_messages.md#msgwithdrawearnedfees)
-3. **[Events](03_events.md)**
+1. **[Events](03_events.md)**
    - [Handlers](03_events.md#handlers)
-4. **[Parameters](04_params.md)**
-
+1. **[Parameters](04_params.md)**

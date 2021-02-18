@@ -17,4 +17,3 @@ type Record struct {
     Creator  string    // the creator of the record
 }
 ```
-

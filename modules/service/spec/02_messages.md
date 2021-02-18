@@ -6,8 +6,7 @@ order: 2
 
 ## MsgDefineService
 
-The service definition can be created by any user via a
-`MsgDefineService` message.
+The service definition can be created by any user via a `MsgDefineService` message.
 
 ```go
 type MsgDefineService struct {
@@ -38,14 +37,12 @@ This message is expected to fail if:
   - does not contain duplicate tags
 - `Schemas` does not satisfy the following:
   - is a valid JSON object
-  - contains the input and output object which are both valid JSON
-    Schema
+  - contains the input and output object which are both valid JSON Schema
 - the service definition with the `Name` already exists
 
 ## MsgBindService
 
-Any user who wants to provide a service can create a service binding via
-`MsgBindService`.
+Any user who wants to provide a service can create a service binding via `MsgBindService`.
 
 ```go
 type MsgBindService struct {
@@ -71,12 +68,10 @@ This message is expected to fail if:
   - length ranges in (0,70]
 - `Deposit` is invalid coins or not positive
 - `Pricing` does not conform the `Pricing Schema`
-- `QoS` is equal to 0 or greater than the system parameter
-  `MaxRequestTimeout`
+- `QoS` is equal to 0 or greater than the system parameter `MaxRequestTimeout`
 - `Options` is non-functional options
 - the service definition with the `ServiceName` does not exist
-- the service binding with the `ServiceName` and `Provider` already
-  exists
+- the service binding with the `ServiceName` and `Provider` already exists
 
 ## MsgUpdateServiceBinding
 
@@ -108,8 +103,7 @@ This message is expected to fail if:
   - length ranges in (0,70]
 - `Deposit` is invalid coins when not empty
 - `Pricing` does not conform the `Pricing Schema` if not empty
-- the service binding with the `ServiceName` and `Provider` does not
-  exist
+- the service binding with the `ServiceName` and `Provider` does not exist
 - owner of the servic binding is not `Owner`
 
 ## MsgDisableServiceBinding
@@ -134,8 +128,7 @@ This message is expected to fail if:
   - begins with alphabetic charactors
   - consists of only alphanumerics, - and _
   - length ranges in (0,70]
-- the service binding with the `ServiceName` and `Provider` does not
-  exist
+- the service binding with the `ServiceName` and `Provider` does not exist
 - owner of the servic binding is not `Owner`
 - the service binding is unvailable
 
@@ -164,16 +157,13 @@ This message is expected to fail if:
   - consists of only alphanumerics, - and _
   - length ranges in (0,70]
 - `Deposit` is invalid coins when not empty
-- the service binding with the `ServiceName` and `Provider` does not
-  exist
+- the service binding with the `ServiceName` and `Provider` does not exist
 - owner of the servic binding is not `Owner`
 - the service binding is available
 
 ## MsgRefundServiceDeposit
 
-The owner can refund deposit from an unavailable service binding after a
-period of time since disabled. The operation is via
-`MsgRefundServiceDeposit`
+The owner can refund deposit from an unavailable service binding after a period of time since disabled. The operation is via `MsgRefundServiceDeposit`
 
 ```go
 type MsgRefundServiceDeposit struct {
@@ -193,8 +183,7 @@ This message is expected to fail if:
   - begins with alphabetic charactors
   - consists of only alphanumerics, - and _
   - length ranges in (0,70]
-- the service binding with the `ServiceName` and `Provider` does not
-  exist
+- the service binding with the `ServiceName` and `Provider` does not exist
 - owner of the servic binding is not `Owner`
 - the service binding is available
 - the deposit is zero
@@ -202,8 +191,7 @@ This message is expected to fail if:
 
 ## MsgSetWithdrawAddress
 
-An owner can set an address to withdraw fees earned by its providers.
-The corresponding message is `MsgSetWithdrawAddress`
+An owner can set an address to withdraw fees earned by its providers. The corresponding message is `MsgSetWithdrawAddress`
 
 ```go
 type MsgSetWithdrawAddress struct {
@@ -240,8 +228,7 @@ type MsgCallService struct {
 
 **State modifications:**
 
-- Create a `RequestContext` by which the requests are generated every
-  EndBlocker
+- Create a `RequestContext` by which the requests are generated every EndBlocker
 
 This message is expected to fail if:
 
@@ -252,15 +239,13 @@ This message is expected to fail if:
 - `Providers` contain duplicate addresses
 - `Input` does not conform to the service input schema
 - `ServiceFeeCap` is invalid coins
-- `Timeout` is equal to 0 or greater than the system parameter
-  `MaxRequestTimeout`
+- `Timeout` is equal to 0 or greater than the system parameter `MaxRequestTimeout`
 - `RepeatedFrequency` is less than `Timeout` if `Repeated` is true
 - `RepeatedTotal` is less than -1 if `Repeated` is true
 
 ## MsgRespondService
 
-The targeting provider can respond to the request via
-`MsgRespondService`
+The targeting provider can respond to the request via `MsgRespondService`
 
 ```go
 type MsgRespondService struct {
@@ -274,8 +259,7 @@ type MsgRespondService struct {
 **State modifications:**
 
 - Create a `Response` if succeeded
-- Slash the provider and refund the service fee to the consumer if the
-  request times out
+- Slash the provider and refund the service fee to the consumer if the request times out
 
 This message is expected to fail if:
 
@@ -288,8 +272,7 @@ This message is expected to fail if:
 
 ## MsgUpdateRequestContext
 
-After invocation, the consumer can update the created request context
-via `MsgUpdateRequestContext`.
+After invocation, the consumer can update the created request context via `MsgUpdateRequestContext`.
 
 ```go
 type MsgUpdateRequestContext struct {
@@ -317,8 +300,7 @@ This message is expected to fail if:
 - the request context does not exist
 - `Providers` contain duplicate addresses
 - `ServiceFeeCap` is invalid coins if not empty
-- `Timeout` is less than the frequency or greater than the system
-  parameter `MaxRequestTimeout` if non zero
+- `Timeout` is less than the frequency or greater than the system parameter `MaxRequestTimeout` if non zero
 - `RepeatedFrequency` is less than the timeout if non zero
 - `RepeatedTotal` is less than -1 if non zero
 
@@ -386,8 +368,7 @@ This message is expected to fail if:
 
 ## MsgWithdrawEarnedFees
 
-The owner of the provider can withdraw the earned fees via
-`MsgWithdrawEarnedFees`
+The owner of the provider can withdraw the earned fees via `MsgWithdrawEarnedFees`
 
 ```go
 type MsgWithdrawEarnedFees struct {
@@ -404,4 +385,3 @@ This message is expected to fail if:
 
 - `Owner` does not have the earned fees or being zero
 - `Provider` does not have the earned fees or being zero
-

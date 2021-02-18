@@ -7,7 +7,7 @@ order: 4
 The service module contains the following parameters:
 
 | Key                  | Type             | Example                                       |
-|:---------------------|:-----------------|:----------------------------------------------|
+| :------------------- | :--------------- | :-------------------------------------------- |
 | MaxRequestTimeout    | int64            | 100                                           |
 | MinDepositMultiple   | int64            | 1000                                          |
 | MinDeposit           | array (coins)    | \[{"denom": "uiris","amount": "5000000000"}\] |
@@ -17,4 +17,3 @@ The service module contains the following parameters:
 | ArbitrationTimeLimit | string (time ns) | "432000000000000"                             |
 | TxSizeLimit          | uint64           | 4000                                          |
 | BaseDenom            | string           | "uiris"                                       |
-
