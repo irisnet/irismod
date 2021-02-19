@@ -6,7 +6,7 @@ order: 3
 
 ## Handlers
 
-## MsgSwapOrder
+### MsgSwapOrder
 
 | Type    | Attribute Key | Attribute Value |
 | :------ | :------------ | :-------------- |
@@ -18,7 +18,7 @@ order: 3
 | message | module        | coinswap        |
 | message | sender        | {senderAddress} |
 
-## MsgAddLiquidity
+### MsgAddLiquidity
 
 | Type          | Attribute Key | Attribute Value |
 | :------------ | :------------ | :-------------- |
@@ -27,7 +27,7 @@ order: 3
 | message       | module        | coinswap        |
 | message       | sender        | {senderAddress} |
 
-## MsgRemoveLiquidity
+### MsgRemoveLiquidity
 
 | Type             | Attribute Key | Attribute Value |
 | :--------------- | :------------ | :-------------- |

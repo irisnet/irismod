@@ -12,7 +12,7 @@ order: 3
 
 ## Handlers
 
-## MsgCreateHTLC
+### MsgCreateHTLC
 
 | Type        | Attribute Key           | Attribute Value        |
 | :---------- | :---------------------- | :--------------------- |
@@ -25,7 +25,7 @@ order: 3
 | message     | module                  | htlc                   |
 | message     | sender                  | {senderAddress}        |
 
-## MsgClaimHTLC
+### MsgClaimHTLC
 
 | Type       | Attribute Key | Attribute Value |
 | :--------- | :------------ | :-------------- |
@@ -35,7 +35,7 @@ order: 3
 | message    | module        | htlc            |
 | message    | sender        | {senderAddress} |
 
-## MsgRefundHTLC
+### MsgRefundHTLC
 
 | Type        | Attribute Key | Attribute Value |
 | :---------- | :------------ | :-------------- |
