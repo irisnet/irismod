@@ -15,6 +15,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/irisnet/irismod/modules/service/keeper"
 	"github.com/irisnet/irismod/modules/service/types"
@@ -23,15 +24,17 @@ import (
 
 var (
 	initCoinAmt = sdk.NewInt(100000)
-	testCoin1   = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10000))
-	testCoin2   = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
-	testCoin3   = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(2))
 
 	testDenom1 = "testdenom1"                                                           // testing the normal cases
 	testDenom2 = "testdenom2"                                                           // testing the case in which the feed value is 0
 	testDenom3 = "testdenom3"                                                           // testing the case in which the feed is not existent
-	testDenom4 = "ibc/9ebf7ebe6f8ffd34617809f3cf00e04a10d8b7226048f68866371fb9dad8a25d" // testing the ibc case
-	testDenom5 = "peggy/0xdac17f958d2ee523a2206206994597c13d831ec7"                     // testing the ethpeg case
+	testDenom4 = "ibc/9EBF7EBE6F8FFD34617809F3CF00E04A10D8B7226048F68866371FB9DAD8A25D" // testing the ibc case
+	testDenom5 = "pegeth0xdac17f958d2ee523a2206206994597c13d831ec7"                     // testing the ethpeg case
+
+	testCoin1 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10000))
+	testCoin2 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
+	testCoin3 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(2))
+	testCoin4 = sdk.NewCoin(testDenom4, sdk.NewInt(10))
 
 	testAuthor    sdk.AccAddress
 	testOwner     sdk.AccAddress
@@ -56,6 +59,7 @@ var (
 	testResult        = `{"code":200,"message":""}`
 	testOutput        = `{"header":{},"body":{}}`
 	testServiceFee    = sdk.NewCoins(testCoin3)
+	testServiceFee2   = sdk.NewCoins(testCoin4)
 	testServiceFeeCap = sdk.NewCoins(testCoin3)
 	testTimeout       = int64(100)
 	testRepeatedFreq  = uint64(120)
@@ -99,6 +103,13 @@ func (suite *KeeperTestSuite) setTestAddrs() {
 	testProvider = testAddrs[2]
 	testProvider1 = testAddrs[3]
 	testConsumer = testAddrs[4]
+}
+
+func (suite *KeeperTestSuite) addCoins(addr sdk.AccAddress, coins sdk.Coins) {
+	supply := suite.app.BankKeeper.GetSupply(suite.ctx)
+	suite.app.BankKeeper.SetSupply(suite.ctx, banktypes.NewSupply(supply.GetTotal().Add(coins...)))
+
+	suite.app.BankKeeper.AddCoins(suite.ctx, addr, coins)
 }
 
 func (suite *KeeperTestSuite) setServiceDefinition() {
@@ -379,7 +390,24 @@ func (suite *KeeperTestSuite) TestKeeperRequestService() {
 	suite.Equal(len(newProviders), int(requestContext.BatchRequestCount))
 	suite.Equal(types.BATCHRUNNING, requestContext.BatchState)
 
-	iterator := suite.keeper.ActiveRequestsIteratorByReqCtx(ctx, requestContextID, requestContext.BatchCounter)
+	iterator := suite.keeper.ActiveRequestsIterator(ctx, testServiceName, testProvider)
+	defer iterator.Close()
+
+	suite.True(iterator.Valid())
+
+	for ; iterator.Valid(); iterator.Next() {
+		var requestID gogotypes.BytesValue
+		suite.cdc.MustUnmarshalBinaryBare(iterator.Value(), &requestID)
+
+		request, found := suite.keeper.GetRequest(ctx, requestID.Value)
+		suite.True(found)
+
+		suite.Equal(testServiceName, request.ServiceName)
+		suite.Equal(consumer.String(), request.Consumer)
+		suite.Equal(testProvider.String(), request.Provider)
+	}
+
+	iterator = suite.keeper.ActiveRequestsIteratorByReqCtx(ctx, requestContextID, requestContext.BatchCounter)
 	defer iterator.Close()
 
 	suite.True(iterator.Valid())
@@ -439,8 +467,10 @@ func (suite *KeeperTestSuite) TestKeeperRespondService() {
 	requestContext.BatchCounter++
 	suite.keeper.SetRequestContext(ctx, requestContextID, requestContext)
 
-	requestID1 := suite.setRequest(ctx, consumer, provider, requestContextID)
-	requestID2 := suite.setRequest(ctx, consumer, provider, requestContextID)
+	suite.addCoins(consumer, testServiceFee2)
+
+	requestID1 := suite.setRequest(ctx, consumer, provider, requestContextID, testServiceFee)
+	requestID2 := suite.setRequest(ctx, consumer, provider, requestContextID, testServiceFee2)
 
 	// respond request 1
 	_, _, err := suite.keeper.AddResponse(ctx, requestID1, provider, testResult, testOutput)
@@ -478,6 +508,8 @@ func (suite *KeeperTestSuite) TestKeeperRespondService() {
 	earnedFees, found := suite.keeper.GetEarnedFees(ctx, provider)
 	suite.True(found)
 	suite.False(earnedFees.Empty())
+	suite.Equal(uint64(2), earnedFees.AmountOf(sdk.DefaultBondDenom).Uint64())
+	suite.Equal(uint64(10), earnedFees.AmountOf(testDenom4).Uint64())
 
 	ownerEarnedFees, found := suite.keeper.GetOwnerEarnedFees(ctx, testOwner)
 	suite.True(found)
@@ -511,8 +543,8 @@ func (suite *KeeperTestSuite) TestRequestServiceFromModule() {
 	requestContext.BatchCounter++
 	suite.keeper.SetRequestContext(ctx, requestContextID, requestContext)
 
-	requestID1 := suite.setRequest(ctx, consumer, provider1, requestContextID)
-	requestID2 := suite.setRequest(ctx, consumer, provider2, requestContextID)
+	requestID1 := suite.setRequest(ctx, consumer, provider1, requestContextID, testServiceFee)
+	requestID2 := suite.setRequest(ctx, consumer, provider2, requestContextID, testServiceFee)
 
 	_, _, err = suite.keeper.AddResponse(ctx, requestID1, provider1, testResult, testOutput)
 	suite.NoError(err)
@@ -628,14 +660,15 @@ func (suite *KeeperTestSuite) setRequestContext(
 	return requestContextID, requestContext
 }
 
-func (suite *KeeperTestSuite) setRequest(ctx sdk.Context, consumer sdk.AccAddress, provider sdk.AccAddress, requestContextID []byte) tmbytes.HexBytes {
+func (suite *KeeperTestSuite) setRequest(ctx sdk.Context, consumer sdk.AccAddress, provider sdk.AccAddress, requestContextID []byte, serviceFee sdk.Coins) tmbytes.HexBytes {
 	requestContext, _ := suite.keeper.GetRequestContext(ctx, requestContextID)
 
-	_ = suite.keeper.DeductServiceFees(ctx, consumer, testServiceFee)
+	err := suite.keeper.DeductServiceFees(ctx, consumer, serviceFee)
+	suite.NoError(err)
 
 	request := types.NewCompactRequest(
 		requestContextID, requestContext.BatchCounter, provider,
-		testServiceFee, ctx.BlockHeight(), requestContext.Timeout,
+		serviceFee, ctx.BlockHeight(), requestContext.Timeout,
 	)
 
 	requestContext.BatchRequestCount++

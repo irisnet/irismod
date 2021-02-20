@@ -37,8 +37,24 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v1.3.1] - 2021-02-09
+
 ### Bug Fixes
 
+* (modules/service) [\#138](https://github.com/irisnet/irismod/pull/138) Modify price regex in the service pricing schema to adapt to the token denom.
+
+### Improvements
+
+* [\#136](https://github.com/irisnet/irismod/issues/136) Clean up the code and fix module specifications.
+
+## [v1.3.0] - 2021-02-07
+
+### Bug Fixes
+
+* (modules/token) [\#129](https://github.com/irisnet/irismod/pull/129) Fix incorrect calculation for minting token.
+* (modules/service) [\#123](https://github.com/irisnet/irismod/pull/123) Fix the key path for owner service fees.
+* (modules/service) [\#120](https://github.com/irisnet/irismod/pull/120) Fix DisableServiceBinding event type.
+* [\#116](https://github.com/irisnet/irismod/pull/116) Adjust ante check logic.
 * (modules/token) [\#102](https://github.com/irisnet/irismod/issues/102) Return error if token baseFee is not a native token.
 * (modules/token) [\#100](https://github.com/irisnet/irismod/issues/100) Mint&Edit&Burn only accept symbol as denom.
 * (modules/token) [\#99](https://github.com/irisnet/irismod/issues/99) Fix incorrect calculation of deduction amount for burning token.
@@ -46,6 +62,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * [\#111](https://github.com/irisnet/irismod/pull/111) Bump cosmos-sdk version to [v0.41.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0).
+* (modules/service) [\#118](https://github.com/irisnet/irismod/pull/118) Remove super mode from service.
+* [\#115](https://github.com/irisnet/irismod/pull/115) Normalize key path
 * (modules/oracle) [\#109](https://github.com/irisnet/irismod/pull/109) Adjust oracle FeedName and ValueJsonPath validation.
 * (modules/token) [\#107](https://github.com/irisnet/irismod/issues/107) Use symbol to calculate the default amount of IssueTokenBaseFee.
 * (modules/service) [\#105](https://github.com/irisnet/irismod/pull/105) Add service tax account.
@@ -115,3 +133,5 @@ Ref: https://keepachangelog.com/en/1.0.0/
 [v1.1.1]: https://github.com/irisnet/irismod/releases/tag/v1.1.1
 [v1.2.0]: https://github.com/irisnet/irismod/releases/tag/v1.2.0
 [v1.2.1]: https://github.com/irisnet/irismod/releases/tag/v1.2.1
+[v1.3.0]: https://github.com/irisnet/irismod/releases/tag/v1.3.0
+[v1.3.1]: https://github.com/irisnet/irismod/releases/tag/v1.3.1
