@@ -1,9 +1,6 @@
 package types
 
 import (
-	"regexp"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -22,9 +19,6 @@ var (
 	_ sdk.Msg = &MsgStartFeed{}
 	_ sdk.Msg = &MsgPauseFeed{}
 	_ sdk.Msg = &MsgEditFeed{}
-
-	// the feed/service name only accepts alphanumeric characters, _ and -
-	regPlainText = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`)
 )
 
 // ______________________________________________________________________
@@ -41,7 +35,6 @@ func (msg MsgCreateFeed) Type() string {
 
 // ValidateBasic implements Msg.
 func (msg MsgCreateFeed) ValidateBasic() error {
-	msg = msg.Normalize()
 	if err := ValidateFeedName(msg.FeedName); err != nil {
 		return err
 	}
@@ -69,10 +62,6 @@ func (msg MsgCreateFeed) ValidateBasic() error {
 		return err
 	}
 
-	if err := ValidateValueJSONPath(msg.ValueJsonPath); err != nil {
-		return err
-	}
-
 	if !msg.ServiceFeeCap.IsValid() {
 		return sdkerrors.Wrapf(ErrInvalidServiceFeeCap, msg.ServiceFeeCap.String())
 	}
@@ -82,16 +71,6 @@ func (msg MsgCreateFeed) ValidateBasic() error {
 	}
 
 	return ValidateResponseThreshold(msg.ResponseThreshold, len(msg.Providers))
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgCreateFeed) Normalize() MsgCreateFeed {
-	msg.FeedName = strings.TrimSpace(msg.FeedName)
-	msg.ServiceName = strings.TrimSpace(msg.ServiceName)
-	msg.Input = strings.TrimSpace(msg.Input)
-	msg.AggregateFunc = strings.TrimSpace(msg.AggregateFunc)
-	msg.ValueJsonPath = strings.TrimSpace(msg.ValueJsonPath)
-	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -128,17 +107,10 @@ func (msg MsgStartFeed) Type() string {
 
 // ValidateBasic implements Msg.
 func (msg MsgStartFeed) ValidateBasic() error {
-	msg = msg.Normalize()
 	if err := ValidateCreator(msg.Creator); err != nil {
 		return err
 	}
 	return ValidateFeedName(msg.FeedName)
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgStartFeed) Normalize() MsgStartFeed {
-	msg.FeedName = strings.TrimSpace(msg.FeedName)
-	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -169,17 +141,10 @@ func (msg MsgPauseFeed) Type() string {
 
 // ValidateBasic implements Msg.
 func (msg MsgPauseFeed) ValidateBasic() error {
-	msg = msg.Normalize()
 	if err := ValidateCreator(msg.Creator); err != nil {
 		return err
 	}
 	return ValidateFeedName(msg.FeedName)
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgPauseFeed) Normalize() MsgPauseFeed {
-	msg.FeedName = strings.TrimSpace(msg.FeedName)
-	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -210,7 +175,6 @@ func (msg MsgEditFeed) Type() string {
 
 // ValidateBasic implements Msg.
 func (msg MsgEditFeed) ValidateBasic() error {
-	msg = msg.Normalize()
 	if err := ValidateFeedName(msg.FeedName); err != nil {
 		return err
 	}
@@ -241,12 +205,6 @@ func (msg MsgEditFeed) ValidateBasic() error {
 		}
 	}
 	return ValidateCreator(msg.Creator)
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgEditFeed) Normalize() MsgEditFeed {
-	msg.FeedName = strings.TrimSpace(msg.FeedName)
-	return msg
 }
 
 // GetSignBytes implements Msg.

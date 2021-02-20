@@ -11,7 +11,7 @@ import "token/token.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/token/types";
 
-// Query creates service with token as rpc
+// Query creates service with token as RPC
 service Query {
     // Token returns token with token name
     rpc Token(QueryTokenRequest) returns (QueryTokenResponse) {
@@ -29,7 +29,7 @@ service Query {
     rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
         option (google.api.http).get = "/irismod/token/params";
     }
-    // Params queries the token parameters
+    // TotalBurn queries all the burnt coins
     rpc TotalBurn(QueryTotalBurnRequest) returns (QueryTotalBurnResponse) {
         option (google.api.http).get = "/irismod/token/total_burn";
     }
@@ -96,6 +96,6 @@ message QueryTotalBurnRequest {}
 
 // QueryTotalBurnResponse is response type for the Query/TotalBurn RPC method
 message QueryTotalBurnResponse {
-    repeated cosmos.base.v1beta1.DecCoin burned_coins = 1
+    repeated cosmos.base.v1beta1.Coin burned_coins = 1
         [ (gogoproto.nullable) = false ];
 }

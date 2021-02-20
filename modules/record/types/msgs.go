@@ -1,19 +1,17 @@
 package types
 
 import (
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
-	TypeMsgCreateRecord = "create_record" // type for TypeMsgCreateRecord
+	TypeMsgCreateRecord = "create_record" // type for MsgCreateRecord
 )
 
 var _ sdk.Msg = &MsgCreateRecord{}
 
-// NewMsgCreateRecord constructs a MsgCreateRecord
+// NewMsgCreateRecord constructs a new MsgCreateRecord instance
 func NewMsgCreateRecord(contents []Content, Creator string) *MsgCreateRecord {
 	return &MsgCreateRecord{
 		Contents: contents,
@@ -38,7 +36,6 @@ func (msg MsgCreateRecord) GetSignBytes() []byte {
 
 // ValidateBasic implements Msg.
 func (msg MsgCreateRecord) ValidateBasic() error {
-	msg = msg.Normalize()
 	if len(msg.Contents) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "contents missing")
 	}
@@ -48,18 +45,6 @@ func (msg MsgCreateRecord) ValidateBasic() error {
 	}
 
 	return ValidateContents(msg.Contents...)
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgCreateRecord) Normalize() MsgCreateRecord {
-	for i, ctx := range msg.Contents {
-		ctx.Digest = strings.TrimSpace(ctx.Digest)
-		ctx.DigestAlgo = strings.TrimSpace(ctx.DigestAlgo)
-		ctx.URI = strings.TrimSpace(ctx.URI)
-		ctx.Meta = strings.TrimSpace(ctx.Meta)
-		msg.Contents[i] = ctx
-	}
-	return msg
 }
 
 // GetSigners implements Msg.

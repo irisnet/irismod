@@ -224,7 +224,7 @@ func (m *QueryBindingResponse) GetServiceBinding() *ServiceBinding {
 type QueryBindingsRequest struct {
 	ServiceName string `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
 	Owner       string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	// pagination defines an optional pagination for the request.
+	// pagination defines an optional pagination for the request
 	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 

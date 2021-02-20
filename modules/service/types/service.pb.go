@@ -59,11 +59,11 @@ func (RequestContextBatchState) EnumDescriptor() ([]byte, []int) {
 type RequestContextState int32
 
 const (
-	// RUNNING defines the running request context status.
+	// RUNNING defines the running request context status
 	RUNNING RequestContextState = 0
-	// PAUSED defines the paused request context status.
+	// PAUSED defines the paused request context status
 	PAUSED RequestContextState = 1
-	// COMPLETED defines the completed request context status.
+	// COMPLETED defines the completed request context status
 	COMPLETED RequestContextState = 2
 )
 
@@ -83,7 +83,7 @@ func (RequestContextState) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_e51e679f9ae460e2, []int{1}
 }
 
-// ServiceDefinition defines a standard for service definition.
+// ServiceDefinition defines a standard for service definition
 type ServiceDefinition struct {
 	Name              string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description       string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
@@ -126,7 +126,7 @@ func (m *ServiceDefinition) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ServiceDefinition proto.InternalMessageInfo
 
-// ServiceBinding defines a standard for service binding.
+// ServiceBinding defines a standard for service binding
 type ServiceBinding struct {
 	ServiceName  string                                   `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty" yaml:"service_name"`
 	Provider     string                                   `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
@@ -172,7 +172,7 @@ func (m *ServiceBinding) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ServiceBinding proto.InternalMessageInfo
 
-// RequestContext defines a standard for request context.
+// RequestContext defines a standard for request context
 type RequestContext struct {
 	ServiceName            string                                   `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty" yaml:"service_name"`
 	Providers              []string                                 `protobuf:"bytes,2,rep,name=providers,proto3" json:"providers,omitempty"`
@@ -181,17 +181,16 @@ type RequestContext struct {
 	ServiceFeeCap          github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,5,rep,name=service_fee_cap,json=serviceFeeCap,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"service_fee_cap" yaml:"service_fee_cap"`
 	ModuleName             string                                   `protobuf:"bytes,6,opt,name=module_name,json=moduleName,proto3" json:"module_name,omitempty" yaml:"module_name"`
 	Timeout                int64                                    `protobuf:"varint,7,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	SuperMode              bool                                     `protobuf:"varint,8,opt,name=super_mode,json=superMode,proto3" json:"super_mode,omitempty" yaml:"super_mode"`
-	Repeated               bool                                     `protobuf:"varint,9,opt,name=repeated,proto3" json:"repeated,omitempty"`
-	RepeatedFrequency      uint64                                   `protobuf:"varint,10,opt,name=repeated_frequency,json=repeatedFrequency,proto3" json:"repeated_frequency,omitempty" yaml:"repeated_frequency"`
-	RepeatedTotal          int64                                    `protobuf:"varint,11,opt,name=repeated_total,json=repeatedTotal,proto3" json:"repeated_total,omitempty" yaml:"repeated_total"`
-	BatchCounter           uint64                                   `protobuf:"varint,12,opt,name=batch_counter,json=batchCounter,proto3" json:"batch_counter,omitempty" yaml:"batch_counter"`
-	BatchRequestCount      uint32                                   `protobuf:"varint,13,opt,name=batch_request_count,json=batchRequestCount,proto3" json:"batch_request_count,omitempty" yaml:"batch_request_count"`
-	BatchResponseCount     uint32                                   `protobuf:"varint,14,opt,name=batch_response_count,json=batchResponseCount,proto3" json:"batch_response_count,omitempty" yaml:"batch_response_count"`
-	BatchResponseThreshold uint32                                   `protobuf:"varint,15,opt,name=batch_response_threshold,json=batchResponseThreshold,proto3" json:"batch_response_threshold,omitempty" yaml:"batch_response_threshold"`
-	ResponseThreshold      uint32                                   `protobuf:"varint,16,opt,name=response_threshold,json=responseThreshold,proto3" json:"response_threshold,omitempty" yaml:"response_threshold"`
-	BatchState             RequestContextBatchState                 `protobuf:"varint,17,opt,name=batch_state,json=batchState,proto3,enum=irismod.service.RequestContextBatchState" json:"batch_state,omitempty" yaml:"batch_state"`
-	State                  RequestContextState                      `protobuf:"varint,18,opt,name=state,proto3,enum=irismod.service.RequestContextState" json:"state,omitempty"`
+	Repeated               bool                                     `protobuf:"varint,8,opt,name=repeated,proto3" json:"repeated,omitempty"`
+	RepeatedFrequency      uint64                                   `protobuf:"varint,9,opt,name=repeated_frequency,json=repeatedFrequency,proto3" json:"repeated_frequency,omitempty" yaml:"repeated_frequency"`
+	RepeatedTotal          int64                                    `protobuf:"varint,10,opt,name=repeated_total,json=repeatedTotal,proto3" json:"repeated_total,omitempty" yaml:"repeated_total"`
+	BatchCounter           uint64                                   `protobuf:"varint,11,opt,name=batch_counter,json=batchCounter,proto3" json:"batch_counter,omitempty" yaml:"batch_counter"`
+	BatchRequestCount      uint32                                   `protobuf:"varint,12,opt,name=batch_request_count,json=batchRequestCount,proto3" json:"batch_request_count,omitempty" yaml:"batch_request_count"`
+	BatchResponseCount     uint32                                   `protobuf:"varint,13,opt,name=batch_response_count,json=batchResponseCount,proto3" json:"batch_response_count,omitempty" yaml:"batch_response_count"`
+	BatchResponseThreshold uint32                                   `protobuf:"varint,14,opt,name=batch_response_threshold,json=batchResponseThreshold,proto3" json:"batch_response_threshold,omitempty" yaml:"batch_response_threshold"`
+	ResponseThreshold      uint32                                   `protobuf:"varint,15,opt,name=response_threshold,json=responseThreshold,proto3" json:"response_threshold,omitempty" yaml:"response_threshold"`
+	BatchState             RequestContextBatchState                 `protobuf:"varint,16,opt,name=batch_state,json=batchState,proto3,enum=irismod.service.RequestContextBatchState" json:"batch_state,omitempty" yaml:"batch_state"`
+	State                  RequestContextState                      `protobuf:"varint,17,opt,name=state,proto3,enum=irismod.service.RequestContextState" json:"state,omitempty"`
 }
 
 func (m *RequestContext) Reset()         { *m = RequestContext{} }
@@ -227,7 +226,7 @@ func (m *RequestContext) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RequestContext proto.InternalMessageInfo
 
-// Request defines a standard for request.
+// Request defines a standard for request
 type Request struct {
 	Id                         string                                   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	ServiceName                string                                   `protobuf:"bytes,2,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty" yaml:"service_name"`
@@ -235,11 +234,10 @@ type Request struct {
 	Consumer                   string                                   `protobuf:"bytes,4,opt,name=consumer,proto3" json:"consumer,omitempty"`
 	Input                      string                                   `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
 	ServiceFee                 github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=service_fee,json=serviceFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"service_fee" yaml:"service_fee"`
-	SuperMode                  bool                                     `protobuf:"varint,7,opt,name=super_mode,json=superMode,proto3" json:"super_mode,omitempty" yaml:"super_mode"`
-	RequestHeight              int64                                    `protobuf:"varint,8,opt,name=request_height,json=requestHeight,proto3" json:"request_height,omitempty" yaml:"request_height"`
-	ExpirationHeight           int64                                    `protobuf:"varint,9,opt,name=expiration_height,json=expirationHeight,proto3" json:"expiration_height,omitempty" yaml:"expiration_height"`
-	RequestContextId           string                                   `protobuf:"bytes,10,opt,name=request_context_id,json=requestContextId,proto3" json:"request_context_id,omitempty" yaml:"request_context_id"`
-	RequestContextBatchCounter uint64                                   `protobuf:"varint,11,opt,name=request_context_batch_counter,json=requestContextBatchCounter,proto3" json:"request_context_batch_counter,omitempty" yaml:"request_context_batch_counter"`
+	RequestHeight              int64                                    `protobuf:"varint,7,opt,name=request_height,json=requestHeight,proto3" json:"request_height,omitempty" yaml:"request_height"`
+	ExpirationHeight           int64                                    `protobuf:"varint,8,opt,name=expiration_height,json=expirationHeight,proto3" json:"expiration_height,omitempty" yaml:"expiration_height"`
+	RequestContextId           string                                   `protobuf:"bytes,9,opt,name=request_context_id,json=requestContextId,proto3" json:"request_context_id,omitempty" yaml:"request_context_id"`
+	RequestContextBatchCounter uint64                                   `protobuf:"varint,10,opt,name=request_context_batch_counter,json=requestContextBatchCounter,proto3" json:"request_context_batch_counter,omitempty" yaml:"request_context_batch_counter"`
 }
 
 func (m *Request) Reset()         { *m = Request{} }
@@ -275,7 +273,7 @@ func (m *Request) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Request proto.InternalMessageInfo
 
-// CompactRequest defines a standard for compact request.
+// CompactRequest defines a standard for compact request
 type CompactRequest struct {
 	RequestContextId           string                                   `protobuf:"bytes,1,opt,name=request_context_id,json=requestContextId,proto3" json:"request_context_id,omitempty" yaml:"request_context_id"`
 	RequestContextBatchCounter uint64                                   `protobuf:"varint,2,opt,name=request_context_batch_counter,json=requestContextBatchCounter,proto3" json:"request_context_batch_counter,omitempty" yaml:"request_context_batch_counter"`
@@ -318,7 +316,7 @@ func (m *CompactRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CompactRequest proto.InternalMessageInfo
 
-// Response defines a standard for response.
+// Response defines a standard for response
 type Response struct {
 	Provider                   string `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
 	Consumer                   string `protobuf:"bytes,2,opt,name=consumer,proto3" json:"consumer,omitempty"`
@@ -361,7 +359,7 @@ func (m *Response) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Response proto.InternalMessageInfo
 
-// Pricing defines a standard for service pricing.
+// Pricing defines a standard for service pricing
 type Pricing struct {
 	Price              github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=price,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"price"`
 	PromotionsByTime   []PromotionByTime                        `protobuf:"bytes,2,rep,name=promotions_by_time,json=promotionsByTime,proto3" json:"promotions_by_time" yaml:"promotions_by_time"`
@@ -401,7 +399,7 @@ func (m *Pricing) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Pricing proto.InternalMessageInfo
 
-// PromotionByTime defines a standard for service promotion by time.
+// PromotionByTime defines a standard for service promotion by time
 type PromotionByTime struct {
 	StartTime time.Time                              `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time" yaml:"start_time"`
 	EndTime   time.Time                              `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time" yaml:"end_time"`
@@ -441,7 +439,7 @@ func (m *PromotionByTime) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PromotionByTime proto.InternalMessageInfo
 
-// PromotionByVolume defines a standard for service promotion by volume.
+// PromotionByVolume defines a standard for service promotion by volume
 type PromotionByVolume struct {
 	Volume   uint64                                 `protobuf:"varint,1,opt,name=volume,proto3" json:"volume,omitempty"`
 	Discount github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=discount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"discount"`
@@ -480,7 +478,7 @@ func (m *PromotionByVolume) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PromotionByVolume proto.InternalMessageInfo
 
-// service parameters
+// Params defines service module's parameters
 type Params struct {
 	MaxRequestTimeout         int64                                    `protobuf:"varint,1,opt,name=max_request_timeout,json=maxRequestTimeout,proto3" json:"max_request_timeout,omitempty" yaml:"max_request_timeout"`
 	MinDepositMultiple        int64                                    `protobuf:"varint,2,opt,name=min_deposit_multiple,json=minDepositMultiple,proto3" json:"min_deposit_multiple,omitempty" yaml:"min_deposit_multiple"`
@@ -922,65 +920,53 @@ func (m *RequestContext) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x90
+		dAtA[i] = 0x88
 	}
 	if m.BatchState != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.BatchState))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x88
+		dAtA[i] = 0x80
 	}
 	if m.ResponseThreshold != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.ResponseThreshold))
 		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x80
+		dAtA[i] = 0x78
 	}
 	if m.BatchResponseThreshold != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.BatchResponseThreshold))
 		i--
-		dAtA[i] = 0x78
+		dAtA[i] = 0x70
 	}
 	if m.BatchResponseCount != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.BatchResponseCount))
 		i--
-		dAtA[i] = 0x70
+		dAtA[i] = 0x68
 	}
 	if m.BatchRequestCount != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.BatchRequestCount))
 		i--
-		dAtA[i] = 0x68
+		dAtA[i] = 0x60
 	}
 	if m.BatchCounter != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.BatchCounter))
 		i--
-		dAtA[i] = 0x60
+		dAtA[i] = 0x58
 	}
 	if m.RepeatedTotal != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.RepeatedTotal))
 		i--
-		dAtA[i] = 0x58
+		dAtA[i] = 0x50
 	}
 	if m.RepeatedFrequency != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.RepeatedFrequency))
 		i--
-		dAtA[i] = 0x50
+		dAtA[i] = 0x48
 	}
 	if m.Repeated {
 		i--
 		if m.Repeated {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x48
-	}
-	if m.SuperMode {
-		i--
-		if m.SuperMode {
 			dAtA[i] = 1
 		} else {
 			dAtA[i] = 0
@@ -1070,32 +1056,22 @@ func (m *Request) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.RequestContextBatchCounter != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.RequestContextBatchCounter))
 		i--
-		dAtA[i] = 0x58
+		dAtA[i] = 0x50
 	}
 	if len(m.RequestContextId) > 0 {
 		i -= len(m.RequestContextId)
 		copy(dAtA[i:], m.RequestContextId)
 		i = encodeVarintService(dAtA, i, uint64(len(m.RequestContextId)))
 		i--
-		dAtA[i] = 0x52
+		dAtA[i] = 0x4a
 	}
 	if m.ExpirationHeight != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.ExpirationHeight))
 		i--
-		dAtA[i] = 0x48
+		dAtA[i] = 0x40
 	}
 	if m.RequestHeight != 0 {
 		i = encodeVarintService(dAtA, i, uint64(m.RequestHeight))
-		i--
-		dAtA[i] = 0x40
-	}
-	if m.SuperMode {
-		i--
-		if m.SuperMode {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
 		i--
 		dAtA[i] = 0x38
 	}
@@ -1663,9 +1639,6 @@ func (m *RequestContext) Size() (n int) {
 	if m.Timeout != 0 {
 		n += 1 + sovService(uint64(m.Timeout))
 	}
-	if m.SuperMode {
-		n += 2
-	}
 	if m.Repeated {
 		n += 2
 	}
@@ -1688,7 +1661,7 @@ func (m *RequestContext) Size() (n int) {
 		n += 1 + sovService(uint64(m.BatchResponseThreshold))
 	}
 	if m.ResponseThreshold != 0 {
-		n += 2 + sovService(uint64(m.ResponseThreshold))
+		n += 1 + sovService(uint64(m.ResponseThreshold))
 	}
 	if m.BatchState != 0 {
 		n += 2 + sovService(uint64(m.BatchState))
@@ -1730,9 +1703,6 @@ func (m *Request) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovService(uint64(l))
 		}
-	}
-	if m.SuperMode {
-		n += 2
 	}
 	if m.RequestHeight != 0 {
 		n += 1 + sovService(uint64(m.RequestHeight))
@@ -2723,26 +2693,6 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 			}
 		case 8:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SuperMode", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowService
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.SuperMode = bool(v != 0)
-		case 9:
-			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Repeated", wireType)
 			}
 			var v int
@@ -2761,7 +2711,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Repeated = bool(v != 0)
-		case 10:
+		case 9:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RepeatedFrequency", wireType)
 			}
@@ -2780,7 +2730,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 11:
+		case 10:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RepeatedTotal", wireType)
 			}
@@ -2799,7 +2749,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 12:
+		case 11:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchCounter", wireType)
 			}
@@ -2818,7 +2768,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 13:
+		case 12:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchRequestCount", wireType)
 			}
@@ -2837,7 +2787,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 14:
+		case 13:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchResponseCount", wireType)
 			}
@@ -2856,7 +2806,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 15:
+		case 14:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchResponseThreshold", wireType)
 			}
@@ -2875,7 +2825,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 16:
+		case 15:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ResponseThreshold", wireType)
 			}
@@ -2894,7 +2844,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 17:
+		case 16:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchState", wireType)
 			}
@@ -2913,7 +2863,7 @@ func (m *RequestContext) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 18:
+		case 17:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
 			}
@@ -3181,26 +3131,6 @@ func (m *Request) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 7:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SuperMode", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowService
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.SuperMode = bool(v != 0)
-		case 8:
-			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RequestHeight", wireType)
 			}
 			m.RequestHeight = 0
@@ -3218,7 +3148,7 @@ func (m *Request) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ExpirationHeight", wireType)
 			}
@@ -3237,7 +3167,7 @@ func (m *Request) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 10:
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RequestContextId", wireType)
 			}
@@ -3269,7 +3199,7 @@ func (m *Request) Unmarshal(dAtA []byte) error {
 			}
 			m.RequestContextId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 11:
+		case 10:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RequestContextBatchCounter", wireType)
 			}

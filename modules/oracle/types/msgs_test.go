@@ -58,46 +58,11 @@ func TestMsgCreateFeed_ValidateBasic(t *testing.T) {
 		},
 		false,
 	}, {
-		"wrong FeedName,invalid length",
-		MsgCreateFeed{
-			FeedName:          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-			AggregateFunc:     "avg",
-			ValueJsonPath:     "data.price",
-			LatestHistory:     10,
-			Description:       "feed eth price",
-			ServiceName:       "GetEthPrice",
-			Providers:         []string{addr1, addr2},
-			Input:             "eth",
-			Timeout:           5,
-			ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))),
-			RepeatedFrequency: 5,
-			ResponseThreshold: 1,
-			Creator:           addr1,
-		}, false,
-	}, {
 		"wrong AggregateFunc",
 		MsgCreateFeed{
 			FeedName:          "feedEthPrice",
 			AggregateFunc:     "",
 			ValueJsonPath:     "data.price",
-			LatestHistory:     10,
-			Description:       "feed eth price",
-			ServiceName:       "GetEthPrice",
-			Providers:         []string{addr1, addr2},
-			Input:             "eth",
-			Timeout:           5,
-			ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))),
-			RepeatedFrequency: 5,
-			ResponseThreshold: 1,
-			Creator:           addr1,
-		},
-		false,
-	}, {
-		"wrong ValueJsonPath",
-		MsgCreateFeed{
-			FeedName:          "feedEthPrice",
-			AggregateFunc:     "avg",
-			ValueJsonPath:     "",
 			LatestHistory:     10,
 			Description:       "feed eth price",
 			ServiceName:       "GetEthPrice",
@@ -283,13 +248,6 @@ func TestMsgStartFeed_ValidateBasic(t *testing.T) {
 		},
 		false,
 	}, {
-		"wrong FeedName,invalid length",
-		MsgStartFeed{
-			FeedName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-			Creator:  addr1,
-		},
-		false,
-	}, {
 		"empty Creator",
 		MsgStartFeed{
 			FeedName: "feedEthPrice",
@@ -323,13 +281,6 @@ func TestMsgPauseFeed_ValidateBasic(t *testing.T) {
 		"wrong FeedName,invalid char",
 		MsgPauseFeed{
 			FeedName: "$feedEthPrice",
-			Creator:  addr1,
-		},
-		false,
-	}, {
-		"wrong FeedName,invalid length",
-		MsgPauseFeed{
-			FeedName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 			Creator:  addr1,
 		},
 		false,
@@ -372,18 +323,6 @@ func TestMsgEditFeed_ValidateBasic(t *testing.T) {
 		"wrong FeedName, invalid char",
 		MsgEditFeed{
 			FeedName:          "$feedEthPrice",
-			LatestHistory:     10,
-			Providers:         []string{addr1, addr2},
-			ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))),
-			RepeatedFrequency: 5,
-			ResponseThreshold: 1,
-			Creator:           addr1,
-		},
-		false,
-	}, {
-		"wrong FeedName, invalid length",
-		MsgEditFeed{
-			FeedName:          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 			LatestHistory:     10,
 			Providers:         []string{addr1, addr2},
 			ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))),

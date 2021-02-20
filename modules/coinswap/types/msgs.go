@@ -12,16 +12,16 @@ var (
 )
 
 const (
-	// FormatUniABSPrefix define the prefix of liquidity token
+	// FormatUniABSPrefix defines the prefix of liquidity token
 	FormatUniABSPrefix = "swap/"
-	// FormatUniDenom define the name of liquidity token
+	// FormatUniDenom defines the name of liquidity token
 	FormatUniDenom = "swap/%s"
 
-	// TypeMsgAddLiquidity define the event type of the MsgAddLiquidity
+	// TypeMsgAddLiquidity defines the type of MsgAddLiquidity
 	TypeMsgAddLiquidity = "add_liquidity"
-	// TypeMsgRemoveLiquidity define the event type of the MsgRemoveLiquidity
+	// TypeMsgRemoveLiquidity defines the type of MsgRemoveLiquidity
 	TypeMsgRemoveLiquidity = "remove_liquidity"
-	// TypeMsgSwapOrder define the event type of the MsgSwapOrder
+	// TypeMsgSwapOrder defines the type of MsgSwapOrder
 	TypeMsgSwapOrder = "swap_order"
 )
 
@@ -58,7 +58,6 @@ func (msg MsgSwapOrder) Type() string { return TypeMsgSwapOrder }
 
 // ValidateBasic implements Msg.
 func (msg MsgSwapOrder) ValidateBasic() error {
-	msg = msg.Normalize()
 	if err := ValidateInput(msg.Input); err != nil {
 		return err
 	}
@@ -72,11 +71,6 @@ func (msg MsgSwapOrder) ValidateBasic() error {
 	}
 
 	return ValidateDeadline(msg.Deadline)
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgSwapOrder) Normalize() MsgSwapOrder {
-	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -122,7 +116,6 @@ func (msg MsgAddLiquidity) Type() string { return TypeMsgAddLiquidity }
 
 // ValidateBasic implements Msg.
 func (msg MsgAddLiquidity) ValidateBasic() error {
-	msg = msg.Normalize()
 	if err := ValidateMaxToken(msg.MaxToken); err != nil {
 		return err
 	}
@@ -143,11 +136,6 @@ func (msg MsgAddLiquidity) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 	return nil
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgAddLiquidity) Normalize() MsgAddLiquidity {
-	return msg
 }
 
 // GetSignBytes implements Msg.
@@ -193,7 +181,6 @@ func (msg MsgRemoveLiquidity) Type() string { return TypeMsgRemoveLiquidity }
 
 // ValidateBasic implements Msg.
 func (msg MsgRemoveLiquidity) ValidateBasic() error {
-	msg = msg.Normalize()
 	if err := ValidateMinToken(msg.MinToken); err != nil {
 		return err
 	}
@@ -214,11 +201,6 @@ func (msg MsgRemoveLiquidity) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 	return nil
-}
-
-// Normalize return a string with spaces removed and lowercase
-func (msg MsgRemoveLiquidity) Normalize() MsgRemoveLiquidity {
-	return msg
 }
 
 // GetSignBytes implements Msg.

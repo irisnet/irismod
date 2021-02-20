@@ -33,7 +33,6 @@ func TestMsgIssueAsset(t *testing.T) {
 		{"symbol too long", NewMsgIssueToken("stake123456789012345678901234567890123456789012345678901234567890", "satoshi", "Bitcoin Network", 9, 1, 1, true, addr), false},
 		{"symbol too short", NewMsgIssueToken("ht", "satoshi", "Bitcoin Network", 9, 1, 1, true, addr), false},
 		{"name empty", NewMsgIssueToken("stake", "satoshi", "", 9, 1, 1, true, addr), false},
-		{"name blank", NewMsgIssueToken("stake", "satoshi", " ", 9, 1, 1, true, addr), false},
 		{"name too long", NewMsgIssueToken("stake", "satoshi", "Bitcoin Network aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 9, 1, 1, true, addr), false},
 		{"initial supply is zero", NewMsgIssueToken("stake", "satoshi", "Bitcoin Network", 9, 0, 1, true, addr), true},
 		{"max supply is zero", NewMsgIssueToken("stake", "satoshi", "Bitcoin Network", 9, 1, 0, true, addr), true},
@@ -62,7 +61,6 @@ func TestMsgEditToken(t *testing.T) {
 	}{
 		{"native basic good", NewMsgEditToken("BTC Token", "btc", 10000, mintable, owner), true},
 		{"wrong symbol", NewMsgEditToken("BTC Token", "BT", 10000, mintable, owner), false},
-		{"wrong max_supply", NewMsgEditToken("BTC Token", "btc", 10000000000000, mintable, owner), false},
 		{"loss owner", NewMsgEditToken("BTC Token", "btc", 10000, mintable, ""), false},
 	}
 
@@ -121,7 +119,6 @@ func TestMsgMintTokenValidateBasic(t *testing.T) {
 		{"empty to", "btc", addr1, emptyAddr, 1000, true},
 		{"not empty to", "btc", addr1, addr2, 1000, true},
 		{"invalid amount", "btc", addr1, addr2, 0, false},
-		{"exceed max supply", "btc", addr1, addr2, 100000000000000, false},
 		{"basic good", "btc", addr1, addr2, 1000, true},
 	}
 

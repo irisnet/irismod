@@ -1,9 +1,7 @@
 package types
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 
 	"gopkg.in/yaml.v2"
 
@@ -22,7 +20,7 @@ var (
 	KeyStandardDenom = []byte("StandardDenom") // standard token denom key
 )
 
-// NewParams coinswap paramtypes constructor
+// NewParams is the coinswap params constructor
 func NewParams(fee sdk.Dec) Params {
 	return Params{
 		Fee: fee,
@@ -82,9 +80,6 @@ func validateStandardDenom(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if strings.TrimSpace(v) == "" {
-		return errors.New("standard denom cannot be blank")
-	}
 	if err := sdk.ValidateDenom(v); err != nil {
 		return err
 	}

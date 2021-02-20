@@ -1,9 +1,7 @@
 package keeper
 
 import (
-	"bytes"
 	"encoding/hex"
-	"strconv"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -89,7 +87,7 @@ func (k Keeper) SetRandom(ctx sdk.Context, reqID []byte, random types.Random) {
 	store.Set(types.KeyRandom(reqID), bz)
 }
 
-// EnqueueRandomRequest enqueue the random number request
+// EnqueueRandomRequest enqueues the random number request
 func (k Keeper) EnqueueRandomRequest(ctx sdk.Context, height int64, reqID []byte, request types.Request) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&request)
@@ -102,14 +100,14 @@ func (k Keeper) DequeueRandomRequest(ctx sdk.Context, height int64, reqID []byte
 	store.Delete(types.KeyRandomRequestQueue(height, reqID))
 }
 
-// SetOracleRandRequest stores the oracle random request
+// SetOracleRandRequest stores the oracle random number request
 func (k Keeper) SetOracleRandRequest(ctx sdk.Context, requestContextID []byte, request types.Request) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&request)
 	store.Set(types.KeyOracleRandomRequest(requestContextID), bz)
 }
 
-// GetOracleRandRequest retrieves the oracle random request by the specified request id
+// GetOracleRandRequest retrieves the oracle random number request by the specified request id
 func (k Keeper) GetOracleRandRequest(ctx sdk.Context, requestContextID []byte) (types.Request, error) {
 	store := ctx.KVStore(k.storeKey)
 
@@ -124,13 +122,13 @@ func (k Keeper) GetOracleRandRequest(ctx sdk.Context, requestContextID []byte) (
 	return request, nil
 }
 
-// DeleteOracleRandRequest delete an oracle random request
+// DeleteOracleRandRequest deletes an oracle random number request
 func (k Keeper) DeleteOracleRandRequest(ctx sdk.Context, requestContextID []byte) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyOracleRandomRequest(requestContextID))
 }
 
-// GetRand retrieves the random number by the specified request id
+// GetRandom retrieves the random number by the specified request id
 func (k Keeper) GetRandom(ctx sdk.Context, reqID []byte) (types.Random, error) {
 	store := ctx.KVStore(k.storeKey)
 
@@ -149,7 +147,7 @@ func (k Keeper) GetRandom(ctx sdk.Context, reqID []byte) (types.Random, error) {
 func (k Keeper) IterateRandoms(ctx sdk.Context, op func(r types.Random) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.PrefixRandom)
+	iterator := sdk.KVStorePrefixIterator(store, types.RandomKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -162,7 +160,7 @@ func (k Keeper) IterateRandoms(ctx sdk.Context, op func(r types.Random) (stop bo
 	}
 }
 
-// IterateRandomRequestQueueByHeight iterates the random number request queue by the specified height
+// IterateRandomRequestQueueByHeight iterates through the random number request queue by the specified height
 func (k Keeper) IterateRandomRequestQueueByHeight(ctx sdk.Context, height int64) sdk.Iterator {
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, types.KeyRandomRequestQueueSubspace(height))
@@ -172,18 +170,17 @@ func (k Keeper) IterateRandomRequestQueueByHeight(ctx sdk.Context, height int64)
 func (k Keeper) IterateRandomRequestQueue(ctx sdk.Context, op func(h int64, reqID []byte, r types.Request) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.PrefixRandomRequestQueue)
+	iterator := sdk.KVStorePrefixIterator(store, types.RandomRequestQueueKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		keyParts := bytes.Split(iterator.Key(), types.KeyDelimiter)
-		height, _ := strconv.ParseInt(string(keyParts[1]), 10, 64)
-		reqID := keyParts[2]
+		height := sdk.BigEndianToUint64(iterator.Key()[1:9])
+		reqID := iterator.Key()[9:]
 
 		var request types.Request
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &request)
 
-		if stop := op(height, reqID, request); stop {
+		if stop := op(int64(height), reqID, request); stop {
 			break
 		}
 	}

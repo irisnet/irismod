@@ -298,7 +298,11 @@ func selectOneToken(
 			return t, nil
 		}
 
-		mintFee := k.GetTokenMintFee(ctx, t.GetSymbol())
+		mintFee, err := k.GetTokenMintFee(ctx, t.GetSymbol())
+		if err != nil {
+			panic(err)
+		}
+
 		account := ak.GetAccount(ctx, t.GetOwner())
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		spendableStake := spendable.AmountOf(nativeToken.MinUnit)
@@ -333,7 +337,10 @@ func genToken(ctx sdk.Context,
 		token = randToken(r, accs)
 	}
 
-	issueFee := k.GetTokenIssueFee(ctx, token.Symbol)
+	issueFee, err := k.GetTokenIssueFee(ctx, token.Symbol)
+	if err != nil {
+		panic(err)
+	}
 
 	account, maxFees := filterAccount(ctx, r, ak, bk, accs, issueFee)
 	token.Owner = account.String()
@@ -367,7 +374,7 @@ func randToken(r *rand.Rand, accs []simtypes.Account) types.Token {
 	name := randStringBetween(r, 1, types.MaximumNameLen)
 	scale := simtypes.RandIntBetween(r, 1, int(types.MaximumScale))
 	initialSupply := r.Int63n(int64(types.MaximumInitSupply))
-	maxSupply := r.Int63n(int64(types.MaximumMaxSupply-types.MaximumInitSupply)) + initialSupply
+	maxSupply := 2 * initialSupply
 	simAccount, _ := simtypes.RandomAcc(r, accs)
 
 	return types.Token{

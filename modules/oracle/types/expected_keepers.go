@@ -8,7 +8,7 @@ import (
 	service "github.com/irisnet/irismod/modules/service/exported"
 )
 
-// expected Service keeper
+// ServiceKeeper defines the expected service keeper (noalias)
 type ServiceKeeper interface {
 	RegisterResponseCallback(
 		moduleName string, respCallback service.ResponseCallback,
@@ -34,7 +34,6 @@ type ServiceKeeper interface {
 		input string,
 		serviceFeeCap sdk.Coins,
 		timeout int64,
-		superMode bool,
 		repeated bool,
 		repeatedFrequency uint64,
 		repeatedTotal int64,
