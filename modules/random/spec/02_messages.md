@@ -6,7 +6,7 @@ order: 2
 
 ## MsgRequestRandom
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The random can be requested using the `MsgRequestRandom` message
 
 ```go
 type MsgRequestRandom struct {
@@ -16,5 +16,3 @@ type MsgRequestRandom struct {
     ServiceFeeCap sdk.Coins
 }
 ```
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

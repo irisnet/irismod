@@ -9,12 +9,12 @@ parent:
 
 ## Abstract
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+This specification describes the coinswap module.
 
 ## Contents
 
 1. **[State](./01_state.md)**
-   - [Parameters](./01_state.md#parameters)
+   - [Params](./01_state.md#params)
 1. **[Messages](./02_messages.md)**
    - [Swap Order](./02_messages.md#msgswaporder)
    - [Add Liquidity](./02_messages.md#msgaddliquidity)

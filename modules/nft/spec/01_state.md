@@ -17,7 +17,7 @@ type NFT interface {
 
 ## Collections
 
-As all NFTs belong to a specific `Collection`, however, considering the performance issue, we did not store the structure, but used `{denom} / {tokenID}` as the key to identify each nft ’s own collection, use `{denom}` as the key to store the number of nft in the current collection, which is convenient for statistics and query.collection is defined as follows
+As all NFTs belong to a specific `Collection`, however, considering the performance issue, we did not store the structure, but used `{denomID}/{tokenID}` as the key to identify each nft ’s own collection, use `{denom}` as the key to store the number of nft in the current collection, which is convenient for statistics and query.collection is defined as follows
 
 ```go
 // Collection of non fungible tokens

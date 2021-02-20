@@ -8,8 +8,6 @@ order: 1
 
 Definition of data structure of FungibleToken
 
-- Token: `0x1 -> amino(Token)`
-
 ```go
 type Token struct {
     Symbol        string
@@ -26,8 +24,6 @@ type Token struct {
 ## Params
 
 Params is a module-wide configuration structure that stores system parameters and defines overall functioning of the token module.
-
-- Params: `Paramsspace("token") -> amino(params)`
 
 ```go
 type Params struct {

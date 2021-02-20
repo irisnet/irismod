@@ -14,11 +14,3 @@ type MsgCreateRecord struct {
     Creator  sdk.AccAddress // the creator of the record
 }
 ```
-
-This message is expected to fail if:
-
-- the length of contents is 0
-- the creator is empty
-- the parameters of each content are faulty, namely:
-  - the `Digest` is empty
-  - the `DigestAlgo` is empty

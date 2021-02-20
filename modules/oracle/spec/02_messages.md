@@ -6,7 +6,7 @@ order: 2
 
 ## MsgCreateFeed
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The feed can be created using the `MsgCreateFeed` message
 
 ```go
 type MsgCreateFeed struct {
@@ -26,11 +26,9 @@ type MsgCreateFeed struct {
 }
 ```
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ## MsgStartFeed
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The feed can be started using the `MsgStartFeed` message
 
 ```go
 type MsgStartFeed struct {
@@ -39,11 +37,9 @@ type MsgStartFeed struct {
 }
 ```
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ## MsgPauseFeed
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The feed can be paused using the `MsgPauseFeed` message
 
 ```go
 type MsgPauseFeed struct {
@@ -52,11 +48,9 @@ type MsgPauseFeed struct {
 }
 ```
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ## MsgEditFeed
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The feed can be edited using the `MsgEditFeed` message
 
 ```go
 type MsgEditFeed struct {
@@ -71,5 +65,3 @@ type MsgEditFeed struct {
     Creator           string
 }
 ```
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

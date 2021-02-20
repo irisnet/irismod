@@ -9,7 +9,7 @@ parent:
 
 ## Abstract
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+This specification describes the htlc module.
 
 ## Contents
 

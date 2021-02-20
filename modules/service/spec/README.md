@@ -17,7 +17,7 @@ The service module implements the IRIS Service model, which bridges the gap betw
    - [ServiceDefinition](01_state.md#servicedefinition)
    - [ServiceBinding](01_state.md#servicebinding)
    - [ServiceInvocation](01_state.md#serviceinvocation)
-   - [Params](01_state.md#parameters)
+   - [Params](01_state.md#params)
 1. **[Messages](02_messages.md)**
    - [MsgDefineService](02_messages.md#msgdefineservice)
    - [MsgBindService](02_messages.md#msgbindservice)

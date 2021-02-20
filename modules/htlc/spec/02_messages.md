@@ -6,7 +6,7 @@ order: 2
 
 ## MsgCreateHTLC
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The HTLC can be created using the `MsgCreateHTLC` message
 
 ```go
 type MsgCreateHTLC struct {
@@ -20,11 +20,9 @@ type MsgCreateHTLC struct {
 }
 ```
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ## MsgClaimHTLC
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The HTLC can be claimed using the `MsgClaimHTLC` message
 
 ```go
 type MsgClaimHTLC struct {
@@ -34,11 +32,9 @@ type MsgClaimHTLC struct {
 }
 ```
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ## MsgRefundHTLC
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The HTLC can be refunded using the `MsgRefundHTLC` message
 
 ```go
 type MsgRefundHTLC struct {
@@ -46,5 +42,3 @@ type MsgRefundHTLC struct {
     HashLock string
 }
 ```
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

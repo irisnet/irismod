@@ -4,7 +4,7 @@ order: 1
 
 # State
 
-## Parameters
+## Params
 
 `Params` defines the rules on which the service module depends to guarantee the interaction between the consumer and provider.
 

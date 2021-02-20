@@ -6,7 +6,7 @@ order: 2
 
 ## MsgSwapOrder
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The coins can be swapped using the `MsgSwapOrder` message
 
 ```go
 type MsgSwapOrder struct {
@@ -32,11 +32,9 @@ type Output struct {
 
 ```
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ## MsgAddLiquidity
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The liquidity can be added using the `MsgAddLiquidity` message
 
 ```go
 type MsgAddLiquidity struct {
@@ -48,11 +46,9 @@ type MsgAddLiquidity struct {
 }
 ```
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ## MsgRemoveLiquidity
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+The liquidity can be removed using the `MsgAddLiquidity` message
 
 ```go
 type MsgRemoveLiquidity struct {
@@ -63,5 +59,3 @@ type MsgRemoveLiquidity struct {
     Sender            string
 }
 ```
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
