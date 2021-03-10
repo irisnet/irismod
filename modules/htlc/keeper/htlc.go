@@ -55,7 +55,7 @@ func (k Keeper) CreateHTLC(
 		id, sender, to, receiverOnOtherChain,
 		senderOnOtherChain, amount, hashLock,
 		nil, timestamp, expirationHeight,
-		types.Open, transfer, direction,
+		types.Open, 0, transfer, direction,
 	)
 
 	// set the HTLC
@@ -196,6 +196,7 @@ func (k Keeper) ClaimHTLC(
 	// update the secret and state of the HTLC
 	htlc.Secret = secret.String()
 	htlc.State = types.Completed
+	htlc.ClosedBlock = uint64(ctx.BlockHeight())
 	k.SetHTLC(ctx, htlc, id)
 
 	// delete from the expiration queue
@@ -244,16 +245,36 @@ func (k Keeper) claimHTLT(ctx sdk.Context, htlc types.HTLC) error {
 	return nil
 }
 
+// TODO: handle err
 // RefundHTLC refunds the specified HTLC
 func (k Keeper) RefundHTLC(ctx sdk.Context, h types.HTLC, id tmbytes.HexBytes) {
 	sender, _ := sdk.AccAddressFromBech32(h.Sender)
 
-	// do the refund
-	_ = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, h.Amount)
+	if h.Transfer {
+		k.refundHTLT(ctx, h.Direction, sender, h.Amount)
+	} else {
+		k.refundHTLC(ctx, sender, h.Amount)
+	}
 
 	// update the state of the HTLC
 	h.State = types.Refunded
+	h.ClosedBlock = uint64(ctx.BlockHeight())
 	k.SetHTLC(ctx, h, id)
+}
+
+func (k Keeper) refundHTLC(ctx sdk.Context, sender sdk.AccAddress, amount sdk.Coins) {
+	_ = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount)
+}
+
+func (k Keeper) refundHTLT(ctx sdk.Context, direction types.SwapDirection, sender sdk.AccAddress, amount sdk.Coins) {
+	switch direction {
+	case types.Incoming:
+		_ = k.DecrementIncomingAssetSupply(ctx, amount[0])
+	case types.Outgoing:
+		_ = k.DecrementOutgoingAssetSupply(ctx, amount[0])
+		// Refund coins to original swap sender for outgoing swaps
+		_ = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount)
+	}
 }
 
 // HasHTLC checks if the given HTLC exists
