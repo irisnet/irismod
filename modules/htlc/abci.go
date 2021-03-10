@@ -16,13 +16,11 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	ctx = ctx.WithLogger(ctx.Logger().With("handler", "beginBlock").With("module", "irismod/htlc"))
 
 	currentBlockHeight := uint64(ctx.BlockHeight())
-
 	k.IterateHTLCExpiredQueueByHeight(
-		ctx,
-		currentBlockHeight,
+		ctx, currentBlockHeight,
 		func(id tmbytes.HexBytes, h types.HTLC) (stop bool) {
 			// refund HTLC
-			k.RefundHTLC(ctx, h, id)
+			_ = k.RefundHTLC(ctx, h, id)
 			// delete from the expiration queue
 			k.DeleteHTLCFromExpiredQueue(ctx, currentBlockHeight, id)
 

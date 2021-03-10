@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"encoding/hex"
+	"fmt"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
@@ -245,36 +246,53 @@ func (k Keeper) claimHTLT(ctx sdk.Context, htlc types.HTLC) error {
 	return nil
 }
 
-// TODO: handle err
 // RefundHTLC refunds the specified HTLC
-func (k Keeper) RefundHTLC(ctx sdk.Context, h types.HTLC, id tmbytes.HexBytes) {
-	sender, _ := sdk.AccAddressFromBech32(h.Sender)
+func (k Keeper) RefundHTLC(ctx sdk.Context, h types.HTLC, id tmbytes.HexBytes) error {
+	sender, err := sdk.AccAddressFromBech32(h.Sender)
+	if err != nil {
+		return err
+	}
 
 	if h.Transfer {
-		k.refundHTLT(ctx, h.Direction, sender, h.Amount)
+		if err := k.refundHTLT(ctx, h.Direction, sender, h.Amount); err != nil {
+			return err
+		}
 	} else {
-		k.refundHTLC(ctx, sender, h.Amount)
+		if err := k.refundHTLC(ctx, sender, h.Amount); err != nil {
+			return err
+		}
 	}
 
 	// update the state of the HTLC
 	h.State = types.Refunded
 	h.ClosedBlock = uint64(ctx.BlockHeight())
 	k.SetHTLC(ctx, h, id)
+
+	return nil
 }
 
-func (k Keeper) refundHTLC(ctx sdk.Context, sender sdk.AccAddress, amount sdk.Coins) {
-	_ = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount)
+func (k Keeper) refundHTLC(ctx sdk.Context, sender sdk.AccAddress, amount sdk.Coins) error {
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount)
 }
 
-func (k Keeper) refundHTLT(ctx sdk.Context, direction types.SwapDirection, sender sdk.AccAddress, amount sdk.Coins) {
+func (k Keeper) refundHTLT(ctx sdk.Context, direction types.SwapDirection, sender sdk.AccAddress, amount sdk.Coins) error {
 	switch direction {
 	case types.Incoming:
-		_ = k.DecrementIncomingAssetSupply(ctx, amount[0])
+		if err := k.DecrementIncomingAssetSupply(ctx, amount[0]); err != nil {
+			return err
+		}
 	case types.Outgoing:
-		_ = k.DecrementOutgoingAssetSupply(ctx, amount[0])
+		if err := k.DecrementOutgoingAssetSupply(ctx, amount[0]); err != nil {
+			return err
+		}
 		// Refund coins to original swap sender for outgoing swaps
-		_ = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount)
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, amount); err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("invalid direction")
 	}
+	return nil
 }
 
 // HasHTLC checks if the given HTLC exists
