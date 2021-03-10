@@ -1,8 +1,11 @@
 package types
 
 import (
+	fmt "fmt"
+
 	"gopkg.in/yaml.v2"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -32,7 +35,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 // DefaultParams returns the default coinswap module parameters
 func DefaultParams() Params {
 	return Params{
-		// TODO
 		AssetParams: []AssetParam{},
 	}
 }
@@ -57,11 +59,63 @@ func (p SupplyLimit) String() string {
 
 // Validate returns err if Params is invalid
 func (p Params) Validate() error {
-	// TODO
-	return nil
+	return validateAssetParams(p.AssetParams)
 }
 
 func validateAssetParams(i interface{}) error {
-	// TODO
+	assetParams, ok := i.([]AssetParam)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	coinDenoms := make(map[string]bool)
+	for _, asset := range assetParams {
+		if err := sdk.ValidateDenom(asset.Denom); err != nil {
+			return fmt.Errorf(fmt.Sprintf("asset denom invalid: %s", asset.Denom))
+		}
+
+		if asset.SupplyLimit.Limit.IsNegative() {
+			return fmt.Errorf(fmt.Sprintf("asset %s has invalid (negative) supply limit: %s", asset.Denom, asset.SupplyLimit.Limit))
+		}
+
+		if asset.SupplyLimit.TimeBasedLimit.IsNegative() {
+			return fmt.Errorf(fmt.Sprintf("asset %s has invalid (negative) supply time limit: %s", asset.Denom, asset.SupplyLimit.TimeBasedLimit))
+		}
+
+		if asset.SupplyLimit.TimeBasedLimit.GT(asset.SupplyLimit.Limit) {
+			return fmt.Errorf(fmt.Sprintf("asset %s cannot have supply time limit > supply limit: %s>%s", asset.Denom, asset.SupplyLimit.TimeBasedLimit, asset.SupplyLimit.Limit))
+		}
+
+		if _, found := coinDenoms[asset.Denom]; found {
+			return fmt.Errorf(fmt.Sprintf("asset %s cannot have duplicate denom", asset.Denom))
+		}
+
+		coinDenoms[asset.Denom] = true
+
+		if _, err := sdk.AccAddressFromBech32(asset.DeputyAddress); err != nil {
+			return fmt.Errorf("invalid deputy address %s", asset.DeputyAddress)
+		}
+
+		if asset.FixedFee.IsNegative() {
+			return fmt.Errorf("asset %s cannot have a negative fixed fee %s", asset.Denom, asset.FixedFee)
+		}
+
+		if asset.MinBlockLock > asset.MaxBlockLock {
+			return fmt.Errorf("asset %s has minimum block lock > maximum block lock %d > %d", asset.Denom, asset.MinBlockLock, asset.MaxBlockLock)
+		}
+
+		if !asset.MinSwapAmount.IsPositive() {
+			return fmt.Errorf(fmt.Sprintf("asset %s must have a positive minimum swap amount, got %s", asset.Denom, asset.MinSwapAmount))
+		}
+
+		if !asset.MaxSwapAmount.IsPositive() {
+			return fmt.Errorf(fmt.Sprintf("asset %s must have a positive maximum swap amount, got %s", asset.Denom, asset.MaxSwapAmount))
+		}
+
+		if asset.MinSwapAmount.GT(asset.MaxSwapAmount) {
+			return fmt.Errorf("asset %s has minimum swap amount > maximum swap amount %s > %s", asset.Denom, asset.MinSwapAmount, asset.MaxSwapAmount)
+		}
+	}
+
 	return nil
 }
