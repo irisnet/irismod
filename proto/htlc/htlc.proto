@@ -23,8 +23,9 @@ message HTLC {
     uint64 timestamp = 9;
     uint64 expiration_height = 10 [ (gogoproto.moretags) = "yaml:\"expiration_height\"" ];
     HTLCState state = 11;
-    bool transfer = 12;
-    SwapDirection direction = 13;
+    uint64 closed_block = 12 [ (gogoproto.moretags) = "yaml:\"closed_block\"" ];
+    bool transfer = 13;
+    SwapDirection direction = 14;
 }
 
 // HTLCState defines the state of an HTLC

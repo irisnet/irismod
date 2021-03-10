@@ -24,6 +24,7 @@ func NewHTLC(
 	timestamp uint64,
 	expirationHeight uint64,
 	state HTLCState,
+	closedBlock uint64,
 	transfer bool,
 	direction SwapDirection,
 ) HTLC {
@@ -39,6 +40,7 @@ func NewHTLC(
 		Timestamp:            timestamp,
 		ExpirationHeight:     expirationHeight,
 		State:                state,
+		ClosedBlock:          closedBlock,
 		Transfer:             transfer,
 		Direction:            direction,
 	}
