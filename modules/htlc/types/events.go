@@ -15,6 +15,7 @@ const (
 	AttributeKeyReceiverOnOtherChain = "receiver_on_other_chain"
 	AttributeKeyAmount               = "amount"
 	AttributeKeyHashLock             = "hash_lock"
+	AttributeKeyID                   = "id"
 	AttributeKeyTimeLock             = "time_lock"
 	AttributeKeySecret               = "secret"
 )

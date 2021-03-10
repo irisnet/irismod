@@ -10,5 +10,5 @@ const (
 
 // QueryHTLCParams defines the params to query an HTLC
 type QueryHTLCParams struct {
-	HashLock tmbytes.HexBytes
+	ID tmbytes.HexBytes
 }

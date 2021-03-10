@@ -15,14 +15,14 @@ import (
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	// query an HTLC
-	r.HandleFunc(fmt.Sprintf("/%s/htlcs/{%s}", types.ModuleName, RestHashLock), queryHTLCHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/htlcs/{%s}", types.ModuleName, RestID), queryHTLCHandlerFn(cliCtx)).Methods("GET")
 }
 
 func queryHTLCHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		hashLock, err := hex.DecodeString(vars[RestHashLock])
+		id, err := hex.DecodeString(vars[RestID])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -34,7 +34,7 @@ func queryHTLCHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		params := types.QueryHTLCParams{
-			HashLock: hashLock,
+			ID: id,
 		}
 
 		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)

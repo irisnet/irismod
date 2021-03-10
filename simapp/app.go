@@ -132,7 +132,10 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			paramsclient.ProposalHandler,
+			distrclient.ProposalHandler,
+			upgradeclient.ProposalHandler,
+			upgradeclient.CancelProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -163,7 +166,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		tokentypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		htlctypes.ModuleName:           nil,
+		htlctypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		coinswaptypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 		servicetypes.DepositAccName:    {authtypes.Burner},
 		servicetypes.RequestAccName:    nil,
@@ -374,7 +377,10 @@ func NewSimApp(
 
 	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
 
-	app.HTLCKeeper = htlckeeper.NewKeeper(appCodec, keys[htlctypes.StoreKey], app.AccountKeeper, app.BankKeeper)
+	app.HTLCKeeper = htlckeeper.NewKeeper(
+		appCodec, keys[htlctypes.StoreKey], app.GetSubspace(htlctypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper, app.ModuleAccountAddrs(),
+	)
 
 	app.CoinswapKeeper = coinswapkeeper.NewKeeper(
 		appCodec, keys[coinswaptypes.StoreKey], app.GetSubspace(coinswaptypes.ModuleName),

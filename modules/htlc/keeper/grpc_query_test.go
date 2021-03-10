@@ -18,7 +18,7 @@ func (suite *KeeperTestSuite) TestQueryBalance() {
 	types.RegisterQueryServer(queryHelper, app.HTLCKeeper)
 	queryClient := types.NewQueryClient(queryHelper)
 
-	response, err := queryClient.HTLC(gocontext.Background(), &types.QueryHTLCRequest{HashLock: hashLock.String()})
+	response, err := queryClient.HTLC(gocontext.Background(), &types.QueryHTLCRequest{Id: id.String()})
 
 	suite.NoError(err)
 	suite.Equal(amount, response.Htlc.Amount)

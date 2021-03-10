@@ -29,9 +29,9 @@ func queryHTLC(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCd
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	htlc, found := k.GetHTLC(ctx, params.HashLock)
+	htlc, found := k.GetHTLC(ctx, params.ID)
 	if !found {
-		return nil, sdkerrors.Wrap(types.ErrUnknownHTLC, params.HashLock.String())
+		return nil, sdkerrors.Wrap(types.ErrUnknownHTLC, params.ID.String())
 	}
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, htlc)

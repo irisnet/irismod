@@ -20,22 +20,20 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	k.IterateHTLCExpiredQueueByHeight(
 		ctx,
 		currentBlockHeight,
-		func(hlock tmbytes.HexBytes, h types.HTLC) (stop bool) {
-			// update the state
-			h.State = types.Expired
-			k.SetHTLC(ctx, h, hlock)
-
+		func(id tmbytes.HexBytes, h types.HTLC) (stop bool) {
+			// refund HTLC
+			k.RefundHTLC(ctx, h, id)
 			// delete from the expiration queue
-			k.DeleteHTLCFromExpiredQueue(ctx, currentBlockHeight, hlock)
+			k.DeleteHTLCFromExpiredQueue(ctx, currentBlockHeight, id)
 
 			ctx.EventManager().EmitEvents(sdk.Events{
 				sdk.NewEvent(
 					types.EventTypeHTLCExpired,
-					sdk.NewAttribute(types.AttributeKeyHashLock, hlock.String()),
+					sdk.NewAttribute(types.AttributeKeyID, id.String()),
 				),
 			})
 
-			ctx.Logger().Info(fmt.Sprintf("HTLC [%s] is expired", hlock.String()))
+			ctx.Logger().Info(fmt.Sprintf("HTLC [%s] is refunded", id.String()))
 
 			return false
 		},

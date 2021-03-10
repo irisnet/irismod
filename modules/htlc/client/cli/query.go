@@ -48,13 +48,13 @@ func GetCmdQueryHTLC() *cobra.Command {
 				return err
 			}
 
-			hashLock, err := hex.DecodeString(args[0])
+			id, err := hex.DecodeString(args[0])
 			if err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			param := types.QueryHTLCRequest{HashLock: tmbytes.HexBytes(hashLock).String()}
+			param := types.QueryHTLCRequest{Id: tmbytes.HexBytes(id).String()}
 			response, err := queryClient.HTLC(context.Background(), &param)
 			if err != nil {
 				return err

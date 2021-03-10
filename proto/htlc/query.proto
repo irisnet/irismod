@@ -10,14 +10,14 @@ option go_package = "github.com/irisnet/irismod/modules/htlc/types";
 service Query {
     // HTLC queries the HTLC by the specified hash lock
     rpc HTLC(QueryHTLCRequest) returns (QueryHTLCResponse) {
-        option (google.api.http).get = "/irismod/htlc/htlcs/{hash_lock}";
+        option (google.api.http).get = "/irismod/htlc/htlcs/{id}";
     }
 }
 
 // QueryHTLCRequest is the request type for the Query/HTLC RPC method
 message QueryHTLCRequest {
     // address is the address to query balances for
-    string hash_lock = 1;
+    string id = 1;
 }
 
 // QueryBalanceResponse is the response type for the Query/HTLC RPC method

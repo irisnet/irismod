@@ -2,7 +2,6 @@ package htlc
 
 import (
 	"encoding/hex"
-	"fmt"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
@@ -30,9 +29,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	pendingHtlcs := make(map[string]types.HTLC)
 
-	k.IterateHTLCs(ctx, func(hlock tmbytes.HexBytes, h types.HTLC) (stop bool) {
+	k.IterateHTLCs(ctx, func(id tmbytes.HexBytes, h types.HTLC) (stop bool) {
 		if h.State == types.Open {
-			pendingHtlcs[hlock.String()] = h
+			pendingHtlcs[id.String()] = h
 		}
 		return false
 	})
@@ -49,10 +48,6 @@ func PrepForZeroHeightGenesis(ctx sdk.Context, k keeper.Keeper) {
 			if h.State == types.Open {
 				h.ExpirationHeight = h.ExpirationHeight - uint64(ctx.BlockHeight()) + 1
 				k.SetHTLC(ctx, h, hlock)
-			} else if h.State == types.Expired {
-				if err := k.RefundHTLC(ctx, hlock); err != nil {
-					panic(fmt.Errorf("failed to export the HTLC genesis state: %s", hlock.String()))
-				}
 			}
 			return false
 		})

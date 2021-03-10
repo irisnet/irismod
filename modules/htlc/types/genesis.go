@@ -5,8 +5,9 @@ import (
 )
 
 // NewGenesisState constructs a new GenesisState instance
-func NewGenesisState(pendingHtlcs map[string]HTLC) GenesisState {
+func NewGenesisState(params Params, pendingHtlcs map[string]HTLC) GenesisState {
 	return GenesisState{
+		Params:       params,
 		PendingHtlcs: pendingHtlcs,
 	}
 }
@@ -21,13 +22,13 @@ func DefaultGenesisState() *GenesisState {
 // ValidateGenesis validates the provided HTLC genesis state to ensure the
 // expected invariants holds.
 func ValidateGenesis(data GenesisState) error {
-	for hashLockStr, htlc := range data.PendingHtlcs {
-		if err := ValidateHashLock(hashLockStr); err != nil {
+	for idStr, htlc := range data.PendingHtlcs {
+		if err := ValidateID(idStr); err != nil {
 			return err
 		}
 
 		if htlc.State != Open {
-			return sdkerrors.Wrap(ErrHTLCNotOpen, hashLockStr)
+			return sdkerrors.Wrap(ErrHTLCNotOpen, idStr)
 		}
 
 		if err := htlc.Validate(); err != nil {

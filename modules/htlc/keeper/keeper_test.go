@@ -28,6 +28,7 @@ var (
 	secret               = tmbytes.HexBytes(tmhash.Sum([]byte("secret")))
 	timestamp            = uint64(1580000000)
 	hashLock             = tmbytes.HexBytes(tmhash.Sum(append(secret, sdk.Uint64ToBigEndian(timestamp)...)))
+	id                   = tmbytes.HexBytes(tmhash.Sum(append(secret, sdk.Uint64ToBigEndian(timestamp)...))) // TODO
 	timeLock             = uint64(50)
 )
 

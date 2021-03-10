@@ -64,7 +64,6 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	stateOpen := "HTLC_STATE_OPEN"
 	stateCompleted := "HTLC_STATE_COMPLETED"
 	stateRefunded := "HTLC_STATE_REFUNDED"
-	stateExpired := "HTLC_STATE_EXPIRED"
 
 	args := []string{
 		fmt.Sprintf("--%s=%s", htlccli.FlagTo, to),
@@ -178,20 +177,6 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
-	bz, err = htlctestutil.RefundHTLCExec(val.ClientCtx, from.String(), hashLock, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal("failed to execute message; message index: 0: F054E34ABD9CCC3CAB12A5B797B8E9C053507F279E7E53FB3F9F44D178C94B20: htlc not expired", txResp.RawLog)
-
-	respType = proto.Message(&htlctypes.HTLC{})
-	bz, err = htlctestutil.QueryHTLCExec(val.ClientCtx, hashLock)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(bz.Bytes(), respType))
-	htlcItem = respType.(*htlctypes.HTLC)
-	s.Require().Equal(stateOpen, htlcItem.State.String())
-
 	// refund an htlc and expect success
 	lastHeigth, err := s.network.LatestHeight()
 	s.Require().NoError(err)
@@ -203,18 +188,6 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	htlcItem = respType.(*htlctypes.HTLC)
 	s.Equal(stateExpired, htlcItem.State.String())
 
-	respType = proto.Message(&sdk.TxResponse{})
-	bz, err = htlctestutil.RefundHTLCExec(val.ClientCtx, from.String(), hashLock, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	respType = proto.Message(&htlctypes.HTLC{})
-	bz, err = htlctestutil.QueryHTLCExec(val.ClientCtx, hashLock)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(bz.Bytes(), respType))
-	htlcItem = respType.(*htlctypes.HTLC)
-	s.Equal(stateRefunded, htlcItem.State.String())
+	// TODO
 	// ---------------------------------------------------------------------------
 }

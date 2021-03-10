@@ -45,15 +45,18 @@ func (m msgServer) CreateHTLC(goCtx context.Context, msg *types.MsgCreateHTLC) (
 		sender,
 		to,
 		msg.ReceiverOnOtherChain,
+		msg.SenderOnOtherChain,
 		msg.Amount,
 		hashLock,
 		msg.Timestamp,
 		msg.TimeLock,
+		msg.Transfer,
 	); err != nil {
 		return nil, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
+		// TODO
 		sdk.NewEvent(
 			types.EventTypeCreateHTLC,
 			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
@@ -73,7 +76,7 @@ func (m msgServer) CreateHTLC(goCtx context.Context, msg *types.MsgCreateHTLC) (
 }
 
 func (m msgServer) ClaimHTLC(goCtx context.Context, msg *types.MsgClaimHTLC) (*types.MsgClaimHTLCResponse, error) {
-	hashLock, err := hex.DecodeString(msg.HashLock)
+	hashLock, err := hex.DecodeString(msg.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -89,10 +92,11 @@ func (m msgServer) ClaimHTLC(goCtx context.Context, msg *types.MsgClaimHTLC) (*t
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
+		// TODO
 		sdk.NewEvent(
 			types.EventTypeClaimHTLC,
 			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeKeyHashLock, msg.HashLock),
+			sdk.NewAttribute(types.AttributeKeyHashLock, msg.Id),
 			sdk.NewAttribute(types.AttributeKeySecret, msg.Secret),
 		),
 		sdk.NewEvent(
@@ -102,30 +106,4 @@ func (m msgServer) ClaimHTLC(goCtx context.Context, msg *types.MsgClaimHTLC) (*t
 		),
 	})
 	return &types.MsgClaimHTLCResponse{}, nil
-}
-
-func (m msgServer) RefundHTLC(goCtx context.Context, msg *types.MsgRefundHTLC) (*types.MsgRefundHTLCResponse, error) {
-	hashLock, err := hex.DecodeString(msg.HashLock)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.RefundHTLC(ctx, hashLock); err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeRefundHTLC,
-			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeKeyHashLock, msg.HashLock),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
-	})
-	return &types.MsgRefundHTLCResponse{}, nil
 }

@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/hex"
 	"fmt"
 	"strings"
 	"testing"
@@ -15,20 +14,23 @@ import (
 )
 
 var (
+	id                   = ""
 	emptyAddr            = ""
 	sender               = sdk.AccAddress(tmhash.SumTruncated([]byte("sender"))).String()
 	recipient            = sdk.AccAddress(tmhash.SumTruncated([]byte("recipient"))).String()
 	receiverOnOtherChain = "receiverOnOtherChain"
+	senderOnOtherChain   = "senderOnOtherChain"
 	amount               = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
 	secret               = tmbytes.HexBytes(tmhash.Sum([]byte("secret")))
 	timestamp            = uint64(1580000000)
 	hashLock             = tmbytes.HexBytes(tmhash.Sum(append(secret, sdk.Uint64ToBigEndian(timestamp)...))).String()
 	timeLock             = uint64(50)
+	transfer             = true
 )
 
 // TestNewMsgCreateHTLC tests constructor for MsgCreateHTLC
 func TestNewMsgCreateHTLC(t *testing.T) {
-	msg := NewMsgCreateHTLC(sender, recipient, receiverOnOtherChain, amount, hashLock, timestamp, timeLock)
+	msg := NewMsgCreateHTLC(sender, recipient, receiverOnOtherChain, senderOnOtherChain, amount, hashLock, timestamp, timeLock, transfer)
 
 	require.Equal(t, sender, msg.Sender)
 	require.Equal(t, recipient, msg.To)
@@ -119,7 +121,7 @@ func TestNewMsgClaimHTLC(t *testing.T) {
 
 	require.Equal(t, sender, msg.Sender)
 	require.Equal(t, secret.String(), msg.Secret)
-	require.Equal(t, hashLock, msg.HashLock)
+	require.Equal(t, hashLock, msg.Id)
 }
 
 // TestMsgClaimHTLCRoute tests Route for MsgClaimHTLC
@@ -179,74 +181,6 @@ func TestMsgClaimHTLCGetSignBytes(t *testing.T) {
 // TestMsgClaimHTLCGetSigners tests GetSigners for MsgClaimHTLC
 func TestMsgClaimHTLCGetSigners(t *testing.T) {
 	msg := NewMsgClaimHTLC(sender, hashLock, secret.String())
-	res := msg.GetSigners()
-
-	expected := "[0A367B92CF0B037DFD89960EE832D56F7FC15168]"
-	require.Equal(t, expected, fmt.Sprintf("%v", res))
-}
-
-// TestNewMsgRefundHTLC tests constructor for MsgRefundHTLC
-func TestNewMsgRefundHTLC(t *testing.T) {
-	msg := NewMsgRefundHTLC(sender, hashLock)
-
-	require.Equal(t, sender, msg.Sender)
-	require.Equal(t, hashLock, msg.HashLock)
-}
-
-// TestMsgRefundHTLCRoute tests Route for MsgRefundHTLC
-func TestMsgRefundHTLCRoute(t *testing.T) {
-	msg := NewMsgRefundHTLC(sender, hashLock)
-	require.Equal(t, "htlc", msg.Route())
-}
-
-// TestMsgRefundHTLCType tests Type for MsgRefundHTLC
-func TestMsgRefundHTLCType(t *testing.T) {
-	msg := NewMsgRefundHTLC(sender, hashLock)
-	require.Equal(t, "refund_htlc", msg.Type())
-}
-
-// TestMsgRefundHTLCValidation tests ValidateBasic for MsgRefundHTLC
-func TestMsgRefundHTLCValidation(t *testing.T) {
-	invalidHashLock := hex.EncodeToString([]byte("0x"))
-
-	testMsgs := []MsgRefundHTLC{
-		NewMsgRefundHTLC(sender, hashLock),        // valid msg
-		NewMsgRefundHTLC(emptyAddr, hashLock),     // missing sender
-		NewMsgRefundHTLC(sender, invalidHashLock), // invalid hash lock
-	}
-
-	testCases := []struct {
-		msg     MsgRefundHTLC
-		expPass bool
-		errMsg  string
-	}{
-		{testMsgs[0], true, ""},
-		{testMsgs[1], false, "missing sender"},
-		{testMsgs[2], false, "invalid hash lock"},
-	}
-
-	for i, tc := range testCases {
-		err := tc.msg.ValidateBasic()
-		if tc.expPass {
-			require.NoError(t, err, "Msg %d failed: %v", i, err)
-		} else {
-			require.Error(t, err, "Invalid Msg %d passed: %s", i, tc.errMsg)
-		}
-	}
-}
-
-// TestMsgRefundHTLCGetSignBytes tests GetSignBytes for MsgRefundHTLC
-func TestMsgRefundHTLCGetSignBytes(t *testing.T) {
-	msg := NewMsgRefundHTLC(sender, hashLock)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"irismod/htlc/MsgRefundHTLC","value":{"hash_lock":"6F4ECE9B22CFC1CF39C9C73DD2D35867A8EC97C48A9C2F664FE5287865A18C2E","sender":"cosmos1pgm8hyk0pvphmlvfjc8wsvk4daluz5tgmr4lac"}}`
-	require.Equal(t, expected, string(res))
-}
-
-// TestMsgRefundHTLCGetSigners tests GetSigners for MsgRefundHTLC
-func TestMsgRefundHTLCGetSigners(t *testing.T) {
-	msg := NewMsgRefundHTLC(sender, hashLock)
 	res := msg.GetSigners()
 
 	expected := "[0A367B92CF0B037DFD89960EE832D56F7FC15168]"
