@@ -24,12 +24,14 @@ func (k Keeper) CreateHTLC(
 	timestamp uint64,
 	timeLock uint64,
 	transfer bool,
-) (err error) {
-	id := types.GetID(sender, to, amount, hashLock)
+) (
+	id tmbytes.HexBytes, err error,
+) {
+	id = types.GetID(sender, to, amount, hashLock)
 
 	// check if the HTLC already exists
 	if k.HasHTLC(ctx, id) {
-		return sdkerrors.Wrap(types.ErrHTLCExists, id.String())
+		return id, sdkerrors.Wrap(types.ErrHTLCExists, id.String())
 	}
 
 	expirationHeight := uint64(ctx.BlockHeight()) + timeLock
@@ -46,7 +48,7 @@ func (k Keeper) CreateHTLC(
 		k.createHTLC(ctx, sender, amount)
 	}
 	if err != nil {
-		return err
+		return id, err
 	}
 
 	htlc := types.NewHTLC(
@@ -62,7 +64,7 @@ func (k Keeper) CreateHTLC(
 	// add to the expiration queue
 	k.AddHTLCToExpiredQueue(ctx, htlc.ExpirationHeight, id)
 
-	return nil
+	return id, nil
 }
 
 func (k Keeper) createHTLC(
@@ -153,37 +155,41 @@ func (k Keeper) createHTLT(
 }
 
 // ClaimHTLC claims the specified HTLC with the given secret
-func (k Keeper) ClaimHTLC(ctx sdk.Context, id tmbytes.HexBytes, secret tmbytes.HexBytes) error {
+func (k Keeper) ClaimHTLC(
+	ctx sdk.Context, id tmbytes.HexBytes, secret tmbytes.HexBytes,
+) (
+	string, bool, types.SwapDirection, error,
+) {
 	// query the HTLC
 	htlc, found := k.GetHTLC(ctx, id)
 	if !found {
-		return sdkerrors.Wrap(types.ErrUnknownHTLC, id.String())
+		return "", false, types.Invalid, sdkerrors.Wrap(types.ErrUnknownHTLC, id.String())
 	}
 
 	// check if the HTLC is open
 	if htlc.State != types.Open {
-		return sdkerrors.Wrap(types.ErrHTLCNotOpen, id.String())
+		return "", false, types.Invalid, sdkerrors.Wrap(types.ErrHTLCNotOpen, id.String())
 	}
 
 	hashLock, _ := hex.DecodeString(htlc.HashLock)
 
 	// check if the secret matches with the hash lock
 	if !bytes.Equal(types.GetHashLock(secret, htlc.Timestamp), hashLock) {
-		return sdkerrors.Wrap(types.ErrInvalidSecret, secret.String())
+		return "", false, types.Invalid, sdkerrors.Wrap(types.ErrInvalidSecret, secret.String())
 	}
 
 	to, err := sdk.AccAddressFromBech32(htlc.To)
 	if err != nil {
-		return err
+		return "", false, types.Invalid, err
 	}
 
 	if htlc.Transfer {
 		if err := k.claimHTLT(ctx, htlc); err != nil {
-			return err
+			return "", false, types.Invalid, err
 		}
 	} else {
 		if err := k.claimHTLC(ctx, htlc.Amount, to); err != nil {
-			return err
+			return "", false, types.Invalid, err
 		}
 	}
 
@@ -193,9 +199,9 @@ func (k Keeper) ClaimHTLC(ctx sdk.Context, id tmbytes.HexBytes, secret tmbytes.H
 	k.SetHTLC(ctx, htlc, id)
 
 	// delete from the expiration queue
-	k.DeleteHTLCFromExpiredQueue(ctx, htlc.ExpirationHeight, hashLock)
+	k.DeleteHTLCFromExpiredQueue(ctx, htlc.ExpirationHeight, id)
 
-	return nil
+	return htlc.HashLock, htlc.Transfer, htlc.Direction, nil
 }
 
 func (k Keeper) claimHTLC(ctx sdk.Context, amount sdk.Coins, to sdk.AccAddress) error {

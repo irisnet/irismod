@@ -28,7 +28,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 			ctx.EventManager().EmitEvents(sdk.Events{
 				sdk.NewEvent(
-					types.EventTypeHTLCExpired,
+					types.EventTypeRefundHTLC,
 					sdk.NewAttribute(types.AttributeKeyID, id.String()),
 				),
 			})
