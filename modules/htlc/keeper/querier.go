@@ -10,12 +10,20 @@ import (
 	"github.com/irisnet/irismod/modules/htlc/types"
 )
 
+// TODO: swagger
+
 // NewQuerier creates a new HTLC Querier instance
 func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
 		case types.QueryHTLC:
 			return queryHTLC(ctx, req, k, legacyQuerierCdc)
+		case types.QueryAssetSupply:
+			return queryAssetSupply(ctx, req, k, legacyQuerierCdc)
+		case types.QueryAssetSupplies:
+			return queryAssetSupplies(ctx, k, legacyQuerierCdc)
+		case types.QueryParameters:
+			return queryParams(ctx, k, legacyQuerierCdc)
 
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown %s query path: %s", types.ModuleName, path[0])
@@ -40,4 +48,19 @@ func queryHTLC(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCd
 	}
 
 	return bz, nil
+}
+
+func queryAssetSupply(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	// TODO
+	return nil, nil
+}
+
+func queryAssetSupplies(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	// TODO
+	return nil, nil
+}
+
+func queryParams(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	// TODO
+	return nil, nil
 }

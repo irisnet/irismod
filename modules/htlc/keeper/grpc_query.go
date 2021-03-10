@@ -29,3 +29,20 @@ func (k Keeper) HTLC(c context.Context, request *types.QueryHTLCRequest) (*types
 
 	return &types.QueryHTLCResponse{Htlc: &htlc}, nil
 }
+
+func (k Keeper) AssetSupply(context.Context, *types.QueryAssetSupplyRequest) (*types.QueryAssetSupplyResponse, error) {
+	// TODO
+	return nil, nil
+}
+
+func (k Keeper) AssetSupplies(context.Context, *types.QueryAssetSuppliesRequest) (*types.QueryAssetSuppliesResponse, error) {
+	// TODO
+	return nil, nil
+}
+
+func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	params := k.GetParams(ctx)
+
+	return &types.QueryParamsResponse{Params: params}, nil
+}
