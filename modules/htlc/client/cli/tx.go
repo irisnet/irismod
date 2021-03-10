@@ -44,10 +44,12 @@ func GetCmdCreateHTLC() *cobra.Command {
 			"$ %s tx htlc create "+
 				"--to=<recipient> "+
 				"--receiver-on-other-chain=<receiver-on-other-chain> "+
+				"--sender-on-other-chain=<sender-on-other-chain> "+
 				"--amount=<amount> "+
 				"--hash-lock=<hash-lock> "+
 				"--timestamp=<timestamp> "+
 				"--time-lock=<time-lock> "+
+				"--transfer=false "+
 				"--from=mykey",
 			version.AppName,
 		),
@@ -126,8 +128,9 @@ func GetCmdCreateHTLC() *cobra.Command {
 			}
 
 			msg := types.NewMsgCreateHTLC(
-				sender.String(), toAddr, receiverOnOtherChain, senderOnOtherChain, amount,
-				hex.EncodeToString(hashLock), timestamp, timeLock, transfer,
+				sender.String(), toAddr, receiverOnOtherChain,
+				senderOnOtherChain, amount, hex.EncodeToString(hashLock),
+				timestamp, timeLock, transfer,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -141,7 +144,6 @@ func GetCmdCreateHTLC() *cobra.Command {
 					hex.EncodeToString(secret), hex.EncodeToString(hashLock),
 				)
 			}
-
 			return err
 		},
 	}
@@ -158,10 +160,10 @@ func GetCmdCreateHTLC() *cobra.Command {
 // GetCmdClaimHTLC implements claiming an HTLC command
 func GetCmdClaimHTLC() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "claim [hash-lock] [secret]",
+		Use:     "claim [id] [secret]",
 		Short:   "Claim an HTLC",
 		Long:    "Claim an open HTLC with a secret.",
-		Example: fmt.Sprintf("$ %s tx htlc claim <hash-lock> <secret> --from mykey", version.AppName),
+		Example: fmt.Sprintf("$ %s tx htlc claim <id> <secret> --from mykey", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

@@ -28,6 +28,7 @@ func GetQueryCmd() *cobra.Command {
 
 	htlcQueryCmd.AddCommand(
 		GetCmdQueryHTLC(),
+		// TODO
 	)
 
 	return htlcQueryCmd
@@ -36,14 +37,13 @@ func GetQueryCmd() *cobra.Command {
 // GetCmdQueryHTLC implements the query HTLC command.
 func GetCmdQueryHTLC() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "htlc [hash-lock]",
+		Use:     "htlc [id]",
 		Short:   "Query an HTLC",
-		Long:    "Query details of an HTLC with the specified hash lock.",
-		Example: fmt.Sprintf("$ %s query htlc htlc <hash-lock>", version.AppName),
+		Long:    "Query details of an HTLC with the specified id.",
+		Example: fmt.Sprintf("$ %s query htlc htlc <id>", version.AppName),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
-
 			if err != nil {
 				return err
 			}
@@ -59,6 +59,7 @@ func GetCmdQueryHTLC() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			return clientCtx.PrintProto(response.Htlc)
 		},
 	}
