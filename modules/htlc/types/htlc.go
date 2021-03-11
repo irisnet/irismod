@@ -57,7 +57,7 @@ func (h HTLC) Validate() error {
 	if err := ValidateReceiverOnOtherChain(h.ReceiverOnOtherChain); err != nil {
 		return err
 	}
-	if err := ValidateAmount(h.Amount); err != nil {
+	if err := ValidateAmount(h.Transfer, h.Amount); err != nil {
 		return err
 	}
 	if h.State != Completed && len(h.Secret) > 0 {

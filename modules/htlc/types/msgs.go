@@ -70,7 +70,7 @@ func (msg MsgCreateHTLC) ValidateBasic() error {
 		return err
 	}
 
-	if err := ValidateAmount(msg.Amount); err != nil {
+	if err := ValidateAmount(msg.Transfer, msg.Amount); err != nil {
 		return err
 	}
 
