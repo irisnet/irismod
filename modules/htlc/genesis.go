@@ -17,6 +17,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 		panic(err.Error())
 	}
 
+	k.SetParams(ctx, data.Params)
+
 	for hashLockStr, htlc := range data.PendingHtlcs {
 		hashLock, _ := hex.DecodeString(hashLockStr)
 
@@ -36,9 +38,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		return false
 	})
 
-	return &types.GenesisState{
-		PendingHtlcs: pendingHtlcs,
-	}
+	return types.NewGenesisState(
+		k.GetParams(ctx),
+		pendingHtlcs,
+	)
 }
 
 func PrepForZeroHeightGenesis(ctx sdk.Context, k keeper.Keeper) {
@@ -50,5 +53,6 @@ func PrepForZeroHeightGenesis(ctx sdk.Context, k keeper.Keeper) {
 				k.SetHTLC(ctx, h, hlock)
 			}
 			return false
-		})
+		},
+	)
 }
