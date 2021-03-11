@@ -26,7 +26,8 @@ func (k Keeper) CreateHTLC(
 	timeLock uint64,
 	transfer bool,
 ) (
-	id tmbytes.HexBytes, err error,
+	id tmbytes.HexBytes,
+	err error,
 ) {
 	id = types.GetID(sender, to, amount, hashLock)
 
@@ -40,16 +41,17 @@ func (k Keeper) CreateHTLC(
 	var direction types.SwapDirection
 	if transfer {
 		// create HTLT
-		direction, err = k.createHTLT(
+		if direction, err = k.createHTLT(
 			ctx, sender, to, receiverOnOtherChain, senderOnOtherChain,
 			amount, hashLock, timestamp, timeLock,
-		)
+		); err != nil {
+			return id, err
+		}
 	} else {
 		// create HTLT
-		k.createHTLC(ctx, sender, amount)
-	}
-	if err != nil {
-		return id, err
+		if err = k.createHTLC(ctx, sender, amount); err != nil {
+			return id, err
+		}
 	}
 
 	htlc := types.NewHTLC(
@@ -88,7 +90,8 @@ func (k Keeper) createHTLT(
 	timestamp uint64,
 	timeLock uint64,
 ) (
-	types.SwapDirection, error,
+	types.SwapDirection,
+	error,
 ) {
 	var direction types.SwapDirection
 
@@ -157,9 +160,14 @@ func (k Keeper) createHTLT(
 
 // ClaimHTLC claims the specified HTLC with the given secret
 func (k Keeper) ClaimHTLC(
-	ctx sdk.Context, id tmbytes.HexBytes, secret tmbytes.HexBytes,
+	ctx sdk.Context,
+	id tmbytes.HexBytes,
+	secret tmbytes.HexBytes,
 ) (
-	string, bool, types.SwapDirection, error,
+	string,
+	bool,
+	types.SwapDirection,
+	error,
 ) {
 	// query the HTLC
 	htlc, found := k.GetHTLC(ctx, id)
