@@ -116,8 +116,7 @@ func GetCmdQueryAssetSupplies() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(response.AssetSupplies)
-
+			return clientCtx.PrintProto(response)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
