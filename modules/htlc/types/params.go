@@ -2,11 +2,16 @@ package types
 
 import (
 	fmt "fmt"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+)
+
+const (
+	FormatHTLTAssetPrefix = "htlt"
 )
 
 // Parameter store keys
@@ -70,8 +75,8 @@ func validateAssetParams(i interface{}) error {
 
 	coinDenoms := make(map[string]bool)
 	for _, asset := range assetParams {
-		if err := sdk.ValidateDenom(asset.Denom); err != nil {
-			return fmt.Errorf(fmt.Sprintf("asset denom invalid: %s", asset.Denom))
+		if err := sdk.ValidateDenom(asset.Denom); err != nil || !strings.HasPrefix(asset.Denom, FormatHTLTAssetPrefix) {
+			return fmt.Errorf(fmt.Sprintf("invalid asset denom: %s", asset.Denom))
 		}
 
 		if asset.SupplyLimit.Limit.IsNegative() {
