@@ -11,7 +11,8 @@ import (
 // Rest variable names
 // nolint
 const (
-	RestID = "id"
+	RestID    = "id"
+	RestDenom = "denom"
 )
 
 // RegisterHandlers defines routes that get registered by the main application
