@@ -15,9 +15,7 @@ func ParamKeyTable() paramstypes.KeyTable {
 
 // GetParams gets all parameteras as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	return types.NewParams(
-		k.AssetParams(ctx),
-	)
+	return types.NewParams(k.AssetParams(ctx))
 }
 
 // MaxRequestTimeout returns the maximum request timeout

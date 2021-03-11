@@ -10,8 +10,6 @@ import (
 	"github.com/irisnet/irismod/modules/htlc/types"
 )
 
-// TODO: swagger
-
 // NewQuerier creates a new HTLC Querier instance
 func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
@@ -51,16 +49,45 @@ func queryHTLC(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCd
 }
 
 func queryAssetSupply(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	// TODO
-	return nil, nil
+	var requestParams types.QueryAssetSupplyParams
+	if err := legacyQuerierCdc.UnmarshalJSON(req.Data, &requestParams); err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	assetSupply, found := k.GetAssetSupply(ctx, requestParams.Denom)
+	if !found {
+		return nil, sdkerrors.Wrap(types.ErrAssetSupplyNotFound, string(requestParams.Denom))
+	}
+
+	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, assetSupply)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return bz, nil
 }
 
 func queryAssetSupplies(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	// TODO
-	return nil, nil
+	assets := k.GetAllAssetSupplies(ctx)
+	if assets == nil {
+		assets = []types.AssetSupply{}
+	}
+
+	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, assets)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return bz, nil
 }
 
 func queryParams(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	// TODO
-	return nil, nil
+	params := k.GetParams(ctx)
+
+	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, params)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return bz, nil
 }

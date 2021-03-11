@@ -25,4 +25,5 @@ var (
 	ErrInvalidIncomingSupply       = sdkerrors.Register(ModuleName, 19, "supply decrease puts incoming asset supply below 0")
 	ErrInvalidOutgoingSupply       = sdkerrors.Register(ModuleName, 20, "supply decrease puts outgoing asset supply below 0")
 	ErrExceedsAvailableSupply      = sdkerrors.Register(ModuleName, 21, "outgoing swap exceeds total available supply")
+	ErrAssetSupplyNotFound         = sdkerrors.Register(ModuleName, 22, "asset supply not found in store")
 )
