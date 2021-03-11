@@ -20,16 +20,24 @@ import (
 var (
 	initCoinAmt = sdk.NewInt(100)
 
-	sender    sdk.AccAddress
-	recipient sdk.AccAddress
+	sender       sdk.AccAddress
+	recipient    sdk.AccAddress
+	senderStr    string
+	recipientStr string
 
 	receiverOnOtherChain = "receiverOnOtherChain"
+	senderOnOtherChain   = "senderOnOtherChain"
 	amount               = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
 	secret               = tmbytes.HexBytes(tmhash.Sum([]byte("secret")))
+	secretStr            = secret.String()
 	timestamp            = uint64(1580000000)
 	hashLock             = tmbytes.HexBytes(tmhash.Sum(append(secret, sdk.Uint64ToBigEndian(timestamp)...)))
-	id                   = tmbytes.HexBytes(tmhash.Sum(append(secret, sdk.Uint64ToBigEndian(timestamp)...)))
+	hashLockStr          = hashLock.String()
+	id                   = tmbytes.HexBytes(tmhash.Sum(append(append(append(hashLock, sender...), recipient...), []byte(amount.String())...)))
+	idStr                = id.String()
 	timeLock             = uint64(50)
+	transfer             = true
+	notTransfer          = false
 )
 
 type KeeperTestSuite struct {
@@ -62,17 +70,8 @@ func (suite *KeeperTestSuite) setTestAddrs() {
 
 	sender = testAddrs[0]
 	recipient = testAddrs[1]
-}
-
-func (suite *KeeperTestSuite) setHTLC(state types.HTLCState) {
-	expirationHeight := uint64(suite.ctx.BlockHeight()) + timeLock
-	htlc := types.NewHTLC(sender, recipient, receiverOnOtherChain, amount, secret, timestamp, expirationHeight, state)
-
-	suite.keeper.SetHTLC(suite.ctx, htlc, hashLock)
-
-	if state == types.Open || state == types.Expired {
-		_ = suite.app.BankKeeper.SendCoinsFromAccountToModule(suite.ctx, sender, types.ModuleName, amount)
-	}
+	senderStr = sender.String()
+	recipientStr = recipient.String()
 }
 
 func (suite *KeeperTestSuite) TestCreateHTLC() {
@@ -82,8 +81,8 @@ func (suite *KeeperTestSuite) TestCreateHTLC() {
 	htlc, found := suite.keeper.GetHTLC(suite.ctx, hashLock)
 	suite.True(found)
 
-	suite.Equal(sender.String(), htlc.Sender)
-	suite.Equal(recipient.String(), htlc.To)
+	suite.Equal(senderStr, htlc.Sender)
+	suite.Equal(recipientStr, htlc.To)
 	suite.Equal(receiverOnOtherChain, htlc.ReceiverOnOtherChain)
 	suite.Equal(amount, htlc.Amount)
 	suite.Equal("", htlc.Secret)
@@ -111,16 +110,28 @@ func (suite *KeeperTestSuite) TestCreateHTLC() {
 	suite.Equal(amount.AmountOf(sdk.DefaultBondDenom), htlcModAccCoin.Amount)
 }
 
-func (suite *KeeperTestSuite) TestClaimHTLC() {
-	suite.setHTLC(types.Open)
+func (suite *KeeperTestSuite) TestCreateIncomingHTLT() {
+	err := suite.keeper.CreateHTLC(suite.ctx, sender, recipient, receiverOnOtherChain, amount, hashLock, timestamp, timeLock)
+	suite.NoError(err)
 
-	err := suite.keeper.ClaimHTLC(suite.ctx, hashLock, secret)
+	// TODO
+}
+
+func (suite *KeeperTestSuite) TestCreateOutgoingHTLT() {
+	err := suite.keeper.CreateHTLC(suite.ctx, sender, recipient, receiverOnOtherChain, amount, hashLock, timestamp, timeLock)
+	suite.NoError(err)
+
+	// TODO
+}
+
+func (suite *KeeperTestSuite) TestClaimHTLC() {
+	err := suite.keeper.CreateHTLC()
 	suite.NoError(err)
 
 	htlc, found := suite.keeper.GetHTLC(suite.ctx, hashLock)
 	suite.True(found)
 
-	suite.Equal(secret.String(), htlc.Secret)
+	suite.Equal(secretStr, htlc.Secret)
 	suite.Equal(timestamp, htlc.Timestamp)
 	suite.Equal(types.Completed, htlc.State)
 
@@ -131,8 +142,23 @@ func (suite *KeeperTestSuite) TestClaimHTLC() {
 	suite.Equal(sdk.ZeroInt(), htlcModAccCoin.Amount)
 }
 
+func (suite *KeeperTestSuite) TestClaimIncomingHTLT() {
+	err := suite.keeper.CreateIncomingHTLT()
+	suite.NoError(err)
+
+	// TODO
+}
+
+func (suite *KeeperTestSuite) TestClaimOutgoingHTLT() {
+	err := suite.keeper.CreateOutgoingHTLT()
+	suite.NoError(err)
+
+	// TODO
+}
+
 func (suite *KeeperTestSuite) TestRefundHTLC() {
-	suite.setHTLC(types.Expired)
+	err := suite.keeper.CreateHTLC()
+	suite.NoError(err)
 
 	err := suite.keeper.RefundHTLC(suite.ctx, hashLock)
 	suite.NoError(err)
@@ -147,4 +173,18 @@ func (suite *KeeperTestSuite) TestRefundHTLC() {
 
 	htlcModAccCoin := suite.app.BankKeeper.GetBalance(suite.ctx, suite.keeper.GetHTLCAccount(suite.ctx).GetAddress(), sdk.DefaultBondDenom)
 	suite.Equal(sdk.ZeroInt(), htlcModAccCoin.Amount)
+}
+
+func (suite *KeeperTestSuite) TestRefundIncomingHTLT() {
+	err := suite.keeper.CreateIncomingHTLT()
+	suite.NoError(err)
+
+	// TODO
+}
+
+func (suite *KeeperTestSuite) TestRefundOutgoingHTLT() {
+	err := suite.keeper.CreateOutgoingHTLT()
+	suite.NoError(err)
+
+	// TODO
 }

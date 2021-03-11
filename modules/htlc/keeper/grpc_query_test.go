@@ -8,7 +8,7 @@ import (
 	"github.com/irisnet/irismod/modules/htlc/types"
 )
 
-func (suite *KeeperTestSuite) TestQueryBalance() {
+func (suite *KeeperTestSuite) TestQueryHTLC() {
 	err := suite.keeper.CreateHTLC(suite.ctx, sender, recipient, receiverOnOtherChain, amount, hashLock, timestamp, timeLock)
 	suite.NoError(err)
 
@@ -22,4 +22,16 @@ func (suite *KeeperTestSuite) TestQueryBalance() {
 
 	suite.NoError(err)
 	suite.Equal(amount, response.Htlc.Amount)
+}
+
+func (suite *KeeperTestSuite) TestQueryAssetSupply() {
+	// TODO
+}
+
+func (suite *KeeperTestSuite) TestQueryAssetSupplies() {
+	// TODO
+}
+
+func (suite *KeeperTestSuite) TestQueryParams() {
+	// TODO
 }

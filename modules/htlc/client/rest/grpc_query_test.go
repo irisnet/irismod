@@ -20,6 +20,8 @@ import (
 	"github.com/irisnet/irismod/simapp"
 )
 
+// TODO
+
 type IntegrationTestSuite struct {
 	suite.Suite
 
@@ -98,5 +100,4 @@ func (s *IntegrationTestSuite) TestHtlc() {
 	s.Require().Equal(receiverOnOtherChain, htlcResp.Htlc.ReceiverOnOtherChain)
 	s.Require().Equal(timestamp, htlcResp.Htlc.Timestamp)
 	s.Require().Equal(stateOpen, htlcResp.Htlc.State.String())
-
 }
