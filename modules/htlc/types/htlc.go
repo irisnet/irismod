@@ -143,5 +143,5 @@ func GetHashLock(secret tmbytes.HexBytes, timestamp uint64) []byte {
 }
 
 func GetID(sender sdk.AccAddress, to sdk.AccAddress, amount sdk.Coins, hashLock tmbytes.HexBytes) tmbytes.HexBytes {
-	return tmhash.Sum(append(append(append(hashLock, sender...), to...), []byte(amount.String())...))
+	return tmhash.Sum(append(append(append(hashLock, sender...), to...), []byte(amount.Sort().String())...))
 }
