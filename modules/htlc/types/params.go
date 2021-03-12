@@ -3,8 +3,11 @@ package types
 import (
 	fmt "fmt"
 	"strings"
+	time "time"
 
 	"gopkg.in/yaml.v2"
+
+	tmtime "github.com/tendermint/tendermint/types/time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -17,6 +20,13 @@ const (
 // Parameter store keys
 var (
 	KeyAssetParams = []byte("AssetParams") // asset params key
+
+	DefaultMinAmount         sdk.Int = sdk.ZeroInt()
+	DefaultMaxAmount         sdk.Int = sdk.NewInt(1000000000000)
+	DefaultMinBlockLock      uint64  = 220
+	DefaultMaxBlockLock      uint64  = 270
+	DefaultPreviousBlockTime         = tmtime.Canonical(time.Unix(1, 0))
+	// TODO: DefaultPreviousBlockTime
 )
 
 // NewParams is the HTLC params constructor

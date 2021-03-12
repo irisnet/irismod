@@ -7,9 +7,9 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/irisnet/irismod/modules/htlc/types";
 option (gogoproto.goproto_getters_all) = false;
 
-// Msg defines the HTLC Msg service.
+// Msg defines the HTLC Msg service
 service Msg {
-    // CreateHTLC defines a method for creating a HTLC.
+    // CreateHTLC defines a method for creating a HTLC
     rpc CreateHTLC(MsgCreateHTLC) returns (MsgCreateHTLCResponse);
 
     // ClaimHTLC defines a method for claiming a HTLC

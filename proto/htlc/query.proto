@@ -47,7 +47,7 @@ message QueryAssetSupplyRequest {
 
 // QueryAssetSupplyResponse is response type for the Query/AssetSupply RPC method
 message QueryAssetSupplyResponse {
-    htlc.AssetSupply asset_supply = 1 [ (gogoproto.moretags) = "yaml:\"asset_supply\"" ];
+    AssetSupply asset_supply = 1 [ (gogoproto.moretags) = "yaml:\"asset_supply\"" ];
 }
 
 // QueryAssetSuppliesRequest is request type for the Query/AssetSupplies RPC method
@@ -56,7 +56,7 @@ message QueryAssetSuppliesRequest {
 
 // QueryAssetSuppliesResponse is response type for the Query/AssetSupplies RPC method
 message QueryAssetSuppliesResponse {
-    repeated htlc.AssetSupply asset_supplies = 1 [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset_supplies\"" ];
+    repeated AssetSupply asset_supplies = 1 [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset_supplies\"" ];
 }
 
 // QueryParamsRequest is request type for the Query/Parameters RPC method
@@ -65,5 +65,5 @@ message QueryParamsRequest {
 
 // QueryParamsResponse is response type for the Query/Parameters RPC method
 message QueryParamsResponse {
-    htlc.Params params = 1 [ (gogoproto.nullable) = false ];
+    Params params = 1 [ (gogoproto.nullable) = false ];
 }

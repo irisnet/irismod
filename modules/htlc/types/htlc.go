@@ -48,6 +48,12 @@ func NewHTLC(
 
 // Validate validates the HTLC
 func (h HTLC) Validate() error {
+	if err := ValidateID(h.Id); err != nil {
+		return err
+	}
+	if err := ValidateHashLock(h.HashLock); err != nil {
+		return err
+	}
 	if _, err := sdk.AccAddressFromBech32(h.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -57,8 +63,29 @@ func (h HTLC) Validate() error {
 	if err := ValidateReceiverOnOtherChain(h.ReceiverOnOtherChain); err != nil {
 		return err
 	}
+	if err := ValidateSenderOnOtherChain(h.SenderOnOtherChain); err != nil {
+		return err
+	}
+	if h.ExpirationHeight == 0 {
+		return sdkerrors.Wrapf(ErrInvalidExpirationHeight, "expire height cannot be 0")
+	}
+	if h.Timestamp == 0 {
+		return sdkerrors.Wrapf(ErrInvalidTimestamp, "timestamp cannot be 0")
+	}
 	if err := ValidateAmount(h.Transfer, h.Amount); err != nil {
 		return err
+	}
+	if h.State > 2 {
+		return sdkerrors.Wrapf(ErrInvalidState, "invalid htlc status")
+	}
+	if h.State == Completed && h.ClosedBlock == 0 {
+		return sdkerrors.Wrapf(ErrInvalidClosedBlock, "closed block cannot be 0")
+	}
+	if !h.Transfer && h.Direction != 0 {
+		return sdkerrors.Wrapf(ErrInvalidDirection, "invalid htlc direction")
+	}
+	if h.Transfer && (h.Direction < 1 || h.Direction > 2) {
+		return sdkerrors.Wrapf(ErrInvalidDirection, "invalid htlt direction")
 	}
 	if h.State != Completed && len(h.Secret) > 0 {
 		return sdkerrors.Wrapf(ErrInvalidSecret, "secret must be empty when the HTLC has not be claimed")

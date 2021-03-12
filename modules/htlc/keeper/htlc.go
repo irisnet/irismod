@@ -367,8 +367,7 @@ func (k Keeper) IterateHTLCs(
 
 // IterateHTLCExpiredQueueByHeight iterates through the HTLC expiration queue by the specified height
 func (k Keeper) IterateHTLCExpiredQueueByHeight(
-	ctx sdk.Context,
-	height uint64,
+	ctx sdk.Context, height uint64,
 	op func(id tmbytes.HexBytes, h types.HTLC) (stop bool),
 ) {
 	store := ctx.KVStore(k.storeKey)

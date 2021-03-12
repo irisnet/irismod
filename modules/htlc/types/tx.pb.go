@@ -334,7 +334,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateHTLC defines a method for creating a HTLC.
+	// CreateHTLC defines a method for creating a HTLC
 	CreateHTLC(ctx context.Context, in *MsgCreateHTLC, opts ...grpc.CallOption) (*MsgCreateHTLCResponse, error)
 	// ClaimHTLC defines a method for claiming a HTLC
 	ClaimHTLC(ctx context.Context, in *MsgClaimHTLC, opts ...grpc.CallOption) (*MsgClaimHTLCResponse, error)
@@ -368,7 +368,7 @@ func (c *msgClient) ClaimHTLC(ctx context.Context, in *MsgClaimHTLC, opts ...grp
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateHTLC defines a method for creating a HTLC.
+	// CreateHTLC defines a method for creating a HTLC
 	CreateHTLC(context.Context, *MsgCreateHTLC) (*MsgCreateHTLCResponse, error)
 	// ClaimHTLC defines a method for claiming a HTLC
 	ClaimHTLC(context.Context, *MsgClaimHTLC) (*MsgClaimHTLCResponse, error)

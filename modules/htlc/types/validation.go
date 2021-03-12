@@ -10,8 +10,10 @@ import (
 const (
 	// SecretLength is the length for the secret in hex string
 	SecretLength = 64
-	// HashLockLength is the length for the hash lock in hex string
+	// HTLCIDLength is the length for the hash lock in hex string
 	HTLCIDLength = 64
+	// HashLockLength is the length for the hash lock in hex string
+	HashLockLength = 64
 	// MaxLengthForAddressOnOtherChain is the maximum length for the address on other chains
 	MaxLengthForAddressOnOtherChain = 128
 	// MinTimeLock is the minimum time span for HTLC in blocks
@@ -55,6 +57,18 @@ func ValidateID(id string) error {
 
 	if _, err := hex.DecodeString(id); err != nil {
 		return sdkerrors.Wrapf(ErrInvalidID, "id must be a hex encoded string")
+	}
+	return nil
+}
+
+// ValidateHashLock verifies whether the given hash lock is legal
+func ValidateHashLock(hashLock string) error {
+	if len(hashLock) != HashLockLength {
+		return sdkerrors.Wrapf(ErrInvalidHashLock, "length of the hash lock must be %d", HashLockLength)
+	}
+
+	if _, err := hex.DecodeString(hashLock); err != nil {
+		return sdkerrors.Wrapf(ErrInvalidHashLock, "hash lock must be a hex encoded string")
 	}
 	return nil
 }
