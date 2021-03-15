@@ -18,12 +18,14 @@ import (
 )
 
 var (
-	id           tmbytes.HexBytes
-	sender       sdk.AccAddress
-	recipient    sdk.AccAddress
-	idStr        string
-	senderStr    string
-	recipientStr string
+	id               tmbytes.HexBytes
+	sender           sdk.AccAddress
+	recipient        sdk.AccAddress
+	deputyAddress    sdk.AccAddress
+	idStr            string
+	senderStr        string
+	recipientStr     string
+	deputyAddressStr string
 
 	initCoinAmt          = sdk.NewInt(100)
 	receiverOnOtherChain = "receiverOnOtherChain"
@@ -56,11 +58,10 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	isCheckTx := false
-	app := simapp.Setup(isCheckTx)
+	app := simapp.Setup(false)
+	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
-	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
 	suite.keeper = &app.HTLCKeeper
 	suite.app = app
 
@@ -68,13 +69,15 @@ func (suite *KeeperTestSuite) SetupTest() {
 }
 
 func (suite *KeeperTestSuite) setTestAddrs() {
-	testAddrs := simapp.AddTestAddrs(suite.app, suite.ctx, 2, initCoinAmt)
+	testAddrs := simapp.AddTestAddrs(suite.app, suite.ctx, 10, initCoinAmt)
 	sender = testAddrs[0]
 	recipient = testAddrs[1]
+	deputyAddress = testAddrs[2]
 	id = tmbytes.HexBytes(tmhash.Sum(append(append(append(hashLock, sender...), recipient...), []byte(amount.String())...)))
 	idStr = id.String()
 	senderStr = sender.String()
 	recipientStr = recipient.String()
+	deputyAddressStr = deputyAddress.String()
 }
 
 func (suite *KeeperTestSuite) TestCreateHTLC() {
