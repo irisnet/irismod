@@ -5,7 +5,6 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -187,10 +186,9 @@ func (k Keeper) UpdateTimeBasedSupplyLimits(ctx sdk.Context) {
 }
 
 // GetAssetSupply gets an asset's current supply from the store.
-func (k Keeper) GetAssetSupply(ctx sdk.Context, denom string) (types.AssetSupply, bool) {
-	var assetSupply types.AssetSupply
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AssetSupplyPrefix)
-	bz := store.Get([]byte(denom))
+func (k Keeper) GetAssetSupply(ctx sdk.Context, denom string) (assetSupply types.AssetSupply, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetAssetSupplyKey(denom))
 	if bz == nil {
 		return types.AssetSupply{}, false
 	}
@@ -200,9 +198,9 @@ func (k Keeper) GetAssetSupply(ctx sdk.Context, denom string) (types.AssetSupply
 
 // SetAssetSupply updates an asset's supply
 func (k Keeper) SetAssetSupply(ctx sdk.Context, supply types.AssetSupply, denom string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AssetSupplyPrefix)
+	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&supply)
-	store.Set([]byte(denom), bz)
+	store.Set(types.GetAssetSupplyKey(denom), bz)
 }
 
 // IterateAssetSupplies provides an iterator over all stored AssetSupplies.
@@ -231,11 +229,12 @@ func (k Keeper) GetAllAssetSupplies(ctx sdk.Context) (supplies []types.AssetSupp
 
 // GetPreviousBlockTime get the blocktime for the previous block
 func (k Keeper) GetPreviousBlockTime(ctx sdk.Context) (blockTime time.Time, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.PreviousBlockTimeKey)
-	b := store.Get([]byte{})
+	store := ctx.KVStore(k.storeKey)
+	b := store.Get(types.PreviousBlockTimeKey)
 	if b == nil {
 		return time.Time{}, false
 	}
+
 	var timestamp *gogotypes.Timestamp
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, timestamp)
 	blockTime, _ = gogotypes.TimestampFromProto(timestamp)
@@ -244,8 +243,8 @@ func (k Keeper) GetPreviousBlockTime(ctx sdk.Context) (blockTime time.Time, foun
 
 // SetPreviousBlockTime set the time of the previous block
 func (k Keeper) SetPreviousBlockTime(ctx sdk.Context, blockTime time.Time) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.PreviousBlockTimeKey)
+	store := ctx.KVStore(k.storeKey)
 	timestamp, _ := gogotypes.TimestampProto(blockTime)
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(timestamp)
-	store.Set([]byte{}, bz)
+	store.Set(types.PreviousBlockTimeKey, bz)
 }

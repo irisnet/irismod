@@ -320,14 +320,11 @@ func (k Keeper) SetHTLC(ctx sdk.Context, htlc types.HTLC, id tmbytes.HexBytes) {
 // GetHTLC retrieves the specified HTLC
 func (k Keeper) GetHTLC(ctx sdk.Context, id tmbytes.HexBytes) (htlc types.HTLC, found bool) {
 	store := ctx.KVStore(k.storeKey)
-
 	bz := store.Get(types.GetHTLCKey(id))
 	if bz == nil {
 		return htlc, false
 	}
-
 	k.cdc.MustUnmarshalBinaryBare(bz, &htlc)
-
 	return htlc, true
 }
 

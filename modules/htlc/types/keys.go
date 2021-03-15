@@ -45,3 +45,8 @@ func GetHTLCExpiredQueueKey(expirationHeight uint64, id []byte) []byte {
 func GetHTLCExpiredQueueSubspace(expirationHeight uint64) []byte {
 	return append(HTLCExpiredQueueKey, sdk.Uint64ToBigEndian(expirationHeight)...)
 }
+
+// GetAssetSupplyKey returns the key prefix for the asset supply by the given denom
+func GetAssetSupplyKey(denom string) []byte {
+	return append(AssetSupplyPrefix, []byte(denom)...)
+}
