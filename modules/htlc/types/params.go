@@ -26,7 +26,6 @@ var (
 	DefaultMinBlockLock      uint64  = 220
 	DefaultMaxBlockLock      uint64  = 270
 	DefaultPreviousBlockTime         = tmtime.Canonical(time.Unix(1, 0))
-	// TODO: DefaultPreviousBlockTime
 )
 
 // NewParams is the HTLC params constructor
@@ -47,49 +46,9 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-// // DefaultParams returns the default coinswap module parameters
-// func DefaultParams() Params {
-// 	return Params{[]AssetParam{}}
-// }
-
 // DefaultParams returns the default coinswap module parameters
 func DefaultParams() Params {
-	return Params{
-		AssetParams: []AssetParam{
-			{
-				Denom: "htltbcbnb",
-				SupplyLimit: SupplyLimit{
-					Limit:          sdk.NewInt(350000000000000),
-					TimeLimited:    false,
-					TimeBasedLimit: sdk.ZeroInt(),
-					TimePeriod:     time.Hour,
-				},
-				Active:        true,
-				DeputyAddress: "iaa1kznrznww4pd6gx0zwrpthjk68fdmqypj55j94s",
-				FixedFee:      sdk.NewInt(1000),
-				MinSwapAmount: sdk.OneInt(),
-				MaxSwapAmount: sdk.NewInt(1000000000000),
-				MinBlockLock:  DefaultMinBlockLock,
-				MaxBlockLock:  DefaultMaxBlockLock,
-			},
-			{
-				Denom: "htltbcbusd",
-				SupplyLimit: SupplyLimit{
-					Limit:          sdk.NewInt(100000000000000),
-					TimeLimited:    true,
-					TimeBasedLimit: sdk.NewInt(50000000000),
-					TimePeriod:     time.Hour,
-				},
-				Active:        true,
-				DeputyAddress: "iaa1kznrznww4pd6gx0zwrpthjk68fdmqypj55j94s",
-				FixedFee:      sdk.NewInt(1000),
-				MinSwapAmount: sdk.OneInt(),
-				MaxSwapAmount: sdk.NewInt(1000000000000),
-				MinBlockLock:  DefaultMinBlockLock,
-				MaxBlockLock:  DefaultMaxBlockLock,
-			},
-		},
-	}
+	return Params{[]AssetParam{}}
 }
 
 // String returns a human readable string representation of the parameters.

@@ -258,9 +258,9 @@ func (k Keeper) GetPreviousBlockTime(ctx sdk.Context) (blockTime time.Time, foun
 		return time.Time{}, false
 	}
 
-	var timestamp *gogotypes.Timestamp
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, timestamp)
-	blockTime, _ = gogotypes.TimestampFromProto(timestamp)
+	var timestamp gogotypes.Timestamp
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(b, &timestamp)
+	blockTime, _ = gogotypes.TimestampFromProto(&timestamp)
 	return blockTime, true
 }
 

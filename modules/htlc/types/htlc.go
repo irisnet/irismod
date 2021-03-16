@@ -113,6 +113,11 @@ func NewAssetSupply(
 	}
 }
 
+// DefaultAssetSupplies gets the raw asset supplies for testing
+func DefaultAssetSupplies() []AssetSupply {
+	return []AssetSupply{}
+}
+
 // Validate performs a basic validation of an asset supply fields.
 func (a AssetSupply) Validate() error {
 	if !a.IncomingSupply.IsValid() {

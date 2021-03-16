@@ -4,7 +4,6 @@ import (
 	fmt "fmt"
 	time "time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -25,31 +24,6 @@ func DefaultGenesisState() *GenesisState {
 		PendingHtlcs:      []HTLC{},
 		Supplies:          DefaultAssetSupplies(),
 		PreviousBlockTime: DefaultPreviousBlockTime,
-	}
-}
-
-// // DefaultAssetSupplies gets the raw asset supplies for testing
-// func DefaultAssetSupplies() []AssetSupply {
-// 	return []AssetSupply{}
-// }
-
-// Only for test
-func DefaultAssetSupplies() []AssetSupply {
-	return []AssetSupply{
-		NewAssetSupply(
-			sdk.NewCoin("htltbcbnb", sdk.ZeroInt()),
-			sdk.NewCoin("htltbcbnb", sdk.ZeroInt()),
-			sdk.NewCoin("htltbcbnb", sdk.ZeroInt()),
-			sdk.NewCoin("htltbcbnb", sdk.ZeroInt()),
-			time.Duration(0),
-		),
-		NewAssetSupply(
-			sdk.NewCoin("htltbcbusd", sdk.ZeroInt()),
-			sdk.NewCoin("htltbcbusd", sdk.ZeroInt()),
-			sdk.NewCoin("htltbcbusd", sdk.ZeroInt()),
-			sdk.NewCoin("htltbcbusd", sdk.ZeroInt()),
-			time.Duration(0),
-		),
 	}
 }
 
