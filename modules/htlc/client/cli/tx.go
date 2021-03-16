@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -141,7 +142,7 @@ func GetCmdCreateHTLC() *cobra.Command {
 				fmt.Println("It is the only way to claim or refund the locked coins from an HTLC")
 				fmt.Println()
 				fmt.Printf("Secret:      %s\nHashLock:    %s\n",
-					hex.EncodeToString(secret), hex.EncodeToString(hashLock),
+					strings.ToUpper(hex.EncodeToString(secret)), strings.ToUpper(hex.EncodeToString(hashLock)),
 				)
 			}
 			return err
