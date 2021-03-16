@@ -14,12 +14,6 @@ package keeper_test
 // 	"github.com/irisnet/irismod/simapp"
 // )
 
-// const (
-// 	TestSenderOtherChain    = "bnb1uky3me9ggqypmrsvxk7ur6hqkzq7zmv4ed4ng7"
-// 	TestRecipientOtherChain = "bnb1urfermcg92dwq36572cx4xg84wpk3lfpksr5g7"
-// 	TestDeputy              = "kava1xy7hrjy9r0algz9w3gzm8u6mrpq97kwta747gj"
-// )
-
 // var (
 // 	DenomMap  = map[int]string{0: "htltbtc", 1: "htlteth", 2: "htltbnb", 3: "htltxrp", 4: "htltdai"}
 // 	TestUser1 = sdk.AccAddress(crypto.AddressHash([]byte("KavaTestUser1")))
@@ -121,8 +115,8 @@ package keeper_test
 // 		id,
 // 		TestUser1,
 // 		TestUser2,
-// 		TestSenderOtherChain,
-// 		TestRecipientOtherChain,
+// 		receiverOnOtherChain,
+// 		senderOnOtherChain,
 // 		amount,
 // 		hashLock,
 // 		secret,
@@ -144,7 +138,7 @@ package keeper_test
 // }
 
 // func assetSupplies(count int) []types.AssetSupply {
-// 	if count > 5 { // Max 5 asset supplies
+// 	if count > 5 {
 // 		return []types.AssetSupply{}
 // 	}
 
