@@ -19,6 +19,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 
 	k.SetPreviousBlockTime(ctx, data.PreviousBlockTime)
 	k.SetParams(ctx, data.Params)
+	for _, supply := range data.Supplies {
+		k.SetAssetSupply(ctx, supply, supply.CurrentSupply.Denom)
+	}
 
 	var incomingSupplies sdk.Coins
 	var outgoingSupplies sdk.Coins

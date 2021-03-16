@@ -61,3 +61,16 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) GetHTLCAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
+
+// EnsureModuleAccountPermissions syncs the bep3 module account's permissions with those in the supply keeper.
+func (k Keeper) EnsureModuleAccountPermissions(ctx sdk.Context) error {
+	maccI := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+	macc, ok := maccI.(*authtypes.ModuleAccount)
+	if !ok {
+		return fmt.Errorf("expected %s account to be a module account type", types.ModuleName)
+	}
+	_, perms := k.accountKeeper.GetModuleAddressAndPermissions(types.ModuleName)
+	macc.Permissions = perms
+	k.accountKeeper.SetModuleAccount(ctx, macc)
+	return nil
+}

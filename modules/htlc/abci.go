@@ -36,4 +36,12 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			return false
 		},
 	)
+
+	if ctx.BlockTime().After(types.ModulePermissionsUpgradeTime) {
+		err := k.EnsureModuleAccountPermissions(ctx)
+		if err != nil {
+			k.Logger(ctx).Error(fmt.Sprintf("couldn't update module account permissions: %v", err))
+		}
+	}
+	k.UpdateTimeBasedSupplyLimits(ctx)
 }

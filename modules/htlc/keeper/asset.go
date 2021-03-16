@@ -26,13 +26,21 @@ func (k Keeper) IncrementCurrentAssetSupply(ctx sdk.Context, coin sdk.Coin) erro
 
 	// Resulting current supply must be under asset's limit
 	if supplyLimit.IsLT(supply.CurrentSupply.Add(coin)) {
-		return sdkerrors.Wrapf(types.ErrExceedsSupplyLimit, "increase %s, asset supply %s, limit %s", coin, supply.CurrentSupply, supplyLimit)
+		return sdkerrors.Wrapf(
+			types.ErrExceedsSupplyLimit,
+			"increase %s, asset supply %s, limit %s",
+			coin, supply.CurrentSupply, supplyLimit,
+		)
 	}
 
 	if limit.TimeLimited {
 		timeBasedSupplyLimit := sdk.NewCoin(coin.Denom, limit.TimeBasedLimit)
 		if timeBasedSupplyLimit.IsLT(supply.TimeLimitedCurrentSupply.Add(coin)) {
-			return sdkerrors.Wrapf(types.ErrExceedsTimeBasedSupplyLimit, "increase %s, current time-based asset supply %s, limit %s", coin, supply.TimeLimitedCurrentSupply, timeBasedSupplyLimit)
+			return sdkerrors.Wrapf(
+				types.ErrExceedsTimeBasedSupplyLimit,
+				"increase %s, current time-based asset supply %s, limit %s",
+				coin, supply.TimeLimitedCurrentSupply, timeBasedSupplyLimit,
+			)
 		}
 		supply.TimeLimitedCurrentSupply = supply.TimeLimitedCurrentSupply.Add(coin)
 	}
@@ -83,7 +91,11 @@ func (k Keeper) IncrementIncomingAssetSupply(ctx sdk.Context, coin sdk.Coin) err
 		timeLimitedTotalSupply := supply.TimeLimitedCurrentSupply.Add(supply.IncomingSupply)
 		timeBasedSupplyLimit := sdk.NewCoin(coin.Denom, limit.TimeBasedLimit)
 		if timeBasedSupplyLimit.IsLT(timeLimitedTotalSupply.Add(coin)) {
-			return sdkerrors.Wrapf(types.ErrExceedsTimeBasedSupplyLimit, "increase %s, time-based asset supply %s, limit %s", coin, supply.TimeLimitedCurrentSupply, timeBasedSupplyLimit)
+			return sdkerrors.Wrapf(
+				types.ErrExceedsTimeBasedSupplyLimit,
+				"increase %s, time-based asset supply %s, limit %s",
+				coin, supply.TimeLimitedCurrentSupply, timeBasedSupplyLimit,
+			)
 		}
 	}
 
@@ -119,8 +131,11 @@ func (k Keeper) IncrementOutgoingAssetSupply(ctx sdk.Context, coin sdk.Coin) err
 
 	// Result of (outgoing + amount) must be less than current supply
 	if supply.CurrentSupply.IsLT(supply.OutgoingSupply.Add(coin)) {
-		return sdkerrors.Wrapf(types.ErrExceedsAvailableSupply, "swap amount %s, available supply %s", coin,
-			supply.CurrentSupply.Amount.Sub(supply.OutgoingSupply.Amount))
+		return sdkerrors.Wrapf(
+			types.ErrExceedsAvailableSupply,
+			"swap amount %s, available supply %s",
+			coin, supply.CurrentSupply.Amount.Sub(supply.OutgoingSupply.Amount),
+		)
 	}
 
 	supply.OutgoingSupply = supply.OutgoingSupply.Add(coin)
@@ -150,7 +165,8 @@ func (k Keeper) DecrementOutgoingAssetSupply(ctx sdk.Context, coin sdk.Coin) err
 func (k Keeper) CreateNewAssetSupply(ctx sdk.Context, denom string) types.AssetSupply {
 	supply := types.NewAssetSupply(
 		sdk.NewCoin(denom, sdk.ZeroInt()), sdk.NewCoin(denom, sdk.ZeroInt()),
-		sdk.NewCoin(denom, sdk.ZeroInt()), sdk.NewCoin(denom, sdk.ZeroInt()), time.Duration(0))
+		sdk.NewCoin(denom, sdk.ZeroInt()), sdk.NewCoin(denom, sdk.ZeroInt()), time.Duration(0),
+	)
 	k.SetAssetSupply(ctx, supply, denom)
 	return supply
 }
@@ -204,10 +220,15 @@ func (k Keeper) SetAssetSupply(ctx sdk.Context, supply types.AssetSupply, denom 
 }
 
 // IterateAssetSupplies provides an iterator over all stored AssetSupplies.
-func (k Keeper) IterateAssetSupplies(ctx sdk.Context, cb func(supply types.AssetSupply) (stop bool)) {
-	iterator := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), types.AssetSupplyPrefix)
+func (k Keeper) IterateAssetSupplies(
+	ctx sdk.Context,
+	cb func(supply types.AssetSupply) (stop bool),
+) {
+	store := ctx.KVStore(k.storeKey)
 
+	iterator := sdk.KVStorePrefixIterator(store, types.AssetSupplyPrefix)
 	defer iterator.Close()
+
 	for ; iterator.Valid(); iterator.Next() {
 		var supply types.AssetSupply
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &supply)
@@ -220,10 +241,12 @@ func (k Keeper) IterateAssetSupplies(ctx sdk.Context, cb func(supply types.Asset
 
 // GetAllAssetSupplies returns all asset supplies from the store
 func (k Keeper) GetAllAssetSupplies(ctx sdk.Context) (supplies []types.AssetSupply) {
-	k.IterateAssetSupplies(ctx, func(supply types.AssetSupply) bool {
-		supplies = append(supplies, supply)
-		return false
-	})
+	k.IterateAssetSupplies(
+		ctx, func(supply types.AssetSupply) bool {
+			supplies = append(supplies, supply)
+			return false
+		},
+	)
 	return
 }
 

@@ -28,4 +28,6 @@ type AccountKeeper interface {
 	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
 	GetModuleAddress(name string) sdk.AccAddress
 	GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI
+	SetModuleAccount(ctx sdk.Context, macc authtypes.ModuleAccountI)
+	GetModuleAddressAndPermissions(moduleName string) (sdk.AccAddress, []string)
 }

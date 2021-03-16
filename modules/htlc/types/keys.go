@@ -1,6 +1,8 @@
 package types
 
 import (
+	time "time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -22,6 +24,9 @@ const (
 )
 
 var (
+	// ModulePermissionsUpgradeTime is the block time after which the htlc module account's permissions are synced with the supply module.
+	ModulePermissionsUpgradeTime time.Time = time.Date(2020, 11, 3, 10, 0, 0, 0, time.UTC)
+
 	// Keys for store prefixes
 	HTLCKey              = []byte{0x01} // prefix for HTLC
 	HTLCExpiredQueueKey  = []byte{0x02} // prefix for the HTLC expiration queue
