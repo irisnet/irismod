@@ -37,6 +37,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+### Improvements
+
+* (modules/htlc)[\#146](https://github.com/irisnet/irismod/pull/146) Refactor HTLC module to support HTLT.
+
 ## [v1.3.1] - 2021-02-09
 
 ### Bug Fixes
