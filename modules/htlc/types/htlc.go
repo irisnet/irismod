@@ -75,7 +75,7 @@ func (h HTLC) Validate() error {
 	if err := ValidateAmount(h.Transfer, h.Amount); err != nil {
 		return err
 	}
-	if h.State > 2 {
+	if h.State > Refunded {
 		return sdkerrors.Wrapf(ErrInvalidState, "invalid htlc status")
 	}
 	if h.State == Completed && h.ClosedBlock == 0 {
@@ -84,7 +84,7 @@ func (h HTLC) Validate() error {
 	if !h.Transfer && h.Direction != 0 {
 		return sdkerrors.Wrapf(ErrInvalidDirection, "invalid htlc direction")
 	}
-	if h.Transfer && (h.Direction < 1 || h.Direction > 2) {
+	if h.Transfer && (h.Direction < Incoming || h.Direction > Outgoing) {
 		return sdkerrors.Wrapf(ErrInvalidDirection, "invalid htlt direction")
 	}
 	if h.State != Completed && len(h.Secret) > 0 {
