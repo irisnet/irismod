@@ -31,6 +31,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 			panic(err.Error())
 		}
 
+		if htlc.State != types.Open {
+			panic(fmt.Sprintf("htlc %s has invalid status %s", htlc.Id, htlc.State.String()))
+		}
+
 		if !htlc.Transfer {
 			k.SetHTLC(ctx, htlc, id)
 			k.AddHTLCToExpiredQueue(ctx, htlc.ExpirationHeight, id)
@@ -44,9 +48,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 		k.SetHTLC(ctx, htlc, id)
 		k.AddHTLCToExpiredQueue(ctx, htlc.ExpirationHeight, id)
 
-		if htlc.State != types.Open {
-			panic(fmt.Sprintf("htlt %s has invalid status %s", htlc.Id, htlc.State.String()))
-		}
 		switch htlc.Direction {
 		case types.Incoming:
 			incomingSupplies = incomingSupplies.Add(htlc.Amount...)
