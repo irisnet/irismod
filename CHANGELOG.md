@@ -40,6 +40,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 * (modules/coinswap) [\#155](https://github.com/irisnet/irismod/pull/155) Fix min liquidity check in add liquidity.
+* (modules/coinswap)[\#153](https://github.com/irisnet/irismod/pull/151) Fix query not-existent reserve pool.
 * (modules/service) [\#152](https://github.com/irisnet/irismod/pull/152) Fix update service binding.
 
 ### Improvements
