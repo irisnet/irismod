@@ -39,7 +39,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Bug Fixes
 
-* (modules/htlc) [\#158](https://github.com/irisnet/irismod/pull/158) Improve htlc.
 * (modules/htlc) [\#157](https://github.com/irisnet/irismod/pull/157) Fix htlc params validation.
 * (modules/htlc) [\#156](https://github.com/irisnet/irismod/pull/156) Fix validation when creating HTLT.
 * (modules/coinswap) [\#155](https://github.com/irisnet/irismod/pull/155) Fix min liquidity check in add liquidity.
@@ -48,6 +47,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
+* (modules/htlc) [\#158](https://github.com/irisnet/irismod/pull/158) Improve htlc.
 * (modules/token)[\#154](https://github.com/irisnet/irismod/pull/154) Add reserved token prefix.
 * (modules/coinswap)[\#151](https://github.com/irisnet/irismod/pull/151) Replace prefix `swap/` with `swap`.
 * (modules/htlc)[\#146](https://github.com/irisnet/irismod/pull/146) Refactor HTLC module to support HTLT.
