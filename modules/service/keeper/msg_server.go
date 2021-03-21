@@ -70,6 +70,10 @@ func (m msgServer) BindService(goCtx context.Context, msg *types.MsgBindService)
 		return nil, err
 	}
 
+	if m.Keeper.blockedAddrs[msg.Owner] {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is a module account", msg.Owner)
+	}
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	if err := m.Keeper.AddServiceBinding(
 		ctx, msg.ServiceName, provider, msg.Deposit,
@@ -106,6 +110,10 @@ func (m msgServer) UpdateServiceBinding(goCtx context.Context, msg *types.MsgUpd
 		return nil, err
 	}
 
+	if m.Keeper.blockedAddrs[msg.Owner] {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is a module account", msg.Owner)
+	}
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	if err := m.Keeper.UpdateServiceBinding(
 		ctx, msg.ServiceName, provider, msg.Deposit,
@@ -140,6 +148,10 @@ func (m msgServer) SetWithdrawAddress(goCtx context.Context, msg *types.MsgSetWi
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
+	}
+
+	if m.Keeper.blockedAddrs[msg.Owner] {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is a module account", msg.Owner)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
