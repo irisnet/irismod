@@ -162,7 +162,11 @@ func (k Keeper) createHTLT(
 		}
 		// Amount in outgoing swaps must be able to pay the deputy's fixed fee.
 		if amount[0].Amount.LT(asset.FixedFee.Add(asset.MinSwapAmount)) {
-			return direction, sdkerrors.Wrap(types.ErrInsufficientAmount, amount[0].String())
+			return direction, sdkerrors.Wrapf(
+				types.ErrInsufficientAmount,
+				"amount %s < fixed fee %s + min swap amount %s",
+				amount[0].String(), asset.FixedFee.String(), asset.MinSwapAmount,
+			)
 		}
 		if err := k.IncrementOutgoingAssetSupply(ctx, amount[0]); err != nil {
 			return direction, err
