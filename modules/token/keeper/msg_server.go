@@ -70,10 +70,6 @@ func (m msgServer) EditToken(goCtx context.Context, msg *types.MsgEditToken) (*t
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if m.Keeper.blockedAddrs[msg.Owner] {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is a module account", msg.Owner)
-	}
-
 	if err := m.Keeper.EditToken(
 		ctx, msg.Symbol, msg.Name,
 		msg.MaxSupply, msg.Mintable, owner,
