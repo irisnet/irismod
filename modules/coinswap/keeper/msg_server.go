@@ -83,10 +83,6 @@ func (m msgServer) SwapCoin(goCtx context.Context, msg *types.MsgSwapOrder) (*ty
 		return nil, sdkerrors.Wrap(types.ErrInvalidDeadline, "deadline has passed for MsgSwapOrder")
 	}
 
-	if m.Keeper.blockedAddrs[msg.Input.Address] {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive external funds", msg.Input.Address)
-	}
-
 	if m.Keeper.blockedAddrs[msg.Output.Address] {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive external funds", msg.Output.Address)
 	}
