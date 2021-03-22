@@ -156,9 +156,9 @@ func (k Keeper) createHTLT(
 			return direction, err
 		}
 	case types.Outgoing:
-		// Outgoing swaps must have a height span within the accepted range
+		// Outgoing swaps must have a time lock within the accepted range
 		if timeLock < asset.MinBlockLock || timeLock > asset.MaxBlockLock {
-			return direction, sdkerrors.Wrapf(types.ErrInvalidTimeLock, "height span %d outside range [%d, %d]", timeLock, asset.MinBlockLock, asset.MaxBlockLock)
+			return direction, sdkerrors.Wrapf(types.ErrInvalidTimeLock, "time lock %d outside range [%d, %d]", timeLock, asset.MinBlockLock, asset.MaxBlockLock)
 		}
 		// Amount in outgoing swaps must be able to pay the deputy's fixed fee.
 		if amount[0].Amount.LT(asset.FixedFee.Add(asset.MinSwapAmount)) {
