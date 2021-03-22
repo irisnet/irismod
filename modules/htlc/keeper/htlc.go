@@ -176,7 +176,7 @@ func (k Keeper) createHTLT(
 			return direction, err
 		}
 	default:
-		return direction, sdkerrors.Wrapf(types.ErrInvalidSwapDirection, direction.String())
+		return direction, sdkerrors.Wrapf(types.ErrInvalidDirection, direction.String())
 	}
 
 	return direction, nil
@@ -272,7 +272,7 @@ func (k Keeper) claimHTLT(ctx sdk.Context, htlc types.HTLC) error {
 			return err
 		}
 	default:
-		return sdkerrors.Wrapf(types.ErrInvalidSwapDirection, htlc.Direction.String())
+		return sdkerrors.Wrapf(types.ErrInvalidDirection, htlc.Direction.String())
 	}
 
 	return nil
