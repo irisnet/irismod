@@ -48,6 +48,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
+* [\#163](https://github.com/irisnet/irismod/pull/163) Improve generate coins.
 * (modules/htlc) [\#158](https://github.com/irisnet/irismod/pull/158) Improve htlc.
 * (modules/token)[\#154](https://github.com/irisnet/irismod/pull/154) Add reserved token prefix.
 * (modules/coinswap)[\#151](https://github.com/irisnet/irismod/pull/151) Replace prefix `swap/` with `swap`.
