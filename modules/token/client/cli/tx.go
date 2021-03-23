@@ -120,7 +120,7 @@ func GetCmdIssueToken() *cobra.Command {
 				}
 
 				// append issuance fee to prompt
-				issueFeeMainUnit := sdk.Coins{fee.IssueFee}.String()
+				issueFeeMainUnit := sdk.NewCoins(fee.IssueFee).String()
 				prompt += fmt.Sprintf(": %s", issueFeeMainUnit)
 			}
 
@@ -256,7 +256,7 @@ func GetCmdMintToken() *cobra.Command {
 				}
 
 				// append mint fee to prompt
-				mintFeeMainUnit := sdk.Coins{fee.MintFee}.String()
+				mintFeeMainUnit := sdk.NewCoins(fee.MintFee).String()
 				prompt += fmt.Sprintf(": %s", mintFeeMainUnit)
 			}
 

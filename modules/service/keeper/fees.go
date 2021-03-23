@@ -18,7 +18,7 @@ func (k Keeper) RefundServiceFee(ctx sdk.Context, consumer sdk.AccAddress, servi
 func (k Keeper) AddEarnedFee(ctx sdk.Context, provider sdk.AccAddress, fee sdk.Coins) error {
 	taxRate := k.ServiceFeeTax(ctx)
 
-	taxCoins := sdk.Coins{}
+	taxCoins := sdk.NewCoins()
 	for _, coin := range fee {
 		taxAmount := sdk.NewDecFromInt(coin.Amount).Mul(taxRate).TruncateInt()
 		taxCoins = taxCoins.Add(sdk.NewCoin(coin.Denom, taxAmount))

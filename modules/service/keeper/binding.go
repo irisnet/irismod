@@ -363,7 +363,7 @@ func (k Keeper) RefundDeposit(ctx sdk.Context, serviceName string, provider, own
 		return err
 	}
 
-	binding.Deposit = sdk.Coins{}
+	binding.Deposit = sdk.NewCoins()
 	k.SetServiceBinding(ctx, binding)
 
 	return nil

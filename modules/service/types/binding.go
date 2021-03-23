@@ -85,7 +85,7 @@ func ParsePricing(pricing string) (p Pricing, err error) {
 		return p, sdkerrors.Wrapf(ErrInvalidPricing, "invalid price: %s", err.Error())
 	}
 
-	p.Price = sdk.Coins{priceCoin}
+	p.Price = sdk.NewCoins(priceCoin)
 	p.PromotionsByTime = rawPricing.PromotionsByTime
 	p.PromotionsByVolume = rawPricing.PromotionsByVolume
 
