@@ -1,97 +1,88 @@
 package keeper_test
 
-// import (
-// 	"crypto/rand"
-// 	"time"
+import (
+	"time"
 
-// 	"github.com/tendermint/tendermint/crypto"
-// 	tmtime "github.com/tendermint/tendermint/types/time"
+	"github.com/tendermint/tendermint/crypto"
 
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-// 	"github.com/irisnet/irismod/modules/htlc/types"
-// 	"github.com/irisnet/irismod/simapp"
-// )
+	"github.com/irisnet/irismod/modules/htlc/types"
+)
 
-// var (
-// 	DenomMap  = map[int]string{0: "htltbtc", 1: "htlteth", 2: "htltbnb", 3: "htltxrp", 4: "htltdai"}
-// 	TestUser1 = sdk.AccAddress(crypto.AddressHash([]byte("KavaTestUser1")))
-// 	TestUser2 = sdk.AccAddress(crypto.AddressHash([]byte("KavaTestUser2")))
-// )
+var (
+	DenomMap                    = map[int]string{0: "htltbtc", 1: "htlteth", 2: "htltbnb", 3: "htltxrp", 4: "htltdai"}
+	TestDeputy                  = sdk.AccAddress(crypto.AddressHash([]byte("TestDeputy")))
+	TestUser1                   = sdk.AccAddress(crypto.AddressHash([]byte("TestUser1")))
+	TestUser2                   = sdk.AccAddress(crypto.AddressHash([]byte("TestUser2")))
+	MinBlockLock         uint64 = 220
+	MaxBlockLock         uint64 = 270
+	ReceiverOnOtherChain        = "ReceiverOnOtherChain"
+	SenderOnOtherChain          = "SenderOnOtherChain"
+)
 
-// func i(in int64) sdk.Int                    { return sdk.NewInt(in) }
-// func c(denom string, amount int64) sdk.Coin { return sdk.NewInt64Coin(denom, amount) }
-// func cs(coins ...sdk.Coin) sdk.Coins        { return sdk.NewCoins(coins...) }
-// func ts(minOffset int) uint64 {
-// 	return uint64(tmtime.Now().Add(time.Duration(minOffset) * time.Minute).Unix())
-// }
+func c(denom string, amount int64) sdk.Coin {
+	return sdk.NewInt64Coin(denom, amount)
+}
 
-// func NewAuthGenStateFromAccs(accounts ...authtypes.GenesisAccount) simapp.GenesisState {
-// 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), accounts)
-// 	return simapp.GenesisState{
-// 		authtypes.ModuleName: authtypes.ModuleCdc.MustMarshalJSON(authGenesis),
-// 	}
-// }
-
-// func NewHTLTGenStateMulti(deputyAddress sdk.AccAddress) simapp.GenesisState {
-// 	htlcGenesis := types.GenesisState{
-// 		Params: types.Params{
-// 			AssetParams: []types.AssetParam{
-// 				{
-// 					Denom: "htltbnb",
-// 					SupplyLimit: types.SupplyLimit{
-// 						Limit:          sdk.NewInt(350000000000000),
-// 						TimeLimited:    false,
-// 						TimeBasedLimit: sdk.ZeroInt(),
-// 						TimePeriod:     time.Hour,
-// 					},
-// 					Active:        true,
-// 					DeputyAddress: deputyAddress.String(),
-// 					FixedFee:      sdk.NewInt(1000),
-// 					MinSwapAmount: sdk.OneInt(),
-// 					MaxSwapAmount: sdk.NewInt(1000000000000),
-// 					MinBlockLock:  types.DefaultMinBlockLock,
-// 					MaxBlockLock:  types.DefaultMaxBlockLock,
-// 				},
-// 				{
-// 					Denom: "htltinc",
-// 					SupplyLimit: types.SupplyLimit{
-// 						Limit:          sdk.NewInt(100000000000000),
-// 						TimeLimited:    true,
-// 						TimeBasedLimit: sdk.NewInt(50000000000),
-// 						TimePeriod:     time.Hour,
-// 					},
-// 					Active:        false,
-// 					DeputyAddress: deputyAddress.String(),
-// 					FixedFee:      sdk.NewInt(1000),
-// 					MinSwapAmount: sdk.OneInt(),
-// 					MaxSwapAmount: sdk.NewInt(100000000000),
-// 					MinBlockLock:  types.DefaultMinBlockLock,
-// 					MaxBlockLock:  types.DefaultMaxBlockLock,
-// 				},
-// 			},
-// 		},
-// 		Supplies: []types.AssetSupply{
-// 			types.NewAssetSupply(
-// 				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-// 				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-// 				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-// 				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-// 				time.Duration(0),
-// 			),
-// 			types.NewAssetSupply(
-// 				sdk.NewCoin("htltinc", sdk.ZeroInt()),
-// 				sdk.NewCoin("htltinc", sdk.ZeroInt()),
-// 				sdk.NewCoin("htltinc", sdk.ZeroInt()),
-// 				sdk.NewCoin("htltinc", sdk.ZeroInt()),
-// 				time.Duration(0),
-// 			),
-// 		},
-// 		PreviousBlockTime: types.DefaultPreviousBlockTime,
-// 	}
-// 	return simapp.GenesisState{types.ModuleName: types.ModuleCdc.MustMarshalJSON(&htlcGenesis)}
-// }
+func NewHTLTGenesis(deputyAddress sdk.AccAddress) *types.GenesisState {
+	return &types.GenesisState{
+		Params: types.Params{
+			AssetParams: []types.AssetParam{
+				{
+					Denom: "htltbnb",
+					SupplyLimit: types.SupplyLimit{
+						Limit:          sdk.NewInt(350000000000000),
+						TimeLimited:    false,
+						TimeBasedLimit: sdk.ZeroInt(),
+						TimePeriod:     time.Hour,
+					},
+					Active:        true,
+					DeputyAddress: deputyAddress.String(),
+					FixedFee:      sdk.NewInt(1000),
+					MinSwapAmount: sdk.OneInt(),
+					MaxSwapAmount: sdk.NewInt(1000000000000),
+					MinBlockLock:  MinBlockLock,
+					MaxBlockLock:  MaxBlockLock,
+				},
+				{
+					Denom: "htltinc",
+					SupplyLimit: types.SupplyLimit{
+						Limit:          sdk.NewInt(100000000000000),
+						TimeLimited:    true,
+						TimeBasedLimit: sdk.NewInt(50000000000),
+						TimePeriod:     time.Hour,
+					},
+					Active:        false,
+					DeputyAddress: deputyAddress.String(),
+					FixedFee:      sdk.NewInt(1000),
+					MinSwapAmount: sdk.OneInt(),
+					MaxSwapAmount: sdk.NewInt(100000000000),
+					MinBlockLock:  MinBlockLock,
+					MaxBlockLock:  MaxBlockLock,
+				},
+			},
+		},
+		PendingHtlcs: []types.HTLC{},
+		Supplies: []types.AssetSupply{
+			types.NewAssetSupply(
+				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
+				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
+				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
+				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
+				time.Duration(0),
+			),
+			types.NewAssetSupply(
+				sdk.NewCoin("htltinc", sdk.ZeroInt()),
+				sdk.NewCoin("htltinc", sdk.ZeroInt()),
+				sdk.NewCoin("htltinc", sdk.ZeroInt()),
+				sdk.NewCoin("htltinc", sdk.ZeroInt()),
+				time.Duration(0),
+			),
+		},
+		PreviousBlockTime: types.DefaultPreviousBlockTime,
+	}
+}
 
 // func htlts(ctx sdk.Context, count int) []types.HTLC {
 // 	var htlts []types.HTLC
@@ -115,8 +106,8 @@ package keeper_test
 // 		id,
 // 		TestUser1,
 // 		TestUser2,
-// 		receiverOnOtherChain,
-// 		senderOnOtherChain,
+// 		ReceiverOnOtherChain,
+// 		SenderOnOtherChain,
 // 		amount,
 // 		hashLock,
 // 		secret,
