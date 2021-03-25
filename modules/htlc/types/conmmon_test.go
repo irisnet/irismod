@@ -43,7 +43,7 @@ func htlc(index int) types.HTLC {
 	amount := cs(c("htltbnb", 50000))
 	id := types.GetID(sender, recipient, amount, randomHashLock)
 
-	swap := types.NewHTLC(
+	htlc := types.NewHTLC(
 		id,
 		sender,
 		recipient,
@@ -60,7 +60,7 @@ func htlc(index int) types.HTLC {
 		types.Incoming,
 	)
 
-	return swap
+	return htlc
 }
 
 func GenerateRandomSecret() ([]byte, error) {
