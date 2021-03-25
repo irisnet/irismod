@@ -67,7 +67,7 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				htlcs = append(htlcs, htlc)
 				supplies = append(supplies, supply)
 			}
-			gs.PendingHtlcs = htlcs
+			gs.Htlcs = htlcs
 			gs.Supplies = supplies
 			return gs
 		},
@@ -86,7 +86,7 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 			gs := NewHTLTGenesis(suite.addrs[0])
 			_, addrs := GeneratePrivKeyAddressPairs(1)
 			swap, _ := loadSwapAndSupply(addrs[0], 2)
-			gs.PendingHtlcs = []types.HTLC{swap}
+			gs.Htlcs = []types.HTLC{swap}
 			return gs
 		},
 		expectPass: false,
@@ -136,7 +136,7 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				true,
 				types.Incoming,
 			)
-			gs.PendingHtlcs = []types.HTLC{htlc}
+			gs.Htlcs = []types.HTLC{htlc}
 
 			gs.Supplies = []types.AssetSupply{
 				{
@@ -180,7 +180,7 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				true,
 				types.Incoming,
 			)
-			gs.PendingHtlcs = []types.HTLC{htlc}
+			gs.Htlcs = []types.HTLC{htlc}
 
 			gs.Supplies = []types.AssetSupply{
 				{
@@ -223,7 +223,7 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				true,
 				types.Outgoing,
 			)
-			gs.PendingHtlcs = []types.HTLC{htlc}
+			gs.Htlcs = []types.HTLC{htlc}
 
 			gs.Supplies = []types.AssetSupply{
 				{
@@ -276,7 +276,7 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				true,
 				types.Incoming,
 			)
-			gs.PendingHtlcs = []types.HTLC{htlc}
+			gs.Htlcs = []types.HTLC{htlc}
 			return gs
 		},
 		expectPass: false,
@@ -307,7 +307,7 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				true,
 				types.Incoming,
 			)
-			gs.PendingHtlcs = []types.HTLC{htlc}
+			gs.Htlcs = []types.HTLC{htlc}
 			return gs
 		},
 		expectPass: false,

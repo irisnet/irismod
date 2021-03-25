@@ -74,7 +74,7 @@ func NewHTLTGenesis(deputyAddress sdk.AccAddress) *types.GenesisState {
 				},
 			},
 		},
-		PendingHtlcs: []types.HTLC{},
+		Htlcs: []types.HTLC{},
 		Supplies: []types.AssetSupply{
 			types.NewAssetSupply(
 				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
