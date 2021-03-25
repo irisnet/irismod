@@ -1,9 +1,12 @@
 package keeper_test
 
 import (
+	"math/rand"
 	"time"
 
 	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
+	tmtime "github.com/tendermint/tendermint/types/time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -15,14 +18,22 @@ var (
 	TestDeputy                  = sdk.AccAddress(crypto.AddressHash([]byte("TestDeputy")))
 	TestUser1                   = sdk.AccAddress(crypto.AddressHash([]byte("TestUser1")))
 	TestUser2                   = sdk.AccAddress(crypto.AddressHash([]byte("TestUser2")))
-	MinBlockLock         uint64 = 220
-	MaxBlockLock         uint64 = 270
+	MinTimeLock          uint64 = 220
+	MaxTimeLock          uint64 = 270
 	ReceiverOnOtherChain        = "ReceiverOnOtherChain"
 	SenderOnOtherChain          = "SenderOnOtherChain"
 )
 
 func c(denom string, amount int64) sdk.Coin {
 	return sdk.NewInt64Coin(denom, amount)
+}
+
+func cs(coins ...sdk.Coin) sdk.Coins {
+	return sdk.NewCoins(coins...)
+}
+
+func ts(minOffset int) uint64 {
+	return uint64(tmtime.Now().Add(time.Duration(minOffset) * time.Minute).Unix())
 }
 
 func NewHTLTGenesis(deputyAddress sdk.AccAddress) *types.GenesisState {
@@ -42,8 +53,8 @@ func NewHTLTGenesis(deputyAddress sdk.AccAddress) *types.GenesisState {
 					FixedFee:      sdk.NewInt(1000),
 					MinSwapAmount: sdk.OneInt(),
 					MaxSwapAmount: sdk.NewInt(1000000000000),
-					MinBlockLock:  MinBlockLock,
-					MaxBlockLock:  MaxBlockLock,
+					MinBlockLock:  MinTimeLock,
+					MaxBlockLock:  MaxTimeLock,
 				},
 				{
 					Denom: "htltinc",
@@ -58,8 +69,8 @@ func NewHTLTGenesis(deputyAddress sdk.AccAddress) *types.GenesisState {
 					FixedFee:      sdk.NewInt(1000),
 					MinSwapAmount: sdk.OneInt(),
 					MaxSwapAmount: sdk.NewInt(100000000000),
-					MinBlockLock:  MinBlockLock,
-					MaxBlockLock:  MaxBlockLock,
+					MinBlockLock:  MinTimeLock,
+					MaxBlockLock:  MaxTimeLock,
 				},
 			},
 		},
@@ -145,3 +156,28 @@ func NewHTLTGenesis(deputyAddress sdk.AccAddress) *types.GenesisState {
 // func assetSupply(denom string) types.AssetSupply {
 // 	return types.NewAssetSupply(c(denom, 0), c(denom, 0), c(denom, 0), c(denom, 0), time.Duration(0))
 // }
+
+// GeneratePrivKeyAddressPairsFromRand generates (deterministically) a total of n secp256k1 private keys and addresses.
+func GeneratePrivKeyAddressPairs(n int) (keys []crypto.PrivKey, addrs []sdk.AccAddress) {
+	r := rand.New(rand.NewSource(12345)) // make the generation deterministic
+	keys = make([]crypto.PrivKey, n)
+	addrs = make([]sdk.AccAddress, n)
+	for i := 0; i < n; i++ {
+		secret := make([]byte, 32)
+		_, err := r.Read(secret)
+		if err != nil {
+			panic("Could not read randomness")
+		}
+		keys[i] = secp256k1.GenPrivKeySecp256k1(secret)
+		addrs[i] = sdk.AccAddress(keys[i].PubKey().Address())
+	}
+	return
+}
+
+func GenerateRandomSecret() ([]byte, error) {
+	bytes := make([]byte, 32)
+	if _, err := rand.Read(bytes); err != nil {
+		return []byte{}, err
+	}
+	return bytes, nil
+}
