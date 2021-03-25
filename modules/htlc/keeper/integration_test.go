@@ -95,68 +95,6 @@ func NewHTLTGenesis(deputyAddress sdk.AccAddress) *types.GenesisState {
 	}
 }
 
-// func htlts(ctx sdk.Context, count int) []types.HTLC {
-// 	var htlts []types.HTLC
-// 	for i := 0; i < count; i++ {
-// 		htlt := htlt(ctx, i)
-// 		htlts = append(htlts, htlt)
-// 	}
-// 	return htlts
-// }
-
-// func htlt(ctx sdk.Context, index int) types.HTLC {
-// 	expireOffset := uint64(200)
-// 	timestamp := ts(index)
-// 	amount := cs(c("htltbnb", 50000))
-
-// 	secret, _ := generateSecret()
-// 	hashLock := types.GetHashLock(secret[:], timestamp)
-// 	id := types.GetID(TestUser1, TestUser2, amount, hashLock)
-
-// 	return types.NewHTLC(
-// 		id,
-// 		TestUser1,
-// 		TestUser2,
-// 		ReceiverOnOtherChain,
-// 		SenderOnOtherChain,
-// 		amount,
-// 		hashLock,
-// 		secret,
-// 		timestamp,
-// 		uint64(ctx.BlockHeight())+expireOffset,
-// 		types.Open,
-// 		0,
-// 		true,
-// 		types.Incoming,
-// 	)
-// }
-
-// func generateSecret() ([]byte, error) {
-// 	bytes := make([]byte, 32)
-// 	if _, err := rand.Read(bytes); err != nil {
-// 		return []byte{}, err
-// 	}
-// 	return bytes, nil
-// }
-
-// func assetSupplies(count int) []types.AssetSupply {
-// 	if count > 5 {
-// 		return []types.AssetSupply{}
-// 	}
-
-// 	var supplies []types.AssetSupply
-
-// 	for i := 0; i < count; i++ {
-// 		supply := assetSupply(DenomMap[i])
-// 		supplies = append(supplies, supply)
-// 	}
-// 	return supplies
-// }
-
-// func assetSupply(denom string) types.AssetSupply {
-// 	return types.NewAssetSupply(c(denom, 0), c(denom, 0), c(denom, 0), c(denom, 0), time.Duration(0))
-// }
-
 // GeneratePrivKeyAddressPairsFromRand generates (deterministically) a total of n secp256k1 private keys and addresses.
 func GeneratePrivKeyAddressPairs(n int) (keys []crypto.PrivKey, addrs []sdk.AccAddress) {
 	r := rand.New(rand.NewSource(12345)) // make the generation deterministic
