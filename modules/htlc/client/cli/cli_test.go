@@ -93,7 +93,7 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) TestHTLC() {
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	ctx := s.network.Validators[0].ClientCtx
 	err := ctx.Keyring.ImportPrivKey("deputy", DeputyArmor, "1234567890")
@@ -113,7 +113,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	type htlcArgs struct {
 		sender             sdk.AccAddress
@@ -178,9 +178,9 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		true,
 	}}
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 	// HTLC
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	args = []string{
 		fmt.Sprintf("--%s=%s", htlccli.FlagTo, testCases[0].args.receiver),
@@ -206,7 +206,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	expectedhtlc := htlctypes.HTLC{
 		Id:                   htlctypes.GetID(testCases[0].args.sender, testCases[0].args.receiver, testCases[0].args.amount, htlctypes.GetHashLock(testCases[0].args.secret, testCases[0].args.timestamp)).String(),
@@ -231,7 +231,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	htlcItem := respType.(*htlctypes.HTLC)
 	s.Require().Equal(expectedhtlc.String(), htlcItem.String())
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -261,9 +261,9 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	balance := coinType.(*sdk.Coin)
 	s.Require().Equal("400001000stake", balance.String())
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 	// HTLT INCOMING
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	args = []string{
 		fmt.Sprintf("--%s=%s", htlccli.FlagTo, testCases[1].args.receiver),
@@ -289,7 +289,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	expectedhtlt := htlctypes.HTLC{
 		Id:                   htlctypes.GetID(testCases[1].args.sender, testCases[1].args.receiver, testCases[1].args.amount, htlctypes.GetHashLock(testCases[1].args.secret, testCases[1].args.timestamp)).String(),
@@ -314,7 +314,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	htltItem := respType.(*htlctypes.HTLC)
 	s.Require().Equal(expectedhtlt.String(), htltItem.String())
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -337,9 +337,9 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	htltItem = respType.(*htlctypes.HTLC)
 	s.Require().Equal(htlctypes.Completed.String(), htltItem.State.String())
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 	// HTLT OUTGOING
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	args = []string{
 		fmt.Sprintf("--%s=%s", htlccli.FlagTo, testCases[2].args.receiver),
@@ -365,7 +365,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	expectedhtlt = htlctypes.HTLC{
 		Id:                   htlctypes.GetID(testCases[2].args.sender, testCases[2].args.receiver, testCases[2].args.amount, htlctypes.GetHashLock(testCases[2].args.secret, testCases[2].args.timestamp)).String(),
@@ -390,7 +390,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	htltItem = respType.(*htlctypes.HTLC)
 	s.Require().Equal(expectedhtlt.String(), htltItem.String())
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -413,7 +413,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	htltItem = respType.(*htlctypes.HTLC)
 	s.Require().Equal(htlctypes.Completed.String(), htltItem.State.String())
 
-	// -------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
 }
 
 func NewHTLTGenesis(deputyAddress sdk.AccAddress) *htlctypes.GenesisState {
