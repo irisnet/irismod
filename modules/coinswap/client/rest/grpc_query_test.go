@@ -20,14 +20,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	authtestutil "github.com/cosmos/cosmos-sdk/x/auth/client/testutil"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
 	tokentestutil "github.com/irisnet/irismod/modules/token/client/testutil"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -40,7 +41,7 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := simapp.NewConfig()
+	cfg := network.DefaultConfig()
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
@@ -99,7 +100,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err := simapp.QueryBalancesExec(clientCtx, from.String())
+	out, err := banktestutil.QueryBalancesExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 	balances := respType.(*banktypes.QueryAllBalancesResponse)
@@ -108,7 +109,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	var account authtypes.AccountI
 	respType = proto.Message(&codectype.Any{})
-	out, err = simapp.QueryAccountExec(clientCtx, from.String())
+	out, err = authtestutil.QueryAccountExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 	err = clientCtx.InterfaceRegistry.UnpackAny(respType.(*codectype.Any), &account)
@@ -159,7 +160,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	out, err = banktestutil.QueryBalancesExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 
@@ -221,7 +222,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	out, err = banktestutil.QueryBalancesExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 
@@ -283,7 +284,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	out, err = banktestutil.QueryBalancesExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 
@@ -345,7 +346,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	out, err = banktestutil.QueryBalancesExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 
@@ -402,7 +403,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	out, err = banktestutil.QueryBalancesExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 
@@ -459,7 +460,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
+	out, err = banktestutil.QueryBalancesExec(clientCtx, from)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), respType))
 
