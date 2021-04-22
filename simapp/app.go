@@ -1,7 +1,6 @@
 package simapp
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -581,7 +580,6 @@ func (app *SimApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Re
 // InitChainer application update at chain initialization
 func (app *SimApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
-	fmt.Println(string(req.AppStateBytes))
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}

@@ -273,9 +273,9 @@ func TestAppSimulationAfterImport(t *testing.T) {
 // TODO: Make another test for the fuzzer itself, which just has noOp txs
 // and doesn't depend on the application.
 func TestAppStateDeterminism(t *testing.T) {
-	if !sdksimapp.FlagEnabledValue {
-		t.Skip("skipping application simulation")
-	}
+	// if !sdksimapp.FlagEnabledValue {
+	// 	t.Skip("skipping application simulation")
+	// }
 
 	config := sdksimapp.NewConfigFromFlags()
 	config.InitialBlockHeight = 1
@@ -311,7 +311,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				t,
 				os.Stdout,
 				app.BaseApp,
-				sdksimapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
+				AppStateFn(app.AppCodec(), app.SimulationManager()),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				sdksimapp.SimulationOperations(app, app.AppCodec(), config),
 				app.ModuleAccountAddrs(),
