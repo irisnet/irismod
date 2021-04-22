@@ -15,11 +15,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
 	tokentestutil "github.com/irisnet/irismod/modules/token/client/testutil"
 	tokentypes "github.com/irisnet/irismod/modules/token/types"
+	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -32,7 +32,7 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := network.DefaultConfig()
+	cfg := simapp.NewConfig()
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
@@ -132,8 +132,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 	//------test GetCmdMintToken()-------------
 	coinType := proto.Message(&sdk.Coin{})
-	out, err := banktestutil.QueryBalancesExec(clientCtx, from,
-		fmt.Sprintf("--denom=%s", symbol))
+	out, err := simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), coinType))
 	balance := coinType.(*sdk.Coin)
@@ -156,8 +155,7 @@ func (s *IntegrationTestSuite) TestToken() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	out, err = banktestutil.QueryBalancesExec(clientCtx, from,
-		fmt.Sprintf("--denom=%s", symbol))
+	out, err = simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), coinType))
 	balance = coinType.(*sdk.Coin)
@@ -183,8 +181,7 @@ func (s *IntegrationTestSuite) TestToken() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	out, err = banktestutil.QueryBalancesExec(clientCtx, from,
-		fmt.Sprintf("--denom=%s", symbol))
+	out, err = simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), coinType))
 	balance = coinType.(*sdk.Coin)

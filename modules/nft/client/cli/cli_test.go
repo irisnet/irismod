@@ -17,6 +17,7 @@ import (
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
 	nfttestutil "github.com/irisnet/irismod/modules/nft/client/testutil"
 	nfttypes "github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -29,7 +30,7 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := network.DefaultConfig()
+	cfg := simapp.NewConfig()
 	cfg.NumValidators = 2
 
 	s.cfg = cfg

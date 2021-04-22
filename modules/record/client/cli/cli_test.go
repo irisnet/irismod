@@ -15,6 +15,7 @@ import (
 	recordcli "github.com/irisnet/irismod/modules/record/client/cli"
 	recordtestutil "github.com/irisnet/irismod/modules/record/client/testutil"
 	recordtypes "github.com/irisnet/irismod/modules/record/types"
+	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -27,7 +28,7 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := network.DefaultConfig()
+	cfg := simapp.NewConfig()
 	cfg.NumValidators = 1
 
 	s.cfg = cfg

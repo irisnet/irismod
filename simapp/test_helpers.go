@@ -10,11 +10,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+	"github.com/tendermint/tmlibs/cli"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -22,10 +24,17 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/cosmos/cosmos-sdk/testutil"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
@@ -104,6 +113,27 @@ func SetupWithGenesisHTLC(htlcGenesis *htlctypes.GenesisState) *SimApp {
 	)
 
 	return app
+}
+
+func NewConfig() network.Config {
+	cfg := network.DefaultConfig()
+	encCfg := MakeTestEncodingConfig()
+	cfg.Codec = encCfg.Marshaler
+	cfg.TxConfig = encCfg.TxConfig
+	cfg.LegacyAmino = encCfg.Amino
+	cfg.InterfaceRegistry = encCfg.InterfaceRegistry
+	cfg.AppConstructor = SimAppConstructor
+	cfg.GenesisState = NewDefaultGenesisState(cfg.Codec)
+	return cfg
+}
+
+func SimAppConstructor(val network.Validator) servertypes.Application {
+	return NewSimApp(
+		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool),
+		val.Ctx.Config.RootDir, 0, MakeTestEncodingConfig(), EmptyAppOptions{},
+		bam.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
+		bam.SetMinGasPrices(val.AppConfig.MinGasPrices),
+	)
 }
 
 // SetupWithGenesisValSet initializes a new SimApp with a validator set and genesis accounts
@@ -463,4 +493,35 @@ type EmptyAppOptions struct{}
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(o string) interface{} {
 	return nil
+}
+
+func QueryBalancesExec(clientCtx client.Context, address string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		address,
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, bankcli.GetBalancesCmd(), args)
+}
+
+func QueryBalanceExec(clientCtx client.Context, address string, denom string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		address,
+		fmt.Sprintf("--%s=%s", bankcli.FlagDenom, denom),
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, bankcli.GetBalancesCmd(), args)
+}
+
+func QueryAccountExec(clientCtx client.Context, address string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		address,
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, authcli.GetAccountCmd(), args)
 }

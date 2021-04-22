@@ -21,6 +21,7 @@ import (
 	htlccli "github.com/irisnet/irismod/modules/htlc/client/cli"
 	htlctestutil "github.com/irisnet/irismod/modules/htlc/client/testutil"
 	htlctypes "github.com/irisnet/irismod/modules/htlc/types"
+	"github.com/irisnet/irismod/simapp"
 )
 
 const (
@@ -68,7 +69,7 @@ func ts(minOffset int) uint64 {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := network.DefaultConfig()
+	cfg := simapp.NewConfig()
 	cfg.NumValidators = 4
 
 	Deputy, _ = sdk.AccAddressFromBech32(DEPUTY_ADDR)
@@ -254,8 +255,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	s.Require().Equal(htlctypes.Completed.String(), htlcItem.State.String())
 
 	coinType := proto.Message(&sdk.Coin{})
-	out, err := banktestutil.QueryBalancesExec(ctx, testCases[0].args.receiver,
-		fmt.Sprintf("--denom=%s", sdk.DefaultBondDenom))
+	out, err := simapp.QueryBalanceExec(ctx, testCases[0].args.receiver.String(), sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 	s.Require().NoError(ctx.JSONMarshaler.UnmarshalJSON(out.Bytes(), coinType))
 	balance := coinType.(*sdk.Coin)

@@ -26,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -175,7 +176,7 @@ var (
 )
 
 var (
-	_ App                     = (*SimApp)(nil)
+	_ simapp.App              = (*SimApp)(nil)
 	_ servertypes.Application = (*SimApp)(nil)
 )
 

@@ -22,6 +22,7 @@ import (
 	servicecli "github.com/irisnet/irismod/modules/service/client/cli"
 	servicetestutil "github.com/irisnet/irismod/modules/service/client/testutil"
 	servicetypes "github.com/irisnet/irismod/modules/service/types"
+	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -34,7 +35,7 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := network.DefaultConfig()
+	cfg := simapp.NewConfig()
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
