@@ -7,6 +7,12 @@ import (
 	"os"
 	"testing"
 
+	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
+	htlctypes "github.com/irisnet/irismod/modules/htlc/types"
+	nfttypes "github.com/irisnet/irismod/modules/nft/types"
+	oracletypes "github.com/irisnet/irismod/modules/oracle/types"
+	servicetypes "github.com/irisnet/irismod/modules/service/types"
+	tokentypes "github.com/irisnet/irismod/modules/token/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -21,14 +27,8 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	ibctransfertypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
-	ibchost "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -163,21 +163,25 @@ func TestAppImportExport(t *testing.T) {
 
 	storeKeysPrefixes := []StoreKeysPrefixes{
 		{app.keys[authtypes.StoreKey], newApp.keys[authtypes.StoreKey], [][]byte{}},
+		{app.keys[banktypes.StoreKey], newApp.keys[banktypes.StoreKey], [][]byte{banktypes.BalancesPrefix}},
+		{app.keys[minttypes.StoreKey], newApp.keys[minttypes.StoreKey], [][]byte{}},
 		{app.keys[stakingtypes.StoreKey], newApp.keys[stakingtypes.StoreKey],
 			[][]byte{
 				stakingtypes.UnbondingQueueKey, stakingtypes.RedelegationQueueKey, stakingtypes.ValidatorQueueKey,
 				stakingtypes.HistoricalInfoKey,
 			}}, // ordering may change but it doesn't matter
-		{app.keys[slashingtypes.StoreKey], newApp.keys[slashingtypes.StoreKey], [][]byte{}},
-		{app.keys[minttypes.StoreKey], newApp.keys[minttypes.StoreKey], [][]byte{}},
 		{app.keys[distrtypes.StoreKey], newApp.keys[distrtypes.StoreKey], [][]byte{}},
-		{app.keys[banktypes.StoreKey], newApp.keys[banktypes.StoreKey], [][]byte{banktypes.BalancesPrefix}},
-		{app.keys[paramtypes.StoreKey], newApp.keys[paramtypes.StoreKey], [][]byte{}},
-		{app.keys[govtypes.StoreKey], newApp.keys[govtypes.StoreKey], [][]byte{}},
-		{app.keys[evidencetypes.StoreKey], newApp.keys[evidencetypes.StoreKey], [][]byte{}},
-		{app.keys[capabilitytypes.StoreKey], newApp.keys[capabilitytypes.StoreKey], [][]byte{}},
-		{app.keys[ibchost.StoreKey], newApp.keys[ibchost.StoreKey], [][]byte{}},
-		{app.keys[ibctransfertypes.StoreKey], newApp.keys[ibctransfertypes.StoreKey], [][]byte{}},
+		{app.keys[slashingtypes.StoreKey], newApp.keys[slashingtypes.StoreKey], [][]byte{}},
+
+		//check irismod module
+		{app.keys[tokentypes.StoreKey], newApp.keys[tokentypes.StoreKey], [][]byte{}},
+		//{app.keys[recordtypes.StoreKey], newApp.keys[recordtypes.StoreKey], [][]byte{recordtypes.IntraTxCounterKey}},
+		{app.keys[nfttypes.StoreKey], newApp.keys[nfttypes.StoreKey], [][]byte{}},
+		{app.keys[htlctypes.StoreKey], newApp.keys[htlctypes.StoreKey], [][]byte{}},
+		{app.keys[coinswaptypes.StoreKey], newApp.keys[coinswaptypes.StoreKey], [][]byte{}},
+		{app.keys[servicetypes.StoreKey], newApp.keys[servicetypes.StoreKey], [][]byte{}},
+		{app.keys[oracletypes.StoreKey], newApp.keys[oracletypes.StoreKey], [][]byte{}},
+		// {app.keys[randomtypes.StoreKey], newApp.keys[randomtypes.StoreKey], [][]byte{randomtypes.RandomKey}},
 	}
 
 	for _, skp := range storeKeysPrefixes {
