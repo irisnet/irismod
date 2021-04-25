@@ -17,9 +17,9 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgSwapOrder        = "op_weight_msg_swap_order"
-	OpWeightMsgAddLiquidity     = "op_weight_msg_add_liquidity"
-	OpWeightMsgRemoveLiquidity  = "op_weight_msg_remove_liquidity"
+	OpWeightMsgSwapOrder       = "op_weight_msg_swap_order"
+	OpWeightMsgAddLiquidity    = "op_weight_msg_add_liquidity"
+	OpWeightMsgRemoveLiquidity = "op_weight_msg_remove_liquidity"
 )
 
 func WeightedOperations(
@@ -80,7 +80,7 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 	) {
 		var (
 			inputCoin, outputCoin sdk.Coin
-			isBuyOrder bool
+			isBuyOrder            bool
 		)
 
 		simAccount, _ := simtypes.RandomAcc(r, accs)
@@ -89,21 +89,25 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 
 		i := rand.Intn(4)
 		switch i {
-		case 0: inputCoin, outputCoin, isBuyOrder = doubleExchangeBill(r, ctx, coins, k, bk)
-		case 1:	inputCoin, outputCoin, isBuyOrder = singleExchangeBill(r, ctx, coins, k, bk)
-		case 2:	inputCoin, outputCoin, isBuyOrder = doubleExchangeSellOrder(r, ctx, coins, k, bk)
-		case 3:	inputCoin, outputCoin, isBuyOrder = singleExchangeSellOrder(r, ctx, coins, k, bk)
+		case 0:
+			inputCoin, outputCoin, isBuyOrder = doubleExchangeBill(r, ctx, coins, k, bk)
+		case 1:
+			inputCoin, outputCoin, isBuyOrder = singleExchangeBill(r, ctx, coins, k, bk)
+		case 2:
+			inputCoin, outputCoin, isBuyOrder = doubleExchangeSellOrder(r, ctx, coins, k, bk)
+		case 3:
+			inputCoin, outputCoin, isBuyOrder = singleExchangeSellOrder(r, ctx, coins, k, bk)
 		}
 
 		deadline := int64(time.Now().Add(time.Second * time.Duration(r.Intn(10))).Second())
 		msg := types.NewMsgSwapOrder(
 			types.Input{
 				Address: simAccount.Address.String(),
-				Coin:  inputCoin,
+				Coin:    inputCoin,
 			},
 			types.Output{
 				Address: simAccount.Address.String(),
-				Coin:  outputCoin,
+				Coin:    outputCoin,
 			},
 			deadline,
 			isBuyOrder,
@@ -140,7 +144,6 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 	}
 }
 
-
 //SimulateMsgAddLiquidity  simulates  the addition of liquidity
 func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
@@ -148,25 +151,25 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		simAccount, _ :=  simtypes.RandomAcc(r, accs)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 
 		var maxCoin sdk.Coin
 		var minLiquidity sdk.Int
 
-		irisAmt := simtypes.RandomAmount(r,sdk.NewIntFromUint64(tokentypes.GetNativeToken().InitialSupply))
+		irisAmt := simtypes.RandomAmount(r, sdk.NewIntFromUint64(tokentypes.GetNativeToken().InitialSupply))
 		standardDenom := k.GetStandardDenom(ctx)
 
 		token := RandomToken(r)
 		uniDenom := types.GetUniDenomFromDenom(token.GetMinUnit())
 		liquidity := bk.GetSupply(ctx).GetTotal().AmountOf(uniDenom)
-		reservePool,err := k.GetReservePool(ctx,uniDenom)
+		reservePool, err := k.GetReservePool(ctx, uniDenom)
 
 		if err != nil {
-			maxCoin = RandomCoin(r,token.MinUnit,sdk.NewIntFromUint64(token.InitialSupply))
-			minLiquidity = simtypes.RandomAmount(r,irisAmt)
-		}else {
-			maxCoin = RandomCoin(r,token.MinUnit,sdk.NewIntFromUint64(token.InitialSupply))
+			maxCoin = RandomCoin(r, token.MinUnit, sdk.NewIntFromUint64(token.InitialSupply))
+			minLiquidity = simtypes.RandomAmount(r, irisAmt)
+		} else {
+			maxCoin = RandomCoin(r, token.MinUnit, sdk.NewIntFromUint64(token.InitialSupply))
 			standardReserveAmt := reservePool.AmountOf(standardDenom)
 			minLiquidity = liquidity.Mul(irisAmt).Quo(standardReserveAmt)
 		}
@@ -218,7 +221,7 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		simAccount, _ :=  simtypes.RandomAcc(r, accs)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		standardDenom := k.GetStandardDenom(ctx)
 
@@ -229,19 +232,18 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 		uniDenom := types.GetUniDenomFromDenom(token.GetMinUnit())
 		minTokenDenom, err := types.GetCoinDenomFromUniDenom(uniDenom)
 		liquidityReserve := bk.GetSupply(ctx).GetTotal().AmountOf(uniDenom)
-		reservePool,err := k.GetReservePool(ctx,uniDenom)
+		reservePool, err := k.GetReservePool(ctx, uniDenom)
 		standardReserveAmt := reservePool.AmountOf(standardDenom)
 		tokenReserveAmt := reservePool.AmountOf(minTokenDenom)
 
-
-		withdrawLiquidity := RandomCoin(r,token.MinUnit,sdk.NewIntFromUint64(token.InitialSupply))
+		withdrawLiquidity := RandomCoin(r, token.MinUnit, sdk.NewIntFromUint64(token.InitialSupply))
 		deadline := int64(time.Now().Add(time.Second * time.Duration(r.Intn(10))).Second())
 
 		if err != nil {
-			minToken       = simtypes.RandomAmount(r, tokenReserveAmt)
+			minToken = simtypes.RandomAmount(r, tokenReserveAmt)
 			minStandardAmt = simtypes.RandomAmount(r, standardReserveAmt)
-		}else {
-			minToken 	   = withdrawLiquidity.Amount.Mul(tokenReserveAmt).Quo(liquidityReserve)
+		} else {
+			minToken = withdrawLiquidity.Amount.Mul(tokenReserveAmt).Quo(liquidityReserve)
 			minStandardAmt = withdrawLiquidity.Amount.Mul(standardReserveAmt).Quo(liquidityReserve)
 		}
 
@@ -281,48 +283,44 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 
 		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 
-
 	}
 }
 
-func RandomCoin(r *rand.Rand,denom string,amount sdk.Int) sdk.Coin{
-	return sdk.NewInt64Coin(denom,r.Int63n(amount.Int64()))
+func RandomCoin(r *rand.Rand, denom string, amount sdk.Int) sdk.Coin {
+	return sdk.NewInt64Coin(denom, r.Int63n(amount.Int64()))
 }
 
-func RandomToken(r *rand.Rand) tokentypes.Token{
+func RandomToken(r *rand.Rand) tokentypes.Token {
 	return tokens[r.Intn(len(tokens))]
 }
 
-
 // generate coin in reserve pool
-func randomCoinInPool(r *rand.Rand, ctx sdk.Context,coins sdk.Coins, k keeper.Keeper) sdk.Coin{
-	for
-	{
+func randomCoinInPool(r *rand.Rand, ctx sdk.Context, coins sdk.Coins, k keeper.Keeper) sdk.Coin {
+	for {
 		denom := coins[r.Intn(len(coins))].GetDenom()
-		if reservePool, _ := k.GetReservePool(ctx, types.GetUniDenomFromDenom(denom)); !reservePool.IsZero(){
+		if reservePool, _ := k.GetReservePool(ctx, types.GetUniDenomFromDenom(denom)); !reservePool.IsZero() {
 			return sdk.Coin{Denom: denom, Amount: reservePool.AmountOf(denom)}
 		}
 	}
 }
 
 //
-func randomBoughtDenom(r *rand.Rand, ctx sdk.Context, bk types.BankKeeper) string{
+func randomBoughtDenom(r *rand.Rand, ctx sdk.Context, bk types.BankKeeper) string {
 	coinsPool := bk.GetSupply(ctx).GetTotal()
 	return coinsPool[r.Intn(len(coinsPool))].GetDenom()
 }
 
-
 //Double exchange bill
-func doubleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool){
+func doubleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 
 	standardDenom := k.GetStandardDenom(ctx)
 	param := k.GetParams(ctx)
 
-	for{
-		inputCoin =  randomCoinInPool(r, ctx,coinsInAccount, k)
+	for {
+		inputCoin = randomCoinInPool(r, ctx, coinsInAccount, k)
 		totalCoins := bk.GetSupply(ctx).GetTotal()
-		outputCoin = randomCoinInPool(r, ctx,totalCoins, k)
+		outputCoin = randomCoinInPool(r, ctx, totalCoins, k)
 		if inputCoin.Denom != standardDenom && outputCoin.Denom != standardDenom {
 			break
 		}
@@ -348,16 +346,16 @@ func doubleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins,
 }
 
 //A single exchange bill
-func singleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper)(sdk.Coin,sdk.Coin,bool){
+func singleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 
 	param := k.GetParams(ctx)
 	standardDenom := k.GetStandardDenom(ctx)
 
-	for{
-		inputCoin =  randomCoinInPool(r, ctx,coinsInAccount, k)
+	for {
+		inputCoin = randomCoinInPool(r, ctx, coinsInAccount, k)
 		totalCoins := bk.GetSupply(ctx).GetTotal()
-		outputCoin = randomCoinInPool(r, ctx,totalCoins, k)
+		outputCoin = randomCoinInPool(r, ctx, totalCoins, k)
 		if inputCoin.Denom == standardDenom || outputCoin.Denom == standardDenom {
 			break
 		}
@@ -373,16 +371,16 @@ func singleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins,
 }
 
 //Double exchange sell orders
-func doubleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper)(sdk.Coin, sdk.Coin, bool){
+func doubleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 	standardDenom := k.GetStandardDenom(ctx)
 
 	param := k.GetParams(ctx)
 
-	for{
-		inputCoin = randomCoinInPool(r, ctx,coinsInAccount, k)
+	for {
+		inputCoin = randomCoinInPool(r, ctx, coinsInAccount, k)
 		totalCoins := bk.GetSupply(ctx).GetTotal()
-		outputCoin =  randomCoinInPool(r, ctx,totalCoins, k)
+		outputCoin = randomCoinInPool(r, ctx, totalCoins, k)
 
 		if inputCoin.Denom != standardDenom && outputCoin.Denom != standardDenom {
 			break
@@ -396,7 +394,6 @@ func doubleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.C
 	standardAmount := keeper.GetInputPrice(inputCoin.Amount, inputReserve, outputReserve, param.Fee)
 	standardCoin := sdk.NewCoin(standardDenom, standardAmount)
 
-
 	boughtDenom := randomBoughtDenom(r, ctx, bk)
 	uniDenom2, _ := k.GetUniDenomFromDenoms(ctx, standardCoin.Denom, boughtDenom)
 	reservePool2, _ := k.GetReservePool(ctx, uniDenom2)
@@ -408,18 +405,17 @@ func doubleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.C
 	return inputCoin, boughtCoin, false
 }
 
-
 //A single exchange sell order
-func singleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper)(sdk.Coin, sdk.Coin, bool){
+func singleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 
 	param := k.GetParams(ctx)
 	standardDenom := k.GetStandardDenom(ctx)
 
-	for{
-		inputCoin = randomCoinInPool(r, ctx,coinsInAccount, k)
+	for {
+		inputCoin = randomCoinInPool(r, ctx, coinsInAccount, k)
 		totalCoins := bk.GetSupply(ctx).GetTotal()
-		outputCoin =  randomCoinInPool(r, ctx,totalCoins, k)
+		outputCoin = randomCoinInPool(r, ctx, totalCoins, k)
 		if inputCoin.Denom == standardDenom || outputCoin.Denom == standardDenom {
 			break
 		}
@@ -434,4 +430,3 @@ func singleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.C
 	outputCoin = sdk.NewCoin(outputCoin.Denom, boughtTokenAmt)
 	return inputCoin, outputCoin, false
 }
-

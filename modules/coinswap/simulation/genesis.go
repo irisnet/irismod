@@ -20,7 +20,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, "fee", &fee, simState.Rand,
 		func(r *rand.Rand) {
-			fee = sdk.NewDecWithPrec(r.Int63n(3),3)
+			fee = sdk.NewDecWithPrec(r.Int63n(3), 3)
 			once.Do(func() {
 				for i := 0; i < 5; i++ {
 					tokens = append(tokens, randToken(r, simState.Accounts))
@@ -35,10 +35,9 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 		},
 	)
-	genesis := types.NewGenesisState(types.NewParams(fee),tokentypes.GetNativeToken().MinUnit)
+	genesis := types.NewGenesisState(types.NewParams(fee), tokentypes.GetNativeToken().MinUnit)
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(genesis)
 }
-
 
 func randToken(r *rand.Rand, accs []simtypes.Account) tokentypes.Token {
 	symbol := randStringBetween(r, tokentypes.MinimumSymbolLen, tokentypes.MaximumSymbolLen)
