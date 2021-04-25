@@ -90,13 +90,13 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 		i := rand.Intn(4)
 		switch i {
 		case 0:
-			inputCoin, outputCoin, isBuyOrder = doubleExchangeBill(r, ctx, coins, k, bk)
+			inputCoin, outputCoin, isBuyOrder = doubleSwapBill(r, ctx, coins, k, bk)
 		case 1:
-			inputCoin, outputCoin, isBuyOrder = singleExchangeBill(r, ctx, coins, k, bk)
+			inputCoin, outputCoin, isBuyOrder = singleSwapBill(r, ctx, coins, k, bk)
 		case 2:
-			inputCoin, outputCoin, isBuyOrder = doubleExchangeSellOrder(r, ctx, coins, k, bk)
+			inputCoin, outputCoin, isBuyOrder = doubleSwapSellOrder(r, ctx, coins, k, bk)
 		case 3:
-			inputCoin, outputCoin, isBuyOrder = singleExchangeSellOrder(r, ctx, coins, k, bk)
+			inputCoin, outputCoin, isBuyOrder = singleSwapSellOrder(r, ctx, coins, k, bk)
 		}
 
 		deadline := int64(time.Now().Add(time.Second * time.Duration(r.Intn(10))).Second())
@@ -304,14 +304,8 @@ func randomCoinInPool(r *rand.Rand, ctx sdk.Context, coins sdk.Coins, k keeper.K
 	}
 }
 
-//
-func randomBoughtDenom(r *rand.Rand, ctx sdk.Context, bk types.BankKeeper) string {
-	coinsPool := bk.GetSupply(ctx).GetTotal()
-	return coinsPool[r.Intn(len(coinsPool))].GetDenom()
-}
-
-//Double exchange bill
-func doubleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
+//Double swap bill
+func doubleSwapBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 
 	standardDenom := k.GetStandardDenom(ctx)
@@ -340,13 +334,13 @@ func doubleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins,
 	outputReserve2 := reservePool2.AmountOf(soldStandardCoin.Denom)
 	inputReserve2 := reservePool2.AmountOf(inputCoin.Denom)
 	soldTokenAmt := keeper.GetOutputPrice(soldStandardCoin.Amount, inputReserve2, outputReserve2, param.Fee)
-	inputCoinFinal := sdk.NewCoin(inputCoin.Denom, soldTokenAmt)
+	inputCoin = sdk.NewCoin(inputCoin.Denom, soldTokenAmt)
 
-	return inputCoinFinal, outputCoin, true
+	return inputCoin, outputCoin, true
 }
 
-//A single exchange bill
-func singleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
+//A single swap bill
+func singleSwapBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 
 	param := k.GetParams(ctx)
@@ -365,13 +359,13 @@ func singleExchangeBill(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins,
 	outputReserve := reservePool.AmountOf(outputCoin.Denom)
 	inputReserve := reservePool.AmountOf(inputCoin.Denom)
 	soldTokenAmt := keeper.GetOutputPrice(outputCoin.Amount, inputReserve, outputReserve, param.Fee)
-	inputCoinFinal := sdk.NewCoin(inputCoin.Denom, soldTokenAmt)
+	inputCoin = sdk.NewCoin(inputCoin.Denom, soldTokenAmt)
 
-	return inputCoinFinal, outputCoin, true
+	return inputCoin, outputCoin, true
 }
 
-//Double exchange sell orders
-func doubleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
+//Double swap sell orders
+func doubleSwapSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 	standardDenom := k.GetStandardDenom(ctx)
 
@@ -394,19 +388,18 @@ func doubleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.C
 	standardAmount := keeper.GetInputPrice(inputCoin.Amount, inputReserve, outputReserve, param.Fee)
 	standardCoin := sdk.NewCoin(standardDenom, standardAmount)
 
-	boughtDenom := randomBoughtDenom(r, ctx, bk)
-	uniDenom2, _ := k.GetUniDenomFromDenoms(ctx, standardCoin.Denom, boughtDenom)
+	uniDenom2, _ := k.GetUniDenomFromDenoms(ctx, standardCoin.Denom, outputCoin.Denom)
 	reservePool2, _ := k.GetReservePool(ctx, uniDenom2)
 	inputReserve2 := reservePool2.AmountOf(standardCoin.Denom)
-	outputReserve2 := reservePool2.AmountOf(boughtDenom)
+	outputReserve2 := reservePool2.AmountOf(outputCoin.Denom)
 	boughtTokenAmt := keeper.GetInputPrice(standardCoin.Amount, inputReserve2, outputReserve2, param.Fee)
-	boughtCoin := sdk.NewCoin(boughtDenom, boughtTokenAmt)
+	outputCoin = sdk.NewCoin(outputCoin.Denom, boughtTokenAmt)
 
-	return inputCoin, boughtCoin, false
+	return inputCoin, outputCoin, false
 }
 
-//A single exchange sell order
-func singleExchangeSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
+//A single swap sell order
+func singleSwapSellOrder(r *rand.Rand, ctx sdk.Context, coinsInAccount sdk.Coins, k keeper.Keeper, bk types.BankKeeper) (sdk.Coin, sdk.Coin, bool) {
 	var inputCoin, outputCoin sdk.Coin
 
 	param := k.GetParams(ctx)
