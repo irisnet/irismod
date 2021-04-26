@@ -58,11 +58,10 @@ func interBlockCacheOpt() func(*baseapp.BaseApp) {
 }
 
 func TestFullAppSimulation(t *testing.T) {
-	sdksimapp.FlagEnabledValue = true
-	config, db, dir, logger, _, err := sdksimapp.SetupSimulation("leveldb-app-sim", "Simulation")
-	//if skip {
-	//	t.Skip("skipping application simulation")
-	//}
+	config, db, dir, logger, skip, err := sdksimapp.SetupSimulation("leveldb-app-sim", "Simulation")
+	if skip {
+		t.Skip("skipping application simulation")
+	}
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
