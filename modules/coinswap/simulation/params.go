@@ -1,10 +1,13 @@
 package simulation
 
 import (
+	"math/rand"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/irisnet/irismod/modules/coinswap/types"
-	"math/rand"
 )
 
 const (
@@ -17,7 +20,7 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(types.ModuleName, keyFee,
 			func(r *rand.Rand) string {
-				return RandomDec(r).String()
+				return sdk.NewDecWithPrec(r.Int63n(3), 3).String() // 0.1%~0.3%
 			},
 		),
 	}
