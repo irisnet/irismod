@@ -48,8 +48,7 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 			msg.LpTokenDenom,
 		)
 	}
-
-	err = m.Keeper.CreatePool(ctx,
+	if err = m.Keeper.CreatePool(ctx,
 		msg.Name,
 		msg.Description,
 		msg.LpTokenDenom,
@@ -58,14 +57,22 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 		msg.TotalReward.Sort(),
 		msg.Destructible,
 		creator,
-	)
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 	return &types.MsgCreatePoolResponse{}, nil
 }
 
-func (msgServer) DestroyPool(context.Context, *types.MsgDestroyPool) (*types.MsgDestroyPoolResponse, error) {
+func (m msgServer) DestroyPool(goCtx context.Context, msg *types.MsgDestroyPool) (*types.MsgDestroyPoolResponse, error) {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := m.Keeper.DestroyPool(ctx, msg.PoolName, creator); err != nil {
+		return nil, err
+	}
 	return &types.MsgDestroyPoolResponse{}, nil
 }
 

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/irisnet/irismod/modules/farm/types"
 )
@@ -20,16 +21,28 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 	if err != nil {
 		return err
 	}
-	pool := types.FarmPool{
-		Name:                   name,
-		Creator:                creator.String(),
-		BeginHeight:            beginHeight,
-		EndHeight:              endHeight,
-		LastHeightDistrRewards: 0,
-		Destructible:           destructible,
+
+	//Escrow total reward
+	if err := k.bk.SendCoinsFromAccountToModule(ctx,
+		creator, types.ModuleName, totalReward); err != nil {
+		return err
 	}
+
+	//send CreatePoolFee to feeCollectorName
+	fee := k.CreatePoolFee(ctx)
+	if err := k.bk.SendCoinsFromAccountToModule(ctx,
+		creator, k.feeCollectorName, sdk.NewCoins(fee)); err != nil {
+		return err
+	}
+
 	//save farm pool
-	k.SetPool(ctx, pool)
+	k.SetPool(ctx, types.FarmPool{
+		Name:         name,
+		Creator:      creator.String(),
+		BeginHeight:  beginHeight,
+		EndHeight:    endHeight,
+		Destructible: destructible,
+	})
 	//save farm rule
 	for i, total := range totalReward {
 		k.SetPoolRule(ctx, name, types.FarmRule{
@@ -45,10 +58,28 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 	return nil
 }
 
-// Destroy creates an new farm pool
-func (k Keeper) DestroyPool(ctx sdk.Context, name string,
+// Destroy destroy an exist farm pool
+func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 	creator sdk.AccAddress) error {
-	//TODO
+	pool, exist := k.GetPool(ctx, poolName)
+	if !exist {
+		return sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+	}
+
+	if creator.String() != pool.Creator {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "creator [%s] is not the creator of the pool", creator.String())
+	}
+
+	if pool.EndHeight < uint64(ctx.BlockHeight()) {
+		return sdkerrors.Wrapf(types.ErrExpiredPool, "not exist pool [%s]", poolName) //TODO
+	}
+
+	if err := k.Refund(ctx, poolName, creator); err != nil {
+		return sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+	}
+
+	pool.EndHeight = uint64(ctx.BlockHeight())
+	k.SetPool(ctx, *pool)
 	return nil
 }
 
@@ -83,4 +114,25 @@ func (k Keeper) Harvest(ctx sdk.Context, name string,
 	creator sdk.AccAddress) (remaining sdk.Coins, err error) {
 	//TODO
 	return nil, nil
+}
+
+// AppendReward creates an new farm pool
+func (k Keeper) Refund(ctx sdk.Context, poolName string, creator sdk.AccAddress) error {
+	rules := k.GetPoolRules(ctx, poolName)
+	var remainingReward sdk.Coins
+
+	for _, r := range rules {
+		remainingReward = remainingReward.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
+		r.RemainingReward = sdk.ZeroInt()
+		//update remaining reward
+		//TODO update RewardPerShare
+		k.SetPoolRule(ctx, poolName, r)
+	}
+
+	//refund the total remaining reward to owner
+	if err := k.bk.SendCoinsFromModuleToAccount(ctx,
+		types.ModuleName, creator, remainingReward); err != nil {
+		return err
+	}
+	return nil
 }

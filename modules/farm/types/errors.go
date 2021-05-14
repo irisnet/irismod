@@ -6,7 +6,9 @@ import (
 
 // farm module sentinel errors
 var (
-	ErrExpiredHeight  = sdkerrors.Register(ModuleName, 2, "expired block height")
-	ErrInvalidLPToken = sdkerrors.Register(ModuleName, 3, "invalid lp token denom")
-	ErrNotMatch       = sdkerrors.Register(ModuleName, 3, "The length of the arrays does not match")
+	ErrExpiredHeight  = sdkerrors.Register(ModuleName, 2, "Expired block height")
+	ErrInvalidLPToken = sdkerrors.Register(ModuleName, 3, "Invalid lp token denom")
+	ErrNotMatch       = sdkerrors.Register(ModuleName, 4, "The length of the arrays does not match")
+	ErrExpiredPool    = sdkerrors.Register(ModuleName, 5, "The farm pool has expired")
+	ErrNotExistPool   = sdkerrors.Register(ModuleName, 5, "The farm pool is not exist")
 )

@@ -7,8 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func ExpiredHeight(begin uint64,
-	rewardPerBlock sdk.Coins,
+func ExpiredHeight(begin uint64, rewardPerBlock sdk.Coins,
 	totalReward sdk.Coins) (uint64, error) {
 	var expiredHeight = uint64(math.MaxUint64)
 	if len(rewardPerBlock) != len(totalReward) {
