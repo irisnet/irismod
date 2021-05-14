@@ -1,0 +1,54 @@
+syntax = "proto3";
+package irismod.farm;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/farm/types";
+option (gogoproto.goproto_getters_all) = false;
+
+message FarmPool {
+  option (gogoproto.equal) = true;
+
+  string name = 1;
+  string creator = 2;
+  uint64 begin_height = 3;
+  uint64 end_height = 4;
+  uint64 last_height_distr_rewards = 5;
+  bool destructible = 6;
+  cosmos.base.v1beta1.Coin total_lp_token_locked = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  repeated FarmRule rule = 8;
+}
+
+message FarmRule {
+  option (gogoproto.equal) = true;
+
+  string reward = 1;
+  string total_reward = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string remaining_reward = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string reward_per_block = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string reward_per_share = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message Farmer {
+  option (gogoproto.equal) = true;
+
+  string address = 2;
+  uint64 locked = 3;
+  uint64 reward_debt = 4;
+}

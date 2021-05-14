@@ -1,0 +1,66 @@
+syntax = "proto3";
+package irismod.farm;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/farm/types";
+
+service Query {
+  rpc Pools(QueryPoolsRequest) returns (QueryPoolsResponse) {
+    option (google.api.http).get = "/irismod/farm/pools";
+  }
+
+  rpc Farmers(QueryFarmersRequest) returns (QueryFarmersResponse) {
+    option (google.api.http).get = "/irismod/farm/farmer";
+  }
+}
+
+message QueryPoolsRequest { string name = 1; }
+
+message FarmPoolEntry {
+  string name = 1;
+  string owner = 2;
+  uint64 begin_height = 3;
+  uint64 end_height = 4;
+  bool destructible = 5;
+  bool expired = 6;
+  cosmos.base.v1beta1.Coin total_lp_token_locked = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin total_reward = 8 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin remaining_reward = 9 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin reward_per_block = 10 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryPoolsResponse { repeated FarmPoolEntry list = 1; }
+
+message QueryFarmersRequest {
+  string farmer = 1;
+  string pool_name = 2;
+}
+
+message QueryFarmersResponse {
+  repeated LockedInfo list = 1;
+  int64 height = 2;
+}
+
+message LockedInfo {
+  string pool_name = 1;
+  uint64 locked = 2;
+  repeated cosmos.base.v1beta1.Coin pending_reward = 3 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+}
