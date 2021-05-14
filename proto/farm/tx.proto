@@ -16,7 +16,7 @@ service Msg {
   rpc DestroyPool(MsgDestroyPool) returns (MsgDestroyPoolResponse);
 
   // AppendReward defines a method for appending reward to a existed farm pool
-  rpc AppendReward(MsgAppendReward) returns (MsgCreatePoolResponse);
+  rpc AppendReward(MsgAppendReward) returns (MsgAppendRewardResponse);
 
   // Stake defines a method for staking some lp token to a farm pool
   rpc Stake(MsgStake) returns (MsgStakeResponse);
