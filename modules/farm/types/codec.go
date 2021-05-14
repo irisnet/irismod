@@ -1,6 +1,8 @@
 package types
 
 import (
+	gogotypes "github.com/gogo/protobuf/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -40,4 +42,17 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
+}
+
+// MustUnMarshalPoolName return the poolName protobuf code
+func MustMarshalPoolName(cdc codec.Marshaler, poolName string) []byte {
+	poolNameWrap := gogotypes.StringValue{Value: poolName}
+	return cdc.MustMarshalBinaryBare(&poolNameWrap)
+}
+
+// MustUnMarshalPoolName return the poolName
+func MustUnMarshalPoolName(cdc codec.Marshaler, poolName []byte) string {
+	var poolNameWrap gogotypes.StringValue
+	cdc.MustUnmarshalBinaryBare(poolName, &poolNameWrap)
+	return poolNameWrap.Value
 }

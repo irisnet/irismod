@@ -1,5 +1,7 @@
 package types
 
+import sdk "github.com/cosmos/cosmos-sdk/types"
+
 // nolint
 const (
 	// module name
@@ -24,3 +26,19 @@ var (
 	FarmerKey          = []byte{0x03} // key for farmer
 	FarmPoolExpiredKey = []byte{0x04} // key for expired farm pool
 )
+
+func GetFarmPoolKey(poolName string) []byte {
+	return append(FarmPoolKey, []byte(poolName)...)
+}
+
+func GetFarmPoolRuleKey(poolName, reward string) []byte {
+	return append(append(FarmPoolRuleKey, []byte(poolName)...), []byte(reward)...)
+}
+
+func GetFarmerKey(address sdk.AccAddress, poolName string) []byte {
+	return append(append(FarmerKey, address...), []byte(poolName)...)
+}
+
+func GetFarmPoolExpiredKey(height uint64, poolName string) []byte {
+	return append(append(FarmPoolExpiredKey, sdk.Uint64ToBigEndian(height)...), []byte(poolName)...)
+}
