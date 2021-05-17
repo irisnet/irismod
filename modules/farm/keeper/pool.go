@@ -364,12 +364,9 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "the rule of the farm pool[%s] not exist", pool.Name)
 	}
 
-	pool.Rules = rules
-	if height == pool.LastHeightDistrRewards {
-		return pool, nil
-	}
-
-	if pool.TotalLpTokenLocked.Amount.GT(sdk.ZeroInt()) {
+	//when there are multiple farm operations in the same block, the value needs to be updated once
+	if height > pool.LastHeightDistrRewards &&
+		pool.TotalLpTokenLocked.Amount.GT(sdk.ZeroInt()) {
 		blockInterval := height - pool.LastHeightDistrRewards
 		for _, r := range rules {
 			rewardAdded := r.RewardPerBlock.ModRaw(int64(blockInterval))
