@@ -24,5 +24,5 @@ func ExpiredHeight(begin uint64, rewardPerBlock sdk.Coins,
 			expiredHeight = inteval + begin
 		}
 	}
-	return expiredHeight, nil
+	return expiredHeight + 1, nil
 }

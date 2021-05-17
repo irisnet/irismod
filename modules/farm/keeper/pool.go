@@ -54,7 +54,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 		})
 	}
 	// put to expired farm pool queue
-	k.Enqueue(ctx, name, endHeight)
+	k.EnqueueExpiredPool(ctx, name, endHeight)
 	return nil
 }
 
@@ -75,7 +75,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 			types.ErrInvalidOperate, "pool [%s] is not destructible", poolName)
 	}
 
-	if pool.EndHeight < uint64(ctx.BlockHeight()) {
+	if pool.EndHeight <= uint64(ctx.BlockHeight()) {
 		return sdkerrors.Wrapf(types.ErrExpiredPool,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
@@ -84,7 +84,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 		)
 	}
 
-	if err := k.Refund(ctx, pool, creator); err != nil {
+	if err := k.Refund(ctx, pool); err != nil {
 		return sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
 	}
 	return nil
@@ -123,8 +123,8 @@ func (k Keeper) Harvest(ctx sdk.Context, name string,
 	return nil, nil
 }
 
-// Refund Refund the remaining reward to creator
-func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool, creator sdk.AccAddress) error {
+// Refund refund the remaining reward to pool creator
+func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) error {
 	rules := k.GetPoolRules(ctx, pool.Name)
 	var remainingReward sdk.Coins
 	for _, r := range rules {
@@ -135,11 +135,19 @@ func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool, creator sdk.AccAdd
 		k.SetPoolRule(ctx, pool.Name, r)
 	}
 
+	creator, err := sdk.AccAddressFromBech32(pool.Creator)
+	if err != nil {
+		return err
+	}
+
 	//refund the total remaining reward to owner
 	if err := k.bk.SendCoinsFromModuleToAccount(ctx,
 		types.ModuleName, creator, remainingReward); err != nil {
 		return err
 	}
+
+	//remove record
+	k.DequeueExpiredPool(ctx, pool.Name, pool.EndHeight)
 
 	//update LastHeightDistrRewards
 	pool.LastHeightDistrRewards = uint64(ctx.BlockHeight())

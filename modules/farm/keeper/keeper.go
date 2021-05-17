@@ -72,11 +72,3 @@ func (k Keeper) GetPoolRules(ctx sdk.Context, poolName string) (rules []types.Fa
 	}
 	return
 }
-
-func (k Keeper) Enqueue(ctx sdk.Context, poolName string, expiredHeight uint64) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(
-		types.GetFarmPoolExpiredKey(expiredHeight, poolName),
-		types.MustMarshalPoolName(k.cdc, poolName),
-	)
-}

@@ -46,3 +46,7 @@ func GetFarmerKey(address sdk.AccAddress, poolName string) []byte {
 func GetFarmPoolExpiredKey(height uint64, poolName string) []byte {
 	return append(append(FarmPoolExpiredKey, sdk.Uint64ToBigEndian(height)...), []byte(poolName)...)
 }
+
+func GetFarmPoolExpiredKeyPrefix(height uint64) []byte {
+	return append(FarmPoolExpiredKey, sdk.Uint64ToBigEndian(height)...)
+}
