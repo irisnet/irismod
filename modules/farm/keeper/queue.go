@@ -18,7 +18,7 @@ func (k Keeper) DequeueExpiredPool(ctx sdk.Context, poolName string, expiredHeig
 	store.Delete(types.GetFarmPoolExpiredKey(expiredHeight, poolName))
 }
 
-func (k Keeper) IteratorExpiredPool(ctx sdk.Context) (fps []*types.FarmPool) {
+func (k Keeper) IteratorExpiredPool(ctx sdk.Context, fun func(pool *types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store,
 		types.GetFarmPoolExpiredKeyPrefix(uint64(ctx.BlockHeight())))
@@ -26,8 +26,19 @@ func (k Keeper) IteratorExpiredPool(ctx sdk.Context) (fps []*types.FarmPool) {
 	for ; iterator.Valid(); iterator.Next() {
 		poolName := types.MustUnMarshalPoolName(k.cdc, iterator.Value())
 		if pool, exist := k.GetPool(ctx, poolName); exist {
-			fps = append(fps, pool)
+			fun(pool)
 		}
 	}
-	return fps
+}
+
+func (k Keeper) IteratorActivePool(ctx sdk.Context, fun func(pool *types.FarmPool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.FarmPoolExpiredKey)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		poolName := types.MustUnMarshalPoolName(k.cdc, iterator.Value())
+		if pool, exist := k.GetPool(ctx, poolName); exist {
+			fun(pool)
+		}
+	}
 }

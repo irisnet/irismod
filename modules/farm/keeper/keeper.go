@@ -37,7 +37,7 @@ func NewKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler,
 
 // CreatePool creates an new farm pool
 func (k Keeper) SetPool(ctx sdk.Context, pool types.FarmPool) {
-	pool.Rule = nil
+	pool.Rules = nil
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&pool)
 	store.Set(types.GetFarmPoolKey(pool.Name), bz)
@@ -61,14 +61,14 @@ func (k Keeper) SetPoolRule(ctx sdk.Context, poolName string, rule types.FarmRul
 	store.Set(types.GetFarmPoolRuleKey(poolName, rule.Reward), bz)
 }
 
-func (k Keeper) GetPoolRules(ctx sdk.Context, poolName string) (rules []types.FarmRule) {
+func (k Keeper) GetPoolRules(ctx sdk.Context, poolName string) (rules []*types.FarmRule) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetFarmPoolRulePrefix(poolName))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var r types.FarmRule
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &r)
-		rules = append(rules, r)
+		rules = append(rules, &r)
 	}
 	return
 }

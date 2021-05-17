@@ -37,7 +37,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 		Creator:      creator.String(),
 		BeginHeight:  beginHeight,
 		Destructible: destructible,
-		Rule:         []*types.FarmRule{},
+		Rules:        []*types.FarmRule{},
 	}
 	//save farm rule
 	for i, total := range totalReward {
@@ -49,7 +49,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 			RewardPerShare:  sdk.ZeroDec(),
 		}
 		k.SetPoolRule(ctx, name, farmRule)
-		fp.Rule = append(fp.Rule, &farmRule)
+		fp.Rules = append(fp.Rules, &farmRule)
 	}
 	fp.EndHeight = fp.ExpiredHeight()
 	//save farm pool
@@ -123,7 +123,7 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 	for _, r := range k.GetPoolRules(ctx, poolName) {
 		r.TotalReward = r.TotalReward.Add(reward.AmountOf(r.Reward))
 		r.RemainingReward = r.RemainingReward.Add(reward.AmountOf(r.Reward))
-		k.SetPoolRule(ctx, poolName, r)
+		k.SetPoolRule(ctx, poolName, *r)
 
 		delta := reward.AmountOf(r.Reward).Quo(r.RewardPerBlock).Uint64()
 		if delta < heightIncr {
@@ -150,7 +150,7 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 
 // Stake is responsible for the user to mortgage the lp token to the system and get back the reward accumulated before then
 func (k Keeper) Stake(ctx sdk.Context, poolName string,
-	amount sdk.Coin,
+	lpToken sdk.Coin,
 	sender sdk.AccAddress,
 ) (reward sdk.Coins, err error) {
 	pool, exist := k.GetPool(ctx, poolName)
@@ -167,21 +167,15 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		)
 	}
 
-	if amount.Denom != pool.TotalLpTokenLocked.Denom {
+	if lpToken.Denom != pool.TotalLpTokenLocked.Denom {
 		return reward, sdkerrors.Wrapf(types.ErrNotMatch,
 			"pool [%s] only accept [%s] token, but got [%s]",
-			poolName, pool.TotalLpTokenLocked.Denom, amount.Denom)
+			poolName, pool.TotalLpTokenLocked.Denom, lpToken.Denom)
 	}
 
 	if err := k.bk.SendCoinsFromAccountToModule(ctx,
-		sender, types.ModuleName, sdk.NewCoins(amount)); err != nil {
+		sender, types.ModuleName, sdk.NewCoins(lpToken)); err != nil {
 		return reward, err
-	}
-
-	//update pool reward shards
-	rulesUpdated, err := k.UpdatePool(ctx, pool, amount.Amount)
-	if err != nil {
-		return nil, err
 	}
 
 	farmer, exist := k.GetFarmer(ctx, poolName, sender.String())
@@ -193,32 +187,29 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		}
 	}
 
-	locked := farmer.Locked.Add(amount.Amount)
-	for _, r := range rulesUpdated {
-		if exist {
-			pendingRewardTotal := r.RewardPerShare.MulInt(farmer.Locked).TruncateInt()
-			pendingReward := pendingRewardTotal.Sub(farmer.RewardDebt.AmountOf(r.Reward))
-			reward = reward.Add(sdk.NewCoin(r.Reward, pendingReward))
-		}
-		rewardDebt := sdk.NewCoin(r.Reward, r.RewardPerShare.MulInt(locked).TruncateInt())
-		farmer.RewardDebt = farmer.RewardDebt.Add(rewardDebt)
+	//update pool reward shards
+	pool, err = k.UpdatePool(ctx, pool, lpToken.Amount, false)
+	if err != nil {
+		return nil, err
 	}
+	rewards, rewardDebt := pool.CaclRewards(*farmer, lpToken.Amount)
 
 	//reward users
 	if reward.IsAllPositive() {
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, reward); err != nil {
+		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
 			return reward, err
 		}
 	}
 
-	farmer.Locked = locked
+	farmer.RewardDebt = rewardDebt
+	farmer.Locked = farmer.Locked.Add(lpToken.Amount)
 	k.SetFarmer(ctx, poolName, *farmer)
-	return reward, nil
+	return rewards, nil
 }
 
 // AppendReward creates an new farm pool
 func (k Keeper) Unstake(ctx sdk.Context, poolName string,
-	amount sdk.Coin,
+	lpToken sdk.Coin,
 	sender sdk.AccAddress) (reward sdk.Coins, err error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
@@ -234,10 +225,10 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		)
 	}
 
-	if amount.Denom != pool.TotalLpTokenLocked.Denom {
+	if lpToken.Denom != pool.TotalLpTokenLocked.Denom {
 		return reward, sdkerrors.Wrapf(types.ErrNotMatch,
 			"pool [%s] only accept [%s] token, but got [%s]",
-			poolName, pool.TotalLpTokenLocked.Denom, amount.Denom)
+			poolName, pool.TotalLpTokenLocked.Denom, lpToken.Denom)
 	}
 
 	farmer, exist := k.GetFarmer(ctx, poolName, sender.String())
@@ -249,44 +240,37 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		)
 	}
 
-	if farmer.Locked.LT(amount.Amount) {
+	if farmer.Locked.LT(lpToken.Amount) {
 		return reward, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"farmer locked lp token %s, but unstake %s",
 			farmer.Locked.String(),
-			amount.Amount.String(),
+			lpToken.Amount.String(),
 		)
 	}
 
-	locked := farmer.Locked.Sub(amount.Amount)
-
+	amtAdded := lpToken.Amount.Neg()
 	//update pool reward shards
-	rulesUpdated, err := k.UpdatePool(ctx, pool, amount.Amount.Neg())
+	pool, err = k.UpdatePool(ctx, pool, amtAdded, false)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, r := range rulesUpdated {
-		pendingRewardTotal := r.RewardPerShare.MulInt(farmer.Locked).TruncateInt()
-		pendingReward := pendingRewardTotal.Sub(farmer.RewardDebt.AmountOf(r.Reward))
-		reward = reward.Add(sdk.NewCoin(r.Reward, pendingReward))
-
-		rewardDebt := sdk.NewCoin(r.Reward, r.RewardPerShare.MulInt(locked).TruncateInt())
-		farmer.RewardDebt = farmer.RewardDebt.Add(rewardDebt)
-	}
-
+	rewards, rewardDebt := pool.CaclRewards(*farmer, amtAdded)
 	//reward users
-	if reward.IsAllPositive() {
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, reward); err != nil {
+	if rewards.IsAllPositive() {
+		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
 			return reward, err
 		}
 	}
 
-	if locked.IsZero() {
+	farmer.RewardDebt = rewardDebt
+	farmer.Locked = farmer.Locked.Add(amtAdded)
+
+	if farmer.Locked.IsZero() {
 		k.DeleteFarmer(ctx, poolName, sender.String())
 		return reward, nil
 	}
 
-	farmer.Locked = locked
 	k.SetFarmer(ctx, poolName, *farmer)
 	return reward, nil
 }
@@ -317,49 +301,41 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 		)
 	}
 
+	amtAdded := sdk.ZeroInt()
 	//update pool reward shards
-	rulesUpdated, err := k.UpdatePool(ctx, pool, sdk.ZeroInt())
+	pool, err = k.UpdatePool(ctx, pool, amtAdded, false)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, r := range rulesUpdated {
-		pendingRewardTotal := r.RewardPerShare.MulInt(farmer.Locked).TruncateInt()
-		pendingReward := pendingRewardTotal.Sub(farmer.RewardDebt.AmountOf(r.Reward))
-		reward = reward.Add(sdk.NewCoin(r.Reward, pendingReward))
-
-		rewardDebt := sdk.NewCoin(r.Reward, r.RewardPerShare.MulInt(farmer.Locked).TruncateInt())
-		farmer.RewardDebt = farmer.RewardDebt.Add(rewardDebt)
-	}
-
+	rewards, rewardDebt := pool.CaclRewards(*farmer, amtAdded)
 	//reward users
-	if reward.IsAllPositive() {
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, reward); err != nil {
+	if rewards.IsAllPositive() {
+		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
 			return reward, err
 		}
 	}
+
+	farmer.RewardDebt = rewardDebt
 	k.SetFarmer(ctx, poolName, *farmer)
 	return reward, nil
 }
 
 // Refund refund the remaining reward to pool creator
-func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) error {
-	rules := k.GetPoolRules(ctx, pool.Name)
-	var remainingTotal sdk.Coins
-
-	blockInterval := uint64(ctx.BlockHeight()) - pool.LastHeightDistrRewards
-	for _, r := range rules {
-		rewardAdded := r.RewardPerBlock.ModRaw(int64(blockInterval))
-		newRewardPerShare := sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
-		r.RewardPerShare = r.RewardPerShare.Add(newRewardPerShare)
-		r.RemainingReward = r.RemainingReward.Sub(rewardAdded)
-		remainingTotal = remainingTotal.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
-		k.SetPoolRule(ctx, pool.Name, r)
+func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) (err error) {
+	pool, err = k.UpdatePool(ctx, pool, sdk.ZeroInt(), true)
+	if err != nil {
+		return err
 	}
 
 	creator, err := sdk.AccAddressFromBech32(pool.Creator)
 	if err != nil {
 		return err
+	}
+
+	var remainingTotal sdk.Coins
+	for _, r := range pool.Rules {
+		remainingTotal = remainingTotal.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
 	}
 
 	//refund the total remaining reward to creator
@@ -370,16 +346,14 @@ func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) error {
 
 	//remove record
 	k.DequeueExpiredPool(ctx, pool.Name, pool.EndHeight)
-
-	//update LastHeightDistrRewards
-	pool.LastHeightDistrRewards = uint64(ctx.BlockHeight())
-	//update EndHeight
-	pool.EndHeight = uint64(ctx.BlockHeight())
-	k.SetPool(ctx, *pool)
 	return nil
 }
 
-func (k Keeper) UpdatePool(ctx sdk.Context, pool *types.FarmPool, amount sdk.Int) ([]types.FarmRule, error) {
+func (k Keeper) UpdatePool(ctx sdk.Context,
+	pool *types.FarmPool,
+	amount sdk.Int,
+	isDestroy bool,
+) (*types.FarmPool, error) {
 	height := uint64(ctx.BlockHeight())
 	if height < pool.LastHeightDistrRewards {
 		return nil, sdkerrors.Wrapf(types.ErrExpiredHeight, "invalid height: %d, current: %d", height, pool.LastHeightDistrRewards)
@@ -390,30 +364,40 @@ func (k Keeper) UpdatePool(ctx sdk.Context, pool *types.FarmPool, amount sdk.Int
 		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "the rule of the farm pool[%s] not exist", pool.Name)
 	}
 
+	pool.Rules = rules
 	if height == pool.LastHeightDistrRewards {
-		return rules, nil
+		return pool, nil
 	}
 
-	if pool.TotalLpTokenLocked.IsZero() {
-		return rules, nil
+	if pool.TotalLpTokenLocked.Amount.GT(sdk.ZeroInt()) {
+		blockInterval := height - pool.LastHeightDistrRewards
+		for _, r := range rules {
+			rewardAdded := r.RewardPerBlock.ModRaw(int64(blockInterval))
+			if r.RemainingReward.LT(rewardAdded) {
+				return nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+					"the remaining reward of the pool[%s] is %s, but got %s",
+					pool.Name,
+					sdk.NewCoin(r.Reward, r.RemainingReward).String(),
+					sdk.NewCoin(r.Reward, rewardAdded).String(),
+				)
+			}
+			newRewardPerShare := sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
+			r.RewardPerShare = r.RewardPerShare.Add(newRewardPerShare)
+			r.RemainingReward = r.RemainingReward.Sub(rewardAdded)
+			k.SetPoolRule(ctx, pool.Name, *r)
+		}
 	}
 
-	blockInterval := height - pool.LastHeightDistrRewards
-	for _, r := range rules {
-		rewardAdded := r.RewardPerBlock.ModRaw(int64(blockInterval))
-		newRewardPerShare := sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
-		r.RewardPerShare = r.RewardPerShare.Add(newRewardPerShare)
-		r.RemainingReward = r.RemainingReward.Sub(rewardAdded)
-		k.SetPoolRule(ctx, pool.Name, r)
-	}
-
-	if amount.IsZero() {
-		return rules, nil
-	}
-
-	totalLocked := pool.TotalLpTokenLocked.Amount.Add(amount)
-	pool.TotalLpTokenLocked = sdk.NewCoin(pool.TotalLpTokenLocked.Denom, totalLocked)
+	pool.TotalLpTokenLocked = sdk.NewCoin(
+		pool.TotalLpTokenLocked.Denom,
+		pool.TotalLpTokenLocked.Amount.Add(amount),
+	)
 	pool.LastHeightDistrRewards = uint64(ctx.BlockHeight())
+	if isDestroy {
+		pool.EndHeight = uint64(ctx.BlockHeight())
+	}
 	k.SetPool(ctx, *pool)
-	return rules, nil
+
+	pool.Rules = rules
+	return pool, nil
 }

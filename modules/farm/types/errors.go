@@ -12,5 +12,5 @@ var (
 	ErrExpiredPool    = sdkerrors.Register(ModuleName, 5, "The farm pool has expired")
 	ErrNotExistPool   = sdkerrors.Register(ModuleName, 6, "The farm pool is not exist")
 	ErrInvalidOperate = sdkerrors.Register(ModuleName, 7, "Invalid operate")
-	ErrNotExistFarmer = sdkerrors.Register(ModuleName, 7, "The farmer is not exist")
+	ErrNotExistFarmer = sdkerrors.Register(ModuleName, 8, "The farmer is not exist")
 )
