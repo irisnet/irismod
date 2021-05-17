@@ -70,16 +70,23 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "creator [%s] is not the creator of the pool", creator.String())
 	}
 
-	if pool.EndHeight < uint64(ctx.BlockHeight()) {
-		return sdkerrors.Wrapf(types.ErrExpiredPool, "not exist pool [%s]", poolName) //TODO
+	if !pool.Destructible {
+		return sdkerrors.Wrapf(
+			types.ErrInvalidOperate, "pool [%s] is not destructible", poolName)
 	}
 
-	if err := k.Refund(ctx, poolName, creator); err != nil {
+	if pool.EndHeight < uint64(ctx.BlockHeight()) {
+		return sdkerrors.Wrapf(types.ErrExpiredPool,
+			"pool [%s] has expired at height[%d], current [%d]",
+			poolName,
+			pool.EndHeight,
+			ctx.BlockHeight(),
+		)
+	}
+
+	if err := k.Refund(ctx, pool, creator); err != nil {
 		return sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
 	}
-
-	pool.EndHeight = uint64(ctx.BlockHeight())
-	k.SetPool(ctx, *pool)
 	return nil
 }
 
@@ -116,17 +123,16 @@ func (k Keeper) Harvest(ctx sdk.Context, name string,
 	return nil, nil
 }
 
-// AppendReward creates an new farm pool
-func (k Keeper) Refund(ctx sdk.Context, poolName string, creator sdk.AccAddress) error {
-	rules := k.GetPoolRules(ctx, poolName)
+// Refund Refund the remaining reward to creator
+func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool, creator sdk.AccAddress) error {
+	rules := k.GetPoolRules(ctx, pool.Name)
 	var remainingReward sdk.Coins
-
 	for _, r := range rules {
+		rewardAdded := r.RewardPerBlock.ModRaw(ctx.BlockHeight() - int64(pool.LastHeightDistrRewards))
+		r.RewardPerShare = sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
+		r.RemainingReward = r.RemainingReward.Sub(rewardAdded)
 		remainingReward = remainingReward.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
-		r.RemainingReward = sdk.ZeroInt()
-		//update remaining reward
-		//TODO update RewardPerShare
-		k.SetPoolRule(ctx, poolName, r)
+		k.SetPoolRule(ctx, pool.Name, r)
 	}
 
 	//refund the total remaining reward to owner
@@ -134,5 +140,11 @@ func (k Keeper) Refund(ctx sdk.Context, poolName string, creator sdk.AccAddress)
 		types.ModuleName, creator, remainingReward); err != nil {
 		return err
 	}
+
+	//update LastHeightDistrRewards
+	pool.LastHeightDistrRewards = uint64(ctx.BlockHeight())
+	//update EndHeight
+	pool.EndHeight = uint64(ctx.BlockHeight())
+	k.SetPool(ctx, *pool)
 	return nil
 }
