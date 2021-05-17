@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -91,16 +93,64 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 }
 
 // AppendReward creates an new farm pool
-func (k Keeper) AppendReward(ctx sdk.Context, name string,
+func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 	reward sdk.Coins,
 	creator sdk.AccAddress,
 ) (remaining sdk.Coins, err error) {
-	//TODO
-	return nil, nil
+	pool, exist := k.GetPool(ctx, poolName)
+	if !exist {
+		return remaining, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+	}
+
+	if creator.String() != pool.Creator {
+		return remaining, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "creator [%s] is not the creator of the pool", creator.String())
+	}
+
+	if pool.EndHeight <= uint64(ctx.BlockHeight()) {
+		return remaining, sdkerrors.Wrapf(types.ErrExpiredPool,
+			"pool [%s] has expired at height[%d], current [%d]",
+			poolName,
+			pool.EndHeight,
+			ctx.BlockHeight(),
+		)
+	}
+
+	if err := k.bk.SendCoinsFromAccountToModule(ctx,
+		creator, types.ModuleName, reward); err != nil {
+		return remaining, err
+	}
+
+	var heightIncr = uint64(math.MaxUint64)
+	for _, r := range k.GetPoolRules(ctx, poolName) {
+		r.TotalReward = r.TotalReward.Add(reward.AmountOf(r.Reward))
+		r.RemainingReward = r.RemainingReward.Add(reward.AmountOf(r.Reward))
+		k.SetPoolRule(ctx, poolName, r)
+
+		delta := reward.AmountOf(r.Reward).Quo(r.RewardPerBlock).Uint64()
+		if delta < heightIncr {
+			heightIncr = delta
+		}
+
+		remaining = remaining.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
+	}
+
+	//if the expiration height does not change, there is no need to update the pool and the expired queue
+	if heightIncr == 0 {
+		return remaining, nil
+	}
+
+	// remove from Expired Pool at old height
+	k.DequeueExpiredPool(ctx, poolName, pool.EndHeight)
+
+	pool.EndHeight = pool.EndHeight + uint64(heightIncr)
+	k.SetPool(ctx, *pool)
+	// put to expired farm pool queue at new height
+	k.EnqueueExpiredPool(ctx, poolName, pool.EndHeight)
+	return remaining, nil
 }
 
 // AppendReward creates an new farm pool
-func (k Keeper) Stake(ctx sdk.Context, name string,
+func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	amount sdk.Coin,
 	sender sdk.AccAddress,
 ) (remaining sdk.Coins, err error) {
@@ -109,7 +159,7 @@ func (k Keeper) Stake(ctx sdk.Context, name string,
 }
 
 // AppendReward creates an new farm pool
-func (k Keeper) Unstake(ctx sdk.Context, name string,
+func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	amount sdk.Coin,
 	sender sdk.AccAddress) (remaining sdk.Coins, err error) {
 	//TODO
@@ -117,7 +167,7 @@ func (k Keeper) Unstake(ctx sdk.Context, name string,
 }
 
 // AppendReward creates an new farm pool
-func (k Keeper) Harvest(ctx sdk.Context, name string,
+func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 	creator sdk.AccAddress) (remaining sdk.Coins, err error) {
 	//TODO
 	return nil, nil
@@ -126,12 +176,12 @@ func (k Keeper) Harvest(ctx sdk.Context, name string,
 // Refund refund the remaining reward to pool creator
 func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) error {
 	rules := k.GetPoolRules(ctx, pool.Name)
-	var remainingReward sdk.Coins
+	var remainingTotal sdk.Coins
 	for _, r := range rules {
 		rewardAdded := r.RewardPerBlock.ModRaw(ctx.BlockHeight() - int64(pool.LastHeightDistrRewards))
 		r.RewardPerShare = sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
 		r.RemainingReward = r.RemainingReward.Sub(rewardAdded)
-		remainingReward = remainingReward.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
+		remainingTotal = remainingTotal.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
 		k.SetPoolRule(ctx, pool.Name, r)
 	}
 
@@ -140,9 +190,9 @@ func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) error {
 		return err
 	}
 
-	//refund the total remaining reward to owner
+	//refund the total remaining reward to creator
 	if err := k.bk.SendCoinsFromModuleToAccount(ctx,
-		types.ModuleName, creator, remainingReward); err != nil {
+		types.ModuleName, creator, remainingTotal); err != nil {
 		return err
 	}
 

@@ -76,8 +76,18 @@ func (m msgServer) DestroyPool(goCtx context.Context, msg *types.MsgDestroyPool)
 	return &types.MsgDestroyPoolResponse{}, nil
 }
 
-func (msgServer) AppendReward(context.Context, *types.MsgAppendReward) (*types.MsgAppendRewardResponse, error) {
-	return &types.MsgAppendRewardResponse{}, nil
+func (m msgServer) AppendReward(goCtx context.Context, msg *types.MsgAppendReward) (*types.MsgAppendRewardResponse, error) {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	remaining, err := m.Keeper.AppendReward(ctx, msg.PoolName, msg.Amount, creator)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgAppendRewardResponse{RemainingReward: remaining}, nil
 }
 
 func (msgServer) Stake(context.Context, *types.MsgStake) (*types.MsgStakeResponse, error) {
