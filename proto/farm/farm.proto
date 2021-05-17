@@ -49,6 +49,12 @@ message Farmer {
   option (gogoproto.equal) = true;
 
   string address = 2;
-  uint64 locked = 3;
-  uint64 reward_debt = 4;
+  string locked = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin reward_debt = 4 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
 }

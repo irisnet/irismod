@@ -39,7 +39,7 @@ func GetFarmPoolRulePrefix(poolName string) []byte {
 	return append(FarmPoolRuleKey, []byte(poolName)...)
 }
 
-func GetFarmerKey(address sdk.AccAddress, poolName string) []byte {
+func GetFarmerKey(address, poolName string) []byte {
 	return append(append(FarmerKey, address...), []byte(poolName)...)
 }
 

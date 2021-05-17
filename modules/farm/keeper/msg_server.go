@@ -90,14 +90,44 @@ func (m msgServer) AppendReward(goCtx context.Context, msg *types.MsgAppendRewar
 	return &types.MsgAppendRewardResponse{RemainingReward: remaining}, nil
 }
 
-func (msgServer) Stake(context.Context, *types.MsgStake) (*types.MsgStakeResponse, error) {
-	return &types.MsgStakeResponse{}, nil
+func (m msgServer) Stake(goCtx context.Context, msg *types.MsgStake) (*types.MsgStakeResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	reward, err := m.Keeper.Stake(ctx, msg.PoolName, msg.Amount, sender)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgStakeResponse{Reward: reward}, nil
 }
 
-func (msgServer) Unstake(context.Context, *types.MsgUnstake) (*types.MsgUnstakeResponse, error) {
-	return &types.MsgUnstakeResponse{}, nil
+func (m msgServer) Unstake(goCtx context.Context, msg *types.MsgUnstake) (*types.MsgUnstakeResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	reward, err := m.Keeper.Unstake(ctx, msg.PoolName, msg.Amount, sender)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgUnstakeResponse{Reward: reward}, nil
 }
 
-func (msgServer) Harvest(context.Context, *types.MsgHarvest) (*types.MsgHarvestResponse, error) {
-	return &types.MsgHarvestResponse{}, nil
+func (m msgServer) Harvest(goCtx context.Context, msg *types.MsgHarvest) (*types.MsgHarvestResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	reward, err := m.Keeper.Harvest(ctx, msg.PoolName, sender)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgHarvestResponse{Reward: reward}, nil
 }
