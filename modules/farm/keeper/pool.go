@@ -18,7 +18,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 	totalReward sdk.Coins,
 	destructible bool,
 	creator sdk.AccAddress,
-) (err error) {
+) error {
 	//Escrow total reward
 	if err := k.bk.SendCoinsFromAccountToModule(ctx,
 		creator, types.ModuleName, totalReward); err != nil {
@@ -32,12 +32,13 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 	}
 
 	pool := types.FarmPool{
-		Name:         name,
-		Creator:      creator.String(),
-		Description:  description,
-		BeginHeight:  beginHeight,
-		Destructible: destructible,
-		Rules:        []*types.RewardRule{},
+		Name:               name,
+		Creator:            creator.String(),
+		Description:        description,
+		BeginHeight:        beginHeight,
+		Destructible:       destructible,
+		TotalLpTokenLocked: sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
+		Rules:              []*types.RewardRule{},
 	}
 	//save farm rule
 	for i, total := range totalReward {
@@ -119,8 +120,13 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 		return remaining, err
 	}
 
+	rules := k.GetRewardRules(ctx, poolName)
+	if !types.RewardRules(rules).Contains(reward) {
+		return remaining, sdkerrors.Wrapf(types.ErrInvalidAppend, reward.String())
+	}
+
 	var heightIncr = uint64(math.MaxUint64)
-	for _, r := range k.GetRewardRules(ctx, poolName) {
+	for _, r := range rules {
 		r.TotalReward = r.TotalReward.Add(reward.AmountOf(r.Reward))
 		r.RemainingReward = r.RemainingReward.Add(reward.AmountOf(r.Reward))
 		k.SetRewardRule(ctx, poolName, *r)

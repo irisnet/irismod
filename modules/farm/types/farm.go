@@ -6,20 +6,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (fp FarmPool) ExpiredHeight() uint64 {
+func (pool FarmPool) ExpiredHeight() uint64 {
 	var expiredHeight = uint64(math.MaxUint64)
-	for _, r := range fp.Rules {
+	for _, r := range pool.Rules {
 		inteval := r.TotalReward.Quo(r.RewardPerBlock).Uint64()
-		if inteval+fp.BeginHeight < expiredHeight {
-			expiredHeight = inteval + fp.BeginHeight
+		if inteval+pool.BeginHeight < expiredHeight {
+			expiredHeight = inteval + pool.BeginHeight
 		}
 	}
 	return expiredHeight + 1
 }
 
-func (fp FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, dewardDebt sdk.Coins) {
-	dewardDebt = farmInfo.RewardDebt
-	for _, r := range fp.Rules {
+func (pool FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, rewardDebt sdk.Coins) {
+	for _, r := range pool.Rules {
 		if farmInfo.Locked.GT(sdk.ZeroInt()) {
 			pendingRewardTotal := r.RewardPerShare.MulInt(farmInfo.Locked).TruncateInt()
 			pendingReward := pendingRewardTotal.Sub(farmInfo.RewardDebt.AmountOf(r.Reward))
@@ -27,8 +26,18 @@ func (fp FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, de
 		}
 
 		locked := farmInfo.Locked.Add(deltaAmt)
-		rewardDebt := sdk.NewCoin(r.Reward, r.RewardPerShare.MulInt(locked).TruncateInt())
-		dewardDebt = dewardDebt.Add(rewardDebt)
+		debt := sdk.NewCoin(r.Reward, r.RewardPerShare.MulInt(locked).TruncateInt())
+		rewardDebt = rewardDebt.Add(debt)
 	}
-	return rewards, dewardDebt
+	return rewards, rewardDebt
+}
+
+type RewardRules []*RewardRule
+
+func (rs RewardRules) Contains(reward sdk.Coins) bool {
+	var allRewards sdk.Coins
+	for _, r := range rs {
+		allRewards = allRewards.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
+	}
+	return reward.DenomsSubsetOf(allRewards)
 }

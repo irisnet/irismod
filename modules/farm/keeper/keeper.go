@@ -20,7 +20,8 @@ type Keeper struct {
 	ck               types.CoinswapKeeper
 }
 
-func NewKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler,
+func NewKeeper(cdc codec.Marshaler,
+	storeKey sdk.StoreKey,
 	bk types.BankKeeper,
 	ck types.CoinswapKeeper,
 	paramSpace paramstypes.Subspace,
@@ -35,6 +36,7 @@ func NewKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler,
 		cdc:              cdc,
 		bk:               bk,
 		ck:               ck,
+		paramSpace:       paramSpace,
 		feeCollectorName: feeCollectorName,
 	}
 }
@@ -48,15 +50,16 @@ func (k Keeper) SetPool(ctx sdk.Context, pool types.FarmPool) {
 }
 
 // GetPool return the specified farm pool
-func (k Keeper) GetPool(ctx sdk.Context, poolName string) (pool *types.FarmPool, exist bool) {
+func (k Keeper) GetPool(ctx sdk.Context, poolName string) (*types.FarmPool, bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetFarmPoolKey(poolName))
 	if len(bz) == 0 {
 		return nil, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(bz, pool)
-	return pool, true
+	var pool types.FarmPool
+	k.cdc.MustUnmarshalBinaryBare(bz, &pool)
+	return &pool, true
 }
 
 func (k Keeper) SetRewardRule(ctx sdk.Context, poolName string, rule types.RewardRule) {

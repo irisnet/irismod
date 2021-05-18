@@ -15,4 +15,5 @@ var (
 	ErrNotExistFarmer     = sdkerrors.Register(ModuleName, 8, "the farmer is not exist")
 	ErrInvalidPoolName    = sdkerrors.Register(ModuleName, 9, "invalid pool name , must contain alphanumeric characters, _ and - only，length greater than 0 and less than or equal to 70")
 	ErrInvalidDescription = sdkerrors.Register(ModuleName, 10, "invalid pool description,length less than or equal to 280")
+	ErrInvalidAppend      = sdkerrors.Register(ModuleName, 11, "cannot add new token as a reward")
 )

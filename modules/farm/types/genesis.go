@@ -19,27 +19,6 @@ func DefaultGenesisState() *GenesisState {
 		Params: Params{
 			CreatePoolFee: sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)),
 		},
-		Pools: []FarmPool{
-			{
-				Name:                   "BUSD-IRIS",
-				Creator:                "iaa1w9lvhwlvkwqvg08q84n2k4nn896u9pqx93velx",
-				Description:            "BUSD-IRIS Farm Pool",
-				BeginHeight:            100,
-				EndHeight:              201,
-				LastHeightDistrRewards: 0,
-				Destructible:           false,
-				Rules: []*RewardRule{
-					{
-						Reward:          sdk.DefaultBondDenom,
-						TotalReward:     sdk.NewInt(10000),
-						RemainingReward: sdk.NewInt(10000),
-						RewardPerBlock:  sdk.NewInt(100),
-						RewardPerShare:  sdk.ZeroDec(),
-					},
-				},
-			},
-		},
-		FarmInfos: []FarmInfo{},
 	}
 }
 
