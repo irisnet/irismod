@@ -12,8 +12,8 @@ service Query {
     option (google.api.http).get = "/irismod/farm/pools";
   }
 
-  rpc Farmers(QueryFarmersRequest) returns (QueryFarmersResponse) {
-    option (google.api.http).get = "/irismod/farm/farmer";
+  rpc Farmer(QueryFarmerRequest) returns (QueryFarmerResponse) {
+    option (google.api.http).get = "/irismod/farm/farmer/{farmer}";
   }
 }
 
@@ -46,19 +46,22 @@ message FarmPoolEntry {
 
 message QueryPoolsResponse { repeated FarmPoolEntry list = 1; }
 
-message QueryFarmersRequest {
+message QueryFarmerRequest {
   string farmer = 1;
   string pool_name = 2;
 }
 
-message QueryFarmersResponse {
+message QueryFarmerResponse {
   repeated LockedInfo list = 1;
   int64 height = 2;
 }
 
 message LockedInfo {
   string pool_name = 1;
-  uint64 locked = 2;
+  cosmos.base.v1beta1.Coin locked = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
   repeated cosmos.base.v1beta1.Coin pending_reward = 3 [
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
     (gogoproto.nullable) = false

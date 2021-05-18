@@ -76,3 +76,14 @@ func (k Keeper) GetPoolRules(ctx sdk.Context, poolName string) (rules []*types.F
 	}
 	return
 }
+
+func (k Keeper) IteratorPoolRules(ctx sdk.Context, poolName string, fun func(r types.FarmRule)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.GetFarmPoolRulePrefix(poolName))
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var r types.FarmRule
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &r)
+		fun(r)
+	}
+}

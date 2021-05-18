@@ -40,7 +40,11 @@ func GetFarmPoolRulePrefix(poolName string) []byte {
 }
 
 func GetFarmerKey(address, poolName string) []byte {
-	return append(append(FarmerKey, address...), []byte(poolName)...)
+	return append(append(FarmerKey, []byte(address)...), []byte(poolName)...)
+}
+
+func GetFarmerKeyPrefix(address string) []byte {
+	return append(FarmerKey, []byte(address)...)
 }
 
 func GetFarmPoolExpiredKey(height uint64, poolName string) []byte {

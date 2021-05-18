@@ -181,6 +181,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	farmer, exist := k.GetFarmer(ctx, poolName, sender.String())
 	if !exist {
 		farmer = &types.Farmer{
+			PoolName:   poolName,
 			Address:    sender.String(),
 			Locked:     sdk.ZeroInt(),
 			RewardDebt: sdk.NewCoins(),
@@ -203,7 +204,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 
 	farmer.RewardDebt = rewardDebt
 	farmer.Locked = farmer.Locked.Add(lpToken.Amount)
-	k.SetFarmer(ctx, poolName, *farmer)
+	k.SetFarmer(ctx, *farmer)
 	return rewards, nil
 }
 
@@ -271,7 +272,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		return reward, nil
 	}
 
-	k.SetFarmer(ctx, poolName, *farmer)
+	k.SetFarmer(ctx, *farmer)
 	return reward, nil
 }
 
@@ -317,7 +318,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 	}
 
 	farmer.RewardDebt = rewardDebt
-	k.SetFarmer(ctx, poolName, *farmer)
+	k.SetFarmer(ctx, *farmer)
 	return reward, nil
 }
 
