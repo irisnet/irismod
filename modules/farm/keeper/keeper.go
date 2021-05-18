@@ -48,15 +48,15 @@ func (k Keeper) SetPool(ctx sdk.Context, pool types.FarmPool) {
 }
 
 // GetPool return the specified farm pool
-func (k Keeper) GetPool(ctx sdk.Context, poolName string) (fp *types.FarmPool, exist bool) {
+func (k Keeper) GetPool(ctx sdk.Context, poolName string) (pool *types.FarmPool, exist bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetFarmPoolKey(poolName))
 	if len(bz) == 0 {
 		return nil, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(bz, fp)
-	return fp, true
+	k.cdc.MustUnmarshalBinaryBare(bz, pool)
+	return pool, true
 }
 
 func (k Keeper) SetRewardRule(ctx sdk.Context, poolName string, rule types.RewardRule) {

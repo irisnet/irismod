@@ -31,9 +31,10 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 		return err
 	}
 
-	fp := types.FarmPool{
+	pool := types.FarmPool{
 		Name:         name,
 		Creator:      creator.String(),
+		Description:  description,
 		BeginHeight:  beginHeight,
 		Destructible: destructible,
 		Rules:        []*types.RewardRule{},
@@ -48,13 +49,13 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 			RewardPerShare:  sdk.ZeroDec(),
 		}
 		k.SetRewardRule(ctx, name, rewardRule)
-		fp.Rules = append(fp.Rules, &rewardRule)
+		pool.Rules = append(pool.Rules, &rewardRule)
 	}
-	fp.EndHeight = fp.ExpiredHeight()
+	pool.EndHeight = pool.ExpiredHeight()
 	//save farm pool
-	k.SetPool(ctx, fp)
+	k.SetPool(ctx, pool)
 	// put to expired farm pool queue
-	k.EnqueueExpiredPool(ctx, name, fp.EndHeight)
+	k.EnqueueActivePool(ctx, name, pool.EndHeight)
 	return nil
 }
 
@@ -138,12 +139,12 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 	}
 
 	// remove from Expired Pool at old height
-	k.DequeueExpiredPool(ctx, poolName, pool.EndHeight)
+	k.DequeueActivePool(ctx, poolName, pool.EndHeight)
 
 	pool.EndHeight = pool.EndHeight + uint64(heightIncr)
 	k.SetPool(ctx, *pool)
 	// put to expired farm pool queue at new height
-	k.EnqueueExpiredPool(ctx, poolName, pool.EndHeight)
+	k.EnqueueActivePool(ctx, poolName, pool.EndHeight)
 	return remaining, nil
 }
 
@@ -345,7 +346,7 @@ func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) (err error) {
 	}
 
 	//remove record
-	k.DequeueExpiredPool(ctx, pool.Name, pool.EndHeight)
+	k.DequeueActivePool(ctx, pool.Name, pool.EndHeight)
 	return nil
 }
 

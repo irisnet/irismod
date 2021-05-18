@@ -28,6 +28,17 @@ func (k Keeper) IteratorFarmInfo(ctx sdk.Context, address string, fun func(farme
 	}
 }
 
+func (k Keeper) IteratorAllFarmInfo(ctx sdk.Context, fun func(farmer types.FarmInfo)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.FarmerKey)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var farmer types.FarmInfo
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &farmer)
+		fun(farmer)
+	}
+}
+
 // SetFarmer save the farmer information
 func (k Keeper) SetFarmInfo(ctx sdk.Context, farmer types.FarmInfo) {
 	store := ctx.KVStore(k.storeKey)

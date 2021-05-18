@@ -21,10 +21,10 @@ const (
 )
 
 var (
-	FarmPoolKey        = []byte{0x01} // key for farm pool
-	FarmPoolRuleKey    = []byte{0x02} // key for farm pool reward rule
-	FarmerKey          = []byte{0x03} // key for farmer
-	FarmPoolExpiredKey = []byte{0x04} // key for expired farm pool
+	FarmPoolKey       = []byte{0x01} // key for farm pool
+	FarmPoolRuleKey   = []byte{0x02} // key for farm pool reward rule
+	FarmerKey         = []byte{0x03} // key for farmer
+	ActiveFarmPoolKey = []byte{0x04} // key for active farm pool
 )
 
 func GetFarmPoolKey(poolName string) []byte {
@@ -47,10 +47,10 @@ func GetFarmerKeyPrefix(address string) []byte {
 	return append(FarmerKey, []byte(address)...)
 }
 
-func GetFarmPoolExpiredKey(height uint64, poolName string) []byte {
-	return append(append(FarmPoolExpiredKey, sdk.Uint64ToBigEndian(height)...), []byte(poolName)...)
+func GetActiveFarmPoolKey(expiredHeight uint64, poolName string) []byte {
+	return append(append(ActiveFarmPoolKey, sdk.Uint64ToBigEndian(expiredHeight)...), []byte(poolName)...)
 }
 
-func GetFarmPoolExpiredKeyPrefix(height uint64) []byte {
-	return append(FarmPoolExpiredKey, sdk.Uint64ToBigEndian(height)...)
+func GetActiveFarmPoolKeyPrefix(expiredHeight uint64) []byte {
+	return append(ActiveFarmPoolKey, sdk.Uint64ToBigEndian(expiredHeight)...)
 }

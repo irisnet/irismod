@@ -12,15 +12,16 @@ message FarmPool {
 
   string name = 1;
   string creator = 2;
-  uint64 begin_height = 3;
-  uint64 end_height = 4;
-  uint64 last_height_distr_rewards = 5;
-  bool destructible = 6;
-  cosmos.base.v1beta1.Coin total_lp_token_locked = 7 [
+  string description = 3;
+  uint64 begin_height = 4;
+  uint64 end_height = 5;
+  uint64 last_height_distr_rewards = 6;
+  bool destructible = 7;
+  cosmos.base.v1beta1.Coin total_lp_token_locked = 8 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
-  repeated RewardRule rules = 8;
+  repeated RewardRule rules = 9;
 }
 
 message RewardRule {

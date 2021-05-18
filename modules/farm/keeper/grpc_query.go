@@ -16,7 +16,7 @@ func (k Keeper) Pools(goctx context.Context,
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	var pools []*types.FarmPoolEntry
-	k.IteratorActivePool(ctx, func(pool *types.FarmPool) {
+	k.IteratorAllPools(ctx, func(pool *types.FarmPool) {
 		var totalReward sdk.Coins
 		var remainingReward sdk.Coins
 		var rewardPerBlock sdk.Coins
