@@ -5,6 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/irisnet/irismod/modules/farm/types"
 )
@@ -36,8 +38,42 @@ func GetCmdCreateFarmPool() *cobra.Command {
 		Short: "Create a new farm pool",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//TODO
-			return nil
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			description, _ := cmd.Flags().GetString(FlagDescription)
+			lpTokenDenom, _ := cmd.Flags().GetString(FlagLPTokenDenom)
+			beginHeight, _ := cmd.Flags().GetUint64(FlagBeginHeight)
+			destructible, _ := cmd.Flags().GetBool(FlagDestructible)
+
+			rewardPerBlockStr, _ := cmd.Flags().GetString(FlagRewardPerBlock)
+			rewardPerBlock, err := sdk.ParseCoinsNormalized(rewardPerBlockStr)
+			if err != nil {
+				return err
+			}
+
+			totalRewardStr, _ := cmd.Flags().GetString(FlagTotalReward)
+			totalReward, err := sdk.ParseCoinsNormalized(totalRewardStr)
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgCreatePool{
+				Name:           args[0],
+				Description:    description,
+				LpTokenDenom:   lpTokenDenom,
+				BeginHeight:    beginHeight,
+				RewardPerBlock: rewardPerBlock,
+				TotalReward:    totalReward,
+				Destructible:   destructible,
+				Creator:        clientCtx.GetFromAddress().String(),
+			}
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 	cmd.Flags().AddFlagSet(FsCreateFarmPool)
@@ -52,8 +88,18 @@ func GetCmdDestroyFarmPool() *cobra.Command {
 		Short: "Destroy a new farm pool",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//TODO
-			return nil
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			msg := types.MsgDestroyPool{
+				PoolName: args[0],
+				Creator:  clientCtx.GetFromAddress().String(),
+			}
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
@@ -67,8 +113,25 @@ func GetCmdAppendReward() *cobra.Command {
 		Short: "Append some reward for farm pool",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//TODO
-			return nil
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			reward, err := sdk.ParseCoinsNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgAppendReward{
+				PoolName: args[0],
+				Amount:   reward,
+				Creator:  clientCtx.GetFromAddress().String(),
+			}
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
@@ -82,8 +145,25 @@ func GetCmdStake() *cobra.Command {
 		Short: "Stake some lp token to farm pool",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//TODO
-			return nil
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			amount, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgStake{
+				PoolName: args[0],
+				Amount:   amount,
+				Sender:   clientCtx.GetFromAddress().String(),
+			}
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
@@ -97,8 +177,25 @@ func GetCmdUnstake() *cobra.Command {
 		Short: "Unstake some lp token from farm pool",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//TODO
-			return nil
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			amount, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgUnstake{
+				PoolName: args[0],
+				Amount:   amount,
+				Sender:   clientCtx.GetFromAddress().String(),
+			}
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
@@ -112,8 +209,19 @@ func GetCmdHarvest() *cobra.Command {
 		Short: "withdraw some reward from the farm pool",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//TODO
-			return nil
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgHarvest{
+				PoolName: args[0],
+				Sender:   clientCtx.GetFromAddress().String(),
+			}
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
