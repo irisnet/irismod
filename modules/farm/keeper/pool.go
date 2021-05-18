@@ -26,9 +26,8 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 	}
 
 	//send CreatePoolFee to feeCollectorName
-	fee := k.CreatePoolFee(ctx)
 	if err := k.bk.SendCoinsFromAccountToModule(ctx,
-		creator, k.feeCollectorName, sdk.NewCoins(fee)); err != nil {
+		creator, k.feeCollectorName, sdk.NewCoins(k.CreatePoolFee(ctx))); err != nil {
 		return err
 	}
 

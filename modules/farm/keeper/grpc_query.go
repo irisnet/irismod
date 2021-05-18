@@ -28,7 +28,7 @@ func (k Keeper) Pools(goctx context.Context,
 
 		pools = append(pools, &types.FarmPoolEntry{
 			Name:               pool.Name,
-			Owner:              pool.Creator,
+			Creator:            pool.Creator,
 			BeginHeight:        pool.BeginHeight,
 			EndHeight:          pool.EndHeight,
 			Destructible:       pool.Destructible,
