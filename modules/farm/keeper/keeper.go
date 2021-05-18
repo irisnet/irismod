@@ -17,12 +17,15 @@ type Keeper struct {
 	// name of the fee collector
 	feeCollectorName string
 	bk               types.BankKeeper
+	ck               types.CoinswapKeeper
 }
 
 func NewKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler,
 	bk types.BankKeeper,
+	ck types.CoinswapKeeper,
 	paramSpace paramstypes.Subspace,
-	feeCollectorName string) Keeper {
+	feeCollectorName string,
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
@@ -31,6 +34,7 @@ func NewKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler,
 		storeKey:         storeKey,
 		cdc:              cdc,
 		bk:               bk,
+		ck:               ck,
 		feeCollectorName: feeCollectorName,
 	}
 }
