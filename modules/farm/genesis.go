@@ -23,6 +23,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	}
 
 	for _, farmInfo := range data.FarmInfos {
+		_, exist := k.GetPool(ctx, farmInfo.PoolName)
+		if !exist {
+			panic(types.ErrNotExistPool)
+		}
 		k.SetFarmInfo(ctx, farmInfo)
 	}
 	k.SetParams(ctx, data.Params)

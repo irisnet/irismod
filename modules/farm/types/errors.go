@@ -6,11 +6,13 @@ import (
 
 // farm module sentinel errors
 var (
-	ErrExpiredHeight  = sdkerrors.Register(ModuleName, 2, "Expired block height")
-	ErrInvalidLPToken = sdkerrors.Register(ModuleName, 3, "Invalid lp token denom")
-	ErrNotMatch       = sdkerrors.Register(ModuleName, 4, "The data does not match")
-	ErrExpiredPool    = sdkerrors.Register(ModuleName, 5, "The farm pool has expired")
-	ErrNotExistPool   = sdkerrors.Register(ModuleName, 6, "The farm pool is not exist")
-	ErrInvalidOperate = sdkerrors.Register(ModuleName, 7, "Invalid operate")
-	ErrNotExistFarmer = sdkerrors.Register(ModuleName, 8, "The farmer is not exist")
+	ErrExpiredHeight      = sdkerrors.Register(ModuleName, 2, "expired block height")
+	ErrInvalidLPToken     = sdkerrors.Register(ModuleName, 3, "invalid lp token denom")
+	ErrNotMatch           = sdkerrors.Register(ModuleName, 4, "the data does not match")
+	ErrExpiredPool        = sdkerrors.Register(ModuleName, 5, "the farm pool has expired")
+	ErrNotExistPool       = sdkerrors.Register(ModuleName, 6, "the farm pool is not exist")
+	ErrInvalidOperate     = sdkerrors.Register(ModuleName, 7, "invalid operate")
+	ErrNotExistFarmer     = sdkerrors.Register(ModuleName, 8, "the farmer is not exist")
+	ErrInvalidPoolName    = sdkerrors.Register(ModuleName, 9, "invalid pool name , must contain alphanumeric characters, _ and - only，length greater than 0 and less than or equal to 70")
+	ErrInvalidDescription = sdkerrors.Register(ModuleName, 10, "invalid pool description,length less than or equal to 280")
 )

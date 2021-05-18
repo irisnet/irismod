@@ -1,5 +1,11 @@
 package types
 
+import (
+	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
 // NewGenesisState constructs a new GenesisState instance
 func NewGenesisState(params Params, pools []FarmPool, farmInfos []FarmInfo) *GenesisState {
 	return &GenesisState{
@@ -9,12 +15,94 @@ func NewGenesisState(params Params, pools []FarmPool, farmInfos []FarmInfo) *Gen
 
 // DefaultGenesisState gets the default genesis state for testing
 func DefaultGenesisState() *GenesisState {
-	return &GenesisState{}
+	return &GenesisState{
+		Params: Params{
+			CreatePoolFee: sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)),
+		},
+		Pools: []FarmPool{
+			{
+				Name:                   "BUSD-IRIS",
+				Creator:                "iaa1w9lvhwlvkwqvg08q84n2k4nn896u9pqx93velx",
+				Description:            "BUSD-IRIS Farm Pool",
+				BeginHeight:            100,
+				EndHeight:              201,
+				LastHeightDistrRewards: 0,
+				Destructible:           false,
+				Rules: []*RewardRule{
+					{
+						Reward:          sdk.DefaultBondDenom,
+						TotalReward:     sdk.NewInt(10000),
+						RemainingReward: sdk.NewInt(10000),
+						RewardPerBlock:  sdk.NewInt(100),
+						RewardPerShare:  sdk.ZeroDec(),
+					},
+				},
+			},
+		},
+		FarmInfos: []FarmInfo{},
+	}
 }
 
 // ValidateGenesis validates the provided farm genesis state to ensure the
 // expected invariants holds.
 func ValidateGenesis(data GenesisState) error {
-	//TODO
-	return nil
+	for _, pool := range data.Pools {
+		if err := ValidatePoolName(pool.Name); err != nil {
+			return err
+		}
+
+		if err := ValidateDescription(pool.Description); err != nil {
+			return err
+		}
+
+		if err := ValidateAddress(pool.Creator); err != nil {
+			return err
+		}
+
+		if err := ValidateCoins(pool.TotalLpTokenLocked); err != nil {
+			return err
+		}
+
+		for _, r := range pool.Rules {
+			if err := ValidateLpTokenDenom(r.Reward); err != nil {
+				return err
+			}
+
+			if !r.TotalReward.IsPositive() {
+				return fmt.Errorf("totalReward must be positive, but got %s", r.TotalReward.String())
+			}
+
+			if r.RemainingReward.IsNegative() {
+				return fmt.Errorf("temainingReward must be greater than zero, but got %s", r.RemainingReward.String())
+			}
+
+			if !r.RewardPerBlock.IsPositive() {
+				return fmt.Errorf("rewardPerBlock must be positive, but got %s", r.RewardPerBlock.String())
+			}
+
+			if !r.RewardPerShare.IsPositive() {
+				return fmt.Errorf("rewardPerShare must be positive, but got %s", r.RewardPerShare.String())
+			}
+		}
+	}
+
+	for _, info := range data.FarmInfos {
+		if err := ValidatePoolName(info.PoolName); err != nil {
+			return err
+		}
+
+		if err := ValidateAddress(info.Address); err != nil {
+			return err
+		}
+
+		if !info.Locked.IsPositive() {
+			return fmt.Errorf("locked must be positive, but got %s", info.Locked.String())
+		}
+
+		if err := ValidateCoins(info.RewardDebt...); err != nil {
+			return err
+		}
+	}
+
+	return ValidateCoins(data.Params.CreatePoolFee)
 }

@@ -41,8 +41,26 @@ func (msg MsgCreatePool) Type() string { return TypeMsgCreatePool }
 
 // ValidateBasic implements Msg
 func (msg MsgCreatePool) ValidateBasic() error {
-	//TODO
-	return nil
+	if err := ValidatePoolName(msg.Name); err != nil {
+		return err
+	}
+
+	if err := ValidateDescription(msg.Description); err != nil {
+		return err
+	}
+
+	if err := ValidateLpTokenDenom(msg.LpTokenDenom); err != nil {
+		return err
+	}
+
+	if err := ValidateCoins(msg.RewardPerBlock...); err != nil {
+		return err
+	}
+
+	if err := ValidateAddress(msg.Creator); err != nil {
+		return err
+	}
+	return ValidateCoins(msg.TotalReward...)
 }
 
 // GetSignBytes implements Msg
@@ -69,8 +87,10 @@ func (msg MsgDestroyPool) Type() string { return TypeMsgDestroyPool }
 
 // ValidateBasic implements Msg
 func (msg MsgDestroyPool) ValidateBasic() error {
-	//TODO
-	return nil
+	if err := ValidateAddress(msg.Creator); err != nil {
+		return err
+	}
+	return ValidatePoolName(msg.PoolName)
 }
 
 // GetSignBytes implements Msg
@@ -97,8 +117,14 @@ func (msg MsgAppendReward) Type() string { return TypeMsgAppendReward }
 
 // ValidateBasic implements Msg
 func (msg MsgAppendReward) ValidateBasic() error {
-	//TODO
-	return nil
+	if err := ValidateAddress(msg.Creator); err != nil {
+		return err
+	}
+
+	if err := ValidateCoins(msg.Amount...); err != nil {
+		return err
+	}
+	return ValidatePoolName(msg.PoolName)
 }
 
 // GetSignBytes implements Msg
@@ -125,8 +151,14 @@ func (msg MsgStake) Type() string { return TypeMsgStake }
 
 // ValidateBasic implements Msg
 func (msg MsgStake) ValidateBasic() error {
-	//TODO
-	return nil
+	if err := ValidateAddress(msg.Sender); err != nil {
+		return err
+	}
+
+	if err := ValidateCoins(msg.Amount); err != nil {
+		return err
+	}
+	return ValidatePoolName(msg.PoolName)
 }
 
 // GetSignBytes implements Msg
@@ -153,8 +185,14 @@ func (msg MsgUnstake) Type() string { return TypeMsgUnstake }
 
 // ValidateBasic implements Msg
 func (msg MsgUnstake) ValidateBasic() error {
-	//TODO
-	return nil
+	if err := ValidateAddress(msg.Sender); err != nil {
+		return err
+	}
+
+	if err := ValidateCoins(msg.Amount); err != nil {
+		return err
+	}
+	return ValidatePoolName(msg.PoolName)
 }
 
 // GetSignBytes implements Msg
@@ -181,8 +219,11 @@ func (msg MsgHarvest) Type() string { return TypeMsgHarvest }
 
 // ValidateBasic implements Msg
 func (msg MsgHarvest) ValidateBasic() error {
-	//TODO
-	return nil
+	if err := ValidateAddress(msg.Sender); err != nil {
+		return err
+	}
+
+	return ValidatePoolName(msg.PoolName)
 }
 
 // GetSignBytes implements Msg
