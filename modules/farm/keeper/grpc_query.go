@@ -20,7 +20,7 @@ func (k Keeper) Pools(goctx context.Context,
 		var totalReward sdk.Coins
 		var remainingReward sdk.Coins
 		var rewardPerBlock sdk.Coins
-		k.IteratorPoolRules(ctx, pool.Name, func(r types.FarmRule) {
+		k.IteratorRewardRules(ctx, pool.Name, func(r types.RewardRule) {
 			totalReward = totalReward.Add(sdk.NewCoin(r.Reward, r.TotalReward))
 			remainingReward = remainingReward.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
 			rewardPerBlock = rewardPerBlock.Add(sdk.NewCoin(r.Reward, r.RewardPerBlock))
@@ -68,7 +68,7 @@ func (k Keeper) Farmer(goctx context.Context,
 			return nil
 		})
 	} else {
-		farmer, existed := k.GetFarmer(ctx, request.PoolName, request.Farmer)
+		farmer, existed := k.GetFarmer(cacheCtx, request.PoolName, request.Farmer)
 		if existed {
 			farmerInfos = append(farmerInfos, *farmer)
 		}

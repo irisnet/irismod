@@ -37,19 +37,19 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 		Creator:      creator.String(),
 		BeginHeight:  beginHeight,
 		Destructible: destructible,
-		Rules:        []*types.FarmRule{},
+		Rules:        []*types.RewardRule{},
 	}
 	//save farm rule
 	for i, total := range totalReward {
-		farmRule := types.FarmRule{
+		rewardRule := types.RewardRule{
 			Reward:          total.Denom,
 			TotalReward:     total.Amount,
 			RemainingReward: total.Amount,
 			RewardPerBlock:  rewardPerBlock[i].Amount,
 			RewardPerShare:  sdk.ZeroDec(),
 		}
-		k.SetPoolRule(ctx, name, farmRule)
-		fp.Rules = append(fp.Rules, &farmRule)
+		k.SetRewardRule(ctx, name, rewardRule)
+		fp.Rules = append(fp.Rules, &rewardRule)
 	}
 	fp.EndHeight = fp.ExpiredHeight()
 	//save farm pool
@@ -120,10 +120,10 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 	}
 
 	var heightIncr = uint64(math.MaxUint64)
-	for _, r := range k.GetPoolRules(ctx, poolName) {
+	for _, r := range k.GetRewardRules(ctx, poolName) {
 		r.TotalReward = r.TotalReward.Add(reward.AmountOf(r.Reward))
 		r.RemainingReward = r.RemainingReward.Add(reward.AmountOf(r.Reward))
-		k.SetPoolRule(ctx, poolName, *r)
+		k.SetRewardRule(ctx, poolName, *r)
 
 		delta := reward.AmountOf(r.Reward).Quo(r.RewardPerBlock).Uint64()
 		if delta < heightIncr {
@@ -360,7 +360,7 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 		return nil, sdkerrors.Wrapf(types.ErrExpiredHeight, "invalid height: %d, current: %d", height, pool.LastHeightDistrRewards)
 	}
 
-	rules := k.GetPoolRules(ctx, pool.Name)
+	rules := k.GetRewardRules(ctx, pool.Name)
 	if len(rules) == 0 {
 		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "the rule of the farm pool[%s] not exist", pool.Name)
 	}
@@ -382,7 +382,7 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 			newRewardPerShare := sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
 			r.RewardPerShare = r.RewardPerShare.Add(newRewardPerShare)
 			r.RemainingReward = r.RemainingReward.Sub(rewardAdded)
-			k.SetPoolRule(ctx, pool.Name, *r)
+			k.SetRewardRule(ctx, pool.Name, *r)
 		}
 	}
 
