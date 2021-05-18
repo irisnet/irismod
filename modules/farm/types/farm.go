@@ -17,16 +17,16 @@ func (fp FarmPool) ExpiredHeight() uint64 {
 	return expiredHeight + 1
 }
 
-func (fp FarmPool) CaclRewards(farmer Farmer, deltaAmt sdk.Int) (rewards, dewardDebt sdk.Coins) {
-	dewardDebt = farmer.RewardDebt
+func (fp FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, dewardDebt sdk.Coins) {
+	dewardDebt = farmInfo.RewardDebt
 	for _, r := range fp.Rules {
-		if farmer.Locked.GT(sdk.ZeroInt()) {
-			pendingRewardTotal := r.RewardPerShare.MulInt(farmer.Locked).TruncateInt()
-			pendingReward := pendingRewardTotal.Sub(farmer.RewardDebt.AmountOf(r.Reward))
+		if farmInfo.Locked.GT(sdk.ZeroInt()) {
+			pendingRewardTotal := r.RewardPerShare.MulInt(farmInfo.Locked).TruncateInt()
+			pendingReward := pendingRewardTotal.Sub(farmInfo.RewardDebt.AmountOf(r.Reward))
 			rewards = rewards.Add(sdk.NewCoin(r.Reward, pendingReward))
 		}
 
-		locked := farmer.Locked.Add(deltaAmt)
+		locked := farmInfo.Locked.Add(deltaAmt)
 		rewardDebt := sdk.NewCoin(r.Reward, r.RewardPerShare.MulInt(locked).TruncateInt())
 		dewardDebt = dewardDebt.Add(rewardDebt)
 	}

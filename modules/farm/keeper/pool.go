@@ -178,9 +178,9 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		return reward, err
 	}
 
-	farmer, exist := k.GetFarmer(ctx, poolName, sender.String())
+	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
-		farmer = &types.Farmer{
+		farmInfo = &types.FarmInfo{
 			PoolName:   poolName,
 			Address:    sender.String(),
 			Locked:     sdk.ZeroInt(),
@@ -193,7 +193,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	if err != nil {
 		return nil, err
 	}
-	rewards, rewardDebt := pool.CaclRewards(*farmer, lpToken.Amount)
+	rewards, rewardDebt := pool.CaclRewards(*farmInfo, lpToken.Amount)
 
 	//reward users
 	if reward.IsAllPositive() {
@@ -202,9 +202,9 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		}
 	}
 
-	farmer.RewardDebt = rewardDebt
-	farmer.Locked = farmer.Locked.Add(lpToken.Amount)
-	k.SetFarmer(ctx, *farmer)
+	farmInfo.RewardDebt = rewardDebt
+	farmInfo.Locked = farmInfo.Locked.Add(lpToken.Amount)
+	k.SetFarmInfo(ctx, *farmInfo)
 	return rewards, nil
 }
 
@@ -232,7 +232,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 			poolName, pool.TotalLpTokenLocked.Denom, lpToken.Denom)
 	}
 
-	farmer, exist := k.GetFarmer(ctx, poolName, sender.String())
+	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
 		return reward, sdkerrors.Wrapf(types.ErrNotExistFarmer,
 			"farmer [%s] not found in pool[%s]",
@@ -241,10 +241,10 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		)
 	}
 
-	if farmer.Locked.LT(lpToken.Amount) {
+	if farmInfo.Locked.LT(lpToken.Amount) {
 		return reward, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"farmer locked lp token %s, but unstake %s",
-			farmer.Locked.String(),
+			farmInfo.Locked.String(),
 			lpToken.Amount.String(),
 		)
 	}
@@ -256,7 +256,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		return nil, err
 	}
 
-	rewards, rewardDebt := pool.CaclRewards(*farmer, amtAdded)
+	rewards, rewardDebt := pool.CaclRewards(*farmInfo, amtAdded)
 	//reward users
 	if rewards.IsAllPositive() {
 		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
@@ -264,15 +264,15 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		}
 	}
 
-	farmer.RewardDebt = rewardDebt
-	farmer.Locked = farmer.Locked.Add(amtAdded)
+	farmInfo.RewardDebt = rewardDebt
+	farmInfo.Locked = farmInfo.Locked.Add(amtAdded)
 
-	if farmer.Locked.IsZero() {
-		k.DeleteFarmer(ctx, poolName, sender.String())
+	if farmInfo.Locked.IsZero() {
+		k.DeleteFarmInfo(ctx, poolName, sender.String())
 		return reward, nil
 	}
 
-	k.SetFarmer(ctx, *farmer)
+	k.SetFarmInfo(ctx, *farmInfo)
 	return reward, nil
 }
 
@@ -293,7 +293,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 		)
 	}
 
-	farmer, exist := k.GetFarmer(ctx, poolName, sender.String())
+	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
 		return reward, sdkerrors.Wrapf(types.ErrNotExistFarmer,
 			"farmer [%s] not found in pool[%s]",
@@ -309,7 +309,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 		return nil, err
 	}
 
-	rewards, rewardDebt := pool.CaclRewards(*farmer, amtAdded)
+	rewards, rewardDebt := pool.CaclRewards(*farmInfo, amtAdded)
 	//reward users
 	if rewards.IsAllPositive() {
 		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
@@ -317,8 +317,8 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 		}
 	}
 
-	farmer.RewardDebt = rewardDebt
-	k.SetFarmer(ctx, *farmer)
+	farmInfo.RewardDebt = rewardDebt
+	k.SetFarmInfo(ctx, *farmInfo)
 	return reward, nil
 }
 

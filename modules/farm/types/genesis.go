@@ -1,9 +1,9 @@
 package types
 
 // NewGenesisState constructs a new GenesisState instance
-func NewGenesisState(params Params, pools []FarmPool, farmers []Farmer) *GenesisState {
+func NewGenesisState(params Params, pools []FarmPool, farmInfos []FarmInfo) *GenesisState {
 	return &GenesisState{
-		params, pools, farmers,
+		params, pools, farmInfos,
 	}
 }
 

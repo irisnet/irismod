@@ -45,7 +45,7 @@ message RewardRule {
   ];
 }
 
-message Farmer {
+message FarmInfo {
   option (gogoproto.equal) = true;
 
   string pool_name = 1;

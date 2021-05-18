@@ -47,37 +47,25 @@ func (k Keeper) Farmer(goctx context.Context,
 	request *types.QueryFarmerRequest) (*types.QueryFarmerResponse, error) {
 	var list []*types.LockedInfo
 	var err error
-	var farmerInfos []types.Farmer
+	var farmInfos []types.FarmInfo
 
 	ctx := sdk.UnwrapSDKContext(goctx)
 	cacheCtx, _ := ctx.CacheContext()
 	if len(request.PoolName) == 0 {
-		k.IteratorFarmer(cacheCtx, request.Farmer, func(farmer types.Farmer) error {
-			farmerInfos = append(farmerInfos, farmer)
-			pool, _ := k.GetPool(cacheCtx, farmer.PoolName)
-			pool, err = k.UpdatePool(cacheCtx, pool, sdk.ZeroInt(), false)
-			if err != nil {
-				return err
-			}
-			rewards, _ := pool.CaclRewards(farmer, sdk.ZeroInt())
-			list = append(list, &types.LockedInfo{
-				PoolName:      farmer.PoolName,
-				Locked:        sdk.NewCoin(pool.TotalLpTokenLocked.Denom, farmer.Locked),
-				PendingReward: rewards,
-			})
-			return nil
+		k.IteratorFarmInfo(cacheCtx, request.Farmer, func(farmInfo types.FarmInfo) {
+			farmInfos = append(farmInfos, farmInfo)
 		})
 	} else {
-		farmer, existed := k.GetFarmer(cacheCtx, request.PoolName, request.Farmer)
+		farmInfo, existed := k.GetFarmInfo(cacheCtx, request.PoolName, request.Farmer)
 		if existed {
-			farmerInfos = append(farmerInfos, *farmer)
+			farmInfos = append(farmInfos, *farmInfo)
 		}
 	}
-	if len(farmerInfos) == 0 {
+	if len(farmInfos) == 0 {
 		return nil, sdkerrors.Wrapf(types.ErrNotExistFarmer, "not found farmer: %s", request.Farmer)
 	}
 
-	for _, farmer := range farmerInfos {
+	for _, farmer := range farmInfos {
 		pool, _ := k.GetPool(cacheCtx, farmer.PoolName)
 		pool, err = k.UpdatePool(cacheCtx, pool, sdk.ZeroInt(), false)
 		if err != nil {
