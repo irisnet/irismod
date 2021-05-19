@@ -234,77 +234,208 @@ func (suite *KeeperTestSuite) TestStake() {
 	)
 	suite.Require().NoError(err)
 
-	//stake first
-	newCtx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
-		Height: 100,
-	})
 	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
-	reward, err := suite.keeper.Stake(newCtx, testPoolName, lpToken, testFarmer1)
-
-	suite.Require().NoError(err)
-	suite.Require().Nil(reward)
-
-	//check farm pool
-	pool, exist := suite.keeper.GetPool(newCtx, testPoolName)
-	suite.Require().True(exist)
-	suite.Require().Equal(lpToken, pool.TotalLpTokenLocked)
-	suite.Require().EqualValues(newCtx.BlockHeight(), pool.LastHeightDistrRewards)
-
-	//check farm infomation
-	info, exist := suite.keeper.GetFarmInfo(newCtx, testPoolName, testFarmer1.String())
-	suite.Require().True(exist)
-	suite.Require().Equal(lpToken.Amount, info.Locked)
-
-	//check reward rules
-	rules := suite.keeper.GetRewardRules(newCtx, testPoolName)
-	suite.Require().Len(rules, len(testRewardPerBlock))
-	for _, r := range rules {
-		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.RemainingReward)
-		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.TotalReward)
-		suite.Require().Equal(testRewardPerBlock.AmountOf(r.Reward), r.RewardPerBlock)
-		suite.Require().Equal(sdk.ZeroDec(), r.RewardPerShare)
+	type args struct {
+		index          int64
+		height         int64
+		stakeCoin      sdk.Coin
+		expectReward   sdk.Coins
+		debt           sdk.Coins
+		rewardPerShare sdk.Dec
 	}
 
-	//stake again
-	newCtx1 := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
-		Height: 200,
-	})
-	lpToken = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
-	reward, err = suite.keeper.Stake(newCtx1, testPoolName, lpToken, testFarmer1)
-
-	suite.Require().NoError(err)
-	suite.Require().Equal("100000000stake", reward.String())
-
-	info, _ = suite.keeper.GetFarmInfo(newCtx, testPoolName, testFarmer1.String())
-	suite.Require().Equal("200000000stake", info.RewardDebt.String())
-
-	//stake again
-	newCtx2 := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
-		Height: 300,
-	})
-	lpToken = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
-	reward, err = suite.keeper.Stake(newCtx2, testPoolName, lpToken, testFarmer1)
-
-	suite.Require().NoError(err)
-	suite.Require().Equal("100000000stake", reward.String())
-
-	info, _ = suite.keeper.GetFarmInfo(newCtx, testPoolName, testFarmer1.String())
-	suite.Require().Equal("450000000stake", info.RewardDebt.String())
-
-	//check reward rules again
-	rules = suite.keeper.GetRewardRules(newCtx, testPoolName)
-	suite.Require().Len(rules, len(testRewardPerBlock))
-	for _, r := range rules {
-		suite.Require().Equal(testTotalReward.AmountOf(r.Reward).SubRaw(200000000), r.RemainingReward)
-		suite.Require().Equal(sdk.NewDecFromIntWithPrec(sdk.NewInt(15), 1), r.RewardPerShare)
+	var testcase = []args{
+		{
+			index:          1,
+			height:         100,
+			stakeCoin:      lpToken,
+			expectReward:   nil,
+			debt:           nil,
+			rewardPerShare: sdk.ZeroDec(),
+		},
+		{
+			index:          2,
+			height:         200,
+			stakeCoin:      lpToken,
+			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(200_000_000))),
+			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1), 0),
+		},
+		{
+			index:          3,
+			height:         300,
+			stakeCoin:      lpToken,
+			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(450_000_000))),
+			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(15), 1),
+		},
+		{
+			index:          4,
+			height:         400,
+			stakeCoin:      lpToken,
+			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(99999999))),
+			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(733_333_333))),
+			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1_833_333_333_333_333_333), 18),
+		},
 	}
 
+	for _, tc := range testcase {
+		suite.AssertStake(tc.index,
+			tc.height,
+			tc.stakeCoin,
+			tc.expectReward,
+			tc.debt,
+			tc.rewardPerShare)
+	}
 }
 
 func (suite *KeeperTestSuite) TestUnstake() {
+	ctx := suite.ctx
+	err := suite.keeper.CreatePool(ctx,
+		testPoolName,
+		testPoolDescription,
+		testLPTokenDenom,
+		testBeginHeight,
+		testRewardPerBlock,
+		testTotalReward,
+		testDestructible,
+		testCreator,
+	)
+	suite.Require().NoError(err)
 
+	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
+	suite.AssertStake(1, 100, lpToken, nil, nil, sdk.ZeroDec())
+
+	newCtx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+		Height: 200,
+	})
+	reward, err := suite.keeper.Unstake(newCtx, testPoolName, lpToken, testFarmer1)
+	suite.Require().NoError(err)
+
+	expect := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)))
+	suite.Require().Equal(expect, reward)
+
+	//check farm information
+	_, exist := suite.keeper.GetFarmInfo(ctx, testPoolName, testFarmer1.String())
+	suite.Require().False(exist)
+
+	//check farm pool
+	pool, exist := suite.keeper.GetPool(ctx, testPoolName)
+	suite.Require().True(exist)
+	suite.Require().Equal(pool.TotalLpTokenLocked.Amount, sdk.ZeroInt())
 }
 
 func (suite *KeeperTestSuite) TestHarvest() {
+	ctx := suite.ctx
+	err := suite.keeper.CreatePool(ctx,
+		testPoolName,
+		testPoolDescription,
+		testLPTokenDenom,
+		testBeginHeight,
+		testRewardPerBlock,
+		testTotalReward,
+		testDestructible,
+		testCreator,
+	)
+	suite.Require().NoError(err)
 
+	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
+	suite.AssertStake(1, 100, lpToken, nil, nil, sdk.ZeroDec())
+
+	type args struct {
+		index          int64
+		height         int64
+		expectReward   sdk.Coins
+		debt           sdk.Coins
+		rewardPerShare sdk.Dec
+	}
+
+	var testcase = []args{
+		{
+			index:          1,
+			height:         200,
+			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1), 0),
+		},
+		{
+			index:          2,
+			height:         300,
+			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(200_000_000))),
+			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(2), 0),
+		},
+		{
+			index:          3,
+			height:         400,
+			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(300_000_000))),
+			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(3), 0),
+		},
+		{
+			index:          4,
+			height:         500,
+			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(400_000_000))),
+			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(4), 0),
+		},
+	}
+
+	for _, tc := range testcase {
+		suite.AssertHarvest(tc.index,
+			tc.height,
+			tc.expectReward,
+			tc.debt,
+			tc.rewardPerShare)
+	}
+}
+
+func (suite *KeeperTestSuite) AssertStake(index, height int64,
+	stakeCoin sdk.Coin,
+	expectReward, debt sdk.Coins,
+	RewardPerShare sdk.Dec,
+) {
+	ctx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+		Height: height,
+	})
+	reward, err := suite.keeper.Stake(ctx, testPoolName, stakeCoin, testFarmer1)
+
+	suite.Require().NoError(err)
+	suite.Require().Equal(expectReward, reward)
+
+	info, exist := suite.keeper.GetFarmInfo(ctx, testPoolName, testFarmer1.String())
+	suite.Require().True(exist)
+	suite.Require().Equal(debt, info.RewardDebt)
+	suite.Require().Equal(stakeCoin.Amount.MulRaw(index), info.Locked)
+
+	//check reward rules again
+	rules := suite.keeper.GetRewardRules(ctx, testPoolName)
+	suite.Require().Len(rules, len(testRewardPerBlock))
+	for _, r := range rules {
+		suite.Require().Equal(RewardPerShare, r.RewardPerShare)
+	}
+}
+
+func (suite *KeeperTestSuite) AssertHarvest(index, height int64,
+	expectReward, debt sdk.Coins,
+	RewardPerShare sdk.Dec,
+) {
+	ctx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+		Height: height,
+	})
+	reward, err := suite.keeper.Harvest(ctx, testPoolName, testFarmer1)
+
+	suite.Require().NoError(err)
+	suite.Require().Equal(expectReward, reward)
+
+	info, exist := suite.keeper.GetFarmInfo(ctx, testPoolName, testFarmer1.String())
+	suite.Require().True(exist)
+	suite.Require().Equal(debt, info.RewardDebt)
+
+	//check reward rules again
+	rules := suite.keeper.GetRewardRules(ctx, testPoolName)
+	suite.Require().Len(rules, len(testRewardPerBlock))
+	for _, r := range rules {
+		suite.Require().Equal(RewardPerShare, r.RewardPerShare)
+	}
 }
