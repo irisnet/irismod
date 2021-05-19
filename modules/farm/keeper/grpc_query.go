@@ -58,7 +58,7 @@ func (k Keeper) Farmer(goctx context.Context,
 	} else {
 		farmInfo, existed := k.GetFarmInfo(cacheCtx, request.PoolName, request.Farmer)
 		if existed {
-			farmInfos = append(farmInfos, *farmInfo)
+			farmInfos = append(farmInfos, farmInfo)
 		}
 	}
 	if len(farmInfos) == 0 {

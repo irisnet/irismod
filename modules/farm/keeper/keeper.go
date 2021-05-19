@@ -68,7 +68,7 @@ func (k Keeper) SetRewardRule(ctx sdk.Context, poolName string, rule types.Rewar
 	store.Set(types.GetFarmPoolRuleKey(poolName, rule.Reward), bz)
 }
 
-func (k Keeper) GetRewardRules(ctx sdk.Context, poolName string) (rules []*types.RewardRule) {
+func (k Keeper) GetRewardRules(ctx sdk.Context, poolName string) (rules types.RewardRules) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetFarmPoolRulePrefix(poolName))
 	defer iterator.Close()

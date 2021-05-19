@@ -6,15 +6,15 @@ import (
 )
 
 // GetFarmer return the specified farmer
-func (k Keeper) GetFarmInfo(ctx sdk.Context, poolName, address string) (farmer *types.FarmInfo, exist bool) {
+func (k Keeper) GetFarmInfo(ctx sdk.Context, poolName, address string) (info types.FarmInfo, exist bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetFarmerKey(address, poolName))
 	if len(bz) == 0 {
-		return nil, false
+		return info, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(bz, farmer)
-	return farmer, true
+	k.cdc.MustUnmarshalBinaryBare(bz, &info)
+	return info, true
 }
 
 func (k Keeper) IteratorFarmInfo(ctx sdk.Context, address string, fun func(farmer types.FarmInfo)) {

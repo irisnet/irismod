@@ -24,7 +24,7 @@ var (
 		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1_000_000)),
 	)
 	testTotalReward = sdk.NewCoins(
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000_000_000)),
 	)
 	testDestructible = true
 
@@ -84,36 +84,36 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 		testDestructible,
 		testCreator,
 	)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	//check farm pool
 	pool, exist := suite.keeper.GetPool(ctx, testPoolName)
-	suite.True(exist)
+	suite.Require().True(exist)
 
-	suite.Equal(testPoolName, pool.Name)
-	suite.Equal(testPoolDescription, pool.Description)
-	suite.Equal(testLPTokenDenom, pool.TotalLpTokenLocked.Denom)
-	suite.Equal(testBeginHeight, pool.BeginHeight)
-	suite.Equal(testDestructible, pool.Destructible)
-	suite.Equal(testCreator.String(), pool.Creator)
+	suite.Require().Equal(testPoolName, pool.Name)
+	suite.Require().Equal(testPoolDescription, pool.Description)
+	suite.Require().Equal(testLPTokenDenom, pool.TotalLpTokenLocked.Denom)
+	suite.Require().Equal(testBeginHeight, pool.BeginHeight)
+	suite.Require().Equal(testDestructible, pool.Destructible)
+	suite.Require().Equal(testCreator.String(), pool.Creator)
 
 	//check reward rules
 	rules := suite.keeper.GetRewardRules(ctx, testPoolName)
-	suite.Len(rules, len(testRewardPerBlock))
+	suite.Require().Len(rules, len(testRewardPerBlock))
 
 	for _, r := range rules {
-		suite.Equal(testTotalReward.AmountOf(r.Reward), r.RemainingReward)
-		suite.Equal(testTotalReward.AmountOf(r.Reward), r.TotalReward)
-		suite.Equal(testRewardPerBlock.AmountOf(r.Reward), r.RewardPerBlock)
-		suite.Equal(sdk.ZeroDec(), r.RewardPerShare)
+		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.RemainingReward)
+		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.TotalReward)
+		suite.Require().Equal(testRewardPerBlock.AmountOf(r.Reward), r.RewardPerBlock)
+		suite.Require().Equal(sdk.ZeroDec(), r.RewardPerShare)
 	}
 
 	pool.Rules = rules
-	suite.Equal(pool.ExpiredHeight(), pool.EndHeight)
+	suite.Require().Equal(pool.ExpiredHeight(), pool.EndHeight)
 
 	//check queue
 	suite.keeper.IteratorExpiredPool(ctx, pool.EndHeight, func(pool *types.FarmPool) {
-		suite.Equal(testPoolName, pool.Name)
+		suite.Require().Equal(testPoolName, pool.Name)
 	})
 
 	//check balance
@@ -121,7 +121,7 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 		Sub(sdk.NewCoins(suite.keeper.CreatePoolFee(ctx))).
 		Sub(testTotalReward)
 	actualBal := suite.app.BankKeeper.GetAllBalances(ctx, testCreator)
-	suite.Equal(expectedBal, actualBal)
+	suite.Require().Equal(expectedBal, actualBal)
 }
 
 func (suite *KeeperTestSuite) TestDestroyPool() {
@@ -136,26 +136,26 @@ func (suite *KeeperTestSuite) TestDestroyPool() {
 		testDestructible,
 		testCreator,
 	)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	newCtx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
 		Height: 10,
 	})
 	err = suite.keeper.DestroyPool(newCtx, testPoolName, testCreator)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	//check farm pool
 	pool, exist := suite.keeper.GetPool(newCtx, testPoolName)
-	suite.True(exist)
+	suite.Require().True(exist)
 
-	suite.EqualValues(newCtx.BlockHeight(), pool.LastHeightDistrRewards)
-	suite.EqualValues(newCtx.BlockHeight(), pool.EndHeight)
+	suite.Require().EqualValues(newCtx.BlockHeight(), pool.LastHeightDistrRewards)
+	suite.Require().EqualValues(newCtx.BlockHeight(), pool.EndHeight)
 
 	//check balance
 	expectedBal := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, testInitCoinAmt)).
 		Sub(sdk.NewCoins(suite.keeper.CreatePoolFee(ctx)))
 	actualBal := suite.app.BankKeeper.GetAllBalances(ctx, testCreator)
-	suite.Equal(expectedBal, actualBal)
+	suite.Require().Equal(expectedBal, actualBal)
 }
 
 func (suite *KeeperTestSuite) TestAppendReward() {
@@ -170,51 +170,134 @@ func (suite *KeeperTestSuite) TestAppendReward() {
 		testDestructible,
 		testCreator,
 	)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	//check farm pool
 	pool, exist := suite.keeper.GetPool(ctx, testPoolName)
-	suite.True(exist)
+	suite.Require().True(exist)
 
-	rewardAdded := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000))
-	remaining, err := suite.keeper.AppendReward(ctx,
+	//panic with adding new token as reward
+	rewardAdded := sdk.NewCoins(
+		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
+		sdk.NewCoin("uiris", sdk.NewInt(10_000_000)),
+	)
+	_, err = suite.keeper.AppendReward(ctx,
 		testPoolName,
-		sdk.NewCoins(rewardAdded),
+		rewardAdded,
 		testCreator,
 	)
-	suite.NoError(err)
-	suite.Equal(testTotalReward.Add(rewardAdded), remaining)
+	suite.Require().Error(err)
+
+	rewardAdded = sdk.NewCoins(
+		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
+	)
+	remaining, err := suite.keeper.AppendReward(ctx,
+		testPoolName,
+		rewardAdded,
+		testCreator,
+	)
+	suite.Require().NoError(err)
+	suite.Require().Equal(testTotalReward.Add(rewardAdded...), remaining)
 
 	//check farm pool
 	pool2, exist := suite.keeper.GetPool(ctx, testPoolName)
-	suite.True(exist)
-	suite.EqualValues(pool.EndHeight+10, pool2.EndHeight)
+	suite.Require().True(exist)
+	suite.Require().EqualValues(pool.EndHeight+10, pool2.EndHeight)
 
 	//check reward rules
 	rules := suite.keeper.GetRewardRules(ctx, testPoolName)
-	suite.Len(rules, len(testRewardPerBlock))
+	suite.Require().Len(rules, len(testRewardPerBlock))
 
 	for _, r := range rules {
 		suite.Equal(
-			testTotalReward.AmountOf(r.Reward).Add(rewardAdded.Amount),
+			testTotalReward.AmountOf(r.Reward).Add(rewardAdded.AmountOf(r.Reward)),
 			r.RemainingReward,
 		)
 		suite.Equal(
-			testTotalReward.AmountOf(r.Reward).Add(rewardAdded.Amount),
+			testTotalReward.AmountOf(r.Reward).Add(rewardAdded.AmountOf(r.Reward)),
 			r.TotalReward,
 		)
 	}
 }
 
-func (suite *KeeperTestSuite) TestUpdatePool() {
-
-}
-
-func (suite *KeeperTestSuite) TestRefund() {
-
-}
-
 func (suite *KeeperTestSuite) TestStake() {
+	ctx := suite.ctx
+	err := suite.keeper.CreatePool(ctx,
+		testPoolName,
+		testPoolDescription,
+		testLPTokenDenom,
+		testBeginHeight,
+		testRewardPerBlock,
+		testTotalReward,
+		testDestructible,
+		testCreator,
+	)
+	suite.Require().NoError(err)
+
+	//stake first
+	newCtx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+		Height: 100,
+	})
+	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
+	reward, err := suite.keeper.Stake(newCtx, testPoolName, lpToken, testFarmer1)
+
+	suite.Require().NoError(err)
+	suite.Require().Nil(reward)
+
+	//check farm pool
+	pool, exist := suite.keeper.GetPool(newCtx, testPoolName)
+	suite.Require().True(exist)
+	suite.Require().Equal(lpToken, pool.TotalLpTokenLocked)
+	suite.Require().EqualValues(newCtx.BlockHeight(), pool.LastHeightDistrRewards)
+
+	//check farm infomation
+	info, exist := suite.keeper.GetFarmInfo(newCtx, testPoolName, testFarmer1.String())
+	suite.Require().True(exist)
+	suite.Require().Equal(lpToken.Amount, info.Locked)
+
+	//check reward rules
+	rules := suite.keeper.GetRewardRules(newCtx, testPoolName)
+	suite.Require().Len(rules, len(testRewardPerBlock))
+	for _, r := range rules {
+		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.RemainingReward)
+		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.TotalReward)
+		suite.Require().Equal(testRewardPerBlock.AmountOf(r.Reward), r.RewardPerBlock)
+		suite.Require().Equal(sdk.ZeroDec(), r.RewardPerShare)
+	}
+
+	//stake again
+	newCtx1 := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+		Height: 200,
+	})
+	lpToken = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
+	reward, err = suite.keeper.Stake(newCtx1, testPoolName, lpToken, testFarmer1)
+
+	suite.Require().NoError(err)
+	suite.Require().Equal("100000000stake", reward.String())
+
+	info, _ = suite.keeper.GetFarmInfo(newCtx, testPoolName, testFarmer1.String())
+	suite.Require().Equal("200000000stake", info.RewardDebt.String())
+
+	//stake again
+	newCtx2 := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+		Height: 300,
+	})
+	lpToken = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
+	reward, err = suite.keeper.Stake(newCtx2, testPoolName, lpToken, testFarmer1)
+
+	suite.Require().NoError(err)
+	suite.Require().Equal("100000000stake", reward.String())
+
+	info, _ = suite.keeper.GetFarmInfo(newCtx, testPoolName, testFarmer1.String())
+	suite.Require().Equal("450000000stake", info.RewardDebt.String())
+
+	//check reward rules again
+	rules = suite.keeper.GetRewardRules(newCtx, testPoolName)
+	suite.Require().Len(rules, len(testRewardPerBlock))
+	for _, r := range rules {
+		suite.Require().Equal(testTotalReward.AmountOf(r.Reward).SubRaw(200000000), r.RemainingReward)
+		suite.Require().Equal(sdk.NewDecFromIntWithPrec(sdk.NewInt(15), 1), r.RewardPerShare)
+	}
 
 }
 

@@ -115,14 +115,14 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 		)
 	}
 
+	rules := k.GetRewardRules(ctx, poolName)
+	if !rules.Contains(reward) {
+		return remaining, sdkerrors.Wrapf(types.ErrInvalidAppend, reward.String())
+	}
+
 	if err := k.bk.SendCoinsFromAccountToModule(ctx,
 		creator, types.ModuleName, reward); err != nil {
 		return remaining, err
-	}
-
-	rules := k.GetRewardRules(ctx, poolName)
-	if !types.RewardRules(rules).Contains(reward) {
-		return remaining, sdkerrors.Wrapf(types.ErrInvalidAppend, reward.String())
 	}
 
 	var heightIncr = uint64(math.MaxUint64)
@@ -186,7 +186,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 
 	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
-		farmInfo = &types.FarmInfo{
+		farmInfo = types.FarmInfo{
 			PoolName:   poolName,
 			Address:    sender.String(),
 			Locked:     sdk.ZeroInt(),
@@ -199,7 +199,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	if err != nil {
 		return nil, err
 	}
-	rewards, rewardDebt := pool.CaclRewards(*farmInfo, lpToken.Amount)
+	rewards, rewardDebt := pool.CaclRewards(farmInfo, lpToken.Amount)
 
 	//reward users
 	if reward.IsAllPositive() {
@@ -210,7 +210,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 
 	farmInfo.RewardDebt = rewardDebt
 	farmInfo.Locked = farmInfo.Locked.Add(lpToken.Amount)
-	k.SetFarmInfo(ctx, *farmInfo)
+	k.SetFarmInfo(ctx, farmInfo)
 	return rewards, nil
 }
 
@@ -262,7 +262,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		return nil, err
 	}
 
-	rewards, rewardDebt := pool.CaclRewards(*farmInfo, amtAdded)
+	rewards, rewardDebt := pool.CaclRewards(farmInfo, amtAdded)
 	//reward users
 	if rewards.IsAllPositive() {
 		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
@@ -278,7 +278,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		return reward, nil
 	}
 
-	k.SetFarmInfo(ctx, *farmInfo)
+	k.SetFarmInfo(ctx, farmInfo)
 	return reward, nil
 }
 
@@ -315,7 +315,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 		return nil, err
 	}
 
-	rewards, rewardDebt := pool.CaclRewards(*farmInfo, amtAdded)
+	rewards, rewardDebt := pool.CaclRewards(farmInfo, amtAdded)
 	//reward users
 	if rewards.IsAllPositive() {
 		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
@@ -324,7 +324,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 	}
 
 	farmInfo.RewardDebt = rewardDebt
-	k.SetFarmInfo(ctx, *farmInfo)
+	k.SetFarmInfo(ctx, farmInfo)
 	return reward, nil
 }
 
@@ -376,7 +376,7 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 		pool.TotalLpTokenLocked.Amount.GT(sdk.ZeroInt()) {
 		blockInterval := height - pool.LastHeightDistrRewards
 		for _, r := range rules {
-			rewardAdded := r.RewardPerBlock.ModRaw(int64(blockInterval))
+			rewardAdded := r.RewardPerBlock.MulRaw(int64(blockInterval))
 			if r.RemainingReward.LT(rewardAdded) {
 				return nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 					"the remaining reward of the pool[%s] is %s, but got %s",
