@@ -22,7 +22,7 @@ func GetQueryCmd() *cobra.Command {
 	}
 	queryCmd.AddCommand(
 		GetCmdQueryFarmPools(),
-		GetCmdQueryReward(),
+		GetCmdQueryFarmer(),
 	)
 	return queryCmd
 }
@@ -55,10 +55,10 @@ func GetCmdQueryFarmPools() *cobra.Command {
 	return cmd
 }
 
-// GetCmdQueryReward implements the query the farmer reward.
-func GetCmdQueryReward() *cobra.Command {
+// GetCmdQueryFarmer implements the query the farmer reward.
+func GetCmdQueryFarmer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "farm reward <Farmer Address> --pool-name <Farm Pool Name>",
+		Use:   "farm farmer <Farmer Address> --pool-name <Farm Pool Name>",
 		Short: "Query farmer reward",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

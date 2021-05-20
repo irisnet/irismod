@@ -39,11 +39,11 @@ func PrefixRewardRule(poolName string) []byte {
 	return append(FarmPoolRuleKey, []byte(poolName)...)
 }
 
-func KeyFarmer(address, poolName string) []byte {
+func KeyFarmInfo(address, poolName string) []byte {
 	return append(append(FarmerKey, []byte(address)...), []byte(poolName)...)
 }
 
-func PrefixFarmer(address string) []byte {
+func PrefixFarmInfo(address string) []byte {
 	return append(FarmerKey, []byte(address)...)
 }
 
