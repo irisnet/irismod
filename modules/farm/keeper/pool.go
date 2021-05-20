@@ -148,7 +148,7 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 	k.DequeueActivePool(ctx, poolName, pool.EndHeight)
 
 	pool.EndHeight = pool.EndHeight + uint64(heightIncr)
-	k.SetPool(ctx, *pool)
+	k.SetPool(ctx, pool)
 	// put to expired farm pool queue at new height
 	k.EnqueueActivePool(ctx, poolName, pool.EndHeight)
 	return remaining, nil
@@ -261,7 +261,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		//If the farm has ended, the reward rules cannot be updated
 		pool.Rules = k.GetRewardRules(ctx, pool.Name)
 		pool.TotalLpTokenLocked = pool.TotalLpTokenLocked.Sub(lpToken)
-		k.SetPool(ctx, *pool)
+		k.SetPool(ctx, pool)
 	} else {
 		//update pool reward shards
 		pool, err = k.UpdatePool(ctx, pool, lpToken.Amount.Neg(), false)
@@ -336,7 +336,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 }
 
 // Refund refund the remaining reward to pool creator
-func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) (err error) {
+func (k Keeper) Refund(ctx sdk.Context, pool types.FarmPool) (err error) {
 	pool, err = k.UpdatePool(ctx, pool, sdk.ZeroInt(), true)
 	if err != nil {
 		return err
@@ -365,13 +365,13 @@ func (k Keeper) Refund(ctx sdk.Context, pool *types.FarmPool) (err error) {
 }
 
 func (k Keeper) UpdatePool(ctx sdk.Context,
-	pool *types.FarmPool,
+	pool types.FarmPool,
 	amount sdk.Int,
 	isDestroy bool,
-) (*types.FarmPool, error) {
+) (types.FarmPool, error) {
 	height := uint64(ctx.BlockHeight())
 	if height < pool.LastHeightDistrRewards {
-		return nil, sdkerrors.Wrapf(types.ErrExpiredHeight,
+		return pool, sdkerrors.Wrapf(types.ErrExpiredHeight,
 			"invalid height: %d, last distribution height: %d",
 			height,
 			pool.LastHeightDistrRewards,
@@ -380,7 +380,7 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 
 	rules := k.GetRewardRules(ctx, pool.Name)
 	if len(rules) == 0 {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistPool,
+		return pool, sdkerrors.Wrapf(types.ErrNotExistPool,
 			"the rule of the farm pool[%s] not exist", pool.Name)
 	}
 	//when there are multiple farm operations in the same block, the value needs to be updated once
@@ -390,7 +390,7 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 		for i := range rules {
 			rewardAdded := rules[i].RewardPerBlock.MulRaw(int64(blockInterval))
 			if rules[i].RemainingReward.LT(rewardAdded) {
-				return nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+				return pool, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 					"the remaining reward of the pool[%s] is %s, but got %s",
 					pool.Name,
 					sdk.NewCoin(rules[i].Reward, rules[i].RemainingReward).String(),
@@ -413,6 +413,6 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 		pool.EndHeight = uint64(ctx.BlockHeight())
 	}
 	pool.Rules = rules
-	k.SetPool(ctx, *pool)
+	k.SetPool(ctx, pool)
 	return pool, nil
 }

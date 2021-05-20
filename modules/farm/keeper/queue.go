@@ -18,7 +18,7 @@ func (k Keeper) DequeueActivePool(ctx sdk.Context, poolName string, expiredHeigh
 	store.Delete(types.GetActiveFarmPoolKey(expiredHeight, poolName))
 }
 
-func (k Keeper) IteratorExpiredPool(ctx sdk.Context, expiredHeight uint64, fun func(pool *types.FarmPool)) {
+func (k Keeper) IteratorExpiredPool(ctx sdk.Context, expiredHeight uint64, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store,
 		types.GetActiveFarmPoolKeyPrefix(expiredHeight))
@@ -31,7 +31,7 @@ func (k Keeper) IteratorExpiredPool(ctx sdk.Context, expiredHeight uint64, fun f
 	}
 }
 
-func (k Keeper) IteratorActivePool(ctx sdk.Context, fun func(pool *types.FarmPool)) {
+func (k Keeper) IteratorActivePool(ctx sdk.Context, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.ActiveFarmPoolKey)
 	defer iterator.Close()

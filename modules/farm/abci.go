@@ -14,7 +14,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		With("module", "irismod/farm"),
 	)
 
-	k.IteratorExpiredPool(ctx, uint64(ctx.BlockHeight()), func(pool *types.FarmPool) {
+	k.IteratorExpiredPool(ctx, uint64(ctx.BlockHeight()), func(pool types.FarmPool) {
 		ctx.Logger().Info(
 			"The farm pool has expired, refund to creator",
 			"poolName", pool.Name,
