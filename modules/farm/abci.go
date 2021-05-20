@@ -7,10 +7,10 @@ import (
 	"github.com/irisnet/irismod/modules/farm/types"
 )
 
-// BeginBlocker handles block beginning logic for farm
-func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+// EndBlocker handles block beginning logic for farm
+func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	ctx = ctx.WithLogger(ctx.Logger().
-		With("handler", "beginBlocker").
+		With("handler", "endBlocker").
 		With("module", "irismod/farm"),
 	)
 

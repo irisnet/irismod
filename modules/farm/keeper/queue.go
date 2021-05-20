@@ -8,20 +8,20 @@ import (
 func (k Keeper) EnqueueActivePool(ctx sdk.Context, poolName string, expiredHeight uint64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
-		types.GetActiveFarmPoolKey(expiredHeight, poolName),
+		types.KeyActiveFarmPool(expiredHeight, poolName),
 		types.MustMarshalPoolName(k.cdc, poolName),
 	)
 }
 
 func (k Keeper) DequeueActivePool(ctx sdk.Context, poolName string, expiredHeight uint64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.GetActiveFarmPoolKey(expiredHeight, poolName))
+	store.Delete(types.KeyActiveFarmPool(expiredHeight, poolName))
 }
 
 func (k Keeper) IteratorExpiredPool(ctx sdk.Context, expiredHeight uint64, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store,
-		types.GetActiveFarmPoolKeyPrefix(expiredHeight))
+		types.PrefixActiveFarmPool(expiredHeight))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		poolName := types.MustUnMarshalPoolName(k.cdc, iterator.Value())

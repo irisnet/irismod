@@ -8,7 +8,7 @@ import (
 // GetFarmer return the specified farmer
 func (k Keeper) GetFarmInfo(ctx sdk.Context, poolName, address string) (info types.FarmInfo, exist bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetFarmerKey(address, poolName))
+	bz := store.Get(types.KeyFarmer(address, poolName))
 	if len(bz) == 0 {
 		return info, false
 	}
@@ -19,7 +19,7 @@ func (k Keeper) GetFarmInfo(ctx sdk.Context, poolName, address string) (info typ
 
 func (k Keeper) IteratorFarmInfo(ctx sdk.Context, address string, fun func(farmer types.FarmInfo)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetFarmerKeyPrefix(address))
+	iterator := sdk.KVStorePrefixIterator(store, types.PrefixFarmer(address))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var farmer types.FarmInfo
@@ -43,10 +43,10 @@ func (k Keeper) IteratorAllFarmInfo(ctx sdk.Context, fun func(farmer types.FarmI
 func (k Keeper) SetFarmInfo(ctx sdk.Context, farmer types.FarmInfo) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&farmer)
-	store.Set(types.GetFarmerKey(farmer.Address, farmer.PoolName), bz)
+	store.Set(types.KeyFarmer(farmer.Address, farmer.PoolName), bz)
 }
 
 func (k Keeper) DeleteFarmInfo(ctx sdk.Context, poolName, address string) {
 	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.GetFarmerKey(address, poolName))
+	store.Delete(types.KeyFarmer(address, poolName))
 }

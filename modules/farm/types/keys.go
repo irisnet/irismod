@@ -27,30 +27,30 @@ var (
 	ActiveFarmPoolKey = []byte{0x04} // key for active farm pool
 )
 
-func GetFarmPoolKey(poolName string) []byte {
+func KeyFarmPool(poolName string) []byte {
 	return append(FarmPoolKey, []byte(poolName)...)
 }
 
-func GetFarmPoolRuleKey(poolName, reward string) []byte {
+func KeyRewardRule(poolName, reward string) []byte {
 	return append(append(FarmPoolRuleKey, []byte(poolName)...), []byte(reward)...)
 }
 
-func GetFarmPoolRulePrefix(poolName string) []byte {
+func PrefixRewardRule(poolName string) []byte {
 	return append(FarmPoolRuleKey, []byte(poolName)...)
 }
 
-func GetFarmerKey(address, poolName string) []byte {
+func KeyFarmer(address, poolName string) []byte {
 	return append(append(FarmerKey, []byte(address)...), []byte(poolName)...)
 }
 
-func GetFarmerKeyPrefix(address string) []byte {
+func PrefixFarmer(address string) []byte {
 	return append(FarmerKey, []byte(address)...)
 }
 
-func GetActiveFarmPoolKey(expiredHeight uint64, poolName string) []byte {
+func KeyActiveFarmPool(expiredHeight uint64, poolName string) []byte {
 	return append(append(ActiveFarmPoolKey, sdk.Uint64ToBigEndian(expiredHeight)...), []byte(poolName)...)
 }
 
-func GetActiveFarmPoolKeyPrefix(expiredHeight uint64) []byte {
+func PrefixActiveFarmPool(expiredHeight uint64) []byte {
 	return append(ActiveFarmPoolKey, sdk.Uint64ToBigEndian(expiredHeight)...)
 }

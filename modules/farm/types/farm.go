@@ -14,7 +14,7 @@ func (pool FarmPool) ExpiredHeight() uint64 {
 			expiredHeight = inteval + pool.BeginHeight
 		}
 	}
-	return expiredHeight + 1
+	return expiredHeight
 }
 
 func (pool FarmPool) IsExpired(ctx sdk.Context) bool {

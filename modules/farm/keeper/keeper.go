@@ -46,13 +46,13 @@ func (k Keeper) SetPool(ctx sdk.Context, pool types.FarmPool) {
 	pool.Rules = nil
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&pool)
-	store.Set(types.GetFarmPoolKey(pool.Name), bz)
+	store.Set(types.KeyFarmPool(pool.Name), bz)
 }
 
 // GetPool return the specified farm pool
 func (k Keeper) GetPool(ctx sdk.Context, poolName string) (types.FarmPool, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetFarmPoolKey(poolName))
+	bz := store.Get(types.KeyFarmPool(poolName))
 	if len(bz) == 0 {
 		return types.FarmPool{}, false
 	}
@@ -65,12 +65,12 @@ func (k Keeper) GetPool(ctx sdk.Context, poolName string) (types.FarmPool, bool)
 func (k Keeper) SetRewardRule(ctx sdk.Context, poolName string, rule types.RewardRule) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&rule)
-	store.Set(types.GetFarmPoolRuleKey(poolName, rule.Reward), bz)
+	store.Set(types.KeyRewardRule(poolName, rule.Reward), bz)
 }
 
 func (k Keeper) GetRewardRules(ctx sdk.Context, poolName string) (rules types.RewardRules) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetFarmPoolRulePrefix(poolName))
+	iterator := sdk.KVStorePrefixIterator(store, types.PrefixRewardRule(poolName))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var r types.RewardRule
@@ -82,7 +82,7 @@ func (k Keeper) GetRewardRules(ctx sdk.Context, poolName string) (rules types.Re
 
 func (k Keeper) IteratorRewardRules(ctx sdk.Context, poolName string, fun func(r types.RewardRule)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetFarmPoolRulePrefix(poolName))
+	iterator := sdk.KVStorePrefixIterator(store, types.PrefixRewardRule(poolName))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var r types.RewardRule
