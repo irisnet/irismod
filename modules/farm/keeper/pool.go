@@ -38,7 +38,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 		BeginHeight:        beginHeight,
 		Destructible:       destructible,
 		TotalLpTokenLocked: sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
-		Rules:              []*types.RewardRule{},
+		Rules:              []types.RewardRule{},
 	}
 	//save farm rule
 	for i, total := range totalReward {
@@ -50,7 +50,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 			RewardPerShare:  sdk.ZeroDec(),
 		}
 		k.SetRewardRule(ctx, name, rewardRule)
-		pool.Rules = append(pool.Rules, &rewardRule)
+		pool.Rules = append(pool.Rules, rewardRule)
 	}
 	pool.EndHeight = pool.ExpiredHeight()
 	//save farm pool
@@ -129,7 +129,7 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 	for _, r := range rules {
 		r.TotalReward = r.TotalReward.Add(reward.AmountOf(r.Reward))
 		r.RemainingReward = r.RemainingReward.Add(reward.AmountOf(r.Reward))
-		k.SetRewardRule(ctx, poolName, *r)
+		k.SetRewardRule(ctx, poolName, r)
 
 		delta := reward.AmountOf(r.Reward).Quo(r.RewardPerBlock).Uint64()
 		if delta < heightIncr {
@@ -387,20 +387,20 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 	if height > pool.LastHeightDistrRewards &&
 		pool.TotalLpTokenLocked.Amount.GT(sdk.ZeroInt()) {
 		blockInterval := height - pool.LastHeightDistrRewards
-		for _, r := range rules {
-			rewardAdded := r.RewardPerBlock.MulRaw(int64(blockInterval))
-			if r.RemainingReward.LT(rewardAdded) {
+		for i := range rules {
+			rewardAdded := rules[i].RewardPerBlock.MulRaw(int64(blockInterval))
+			if rules[i].RemainingReward.LT(rewardAdded) {
 				return nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 					"the remaining reward of the pool[%s] is %s, but got %s",
 					pool.Name,
-					sdk.NewCoin(r.Reward, r.RemainingReward).String(),
-					sdk.NewCoin(r.Reward, rewardAdded).String(),
+					sdk.NewCoin(rules[i].Reward, rules[i].RemainingReward).String(),
+					sdk.NewCoin(rules[i].Reward, rewardAdded).String(),
 				)
 			}
 			newRewardPerShare := sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
-			r.RewardPerShare = r.RewardPerShare.Add(newRewardPerShare)
-			r.RemainingReward = r.RemainingReward.Sub(rewardAdded)
-			k.SetRewardRule(ctx, pool.Name, *r)
+			rules[i].RewardPerShare = rules[i].RewardPerShare.Add(newRewardPerShare)
+			rules[i].RemainingReward = rules[i].RemainingReward.Sub(rewardAdded)
+			k.SetRewardRule(ctx, pool.Name, rules[i])
 		}
 	}
 

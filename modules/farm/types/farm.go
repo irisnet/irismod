@@ -36,7 +36,7 @@ func (pool FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, 
 	return rewards, rewardDebt
 }
 
-type RewardRules []*RewardRule
+type RewardRules []RewardRule
 
 func (rs RewardRules) Contains(reward sdk.Coins) bool {
 	var allRewards sdk.Coins

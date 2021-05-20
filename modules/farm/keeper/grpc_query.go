@@ -16,7 +16,7 @@ func (k Keeper) Pools(goctx context.Context,
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	var pools []*types.FarmPoolEntry
-	k.IteratorAllPools(ctx, func(pool *types.FarmPool) {
+	k.IteratorAllPools(ctx, func(pool types.FarmPool) {
 		var totalReward sdk.Coins
 		var remainingReward sdk.Coins
 		var rewardPerBlock sdk.Coins
@@ -32,14 +32,13 @@ func (k Keeper) Pools(goctx context.Context,
 			BeginHeight:        pool.BeginHeight,
 			EndHeight:          pool.EndHeight,
 			Destructible:       pool.Destructible,
-			Expired:            uint64(ctx.BlockHeight()) >= pool.EndHeight,
+			Expired:            pool.IsExpired(ctx),
 			TotalLpTokenLocked: pool.TotalLpTokenLocked,
 			TotalReward:        totalReward,
 			RemainingReward:    remainingReward,
 			RewardPerBlock:     rewardPerBlock,
 		})
 	})
-
 	return &types.QueryPoolsResponse{List: pools}, nil
 }
 

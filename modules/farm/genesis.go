@@ -14,10 +14,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	}
 	for _, pool := range data.Pools {
 		for _, r := range pool.Rules {
-			k.SetRewardRule(ctx, pool.Name, *r)
+			k.SetRewardRule(ctx, pool.Name, r)
 		}
 		k.SetPool(ctx, pool)
-		if pool.EndHeight > uint64(ctx.BlockHeight()) {
+		if !pool.IsExpired(ctx) {
 			k.EnqueueActivePool(ctx, pool.Name, pool.EndHeight)
 		}
 	}
@@ -36,9 +36,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	var pools []types.FarmPool
 	var farmInfos []types.FarmInfo
-	k.IteratorAllPools(ctx, func(pool *types.FarmPool) {
+	k.IteratorAllPools(ctx, func(pool types.FarmPool) {
 		pool.Rules = k.GetRewardRules(ctx, pool.Name)
-		pools = append(pools, *pool)
+		pools = append(pools, pool)
 	})
 	k.IteratorAllFarmInfo(ctx, func(farmInfo types.FarmInfo) {
 		farmInfos = append(farmInfos, farmInfo)

@@ -43,13 +43,13 @@ func (k Keeper) IteratorActivePool(ctx sdk.Context, fun func(pool *types.FarmPoo
 	}
 }
 
-func (k Keeper) IteratorAllPools(ctx sdk.Context, fun func(pool *types.FarmPool)) {
+func (k Keeper) IteratorAllPools(ctx sdk.Context, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.FarmPoolKey)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
-		var pool *types.FarmPool
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), pool)
+		var pool types.FarmPool
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &pool)
 		fun(pool)
 	}
 }

@@ -75,7 +75,7 @@ func (k Keeper) GetRewardRules(ctx sdk.Context, poolName string) (rules types.Re
 	for ; iterator.Valid(); iterator.Next() {
 		var r types.RewardRule
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &r)
-		rules = append(rules, &r)
+		rules = append(rules, r)
 	}
 	return
 }

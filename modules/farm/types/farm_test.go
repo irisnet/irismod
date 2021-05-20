@@ -11,7 +11,7 @@ func TestFarmPool_ExpiredHeight(t *testing.T) {
 	type fields struct {
 		Name        string
 		BeginHeight uint64
-		Rules       []*RewardRule
+		Rules       []RewardRule
 	}
 	tests := []struct {
 		name   string
@@ -23,7 +23,7 @@ func TestFarmPool_ExpiredHeight(t *testing.T) {
 			fields: fields{
 				Name:        "pool_1",
 				BeginHeight: 100,
-				Rules: []*RewardRule{
+				Rules: []RewardRule{
 					{
 						Reward:         sdk.DefaultBondDenom,
 						TotalReward:    sdk.NewInt(10000),
@@ -43,7 +43,7 @@ func TestFarmPool_ExpiredHeight(t *testing.T) {
 			fields: fields{
 				Name:        "pool_2",
 				BeginHeight: 10,
-				Rules: []*RewardRule{
+				Rules: []RewardRule{
 					{
 						Reward:         sdk.DefaultBondDenom,
 						TotalReward:    sdk.NewInt(10000),
@@ -70,7 +70,7 @@ func TestFarmPool_ExpiredHeight(t *testing.T) {
 
 func TestFarmPool_CaclRewards(t *testing.T) {
 	type fields struct {
-		Rules []*RewardRule
+		Rules []RewardRule
 	}
 	type args struct {
 		farmInfo FarmInfo
@@ -86,7 +86,7 @@ func TestFarmPool_CaclRewards(t *testing.T) {
 		{
 			name: "test case 1",
 			fields: fields{
-				Rules: []*RewardRule{
+				Rules: []RewardRule{
 					{
 						Reward:         sdk.DefaultBondDenom,
 						RewardPerShare: sdk.NewDec(100),
@@ -116,7 +116,7 @@ func TestFarmPool_CaclRewards(t *testing.T) {
 		{
 			name: "test case 2",
 			fields: fields{
-				Rules: []*RewardRule{
+				Rules: []RewardRule{
 					{
 						Reward:         sdk.DefaultBondDenom,
 						RewardPerShare: sdk.NewDec(100),
