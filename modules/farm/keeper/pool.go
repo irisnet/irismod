@@ -77,7 +77,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 			types.ErrInvalidOperate, "pool [%s] is not destructible", poolName)
 	}
 
-	if pool.EndHeight <= uint64(ctx.BlockHeight()) {
+	if pool.IsExpired(ctx) {
 		return sdkerrors.Wrapf(types.ErrExpiredPool,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
@@ -201,7 +201,8 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	rewards, rewardDebt := pool.CaclRewards(farmInfo, lpToken.Amount)
 	//reward users
 	if rewards.IsAllPositive() {
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
+		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName,
+			sender, rewards); err != nil {
 			return reward, err
 		}
 	}
@@ -370,12 +371,17 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 ) (*types.FarmPool, error) {
 	height := uint64(ctx.BlockHeight())
 	if height < pool.LastHeightDistrRewards {
-		return nil, sdkerrors.Wrapf(types.ErrExpiredHeight, "invalid height: %d, current: %d", height, pool.LastHeightDistrRewards)
+		return nil, sdkerrors.Wrapf(types.ErrExpiredHeight,
+			"invalid height: %d, last distribution height: %d",
+			height,
+			pool.LastHeightDistrRewards,
+		)
 	}
 
 	rules := k.GetRewardRules(ctx, pool.Name)
 	if len(rules) == 0 {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "the rule of the farm pool[%s] not exist", pool.Name)
+		return nil, sdkerrors.Wrapf(types.ErrNotExistPool,
+			"the rule of the farm pool[%s] not exist", pool.Name)
 	}
 	//when there are multiple farm operations in the same block, the value needs to be updated once
 	if height > pool.LastHeightDistrRewards &&

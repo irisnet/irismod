@@ -60,6 +60,19 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 	); err != nil {
 		return nil, err
 	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCreatePool,
+			sdk.NewAttribute(types.AttributeValueCreator, msg.Creator),
+			sdk.NewAttribute(types.AttributeValuePoolName, msg.Name),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
+		),
+	})
 	return &types.MsgCreatePoolResponse{}, nil
 }
 
@@ -73,6 +86,18 @@ func (m msgServer) DestroyPool(goCtx context.Context, msg *types.MsgDestroyPool)
 	if err := m.Keeper.DestroyPool(ctx, msg.PoolName, creator); err != nil {
 		return nil, err
 	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeDestroyPool,
+			sdk.NewAttribute(types.AttributeValueCreator, msg.Creator),
+			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
+		),
+	})
 	return &types.MsgDestroyPoolResponse{}, nil
 }
 
@@ -87,6 +112,19 @@ func (m msgServer) AppendReward(goCtx context.Context, msg *types.MsgAppendRewar
 	if err != nil {
 		return nil, err
 	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeAppendReward,
+			sdk.NewAttribute(types.AttributeValueCreator, msg.Creator),
+			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
+			sdk.NewAttribute(types.AttributeValueReward, msg.Amount.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
+		),
+	})
 	return &types.MsgAppendRewardResponse{RemainingReward: remaining}, nil
 }
 
@@ -101,6 +139,20 @@ func (m msgServer) Stake(goCtx context.Context, msg *types.MsgStake) (*types.Msg
 	if err != nil {
 		return nil, err
 	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeStake,
+			sdk.NewAttribute(types.AttributeValueCreator, msg.Sender),
+			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
+			sdk.NewAttribute(types.AttributeValueAmount, msg.String()),
+			sdk.NewAttribute(types.AttributeValueReward, reward.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
 	return &types.MsgStakeResponse{Reward: reward}, nil
 }
 
@@ -115,6 +167,20 @@ func (m msgServer) Unstake(goCtx context.Context, msg *types.MsgUnstake) (*types
 	if err != nil {
 		return nil, err
 	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeUnstake,
+			sdk.NewAttribute(types.AttributeValueCreator, msg.Sender),
+			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
+			sdk.NewAttribute(types.AttributeValueAmount, msg.String()),
+			sdk.NewAttribute(types.AttributeValueReward, reward.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
 	return &types.MsgUnstakeResponse{Reward: reward}, nil
 }
 
@@ -129,5 +195,19 @@ func (m msgServer) Harvest(goCtx context.Context, msg *types.MsgHarvest) (*types
 	if err != nil {
 		return nil, err
 	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeHarvest,
+			sdk.NewAttribute(types.AttributeValueCreator, msg.Sender),
+			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
+			sdk.NewAttribute(types.AttributeValueAmount, msg.String()),
+			sdk.NewAttribute(types.AttributeValueReward, reward.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
 	return &types.MsgHarvestResponse{Reward: reward}, nil
 }

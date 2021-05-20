@@ -236,7 +236,6 @@ func (suite *KeeperTestSuite) TestStake() {
 
 	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
 	type args struct {
-		index          int64
 		height         int64
 		stakeCoin      sdk.Coin
 		locked         sdk.Int
