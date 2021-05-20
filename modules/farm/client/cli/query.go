@@ -67,7 +67,10 @@ func GetCmdQueryReward() *cobra.Command {
 				return err
 			}
 
-			poolName, _ := cmd.Flags().GetString(FlagFarmPool)
+			poolName, err := cmd.Flags().GetString(FlagFarmPool)
+			if err != nil {
+				return err
+			}
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.Farmer(context.Background(), &types.QueryFarmerRequest{
 				Farmer:   args[0],

@@ -13,7 +13,7 @@ service Query {
   }
 
   rpc Farmer(QueryFarmerRequest) returns (QueryFarmerResponse) {
-    option (google.api.http).get = "/irismod/farm/farmer/{farmer}";
+    option (google.api.http).get = "/irismod/farm/farmers/{farmer}";
   }
 }
 

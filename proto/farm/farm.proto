@@ -21,7 +21,7 @@ message FarmPool {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
-  repeated RewardRule rules = 9;
+  repeated RewardRule rules = 9 [ (gogoproto.nullable) = false ];
 }
 
 message RewardRule {

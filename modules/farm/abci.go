@@ -21,9 +21,14 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			"endHeight", pool.EndHeight,
 			"lastHeightDistrRewards", pool.LastHeightDistrRewards,
 			"totalLpTokenLocked", pool.TotalLpTokenLocked,
+			"creator", pool.Creator,
 		)
 		if err := k.Refund(ctx, pool); err != nil {
-			panic(err)
+			ctx.Logger().Error("The farm pool refund failed",
+				"poolName", pool.Name,
+				"creator", pool.Creator,
+				"errMsg", err.Error(),
+			)
 		}
 	})
 }
