@@ -248,7 +248,7 @@ func (suite *KeeperTestSuite) TestStake() {
 		{
 			height:         100,
 			stakeCoin:      lpToken,
-			locked:         lpToken.Amount.ModRaw(1),
+			locked:         lpToken.Amount.MulRaw(1),
 			expectReward:   nil,
 			debt:           nil,
 			rewardPerShare: sdk.ZeroDec(),
@@ -256,7 +256,7 @@ func (suite *KeeperTestSuite) TestStake() {
 		{
 			height:         200,
 			stakeCoin:      lpToken,
-			locked:         lpToken.Amount.ModRaw(2),
+			locked:         lpToken.Amount.MulRaw(2),
 			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
 			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(200_000_000))),
 			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1), 0),
@@ -264,7 +264,7 @@ func (suite *KeeperTestSuite) TestStake() {
 		{
 			height:         300,
 			stakeCoin:      lpToken,
-			locked:         lpToken.Amount.ModRaw(3),
+			locked:         lpToken.Amount.MulRaw(3),
 			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
 			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(450_000_000))),
 			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(15), 1),
@@ -272,7 +272,7 @@ func (suite *KeeperTestSuite) TestStake() {
 		{
 			height:         400,
 			stakeCoin:      lpToken,
-			locked:         lpToken.Amount.ModRaw(4),
+			locked:         lpToken.Amount.MulRaw(4),
 			expectReward:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(99999999))),
 			debt:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(733_333_333))),
 			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1_833_333_333_333_333_333), 18),
