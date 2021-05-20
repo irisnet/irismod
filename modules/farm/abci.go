@@ -8,9 +8,9 @@ import (
 )
 
 // EndBlocker handles block beginning logic for farm
-func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
+func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	ctx = ctx.WithLogger(ctx.Logger().
-		With("handler", "endBlocker").
+		With("handler", "beginBlocker").
 		With("module", "irismod/farm"),
 	)
 
