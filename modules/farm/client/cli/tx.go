@@ -34,9 +34,10 @@ func NewTxCmd() *cobra.Command {
 // GetCmdCreateFarmPool implements the create a new farm pool command.
 func GetCmdCreateFarmPool() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iris tx farm create <Farm Pool Name> [flags]",
-		Short: "Create a new farm pool",
-		Args:  cobra.ExactArgs(1),
+		Use:     "create",
+		Short:   "Create a new farm pool",
+		Example: "iris tx farm create <Farm Pool Name> [flags]",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -87,9 +88,10 @@ func GetCmdCreateFarmPool() *cobra.Command {
 // GetCmdDestroyFarmPool implements the destroy a farm pool command.
 func GetCmdDestroyFarmPool() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iris tx farm destroy <Farm Pool Name> [flags]",
-		Short: "Destroy a new farm pool",
-		Args:  cobra.ExactArgs(1),
+		Use:     "destroy",
+		Short:   "Destroy a new farm pool",
+		Example: "iris tx farm destroy <Farm Pool Name> [flags]",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -112,9 +114,10 @@ func GetCmdDestroyFarmPool() *cobra.Command {
 // GetCmdAppendReward implements the append some reward for farm pool command.
 func GetCmdAppendReward() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iris tx farm append <Farm Pool Name> <reward> [flags]",
-		Short: "Append some reward for farm pool",
-		Args:  cobra.ExactArgs(2),
+		Use:     "append",
+		Short:   "Append some reward for farm pool",
+		Example: "iris tx farm append <Farm Pool Name> <reward> [flags]",
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -144,9 +147,10 @@ func GetCmdAppendReward() *cobra.Command {
 // GetCmdStake implements the staking lp token to farm pool command.
 func GetCmdStake() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iris tx farm stake <Farm Pool Name> <lp token> [flags]",
-		Short: "Stake some lp token to farm pool",
-		Args:  cobra.ExactArgs(2),
+		Use:     "stake",
+		Short:   "Stake some lp token to farm pool",
+		Example: "iris tx farm stake <Farm Pool Name> <lp token> [flags]",
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -176,9 +180,10 @@ func GetCmdStake() *cobra.Command {
 // GetCmdUnstake implements the unstaking some lp token from farm pool command.
 func GetCmdUnstake() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iris tx farm unstake <Farm Pool Name> <lp token> [flags]",
-		Short: "Unstake some lp token from farm pool",
-		Args:  cobra.ExactArgs(2),
+		Use:     "unstake",
+		Short:   "Unstake some lp token from farm pool",
+		Example: "iris tx farm unstake <Farm Pool Name> <lp token> [flags]",
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -208,9 +213,10 @@ func GetCmdUnstake() *cobra.Command {
 // GetCmdHarvest implements the withdrawing some reward from the farm pool.
 func GetCmdHarvest() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iris tx farm harvest <Farm Pool Name>",
-		Short: "withdraw some reward from the farm pool",
-		Args:  cobra.ExactArgs(1),
+		Use:     "harvest",
+		Short:   "withdraw some reward from the farm pool",
+		Example: "iris tx farm harvest <Farm Pool Name>",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
