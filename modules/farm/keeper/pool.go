@@ -411,6 +411,9 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 			newRewardPerShare := sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
 			rules[i].RewardPerShare = rules[i].RewardPerShare.Add(newRewardPerShare)
 			rules[i].RemainingReward = rules[i].RemainingReward.Sub(rewardAdded)
+			if isDestroy {
+				rules[i].RemainingReward = sdk.ZeroInt()
+			}
 			k.SetRewardRule(ctx, pool.Name, rules[i])
 		}
 	}
