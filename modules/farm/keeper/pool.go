@@ -184,6 +184,12 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		return reward, err
 	}
 
+	//update pool reward shards
+	pool, err = k.UpdatePool(ctx, pool, lpToken.Amount, false)
+	if err != nil {
+		return nil, err
+	}
+
 	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
 		farmInfo = types.FarmInfo{
@@ -193,11 +199,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 			RewardDebt: sdk.NewCoins(),
 		}
 	}
-	//update pool reward shards
-	pool, err = k.UpdatePool(ctx, pool, lpToken.Amount, false)
-	if err != nil {
-		return nil, err
-	}
+
 	rewards, rewardDebt := pool.CaclRewards(farmInfo, lpToken.Amount)
 	//reward users
 	if rewards.IsAllPositive() {
@@ -213,7 +215,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	return rewards, nil
 }
 
-// AppendReward creates an new farm pool
+// Unstake withdraw lp token from farm pool
 func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	lpToken sdk.Coin,
 	sender sdk.AccAddress) (_ sdk.Coins, err error) {
