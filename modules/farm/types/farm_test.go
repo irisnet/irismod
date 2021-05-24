@@ -58,7 +58,7 @@ func TestFarmPool_ExpiredHeight(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fp := FarmPool{
 				Name:        tt.fields.Name,
-				BeginHeight: tt.fields.BeginHeight,
+				StartHeight: tt.fields.BeginHeight,
 				Rules:       tt.fields.Rules,
 			}
 			if got := fp.ExpiredHeight(); got != tt.want {

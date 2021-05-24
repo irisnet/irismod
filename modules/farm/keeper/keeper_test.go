@@ -93,7 +93,7 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 	suite.Require().Equal(testPoolName, pool.Name)
 	suite.Require().Equal(testPoolDescription, pool.Description)
 	suite.Require().Equal(testLPTokenDenom, pool.TotalLpTokenLocked.Denom)
-	suite.Require().Equal(testBeginHeight, pool.BeginHeight)
+	suite.Require().Equal(testBeginHeight, pool.StartHeight)
 	suite.Require().Equal(testDestructible, pool.Destructible)
 	suite.Require().Equal(testCreator.String(), pool.Creator)
 

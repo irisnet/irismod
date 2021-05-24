@@ -10,8 +10,8 @@ func (pool FarmPool) ExpiredHeight() uint64 {
 	var expiredHeight = uint64(math.MaxUint64)
 	for _, r := range pool.Rules {
 		inteval := r.TotalReward.Quo(r.RewardPerBlock).Uint64()
-		if inteval+pool.BeginHeight < expiredHeight {
-			expiredHeight = inteval + pool.BeginHeight
+		if inteval+pool.StartHeight < expiredHeight {
+			expiredHeight = inteval + pool.StartHeight
 		}
 	}
 	return expiredHeight + 1

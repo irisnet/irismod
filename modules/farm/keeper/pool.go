@@ -35,7 +35,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 		Name:               name,
 		Creator:            creator.String(),
 		Description:        description,
-		BeginHeight:        beginHeight,
+		StartHeight:        beginHeight,
 		Destructible:       destructible,
 		TotalLpTokenLocked: sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
 		Rules:              []types.RewardRule{},
@@ -164,11 +164,11 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		return reward, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
 	}
 
-	if pool.BeginHeight > uint64(ctx.BlockHeight()) {
+	if pool.StartHeight > uint64(ctx.BlockHeight()) {
 		return reward, sdkerrors.Wrapf(types.ErrNotStartPool,
 			"farm pool [%s] will start at height[%d], current [%d]",
 			poolName,
-			pool.BeginHeight,
+			pool.StartHeight,
 			ctx.BlockHeight(),
 		)
 	}

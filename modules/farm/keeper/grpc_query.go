@@ -29,7 +29,7 @@ func (k Keeper) Pools(goctx context.Context,
 		pools = append(pools, &types.FarmPoolEntry{
 			Name:               pool.Name,
 			Creator:            pool.Creator,
-			BeginHeight:        pool.BeginHeight,
+			StartHeight:        pool.StartHeight,
 			EndHeight:          pool.EndHeight,
 			Destructible:       pool.Destructible,
 			Expired:            pool.IsExpired(ctx),
@@ -70,7 +70,7 @@ func (k Keeper) Farmer(goctx context.Context,
 			return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", farmer.PoolName)
 		}
 
-		if pool.BeginHeight > uint64(ctx.BlockHeight()) {
+		if pool.StartHeight > uint64(ctx.BlockHeight()) {
 			list = append(list, &types.LockedInfo{
 				PoolName: farmer.PoolName,
 				Locked:   sdk.NewCoin(pool.TotalLpTokenLocked.Denom, farmer.Locked),

@@ -13,7 +13,7 @@ message FarmPool {
   string name = 1;
   string creator = 2;
   string description = 3;
-  uint64 begin_height = 4;
+  uint64 start_height = 4;
   uint64 end_height = 5;
   uint64 last_height_distr_rewards = 6;
   bool destructible = 7;

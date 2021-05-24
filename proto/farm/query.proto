@@ -22,7 +22,7 @@ message QueryPoolsRequest { string name = 1; }
 message FarmPoolEntry {
   string name = 1;
   string creator = 2;
-  uint64 begin_height = 3;
+  uint64 start_height = 3;
   uint64 end_height = 4;
   bool destructible = 5;
   bool expired = 6;
