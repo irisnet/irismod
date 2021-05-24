@@ -164,6 +164,15 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		return reward, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
 	}
 
+	if pool.BeginHeight > uint64(ctx.BlockHeight()) {
+		return reward, sdkerrors.Wrapf(types.ErrNotStartPool,
+			"farm pool [%s] will start at height[%d], current [%d]",
+			poolName,
+			pool.BeginHeight,
+			ctx.BlockHeight(),
+		)
+	}
+
 	if pool.IsExpired(ctx) {
 		return reward, sdkerrors.Wrapf(types.ErrExpiredPool,
 			"pool [%s] has expired at height[%d], current [%d]",

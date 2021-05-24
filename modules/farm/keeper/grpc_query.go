@@ -65,7 +65,19 @@ func (k Keeper) Farmer(goctx context.Context,
 	}
 
 	for _, farmer := range farmInfos {
-		pool, _ := k.GetPool(cacheCtx, farmer.PoolName)
+		pool, exist := k.GetPool(cacheCtx, farmer.PoolName)
+		if !exist {
+			return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", farmer.PoolName)
+		}
+
+		if pool.BeginHeight > uint64(ctx.BlockHeight()) {
+			list = append(list, &types.LockedInfo{
+				PoolName: farmer.PoolName,
+				Locked:   sdk.NewCoin(pool.TotalLpTokenLocked.Denom, farmer.Locked),
+			})
+			continue
+		}
+
 		pool, err = k.UpdatePool(cacheCtx, pool, sdk.ZeroInt(), false)
 		if err != nil {
 			return nil, err

@@ -30,9 +30,10 @@ func GetQueryCmd() *cobra.Command {
 // GetCmdQueryFarmPools implements the query the farm pool.
 func GetCmdQueryFarmPools() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "farm pools --pool-name <Farm Pool Name>",
-		Short: "Query a farm",
-		Args:  cobra.ExactArgs(1),
+		Use:     "pools",
+		Example: "farm pools --pool-name <Farm Pool Name>",
+		Short:   "Query a farm",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -58,9 +59,10 @@ func GetCmdQueryFarmPools() *cobra.Command {
 // GetCmdQueryFarmer implements the query the farmer reward.
 func GetCmdQueryFarmer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "farm farmer <Farmer Address> --pool-name <Farm Pool Name>",
-		Short: "Query farmer reward",
-		Args:  cobra.ExactArgs(1),
+		Use:     "farmer",
+		Example: "farm farmer <Farmer Address> --pool-name <Farm Pool Name>",
+		Short:   "Query farmer reward",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

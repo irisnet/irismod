@@ -10,6 +10,7 @@ var (
 	ErrInvalidLPToken     = sdkerrors.Register(ModuleName, 3, "invalid lp token denom")
 	ErrNotMatch           = sdkerrors.Register(ModuleName, 4, "the data does not match")
 	ErrExpiredPool        = sdkerrors.Register(ModuleName, 5, "the farm pool has expired")
+	ErrNotStartPool       = sdkerrors.Register(ModuleName, 5, "the farm pool don't start")
 	ErrNotExistPool       = sdkerrors.Register(ModuleName, 6, "the farm pool is not exist")
 	ErrInvalidOperate     = sdkerrors.Register(ModuleName, 7, "invalid operate")
 	ErrNotExistFarmer     = sdkerrors.Register(ModuleName, 8, "the farmer is not exist")
