@@ -13,5 +13,5 @@ type BankKeeper interface {
 }
 
 type CoinswapKeeper interface {
-	GetReservePool(ctx sdk.Context, lpTokenDenom string) (coins sdk.Coins, err error)
+	ValidatePool(ctx sdk.Context, lpTokenDenom string) error
 }
