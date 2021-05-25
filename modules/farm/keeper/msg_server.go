@@ -30,12 +30,12 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	//check valid begin height
-	if ctx.BlockHeight() > int64(msg.BeginHeight) {
+	if ctx.BlockHeight() > int64(msg.StartHeight) {
 		return nil, sdkerrors.Wrapf(
 			types.ErrExpiredHeight,
-			"The current block height[%d] is greater than BeginHeight[%d]",
+			"The current block height[%d] is greater than StartHeight[%d]",
 			ctx.BlockHeight(),
-			msg.BeginHeight,
+			msg.StartHeight,
 		)
 	}
 
@@ -60,7 +60,7 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 		msg.Name,
 		msg.Description,
 		msg.LpTokenDenom,
-		msg.BeginHeight,
+		msg.StartHeight,
 		msg.RewardPerBlock.Sort(),
 		msg.TotalReward.Sort(),
 		msg.Destructible,

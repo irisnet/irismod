@@ -33,6 +33,7 @@ func GetCmdQueryFarmPools() *cobra.Command {
 		Use:     "pools",
 		Example: "farm pools --pool-name <Farm Pool Name>",
 		Short:   "Query a farm",
+		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
