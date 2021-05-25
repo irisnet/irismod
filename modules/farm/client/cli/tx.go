@@ -46,7 +46,7 @@ func GetCmdCreateFarmPool() *cobra.Command {
 
 			description, _ := cmd.Flags().GetString(FlagDescription)
 			lpTokenDenom, _ := cmd.Flags().GetString(FlagLPTokenDenom)
-			beginHeight, err := cmd.Flags().GetInt64(FlagBeginHeight)
+			startHeight, err := cmd.Flags().GetInt64(FlagStartHeight)
 			if err != nil {
 				return err
 			}
@@ -68,7 +68,7 @@ func GetCmdCreateFarmPool() *cobra.Command {
 				Name:           args[0],
 				Description:    description,
 				LpTokenDenom:   lpTokenDenom,
-				BeginHeight:    uint64(beginHeight),
+				BeginHeight:    uint64(startHeight),
 				RewardPerBlock: rewardPerBlock,
 				TotalReward:    totalReward,
 				Destructible:   destructible,

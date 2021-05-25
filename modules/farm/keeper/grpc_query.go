@@ -15,8 +15,21 @@ func (k Keeper) Pools(goctx context.Context,
 	request *types.QueryPoolsRequest) (*types.QueryPoolsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
-	var pools []*types.FarmPoolEntry
-	k.IteratorAllPools(ctx, func(pool types.FarmPool) {
+	var pools []types.FarmPool
+	if len(request.Name) > 0 {
+		pool, exist := k.GetPool(ctx, request.Name)
+		if !exist {
+			return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not found pool: %s", request.Name)
+		}
+		pools = append(pools, pool)
+	} else {
+		k.IteratorAllPools(ctx, func(pool types.FarmPool) {
+			pools = append(pools, pool)
+		})
+	}
+
+	var list []*types.FarmPoolEntry
+	for _, pool := range pools {
 		var totalReward sdk.Coins
 		var remainingReward sdk.Coins
 		var rewardPerBlock sdk.Coins
@@ -26,20 +39,20 @@ func (k Keeper) Pools(goctx context.Context,
 			rewardPerBlock = rewardPerBlock.Add(sdk.NewCoin(r.Reward, r.RewardPerBlock))
 		})
 
-		pools = append(pools, &types.FarmPoolEntry{
+		list = append(list, &types.FarmPoolEntry{
 			Name:               pool.Name,
 			Creator:            pool.Creator,
 			StartHeight:        pool.StartHeight,
 			EndHeight:          pool.EndHeight,
 			Destructible:       pool.Destructible,
-			Expired:            pool.IsExpired(ctx),
+			Expired:            pool.IsExpired(ctx.BlockHeight()),
 			TotalLpTokenLocked: pool.TotalLpTokenLocked,
 			TotalReward:        totalReward,
 			RemainingReward:    remainingReward,
 			RewardPerBlock:     rewardPerBlock,
 		})
-	})
-	return &types.QueryPoolsResponse{List: pools}, nil
+	}
+	return &types.QueryPoolsResponse{List: list}, nil
 }
 
 func (k Keeper) Farmer(goctx context.Context,
@@ -70,6 +83,7 @@ func (k Keeper) Farmer(goctx context.Context,
 			return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", farmer.PoolName)
 		}
 
+		//The farm pool has not started, no reward
 		if pool.StartHeight > uint64(ctx.BlockHeight()) {
 			list = append(list, &types.LockedInfo{
 				PoolName: farmer.PoolName,
@@ -78,10 +92,15 @@ func (k Keeper) Farmer(goctx context.Context,
 			continue
 		}
 
-		pool, err = k.UpdatePool(cacheCtx, pool, sdk.ZeroInt(), false)
-		if err != nil {
-			return nil, err
+		if !pool.IsExpired(ctx.BlockHeight()) {
+			pool, err = k.UpdatePool(cacheCtx, pool, sdk.ZeroInt(), false)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			pool.Rules = k.GetRewardRules(ctx, pool.Name)
 		}
+
 		rewards, _ := pool.CaclRewards(farmer, sdk.ZeroInt())
 		list = append(list, &types.LockedInfo{
 			PoolName:      farmer.PoolName,

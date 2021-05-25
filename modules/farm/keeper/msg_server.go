@@ -29,7 +29,6 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
 	//check valid begin height
 	if ctx.BlockHeight() > int64(msg.BeginHeight) {
 		return nil, sdkerrors.Wrapf(
@@ -37,6 +36,15 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 			"The current block height[%d] is greater than BeginHeight[%d]",
 			ctx.BlockHeight(),
 			msg.BeginHeight,
+		)
+	}
+
+	//check pool exist
+	if _, exist := m.Keeper.GetPool(ctx, msg.Name); exist {
+		return nil, sdkerrors.Wrapf(
+			types.ErrExistPool,
+			"pool: [%s]",
+			msg.Name,
 		)
 	}
 
@@ -144,7 +152,7 @@ func (m msgServer) Stake(goCtx context.Context, msg *types.MsgStake) (*types.Msg
 			types.EventTypeStake,
 			sdk.NewAttribute(types.AttributeValueCreator, msg.Sender),
 			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
-			sdk.NewAttribute(types.AttributeValueAmount, msg.String()),
+			sdk.NewAttribute(types.AttributeValueAmount, msg.Amount.String()),
 			sdk.NewAttribute(types.AttributeValueReward, reward.String()),
 		),
 		sdk.NewEvent(
@@ -172,7 +180,7 @@ func (m msgServer) Unstake(goCtx context.Context, msg *types.MsgUnstake) (*types
 			types.EventTypeUnstake,
 			sdk.NewAttribute(types.AttributeValueCreator, msg.Sender),
 			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
-			sdk.NewAttribute(types.AttributeValueAmount, msg.String()),
+			sdk.NewAttribute(types.AttributeValueAmount, msg.Amount.String()),
 			sdk.NewAttribute(types.AttributeValueReward, reward.String()),
 		),
 		sdk.NewEvent(
@@ -200,7 +208,6 @@ func (m msgServer) Harvest(goCtx context.Context, msg *types.MsgHarvest) (*types
 			types.EventTypeHarvest,
 			sdk.NewAttribute(types.AttributeValueCreator, msg.Sender),
 			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
-			sdk.NewAttribute(types.AttributeValueAmount, msg.String()),
 			sdk.NewAttribute(types.AttributeValueReward, reward.String()),
 		),
 		sdk.NewEvent(

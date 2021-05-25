@@ -33,15 +33,19 @@ func GetCmdQueryFarmPools() *cobra.Command {
 		Use:     "pools",
 		Example: "farm pools --pool-name <Farm Pool Name>",
 		Short:   "Query a farm",
-		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			var poolName string
+			if len(args) > 0 {
+				poolName = args[0]
+			}
+
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.Pools(context.Background(), &types.QueryPoolsRequest{
-				Name: args[0],
+				Name: poolName,
 			})
 			if err != nil {
 				return err

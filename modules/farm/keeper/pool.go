@@ -77,7 +77,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 			types.ErrInvalidOperate, "pool [%s] is not destructible", poolName)
 	}
 
-	if pool.IsExpired(ctx) {
+	if pool.IsExpired(ctx.BlockHeight()) {
 		return sdkerrors.Wrapf(types.ErrExpiredPool,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
@@ -106,7 +106,7 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 		return remaining, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "creator [%s] is not the creator of the pool", creator.String())
 	}
 
-	if pool.EndHeight <= uint64(ctx.BlockHeight()) {
+	if pool.IsExpired(ctx.BlockHeight()) {
 		return remaining, sdkerrors.Wrapf(types.ErrExpiredPool,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
@@ -173,7 +173,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 		)
 	}
 
-	if pool.IsExpired(ctx) {
+	if pool.IsExpired(ctx.BlockHeight()) {
 		return reward, sdkerrors.Wrapf(types.ErrExpiredPool,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
@@ -268,7 +268,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 		)
 	}
 
-	if pool.IsExpired(ctx) {
+	if pool.IsExpired(ctx.BlockHeight()) {
 		//If the farm has ended, the reward rules cannot be updated
 		pool.Rules = k.GetRewardRules(ctx, pool.Name)
 		pool.TotalLpTokenLocked = pool.TotalLpTokenLocked.Sub(lpToken)
@@ -280,14 +280,16 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 			return nil, err
 		}
 	}
-
+	sentCoins := sdk.NewCoins(lpToken)
 	//compute farmer rewards
 	rewards, rewardDebt := pool.CaclRewards(farmInfo, lpToken.Amount.Neg())
-	//distribute reward
 	if rewards.IsAllPositive() {
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, rewards); err != nil {
-			return nil, err
-		}
+		sentCoins = sentCoins.Add(rewards...)
+	}
+	//distribute reward
+	if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName,
+		sender, sentCoins); err != nil {
+		return nil, err
 	}
 
 	farmInfo.RewardDebt = rewardDebt
@@ -308,7 +310,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
 	}
 
-	if pool.IsExpired(ctx) {
+	if pool.IsExpired(ctx.BlockHeight()) {
 		return nil, sdkerrors.Wrapf(types.ErrExpiredPool,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,

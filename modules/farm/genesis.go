@@ -17,7 +17,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 			k.SetRewardRule(ctx, pool.Name, r)
 		}
 		k.SetPool(ctx, pool)
-		if !pool.IsExpired(ctx) {
+		if !pool.IsExpired(ctx.BlockHeight()) {
 			k.EnqueueActivePool(ctx, pool.Name, pool.EndHeight)
 		}
 	}

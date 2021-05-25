@@ -17,8 +17,8 @@ func (pool FarmPool) ExpiredHeight() uint64 {
 	return expiredHeight + 1
 }
 
-func (pool FarmPool) IsExpired(ctx sdk.Context) bool {
-	return pool.EndHeight <= uint64(ctx.BlockHeight())
+func (pool FarmPool) IsExpired(height int64) bool {
+	return pool.EndHeight <= uint64(height)
 }
 
 func (pool FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, rewardDebt sdk.Coins) {
