@@ -361,6 +361,8 @@ func (k Keeper) Refund(ctx sdk.Context, pool types.FarmPool) (err error) {
 	var remainingTotal sdk.Coins
 	for _, r := range pool.Rules {
 		remainingTotal = remainingTotal.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
+		r.RemainingReward = sdk.ZeroInt()
+		k.SetRewardRule(ctx, pool.Name, r)
 	}
 
 	if remainingTotal.IsAllPositive() {
@@ -411,9 +413,6 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 			newRewardPerShare := sdk.NewDecFromInt(rewardAdded).QuoInt(pool.TotalLpTokenLocked.Amount)
 			rules[i].RewardPerShare = rules[i].RewardPerShare.Add(newRewardPerShare)
 			rules[i].RemainingReward = rules[i].RemainingReward.Sub(rewardAdded)
-			if isDestroy {
-				rules[i].RemainingReward = sdk.ZeroInt()
-			}
 			k.SetRewardRule(ctx, pool.Name, rules[i])
 		}
 	}
