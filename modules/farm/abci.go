@@ -9,13 +9,9 @@ import (
 
 // EndBlocker handles block beginning logic for farm
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-	ctx = ctx.WithLogger(ctx.Logger().
-		With("handler", "beginBlocker").
-		With("module", "irismod/farm"),
-	)
-
+	logger := k.Logger(ctx).With("handler", "beginBlocker")
 	k.IteratorExpiredPool(ctx, uint64(ctx.BlockHeight()), func(pool types.FarmPool) {
-		ctx.Logger().Info(
+		logger.Info(
 			"The farm pool has expired, refund to creator",
 			"poolName", pool.Name,
 			"endHeight", pool.EndHeight,
@@ -24,7 +20,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			"creator", pool.Creator,
 		)
 		if err := k.Refund(ctx, pool); err != nil {
-			ctx.Logger().Error("The farm pool refund failed",
+			logger.Error("The farm pool refund failed",
 				"poolName", pool.Name,
 				"creator", pool.Creator,
 				"errMsg", err.Error(),

@@ -422,6 +422,7 @@ func NewSimApp(
 	app.Farmkeeper = farmkeeper.NewKeeper(appCodec,
 		keys[farmtypes.StoreKey],
 		app.BankKeeper,
+		app.AccountKeeper,
 		app.CoinswapKeeper,
 		app.GetSubspace(farmtypes.ModuleName),
 		authtypes.FeeCollectorName,

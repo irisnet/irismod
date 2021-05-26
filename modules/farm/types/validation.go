@@ -50,3 +50,17 @@ func ValidateAddress(sender string) error {
 	_, err := sdk.AccAddressFromBech32(sender)
 	return err
 }
+
+// ValidateReward validates the coin
+func ValidateReward(rewardPerBlock, totalReward sdk.Coins) error {
+	if len(rewardPerBlock) != len(totalReward) {
+		return sdkerrors.Wrapf(ErrNotMatch, "The length of rewardPerBlock and totalReward must be the same")
+	}
+
+	for _, r := range totalReward {
+		if !rewardPerBlock.AmountOf(r.Denom).IsPositive() {
+			return sdkerrors.Wrapf(ErrNotMatch, "rewardPerBlock and totalReward token types are inconsistent")
+		}
+	}
+	return nil
+}

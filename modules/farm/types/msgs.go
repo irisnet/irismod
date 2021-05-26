@@ -60,7 +60,11 @@ func (msg MsgCreatePool) ValidateBasic() error {
 	if err := ValidateAddress(msg.Creator); err != nil {
 		return err
 	}
-	return ValidateCoins(msg.TotalReward...)
+
+	if err := ValidateCoins(msg.TotalReward...); err != nil {
+		return err
+	}
+	return ValidateReward(msg.RewardPerBlock, msg.TotalReward)
 }
 
 // GetSignBytes implements Msg

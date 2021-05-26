@@ -93,7 +93,7 @@ func (k Keeper) Farmer(goctx context.Context,
 		}
 
 		if !pool.IsExpired(ctx.BlockHeight()) {
-			pool, err = k.UpdatePool(cacheCtx, pool, sdk.ZeroInt(), false)
+			pool, _, err = k.UpdatePool(cacheCtx, pool, sdk.ZeroInt(), false)
 			if err != nil {
 				return nil, err
 			}

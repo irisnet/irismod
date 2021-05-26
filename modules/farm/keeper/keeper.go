@@ -1,6 +1,10 @@
 package keeper
 
 import (
+	"fmt"
+
+	"github.com/tendermint/tendermint/libs/log"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -17,12 +21,14 @@ type Keeper struct {
 	// name of the fee collector
 	feeCollectorName string
 	bk               types.BankKeeper
+	ak               types.AccountKeeper
 	ck               types.CoinswapKeeper
 }
 
 func NewKeeper(cdc codec.Marshaler,
 	storeKey sdk.StoreKey,
 	bk types.BankKeeper,
+	ak types.AccountKeeper,
 	ck types.CoinswapKeeper,
 	paramSpace paramstypes.Subspace,
 	feeCollectorName string,
@@ -31,10 +37,16 @@ func NewKeeper(cdc codec.Marshaler,
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
 	}
+
+	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
+	}
+
 	return Keeper{
 		storeKey:         storeKey,
 		cdc:              cdc,
 		bk:               bk,
+		ak:               ak,
 		ck:               ck,
 		paramSpace:       paramSpace,
 		feeCollectorName: feeCollectorName,
@@ -78,6 +90,10 @@ func (k Keeper) GetRewardRules(ctx sdk.Context, poolName string) (rules types.Re
 		rules = append(rules, r)
 	}
 	return
+}
+
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", "irismod/farm")
 }
 
 func (k Keeper) IteratorRewardRules(ctx sdk.Context, poolName string, fun func(r types.RewardRule)) {
