@@ -382,6 +382,11 @@ func (k Keeper) Refund(ctx sdk.Context, pool types.FarmPool) error {
 	return nil
 }
 
+// UpdatePool is responsible for updating the status information of the farm pool, including the total accumulated bonus from the last time the bonus was distributed to the present, the current remaining bonus in the farm pool, and the ratio of the current liquidity token to the bonus.
+
+// Note that when multiple transactions at the same block height trigger the farm pool update at the same time, only the first transaction will trigger the `RewardPerShare` update operation
+
+// This method returns the updated farm pool and the bonuses collected in this period
 func (k Keeper) UpdatePool(ctx sdk.Context,
 	pool types.FarmPool,
 	amount sdk.Int,
