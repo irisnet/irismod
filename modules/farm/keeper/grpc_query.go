@@ -114,3 +114,11 @@ func (k Keeper) Farmer(goctx context.Context,
 		Height: ctx.BlockHeight(),
 	}, nil
 }
+
+func (k Keeper) Params(goctx context.Context,
+	request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	return &types.QueryParamsResponse{
+		Params: k.GetParams(ctx),
+	}, nil
+}

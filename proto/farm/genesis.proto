@@ -12,11 +12,3 @@ message GenesisState {
   repeated FarmPool pools = 2 [ (gogoproto.nullable) = false ];
   repeated FarmInfo farm_infos = 3 [ (gogoproto.nullable) = false ];
 }
-
-message Params {
-  cosmos.base.v1beta1.Coin create_pool_fee = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
-    (gogoproto.nullable) = false
-  ];
-  uint32 max_reward_category_n = 4;
-}

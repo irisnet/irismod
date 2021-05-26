@@ -2,11 +2,13 @@ package cli
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/version"
 
 	"github.com/irisnet/irismod/modules/farm/types"
 )
@@ -23,6 +25,7 @@ func GetQueryCmd() *cobra.Command {
 	queryCmd.AddCommand(
 		GetCmdQueryFarmPools(),
 		GetCmdQueryFarmer(),
+		GetCmdQueryParams(),
 	)
 	return queryCmd
 }
@@ -31,7 +34,7 @@ func GetQueryCmd() *cobra.Command {
 func GetCmdQueryFarmPools() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "pools",
-		Example: "farm pools --pool-name <Farm Pool Name>",
+		Example: fmt.Sprintf("$ %s query farm pools --pool-name <Farm Pool Name>", version.AppName),
 		Short:   "Query a farm",
 		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -65,7 +68,7 @@ func GetCmdQueryFarmPools() *cobra.Command {
 func GetCmdQueryFarmer() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "farmer",
-		Example: "farm farmer <Farmer Address> --pool-name <Farm Pool Name>",
+		Example: fmt.Sprintf("$ %s query farm farmer <Farmer Address> --pool-name <Farm Pool Name>", version.AppName),
 		Short:   "Query farmer reward",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -91,6 +94,33 @@ func GetCmdQueryFarmer() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(FsQueryFarmPool)
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdQueryParams implements the query params command.
+func GetCmdQueryParams() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "params",
+		Short:   "Query the current farm parameter values",
+		Example: fmt.Sprintf("$ %s query farm params", version.AppName),
+		Args:    cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(&res.Params)
+		},
+	}
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

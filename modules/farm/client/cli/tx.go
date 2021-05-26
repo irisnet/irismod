@@ -1,12 +1,15 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 
 	"github.com/irisnet/irismod/modules/farm/types"
 )
@@ -36,7 +39,7 @@ func GetCmdCreateFarmPool() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "create",
 		Short:   "Create a new farm pool",
-		Example: "iris tx farm create <Farm Pool Name> [flags]",
+		Example: fmt.Sprintf("$ %s tx farm create <Farm Pool Name> [flags]", version.AppName),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -90,7 +93,7 @@ func GetCmdDestroyFarmPool() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "destroy",
 		Short:   "Destroy a new farm pool",
-		Example: "iris tx farm destroy <Farm Pool Name> [flags]",
+		Example: fmt.Sprintf("$ %s tx farm destroy <Farm Pool Name> [flags]", version.AppName),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -116,7 +119,7 @@ func GetCmdAppendReward() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "append",
 		Short:   "Append some reward for farm pool",
-		Example: "iris tx farm append <Farm Pool Name> <reward> [flags]",
+		Example: fmt.Sprintf("$ %s tx farm append <Farm Pool Name> <reward> [flags]", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -149,7 +152,7 @@ func GetCmdStake() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "stake",
 		Short:   "Stake some lp token to farm pool",
-		Example: "iris tx farm stake <Farm Pool Name> <lp token> [flags]",
+		Example: fmt.Sprintf("$ %s tx farm stake <Farm Pool Name> <lp token> [flags]", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -182,7 +185,7 @@ func GetCmdUnstake() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "unstake",
 		Short:   "Unstake some lp token from farm pool",
-		Example: "iris tx farm unstake <Farm Pool Name> <lp token> [flags]",
+		Example: fmt.Sprintf("$ %s tx farm unstake <Farm Pool Name> <lp token> [flags]", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -215,7 +218,7 @@ func GetCmdHarvest() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "harvest",
 		Short:   "withdraw some reward from the farm pool",
-		Example: "iris tx farm harvest <Farm Pool Name>",
+		Example: fmt.Sprintf("$ %s tx farm harvest <Farm Pool Name>", version.AppName),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
