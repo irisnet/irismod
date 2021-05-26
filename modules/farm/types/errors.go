@@ -18,4 +18,5 @@ var (
 	ErrInvalidPoolName    = sdkerrors.Register(ModuleName, 11, "invalid pool name, must contain alphanumeric characters, _ and - only length greater than 0 and less than or equal to 70")
 	ErrInvalidDescription = sdkerrors.Register(ModuleName, 12, "invalid pool description,length less than or equal to 280")
 	ErrInvalidAppend      = sdkerrors.Register(ModuleName, 13, "cannot add new token as a reward")
+	ErrInvalidRewardRule  = sdkerrors.Register(ModuleName, 14, "invalid reward rule")
 )

@@ -9,32 +9,38 @@ import (
 
 // Farm params default values
 var (
-	DefaultCreatePoolFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)) // 5000stake
+	DefaultCreatePoolFee      = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)) // 5000stake
+	DefaultMaxRewardCategoryN = uint32(2)
 )
 
 // Keys for parameter access
 // nolint
 var (
-	KeyCreatePoolFee = []byte("CreatePoolFee")
+	KeyCreatePoolFee      = []byte("CreatePoolFee")
+	KeyMaxRewardCategoryN = []byte("MaxRewardCategoryN")
 )
 
 // NewParams creates a new Params instance
-func NewParams(createPoolFee sdk.Coin) Params {
+func NewParams(createPoolFee sdk.Coin, maxRewardCategoryN uint32) Params {
 	return Params{
-		CreatePoolFee: createPoolFee,
+		CreatePoolFee:      createPoolFee,
+		MaxRewardCategoryN: maxRewardCategoryN,
 	}
 }
 
 // ParamSetPairs implements paramstypes.ParamSet
 func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(KeyCreatePoolFee, &p.CreatePoolFee, validateCreatePoolFee),
+		paramstypes.NewParamSetPair(
+			KeyCreatePoolFee, &p.CreatePoolFee, validateCreatePoolFee),
+		paramstypes.NewParamSetPair(
+			KeyMaxRewardCategoryN, &p.MaxRewardCategoryN, validateMaxRewardCategoryN),
 	}
 }
 
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
-	return NewParams(DefaultCreatePoolFee)
+	return NewParams(DefaultCreatePoolFee, DefaultMaxRewardCategoryN)
 }
 
 // Validate validates a set of params
@@ -53,3 +59,5 @@ func validateCreatePoolFee(i interface{}) error {
 	}
 	return nil
 }
+
+func validateMaxRewardCategoryN(i interface{}) error { return nil }

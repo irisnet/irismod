@@ -18,4 +18,5 @@ message Params {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
+  uint32 max_reward_category_n = 4;
 }
