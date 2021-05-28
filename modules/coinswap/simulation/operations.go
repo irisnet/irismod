@@ -96,20 +96,20 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 		exactStandardAmt := simtypes.RandomAmount(r, spendable.AmountOf(standardDenom))
 
 		if !exactStandardAmt.IsPositive() {
-			return
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "standardAmount should be positive"), nil, nil
 		}
 
 		maxToken = RandomSpendableToken(r, spendable)
 		if maxToken.Denom == standardDenom {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "tokenDenom should not be standardDenom"), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "tokenDenom should not be standardDenom"), nil, err
 		}
 
 		if strings.HasPrefix(maxToken.Denom, types.FormatUniABSPrefix) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "tokenDenom should not be liquidity token"), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "tokenDenom should not be liquidity token"), nil, err
 		}
 
 		if !maxToken.Amount.IsPositive() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "maxToken must is positive"), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "maxToken must is positive"), nil, err
 		}
 
 		uniDenom := types.GetUniDenomFromDenom(maxToken.Denom)
@@ -121,11 +121,10 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 		} else {
 			standardReserveAmt := reservePool.AmountOf(standardDenom)
 			liquidity := bk.GetSupply(ctx).GetTotal().AmountOf(uniDenom)
-			//liquidity := reservePool.AmountOf(uniDenom)
 			minLiquidity = liquidity.Mul(exactStandardAmt).Quo(standardReserveAmt)
 
 			if !maxToken.Amount.Sub(reservePool.AmountOf(maxToken.GetDenom()).Mul(exactStandardAmt).Quo(standardReserveAmt)).IsPositive() {
-				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "insufficient funds"), nil, err
+				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "insufficient funds"), nil, err
 			}
 		}
 
@@ -239,12 +238,25 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, err.Error()), nil, nil
 			}
 		} else if isBuyOrder && !isDoubleSwap {
-			inputCoin, outputCoin = singleSwapBill(inputCoin, outputCoin, ctx, k)
+			inputCoin, outputCoin, err = singleSwapBill(inputCoin, outputCoin, ctx, k)
+			if err != nil {
+				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, err.Error()), nil, nil
+			}
 		} else if !isBuyOrder && isDoubleSwap {
-			inputCoin, outputCoin = doubleSwapSellOrder(inputCoin, outputCoin, ctx, k)
+			inputCoin, outputCoin, err = doubleSwapSellOrder(inputCoin, outputCoin, ctx, k)
+			if err != nil {
+				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, err.Error()), nil, nil
+			}
 		} else if !isBuyOrder && !isDoubleSwap {
-			inputCoin, outputCoin = singleSwapSellOrder(inputCoin, outputCoin, ctx, k)
+			inputCoin, outputCoin, err = singleSwapSellOrder(inputCoin, outputCoin, ctx, k)
+			if err != nil {
+				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, err.Error()), nil, nil
+			}
 		}
+		if !outputCoin.Amount.IsPositive() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "outputCoin must is positive"), nil, err
+		}
+
 		deadline := randDeadline(r)
 		//deadline := int64(time.Now().Add(time.Second * time.Duration(r.Intn(10))).Second())
 		msg := types.NewMsgSwapOrder(
@@ -260,10 +272,6 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 			isBuyOrder,
 		)
 
-		//fees, err := simtypes.RandomFees(r, ctx, spendable)
-		//if err != nil {
-		//	return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate fees"), nil, err
-		//}
 		var fees sdk.Coins
 		coinsTemp, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin(inputCoin.Denom, inputCoin.Amount)))
 		if !hasNeg {
@@ -322,12 +330,10 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 
 		token := RandomSpendableToken(r, spendable)
 
-		////should not be standardDenom
 		if token.Denom == standardDenom {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "tokenDenom  should not be standardDenom"), nil, err
 		}
 
-		//token.Denom must be "liquidity token"
 		tokenDenom, err := types.GetCoinDenomFromUniDenom(token.Denom)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, err.Error()), nil, nil
@@ -336,19 +342,29 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 		reservePool, err := k.GetReservePool(ctx, token.Denom)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, err.Error()), nil, nil
-		} else {
-			standardReserveAmt := reservePool.AmountOf(standardDenom)
-			tokenReserveAmt := reservePool.AmountOf(tokenDenom)
+		}
 
-			//withdrawLiquidity = sdk.NewCoin(token.GetDenom(), simtypes.RandomAmount(r, sdk.MinInt(token.Amount, tokenReserveAmt)))
-			withdrawLiquidity = sdk.NewCoin(token.GetDenom(), simtypes.RandomAmount(r, token.Amount))
+		standardReserveAmt := reservePool.AmountOf(standardDenom)
+		tokenReserveAmt := reservePool.AmountOf(tokenDenom)
 
-			if !withdrawLiquidity.IsValid() || !withdrawLiquidity.IsPositive() {
-				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "invalid withdrawLiquidity"), nil, nil
-			}
-			liquidityReserve := bk.GetSupply(ctx).GetTotal().AmountOf(token.Denom)
-			minToken = withdrawLiquidity.Amount.Mul(tokenReserveAmt).Quo(liquidityReserve)
-			minStandardAmt = withdrawLiquidity.Amount.Mul(standardReserveAmt).Quo(liquidityReserve)
+		withdrawLiquidity = sdk.NewCoin(token.GetDenom(), simtypes.RandomAmount(r, token.Amount))
+		liquidityReserve := bk.GetSupply(ctx).GetTotal().AmountOf(token.Denom)
+
+		if !withdrawLiquidity.IsValid() || !withdrawLiquidity.IsPositive() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "invalid withdrawLiquidity"), nil, nil
+		}
+		if liquidityReserve.LT(withdrawLiquidity.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "insufficient funds"), nil, nil
+		}
+
+		minToken = withdrawLiquidity.Amount.Mul(tokenReserveAmt).Quo(liquidityReserve)
+		if tokenReserveAmt.LT(minToken) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "insufficient funds"), nil, nil
+		}
+
+		minStandardAmt = withdrawLiquidity.Amount.Mul(standardReserveAmt).Quo(liquidityReserve)
+		if standardReserveAmt.LT(minStandardAmt) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "insufficient funds"), nil, nil
 		}
 
 		deadline := randDeadline(r)
@@ -359,9 +375,14 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 			deadline,
 			account.GetAddress().String(),
 		)
-		fees, err := simtypes.RandomFees(r, ctx, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate fees"), nil, err
+
+		var fees sdk.Coins
+		coinsTemp, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin(tokenDenom, minToken), sdk.NewCoin(standardDenom, minStandardAmt)))
+		if !hasNeg {
+			fees, err = simtypes.RandomFees(r, ctx, coinsTemp)
+			if err != nil {
+				return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate fees"), nil, nil
+			}
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -382,7 +403,7 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 		}
 
 		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
 		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
@@ -400,31 +421,13 @@ func RandomTotalToken(r *rand.Rand, coins sdk.Coins) sdk.Coin {
 	return sdk.NewCoin(token.Denom, simtypes.RandomAmount(r, token.Amount))
 }
 
-// random coin in pool
-func randomCoinInPool(r *rand.Rand, ctx sdk.Context, spendableCoins sdk.Coins, k keeper.Keeper) (coin sdk.Coin) {
-	standardDenom := k.GetStandardDenom(ctx)
-	token := spendableCoins[r.Intn(len(spendableCoins))]
-
-	// token can be standardDenom
-	if token.Denom == standardDenom {
-		return sdk.Coin{Denom: token.Denom, Amount: simtypes.RandomAmount(r, token.Amount)}
-	}
-
-	// should not be liquidity token
-	if strings.HasPrefix(token.Denom, types.FormatUniABSPrefix) {
-		return sdk.Coin{}
-	}
-
-	// token should exist in the pool
-	if reservePool, err := k.GetReservePool(ctx, types.GetUniDenomFromDenom(token.Denom)); err == nil {
-		return sdk.Coin{Denom: token.Denom, Amount: simtypes.RandomAmount(r, sdk.MinInt(token.Amount, reservePool.AmountOf(token.Denom)))}
-	}
-	return sdk.Coin{}
-}
-
 func randDeadline(r *rand.Rand) int64 {
 	var delta = time.Duration(simtypes.RandIntBetween(r, 10, 100)) * time.Second
 	return time.Now().Add(delta).UnixNano()
+}
+
+func randBoolean(r *rand.Rand) bool {
+	return r.Int()%2 == 0
 }
 
 //Double swap bill
@@ -455,7 +458,7 @@ func doubleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Ke
 }
 
 //A single swap bill
-func singleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin) {
+func singleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin, error) {
 	param := k.GetParams(ctx)
 
 	uniDenom, _ := k.GetUniDenomFromDenoms(ctx, outputCoin.Denom, inputCoin.Denom)
@@ -465,11 +468,11 @@ func singleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Ke
 	soldTokenAmt := keeper.GetOutputPrice(outputCoin.Amount, inputReserve, outputReserve, param.Fee)
 	inputCoin = sdk.NewCoin(inputCoin.Denom, soldTokenAmt)
 
-	return inputCoin, outputCoin
+	return inputCoin, outputCoin, nil
 }
 
 //Double swap sell orders
-func doubleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin) {
+func doubleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 
 	param := k.GetParams(ctx)
@@ -488,11 +491,11 @@ func doubleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keep
 	boughtTokenAmt := keeper.GetInputPrice(standardCoin.Amount, inputReserve2, outputReserve2, param.Fee)
 	outputCoin = sdk.NewCoin(outputCoin.Denom, boughtTokenAmt)
 
-	return inputCoin, outputCoin
+	return inputCoin, outputCoin, nil
 }
 
 //A single swap sell order
-func singleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin) {
+func singleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin, error) {
 	param := k.GetParams(ctx)
 
 	uniDenom, _ := k.GetUniDenomFromDenoms(ctx, inputCoin.Denom, outputCoin.Denom)
@@ -502,9 +505,5 @@ func singleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keep
 	boughtTokenAmt := keeper.GetInputPrice(inputCoin.Amount, inputReserve, outputReserve, param.Fee)
 
 	outputCoin = sdk.NewCoin(outputCoin.Denom, boughtTokenAmt)
-	return inputCoin, outputCoin
-}
-
-func randBoolean(r *rand.Rand) bool {
-	return r.Int()%2 == 0
+	return inputCoin, outputCoin, nil
 }

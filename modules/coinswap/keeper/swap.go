@@ -263,7 +263,7 @@ func GetInputPrice(inputAmt, inputReserve, outputReserve sdk.Int, fee sdk.Dec) s
 	return numerator.Quo(denominator)
 }
 
-// GetOutputPrice returns thoutputReserve := reservePool.AmountOfe amount of coins sold (calculated) given the output amount being bought (exact)
+// GetOutputPrice returns the amount of coins sold (calculated) given the output amount being bought (exact)
 // The fee is included in the output coins being bought
 func GetOutputPrice(outputAmt, inputReserve, outputReserve sdk.Int, fee sdk.Dec) sdk.Int {
 	deltaFee := sdk.OneDec().Sub(fee)
