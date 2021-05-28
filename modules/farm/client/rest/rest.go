@@ -6,12 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// Rest variable names
-// nolint
-const (
-	RestPoolName = "pool-name"
-)
-
 // RegisterHandlers defines routes that get registered by the main application
 func RegisterHandlers(cliCtx client.Context, r *mux.Router) {
 	registerTxRoutes(cliCtx, r)
