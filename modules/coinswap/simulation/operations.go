@@ -258,7 +258,7 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 		}
 
 		deadline := randDeadline(r)
-		//deadline := int64(time.Now().Add(time.Second * time.Duration(r.Intn(10))).Second())
+
 		msg := types.NewMsgSwapOrder(
 			types.Input{
 				Address: simAccount.Address.String(),
