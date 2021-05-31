@@ -22,7 +22,7 @@ Parameters are stored in a global GlobalParams KVStore.
 
 ## FarmPool
 
-`FarmPool` records all the detailed information of the current pool, including the total amount of the prize pool, balance, etc.
+`FarmPool` records all the detailed information of the current pool, including the total amount of the pool, balance, etc.
 
 ```go
 type FarmPool struct {
@@ -54,8 +54,43 @@ type RewardRule struct {
 - `LastHeightDistrRewards`: `LastHeightDistrRewards` records the height of the pool that triggered the reward distribution last time. When the reward distribution is triggered next time, it will use `LastHeightDistrRewards` as the starting height and the current height as the ending height. The total rewards generated during this time period are calculated.
 - `Destructible`: whether the farm pool can be actively destroyed by the creator, after the farm pool is destroyed, the profit calculation ends, and the remaining money is returned to the creator.
 - `TotalLpTokenLocked`: the farm pool accepts collateralized token denom, and the denom rules can be set by the users of moudle.
-- `Rules.Reward`: types of rewards issued.
-- `Rules.TotalReward`: total amount of rewards issued.
-- `Rules.RemainingReward`: the remaining amount of the reward.
-- `Rules.RewardPerBlock`: amount of rewards issued for each block.
-- `Rules.RewardPerShare`: the current amount of rewards that each lptoken can get.
+
+## RewardRule
+
+`RewardRule` defines the rules for the pool to issue rewards and the remaining bonuses of the current pool.
+
+```go
+type RewardRule struct {
+    Reward          string
+    TotalReward     sdk.Int
+    RemainingReward sdk.Int
+    RewardPerBlock  sdk.Int
+    RewardPerShare  sdk.Dec
+}
+```
+
+- `Reward`: types of rewards issued.
+- `TotalReward`: total amount of rewards issued.
+- `RemainingReward`: the remaining amount of the reward.
+- `RewardPerBlock`: amount of rewards issued for each block.
+- `RewardPerShare`: the current amount of rewards that each lptoken can get.
+
+## FarmInfo
+
+`FarmInfo` records the user's stake information.
+
+```go
+type FarmInfo struct {
+    PoolName   string
+    Address    string
+    Locked     sdk.Int
+    RewardDebt sdks.Coins
+}
+```
+
+- `PoolName`: the name of farm pool.
+- `Address`: the address of farmer.
+- `Locked`: the total amount of user staked
+- `RewardDebt`: user's total debt.
+
+Every time the user triggers the return of earnings, the `RewardDebt` will be updated. When all `lpToken` is retrieved, `FarmInfo` is deleted.
