@@ -18,6 +18,9 @@ const (
 
 	// Query endpoints supported by the farm querier
 	QueryRecord = "farm"
+
+	// RewardDistrAccount is the root string for the reward distribution account address
+	RewardDistrAccount = "reward_distr_account"
 )
 
 var (
