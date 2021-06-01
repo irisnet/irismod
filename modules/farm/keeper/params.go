@@ -18,9 +18,9 @@ func (k Keeper) CreatePoolFee(ctx sdk.Context) (fee sdk.Coin) {
 	return
 }
 
-// MaxRewardCategory returns the maxRewardCategory
-func (k Keeper) MaxRewardCategory(ctx sdk.Context) (maxRewardCategory uint32) {
-	k.paramSpace.Get(ctx, types.KeyMaxRewardCategory, &maxRewardCategory)
+// MaxRewardCategories returns the maxRewardCategories
+func (k Keeper) MaxRewardCategories(ctx sdk.Context) (maxRewardCategories uint32) {
+	k.paramSpace.Get(ctx, types.KeyMaxRewardCategories, &maxRewardCategories)
 	return
 }
 
@@ -34,6 +34,6 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) (fee sdk.Coin) {
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.CreatePoolFee(ctx),
-		k.MaxRewardCategory(ctx),
+		k.MaxRewardCategories(ctx),
 	)
 }
