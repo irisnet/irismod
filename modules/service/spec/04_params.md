@@ -4,8 +4,7 @@ order: 4
 
 # Parameters
 
-The farm module contains the following parameters:
-
+The service module contains the following parameters:
 
 | Key                       | Type             | Example                               |
 | :------------------------ | :--------------- | :------------------------------------ |
