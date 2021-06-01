@@ -43,8 +43,8 @@ func NewKeeper(cdc codec.Marshaler,
 	}
 
 	// ensure farm module accounts are set
-	if addr := ak.GetModuleAddress(types.RewardDistrAccount); addr == nil {
-		panic(fmt.Sprintf("%s module account has not been set", types.RewardDistrAccount))
+	if addr := ak.GetModuleAddress(types.RewardCollector); addr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", types.RewardCollector))
 	}
 
 	return Keeper{

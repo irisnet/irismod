@@ -177,7 +177,7 @@ var (
 		servicetypes.RequestAccName:    nil,
 		servicetypes.FeeCollectorName:  {authtypes.Burner},
 		farmtypes.ModuleName:           nil,
-		farmtypes.RewardDistrAccount:   nil,
+		farmtypes.RewardCollector:      nil,
 	}
 )
 

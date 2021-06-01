@@ -205,7 +205,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	rewards, rewardDebt := pool.CaclRewards(farmInfo, lpToken.Amount)
 	//reward users
 	if rewards.IsAllPositive() {
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.RewardDistrAccount,
+		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.RewardCollector,
 			sender, rewards); err != nil {
 			return reward, err
 		}
@@ -284,7 +284,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	rewards, rewardDebt := pool.CaclRewards(farmInfo, lpToken.Amount.Neg())
 	if rewards.IsAllPositive() {
 		//distribute reward
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.RewardDistrAccount,
+		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.RewardCollector,
 			sender, rewards); err != nil {
 			return nil, err
 		}
@@ -336,7 +336,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 	rewards, rewardDebt := pool.CaclRewards(farmInfo, amtAdded)
 	//reward users
 	if rewards.IsAllPositive() {
-		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.RewardDistrAccount, sender, rewards); err != nil {
+		if err = k.bk.SendCoinsFromModuleToAccount(ctx, types.RewardCollector, sender, rewards); err != nil {
 			return nil, err
 		}
 	}
@@ -433,10 +433,10 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 		}
 	}
 
-	//escrow the collected rewards to the `RewardDistrAccount` account
+	//escrow the collected rewards to the `RewardCollector` account
 	if rewardTotal.IsAllPositive() {
 		if err := k.bk.SendCoinsFromModuleToModule(ctx,
-			types.ModuleName, types.RewardDistrAccount, rewardTotal); err != nil {
+			types.ModuleName, types.RewardCollector, rewardTotal); err != nil {
 			return pool, rewardTotal, err
 		}
 	}
