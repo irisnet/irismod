@@ -16,15 +16,15 @@ var (
 // Keys for parameter access
 // nolint
 var (
-	KeyCreatePoolFee      = []byte("CreatePoolFee")
-	KeyMaxRewardCategoryN = []byte("MaxRewardCategoryN")
+	KeyCreatePoolFee     = []byte("CreatePoolFee")
+	KeyMaxRewardCategory = []byte("MaxRewardCategory")
 )
 
 // NewParams creates a new Params instance
-func NewParams(createPoolFee sdk.Coin, maxRewardCategoryN uint32) Params {
+func NewParams(createPoolFee sdk.Coin, maxRewardCategory uint32) Params {
 	return Params{
-		CreatePoolFee:      createPoolFee,
-		MaxRewardCategoryN: maxRewardCategoryN,
+		CreatePoolFee:     createPoolFee,
+		MaxRewardCategory: maxRewardCategory,
 	}
 }
 
@@ -34,7 +34,7 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(
 			KeyCreatePoolFee, &p.CreatePoolFee, validateCreatePoolFee),
 		paramstypes.NewParamSetPair(
-			KeyMaxRewardCategoryN, &p.MaxRewardCategoryN, validateMaxRewardCategoryN),
+			KeyMaxRewardCategory, &p.MaxRewardCategory, validateMaxRewardCategory),
 	}
 }
 
@@ -60,4 +60,4 @@ func validateCreatePoolFee(i interface{}) error {
 	return nil
 }
 
-func validateMaxRewardCategoryN(i interface{}) error { return nil }
+func validateMaxRewardCategory(i interface{}) error { return nil }
