@@ -57,7 +57,7 @@ type RewardRule struct {
 
 ## RewardRule
 
-`RewardRule` defines the rules for the pool to issue rewards and the remaining bonuses of the current pool.
+`RewardRule` defines the rules for the pool to distribute rewards and record the remaining bonuses of the current pool.
 
 ```go
 type RewardRule struct {
@@ -69,7 +69,7 @@ type RewardRule struct {
 }
 ```
 
-- `Reward`: types of rewards issued.
+- `Reward`: denom of rewards distribution.
 - `TotalReward`: total amount of bonuses issued.
 - `RemainingReward`: the remaining amount of the bonuses.
 - `RewardPerBlock`: amount of rewards issued for each block.

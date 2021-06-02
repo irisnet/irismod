@@ -30,7 +30,7 @@ This message is expected to fail if:
 - the balance of creator is not enough to pay `CreatePoolFee+TotalReward`.
 - The lenght of `TotalReward` is greater than `MaxRewardCategoryN`.
 
-In addition, the `Endheight = TotalReward/RewardPerBlock`.Because there may be multiple tokens for event rewards, the end heights may be inconsistent. In order to reduce the complexity of the system, take the smallest value among all heights as the final end height. After the event ends, the remaining bonuses will be refunded To creator's account.
+In addition, the `Endheight = TotalReward/RewardPerBlock`. Because there may be multiple tokens for event rewards, the end heights may be inconsistent. In order to reduce the complexity of the system, take the smallest value among all heights as the final end height. After the event ends, the remaining bonuses will be refunded to creator's account.
 
 At the beginning of the activity, because there was no user participating, so `RewardPerShare=0`, which means that the user has no income from the beginning of the activity to the user's first stake, and every time the user's `stake`、 `unstake` 、`harvest` will trigger
 in the calculation of `RewardPerShare` (calculate the income that each lptoken can obtain before), the user's previous income is equal to `lastTotalLocked*RewardPerShare-lastDebt`, after the user gets back the income, record the user's current total debt (total income that has been withdrawn, lastDebt) is equal to `currentTotalLocked*RewardPerShare`.
@@ -54,7 +54,7 @@ This message is expected to fail if:
 
 When creator actively destroys the pool, it will also trigger the recalculation of `RewardPerShare`, calculate the current value of each `lpToken` (relative to the reward), and calculate the current remaining bonus in the pool, and return the bonus to creator to remove the pool from the active queue.
 
-When the pool becomes inactive (or expired、 ended), the user can only unstake his staking `lptoken` from the pool and get rewards, or it can be retrieved multiple times, but the reward obtained are the same as all at once. note that `RewardPerShare` will no longer be updated at this time
+When the pool becomes inactive (expired or ended), the user can only unstake his staking `lptoken` from the pool and get rewards, or it can be retrieved multiple times, but the reward obtained are the same as all at once. note that `RewardPerShare` will no longer be updated at this time
 
 ## MsgAppendReward
 
