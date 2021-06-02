@@ -6,7 +6,7 @@ order: 4
 
 The farm module contains the following parameters:
 
-| Key                | Type | Example                             |
-| :----------------- | :--- | :---------------------------------- |
-| CreatePoolFee      | Coin | {"denom": "stake","amount": "5000"} |
-| MaxRewardCategoryN | Coin | 2                                   |
+| Key                 | Type | Example                             |
+| :------------------ | :--- | :---------------------------------- |
+| CreatePoolFee       | Coin | {"denom": "stake","amount": "5000"} |
+| MaxRewardCategories | int  | 2                                   |
