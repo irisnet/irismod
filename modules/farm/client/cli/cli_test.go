@@ -95,8 +95,9 @@ func (s *IntegrationTestSuite) TestFarm() {
 	expectedContents := farmtypes.FarmPoolEntry{
 		Name:               farmPool,
 		Creator:            creator.String(),
+		Description:        description,
 		StartHeight:        uint64(startHeight),
-		EndHeight:          uint64(startHeight + 101),
+		EndHeight:          uint64(startHeight + 100),
 		Destructible:       destructible,
 		Expired:            false,
 		TotalLpTokenLocked: sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
