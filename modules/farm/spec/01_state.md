@@ -11,14 +11,14 @@ order: 1
 ```go
 type Params struct {
     CreatePoolFee      sdk.Coin 
-    MaxRewardCategoryN uint32                                  
+    MaxRewardCategories uint32                                  
 }
 ```
 
 Parameters are stored in a global GlobalParams KVStore.
 
 - `CreatePoolFee`: the cost of creating a farm pool, which will be allocated to the validator or delegator
-- `MaxRewardCategoryN`: the farm pool can be set to reward how many types of tokens
+- `MaxRewardCategories`: the farm pool can be set to reward how many types of tokens
 
 ## FarmPool
 
