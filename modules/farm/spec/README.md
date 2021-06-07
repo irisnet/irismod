@@ -9,7 +9,7 @@ parent:
 
 ## Abstract
 
-This specification describes describes the creation, destruction, additional bonuses, stake `lptoken`, unstake `lptoken`, retrieving rewards functions of the farm pool
+This specification describes the creation, destruction, additional bonuses, stake `lptoken`, unstake `lptoken`, retrieving rewards functions of the farm pool
 
 ## Contents
 
