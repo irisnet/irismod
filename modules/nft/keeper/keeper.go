@@ -33,9 +33,9 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // IssueDenom issues a denom according to the given params
 func (k Keeper) IssueDenom(ctx sdk.Context,
-	id, name, schema string,
+	id, name, schema, symbol string,
 	creator sdk.AccAddress) error {
-	return k.SetDenom(ctx, types.NewDenom(id, name, schema, creator))
+	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, creator))
 }
 
 // MintNFT mints an NFT and manages the NFT's existence within Collections and Owners

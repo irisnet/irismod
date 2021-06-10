@@ -62,11 +62,13 @@ func (s *IntegrationTestSuite) TestNft() {
 	denomName := "name"
 	denom := "denom"
 	schema := "schema"
+	symbol := "symbol"
 	baseURL := val.APIAddress
 
 	//------test GetCmdIssueDenom()-------------
 	args := []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagDenomName, denomName),
+		fmt.Sprintf("--%s=%s", nftcli.FlagSymbol, symbol),
 		fmt.Sprintf("--%s=%s", nftcli.FlagSchema, schema),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -94,6 +96,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	denomItem := respType.(*nfttypes.QueryDenomResponse)
 	s.Require().Equal(denomName, denomItem.Denom.Name)
 	s.Require().Equal(schema, denomItem.Denom.Schema)
+	s.Require().Equal(symbol, denomItem.Denom.Symbol)
 
 	//------test GetCmdQueryDenoms()-------------
 	url = fmt.Sprintf("%s/irismod/nft/denoms", baseURL)

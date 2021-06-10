@@ -19,12 +19,14 @@ import (
 )
 
 var (
-	denomID = "denomid"
-	denomNm = "denomnm"
-	schema  = "{a:a,b:b}"
+	denomID     = "denomid"
+	denomNm     = "denomnm"
+	denomSymbol = "denomSymbol"
+	schema      = "{a:a,b:b}"
 
-	denomID2 = "denomid2"
-	denomNm2 = "denom2nm"
+	denomID2     = "denomid2"
+	denomNm2     = "denom2nm"
+	denomSymbol2 = "denomSymbol2"
 
 	tokenID  = "tokenid"
 	tokenID2 = "tokenid2"
@@ -68,11 +70,11 @@ func (suite *KeeperSuite) SetupTest() {
 	types.RegisterQueryServer(queryHelper, app.NFTKeeper)
 	suite.queryClient = types.NewQueryClient(queryHelper)
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	// MintNFT shouldn't fail when collection does not exist
-	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, address)
+	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, denomSymbol2, address)
 	suite.NoError(err)
 
 	// collections should equal 1
