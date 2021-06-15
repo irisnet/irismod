@@ -1,20 +1,37 @@
 package types
 
 import (
-	math "math"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (pool FarmPool) ExpiredHeight() uint64 {
-	var targetInteval = uint64(math.MaxUint64)
-	for _, r := range pool.Rules {
+	if len(pool.Rules) == 0 {
+		return pool.StartHeight
+	}
+
+	targetInteval := pool.Rules[0].TotalReward.Quo(pool.Rules[0].RewardPerBlock).Uint64()
+	for _, r := range pool.Rules[1:] {
 		inteval := r.TotalReward.Quo(r.RewardPerBlock).Uint64()
 		if targetInteval > inteval {
 			targetInteval = inteval
 		}
 	}
 	return pool.StartHeight + targetInteval
+}
+
+func (pool FarmPool) RemainingHeight() uint64 {
+	if len(pool.Rules) == 0 {
+		return 0
+	}
+
+	targetInteval := pool.Rules[0].RemainingReward.Quo(pool.Rules[0].RewardPerBlock).Uint64()
+	for _, r := range pool.Rules[1:] {
+		inteval := r.RemainingReward.Quo(r.RewardPerBlock).Uint64()
+		if targetInteval > inteval {
+			targetInteval = inteval
+		}
+	}
+	return targetInteval
 }
 
 func (pool FarmPool) IsExpired(height int64) bool {
@@ -44,4 +61,14 @@ func (rs RewardRules) Contains(reward sdk.Coins) bool {
 		allRewards = allRewards.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
 	}
 	return reward.DenomsSubsetOf(allRewards)
+}
+
+func (rs RewardRules) UpdateWith(rewarPerBlockd sdk.Coins) RewardRules {
+	for _, r := range rs {
+		rewardAmt := rewarPerBlockd.AmountOf(r.Reward)
+		if rewardAmt.IsPositive() {
+			r.RewardPerBlock = rewardAmt
+		}
+	}
+	return rs
 }

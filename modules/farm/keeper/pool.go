@@ -143,6 +143,50 @@ func (k Keeper) AppendReward(ctx sdk.Context, poolName string,
 	return remaining, nil
 }
 
+// AdjustRewardPerBlock creates an new farm pool
+func (k Keeper) AdjustRewardPerBlock(ctx sdk.Context, poolName string,
+	rewardPerBlock sdk.Coins,
+	creator sdk.AccAddress) (err error) {
+	pool, exist := k.GetPool(ctx, poolName)
+	if !exist {
+		return sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+	}
+
+	if creator.String() != pool.Creator {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "creator [%s] is not the creator of the pool", creator.String())
+	}
+
+	if pool.IsExpired(ctx.BlockHeight()) {
+		return sdkerrors.Wrapf(types.ErrExpiredPool,
+			"pool [%s] has expired at height[%d], current [%d]",
+			poolName,
+			pool.EndHeight,
+			ctx.BlockHeight(),
+		)
+	}
+
+	//update pool reward shards
+	pool, _, err = k.UpdatePool(ctx, pool, sdk.ZeroInt(), false)
+	if err != nil {
+		return err
+	}
+	pool.Rules = types.RewardRules(pool.Rules).UpdateWith(rewardPerBlock)
+	//if the expiration height does not change, there is no need to update the pool and the expired queue
+	expiredHeight := uint64(ctx.BlockHeight()) + pool.RemainingHeight()
+	if expiredHeight == pool.EndHeight {
+		return nil
+	}
+
+	// remove from Expired Pool at old height
+	k.DequeueActivePool(ctx, poolName, pool.EndHeight)
+	pool.EndHeight = expiredHeight
+	k.SetPool(ctx, pool)
+	k.SetRewardRules(ctx, pool.Name, pool.Rules)
+	// put to expired farm pool queue at new height
+	k.EnqueueActivePool(ctx, poolName, pool.EndHeight)
+	return nil
+}
+
 // Stake is responsible for the user to mortgage the lp token to the system and get back the reward accumulated before then
 func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	lpToken sdk.Coin,
