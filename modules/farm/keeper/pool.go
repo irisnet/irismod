@@ -352,6 +352,8 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 
 // Refund refund the remaining reward to pool creator
 func (k Keeper) Refund(ctx sdk.Context, pool types.FarmPool) (sdk.Coins, error) {
+	//remove from active Pool
+	k.DequeueActivePool(ctx, pool.Name, pool.EndHeight)
 	pool, _, err := k.UpdatePool(ctx, pool, sdk.ZeroInt(), true)
 	if err != nil {
 		return nil, err
@@ -377,8 +379,6 @@ func (k Keeper) Refund(ctx sdk.Context, pool types.FarmPool) (sdk.Coins, error) 
 			return nil, err
 		}
 	}
-	//remove record
-	k.DequeueActivePool(ctx, pool.Name, pool.EndHeight)
 	return refundTotal, nil
 }
 
@@ -452,6 +452,9 @@ func (k Keeper) UpdatePool(ctx sdk.Context,
 	pool.LastHeightDistrRewards = uint64(ctx.BlockHeight())
 	if isDestroy {
 		pool.EndHeight = uint64(ctx.BlockHeight())
+		if pool.StartHeight > pool.EndHeight {
+			pool.StartHeight = pool.EndHeight
+		}
 	}
 	pool.Rules = rules
 	k.SetPool(ctx, pool)
