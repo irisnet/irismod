@@ -6,6 +6,27 @@ import (
 	"github.com/irisnet/irismod/modules/farm/types"
 )
 
+func (k Keeper) Expired(ctx sdk.Context, pool types.FarmPool) bool {
+	height := uint64(ctx.BlockHeader().Height)
+	if pool.EndHeight < height {
+		return true
+	}
+
+	//When Destroy and other operations are at the same block height
+	start := types.KeyActiveFarmPool(height, pool.Name)
+	end := types.KeyActiveFarmPool(pool.EndHeight+1, pool.Name)
+	store := ctx.KVStore(k.storeKey)
+	iterator := store.Iterator(start, end)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		poolName := types.MustUnMarshalPoolName(k.cdc, iterator.Value())
+		if poolName == pool.Name {
+			return false
+		}
+	}
+	return true
+}
+
 func (k Keeper) EnqueueActivePool(ctx sdk.Context, poolName string, expiredHeight uint64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(

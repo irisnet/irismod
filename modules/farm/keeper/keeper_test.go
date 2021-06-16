@@ -110,7 +110,8 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 	}
 
 	pool.Rules = rules
-	suite.Require().Equal(pool.ExpiredHeight(), pool.EndHeight)
+	endHeight, _ := pool.ExpiredHeight()
+	suite.Require().Equal(endHeight, pool.EndHeight)
 
 	//check queue
 	suite.keeper.IteratorExpiredPool(ctx, pool.EndHeight, func(pool types.FarmPool) {
