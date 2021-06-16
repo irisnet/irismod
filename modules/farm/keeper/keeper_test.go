@@ -158,6 +158,17 @@ func (suite *KeeperTestSuite) TestDestroyPool() {
 		Sub(sdk.NewCoins(suite.keeper.CreatePoolFee(ctx)))
 	actualBal := suite.app.BankKeeper.GetAllBalances(ctx, testCreator)
 	suite.Require().Equal(expectedBal, actualBal)
+
+	rewardAdded := sdk.NewCoins(
+		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
+		sdk.NewCoin("uiris", sdk.NewInt(10_000_000)),
+	)
+	_, err = suite.keeper.AppendReward(newCtx,
+		testPoolName,
+		rewardAdded,
+		testCreator,
+	)
+	suite.Require().Error(err)
 }
 
 func (suite *KeeperTestSuite) TestAppendReward() {
