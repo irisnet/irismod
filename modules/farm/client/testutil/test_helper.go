@@ -40,12 +40,10 @@ func QueryFarmPoolExec(clientCtx client.Context, poolName string, extraArgs ...s
 // AppendRewardExec creates a redelegate message.
 func AppendRewardExec(clientCtx client.Context,
 	creator,
-	poolName,
-	reward string,
+	poolName string,
 	extraArgs ...string) (testutil.BufferWriter, error) {
 	args := []string{
 		poolName,
-		reward,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creator),
 	}
 	args = append(args, extraArgs...)

@@ -6,13 +6,14 @@ import (
 )
 
 const (
-	FlagDescription    = "description"
-	FlagStartHeight    = "start-height"
-	FlagRewardPerBlock = "reward-per-block"
-	FlagLPTokenDenom   = "lp-token-denom"
-	FlagTotalReward    = "total-reward"
-	FlagDestructible   = "destructible"
-	FlagFarmPool       = "farm-pool"
+	FlagDescription      = "description"
+	FlagStartHeight      = "start-height"
+	FlagRewardPerBlock   = "reward-per-block"
+	FlagLPTokenDenom     = "lp-token-denom"
+	FlagTotalReward      = "total-reward"
+	FlagEditable         = "editable"
+	FlagFarmPool         = "farm-pool"
+	FlagAdditionalReward = "additional-reward"
 )
 
 // common flag sets to add to various functions
@@ -27,7 +28,7 @@ func init() {
 	FsCreateFarmPool.String(FlagRewardPerBlock, "", "The reward per block,ex: 1iris,1atom")
 	FsCreateFarmPool.String(FlagLPTokenDenom, "", "The token accepted by farm pool")
 	FsCreateFarmPool.String(FlagTotalReward, "", "The Total reward for the farm pool")
-	FsCreateFarmPool.Bool(FlagDestructible, false, "Can farm activities end early")
+	FsCreateFarmPool.Bool(FlagEditable, false, "Is it possible to adjust the parameters of the farm pool")
 
 	FsQueryFarmPool.String(FlagFarmPool, "", "The farm pool name")
 }

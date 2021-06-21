@@ -72,7 +72,7 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 		msg.StartHeight,
 		msg.RewardPerBlock.Sort(),
 		msg.TotalReward.Sort(),
-		msg.Destructible,
+		msg.Editable,
 		creator,
 	); err != nil {
 		return nil, err
@@ -121,15 +121,19 @@ func (m msgServer) DestroyPool(goCtx context.Context, msg *types.MsgDestroyPool)
 	return &types.MsgDestroyPoolResponse{}, nil
 }
 
-func (m msgServer) AppendReward(goCtx context.Context, msg *types.MsgAppendReward) (*types.MsgAppendRewardResponse, error) {
+func (m msgServer) AdjustPool(goCtx context.Context, msg *types.MsgAdjustPool) (*types.MsgAdjustPoolResponse, error) {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	remaining, err := m.Keeper.AppendReward(ctx, msg.PoolName, msg.Amount, creator)
-	if err != nil {
+	if err = m.Keeper.AdjustPool(ctx,
+		msg.PoolName,
+		msg.AdditionalReward,
+		msg.RewardPerBlock,
+		creator,
+	); err != nil {
 		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -137,7 +141,6 @@ func (m msgServer) AppendReward(goCtx context.Context, msg *types.MsgAppendRewar
 			types.EventTypeAppendReward,
 			sdk.NewAttribute(types.AttributeValueCreator, msg.Creator),
 			sdk.NewAttribute(types.AttributeValuePoolName, msg.PoolName),
-			sdk.NewAttribute(types.AttributeValueReward, msg.Amount.String()),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -145,7 +148,7 @@ func (m msgServer) AppendReward(goCtx context.Context, msg *types.MsgAppendRewar
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
 		),
 	})
-	return &types.MsgAppendRewardResponse{RemainingReward: remaining}, nil
+	return &types.MsgAdjustPoolResponse{}, nil
 }
 
 func (m msgServer) Stake(goCtx context.Context, msg *types.MsgStake) (*types.MsgStakeResponse, error) {

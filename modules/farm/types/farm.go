@@ -21,6 +21,20 @@ func (pool FarmPool) ExpiredHeight() (uint64, error) {
 	return pool.StartHeight + targetInteval, nil
 }
 
+func (pool FarmPool) RemainingHeight() uint64 {
+	if len(pool.Rules) == 0 {
+		return 0
+	}
+	targetInteval := pool.Rules[0].RemainingReward.Quo(pool.Rules[0].RewardPerBlock).Uint64()
+	for _, r := range pool.Rules[1:] {
+		inteval := r.RemainingReward.Quo(r.RewardPerBlock).Uint64()
+		if targetInteval > inteval {
+			targetInteval = inteval
+		}
+	}
+	return targetInteval
+}
+
 func (pool FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, rewardDebt sdk.Coins) {
 	for _, r := range pool.Rules {
 		if farmInfo.Locked.GT(sdk.ZeroInt()) {
@@ -44,4 +58,14 @@ func (rs RewardRules) Contains(reward sdk.Coins) bool {
 		allRewards = allRewards.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
 	}
 	return reward.DenomsSubsetOf(allRewards)
+}
+
+func (rs RewardRules) UpdateWith(rewarPerBlockd sdk.Coins) RewardRules {
+	for _, r := range rs {
+		rewardAmt := rewarPerBlockd.AmountOf(r.Reward)
+		if rewardAmt.IsPositive() {
+			r.RewardPerBlock = rewardAmt
+		}
+	}
+	return rs
 }

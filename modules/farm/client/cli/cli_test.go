@@ -74,7 +74,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		fmt.Sprintf("--%s=%s", farmcli.FlagRewardPerBlock, rewardPerBlock),
 		fmt.Sprintf("--%s=%s", farmcli.FlagLPTokenDenom, lpTokenDenom),
 		fmt.Sprintf("--%s=%s", farmcli.FlagTotalReward, totalReward),
-		fmt.Sprintf("--%s=%v", farmcli.FlagDestructible, destructible),
+		fmt.Sprintf("--%s=%v", farmcli.FlagAdditionalReward, destructible),
 	}
 
 	args = append(args, globalFlags...)
@@ -114,11 +114,15 @@ func (s *IntegrationTestSuite) TestFarm() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 	reward := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(1000)))
+
+	args = []string{
+		fmt.Sprintf("--%s=%v", farmcli.FlagAdditionalReward, reward.String()),
+	}
+	args = append(args, globalFlags...)
 	bz, err = testutil.AppendRewardExec(clientCtx,
 		creator.String(),
 		farmPool,
-		reward.String(),
-		globalFlags...,
+		args...,
 	)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(bz.Bytes(), respType), bz.String())

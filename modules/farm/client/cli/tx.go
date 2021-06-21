@@ -53,7 +53,7 @@ func GetCmdCreateFarmPool() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			destructible, _ := cmd.Flags().GetBool(FlagDestructible)
+			editable, _ := cmd.Flags().GetBool(FlagEditable)
 
 			rewardPerBlockStr, _ := cmd.Flags().GetString(FlagRewardPerBlock)
 			rewardPerBlock, err := sdk.ParseCoinsNormalized(rewardPerBlockStr)
@@ -74,7 +74,7 @@ func GetCmdCreateFarmPool() *cobra.Command {
 				StartHeight:    uint64(startHeight),
 				RewardPerBlock: rewardPerBlock,
 				TotalReward:    totalReward,
-				Destructible:   destructible,
+				Editable:       editable,
 				Creator:        clientCtx.GetFromAddress().String(),
 			}
 			if err := msg.ValidateBasic(); err != nil {
@@ -117,25 +117,36 @@ func GetCmdDestroyFarmPool() *cobra.Command {
 // GetCmdAppendReward implements the append some reward for farm pool command.
 func GetCmdAppendReward() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "append",
-		Short:   "Append some reward for farm pool",
-		Example: fmt.Sprintf("$ %s tx farm append <Farm Pool Name> <reward> [flags]", version.AppName),
-		Args:    cobra.ExactArgs(2),
+		Use:     "adjust",
+		Short:   "Adjust farm pool parameters",
+		Example: fmt.Sprintf("$ %s tx farm adjust <pool-name> [flags]", version.AppName),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			reward, err := sdk.ParseCoinsNormalized(args[1])
-			if err != nil {
-				return err
+			var additionalReward, rewardPerBlock sdk.Coins
+			if cmd.Flags().Changed(FlagRewardPerBlock) {
+				rewardPerBlockStr, _ := cmd.Flags().GetString(FlagRewardPerBlock)
+				rewardPerBlock, err = sdk.ParseCoinsNormalized(rewardPerBlockStr)
+				if err != nil {
+					return err
+				}
 			}
-
-			msg := types.MsgAppendReward{
-				PoolName: args[0],
-				Amount:   reward,
-				Creator:  clientCtx.GetFromAddress().String(),
+			if cmd.Flags().Changed(FlagAdditionalReward) {
+				additionalRewardStr, _ := cmd.Flags().GetString(FlagAdditionalReward)
+				additionalReward, err = sdk.ParseCoinsNormalized(additionalRewardStr)
+				if err != nil {
+					return err
+				}
+			}
+			msg := types.MsgAdjustPool{
+				PoolName:         args[0],
+				AdditionalReward: additionalReward,
+				RewardPerBlock:   rewardPerBlock,
+				Creator:          clientCtx.GetFromAddress().String(),
 			}
 			if err := msg.ValidateBasic(); err != nil {
 				return err

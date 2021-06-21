@@ -19,4 +19,5 @@ var (
 	ErrInvalidDescription = sdkerrors.Register(ModuleName, 12, "invalid pool description, length must be less than or equal to 280")
 	ErrInvalidAppend      = sdkerrors.Register(ModuleName, 13, "cannot add new token as a reward")
 	ErrInvalidRewardRule  = sdkerrors.Register(ModuleName, 14, "invalid reward rule")
+	ErrAllEmpty           = sdkerrors.Register(ModuleName, 15, "shouldn't all be empty")
 )
