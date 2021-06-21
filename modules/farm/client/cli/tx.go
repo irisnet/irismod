@@ -26,7 +26,7 @@ func NewTxCmd() *cobra.Command {
 	txCmd.AddCommand(
 		GetCmdCreateFarmPool(),
 		GetCmdDestroyFarmPool(),
-		GetCmdAppendReward(),
+		GetCmdAdjustPool(),
 		GetCmdStake(),
 		GetCmdUnstake(),
 		GetCmdHarvest(),
@@ -114,8 +114,8 @@ func GetCmdDestroyFarmPool() *cobra.Command {
 	return cmd
 }
 
-// GetCmdAppendReward implements the append some reward for farm pool command.
-func GetCmdAppendReward() *cobra.Command {
+// GetCmdAdjustPool implements the append some reward for farm pool command.
+func GetCmdAdjustPool() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "adjust",
 		Short:   "Adjust farm pool parameters",
@@ -154,6 +154,7 @@ func GetCmdAppendReward() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+	cmd.Flags().AddFlagSet(FsAdjustFarmPool)
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

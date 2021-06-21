@@ -74,7 +74,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		fmt.Sprintf("--%s=%s", farmcli.FlagRewardPerBlock, rewardPerBlock),
 		fmt.Sprintf("--%s=%s", farmcli.FlagLPTokenDenom, lpTokenDenom),
 		fmt.Sprintf("--%s=%s", farmcli.FlagTotalReward, totalReward),
-		fmt.Sprintf("--%s=%v", farmcli.FlagAdditionalReward, destructible),
+		fmt.Sprintf("--%s=%v", farmcli.FlagEditable, destructible),
 	}
 
 	args = append(args, globalFlags...)

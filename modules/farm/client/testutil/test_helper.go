@@ -48,7 +48,7 @@ func AppendRewardExec(clientCtx client.Context,
 	}
 	args = append(args, extraArgs...)
 
-	return clitestutil.ExecTestCLICmd(clientCtx, farmcli.GetCmdAppendReward(), args)
+	return clitestutil.ExecTestCLICmd(clientCtx, farmcli.GetCmdAdjustPool(), args)
 }
 
 // StakeExec creates a redelegate message.
