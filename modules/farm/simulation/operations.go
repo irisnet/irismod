@@ -479,7 +479,7 @@ func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "unable to find account"), nil, nil
 		}
 
-		if !farmPool.Destructible {
+		if !farmPool.Editable {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDestroyPool, "farm pool is not destructible"), nil, nil
 		}
 

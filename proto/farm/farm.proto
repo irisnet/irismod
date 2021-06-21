@@ -16,7 +16,7 @@ message FarmPool {
   uint64 start_height = 4;
   uint64 end_height = 5;
   uint64 last_height_distr_rewards = 6;
-  bool destructible = 7;
+  bool editable = 7;
   cosmos.base.v1beta1.Coin total_lp_token_locked = 8 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false

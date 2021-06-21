@@ -14,7 +14,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 	startHeight uint64,
 	rewardPerBlock sdk.Coins,
 	totalReward sdk.Coins,
-	destructible bool,
+	editable bool,
 	creator sdk.AccAddress,
 ) error {
 	//Escrow total reward
@@ -34,7 +34,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, name string,
 		Creator:            creator.String(),
 		Description:        description,
 		StartHeight:        startHeight,
-		Destructible:       destructible,
+		Editable:           editable,
 		TotalLpTokenLocked: sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
 		Rules:              []types.RewardRule{},
 	}
@@ -76,7 +76,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "creator [%s] is not the creator of the pool", creator.String())
 	}
 
-	if !pool.Destructible {
+	if !pool.Editable {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidOperate, "pool [%s] is not destructible", poolName)
 	}
@@ -103,6 +103,11 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 	//check if the liquidity pool exists
 	if !exist {
 		return sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+	}
+
+	if !pool.Editable {
+		return sdkerrors.Wrapf(
+			types.ErrInvalidOperate, "pool [%s] is not editable", poolName)
 	}
 
 	//check permissions

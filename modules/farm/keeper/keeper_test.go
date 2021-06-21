@@ -97,7 +97,7 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 	suite.Require().Equal(testPoolDescription, pool.Description)
 	suite.Require().Equal(testLPTokenDenom, pool.TotalLpTokenLocked.Denom)
 	suite.Require().Equal(testBeginHeight, pool.StartHeight)
-	suite.Require().Equal(testDestructible, pool.Destructible)
+	suite.Require().Equal(testDestructible, pool.Editable)
 	suite.Require().Equal(testCreator.String(), pool.Creator)
 
 	//check reward rules
