@@ -59,7 +59,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)))
 	lpTokenDenom := s.cfg.BondDenom
 	totalReward := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(1000)))
-	destructible := true
+	editable := true
 	farmPool := "iris-atom"
 
 	globalFlags := []string{
@@ -74,7 +74,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		fmt.Sprintf("--%s=%s", farmcli.FlagRewardPerBlock, rewardPerBlock),
 		fmt.Sprintf("--%s=%s", farmcli.FlagLPTokenDenom, lpTokenDenom),
 		fmt.Sprintf("--%s=%s", farmcli.FlagTotalReward, totalReward),
-		fmt.Sprintf("--%s=%v", farmcli.FlagEditable, destructible),
+		fmt.Sprintf("--%s=%v", farmcli.FlagEditable, editable),
 	}
 
 	args = append(args, globalFlags...)
@@ -98,7 +98,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		Description:        description,
 		StartHeight:        uint64(startHeight),
 		EndHeight:          uint64(startHeight + 100),
-		Editable:           destructible,
+		Editable:           editable,
 		Expired:            false,
 		TotalLpTokenLocked: sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
 		TotalReward:        totalReward,

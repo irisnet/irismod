@@ -78,7 +78,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 
 	if !pool.Editable {
 		return nil, sdkerrors.Wrapf(
-			types.ErrInvalidOperate, "pool [%s] is not destructible", poolName)
+			types.ErrInvalidOperate, "pool [%s] is not editable", poolName)
 	}
 
 	if k.Expired(ctx, pool) {

@@ -121,7 +121,7 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		totalReward := GenTotalReward(r, spendable)
 		lpTokenDenom := GenLpToken(r, spendable)
-		destructible := GenDestructible(r)
+		editable := GenDestructible(r)
 		startHeight := GenStartHeight(r, ctx)
 		rewardPerBlock := GenRewardPerBlock(r, totalReward)
 
@@ -151,7 +151,7 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			StartHeight:    startHeight,
 			RewardPerBlock: sdk.Coins{sdk.NewCoin(rewardPerBlock.Denom, rewardPerBlock.Amount)},
 			TotalReward:    sdk.NewCoins(totalReward),
-			Editable:       destructible,
+			Editable:       editable,
 			Creator:        simAccount.Address.String(),
 		}
 
@@ -480,7 +480,7 @@ func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 		}
 
 		if !farmPool.Editable {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDestroyPool, "farm pool is not destructible"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDestroyPool, "farm pool is not editable"), nil, nil
 		}
 
 		if k.Expired(ctx, farmPool) {
@@ -589,12 +589,12 @@ func GenFarmPoolName(r *rand.Rand) string {
 	return simtypes.RandStringOfLength(r, 10)
 }
 
-// GenDestructible randomized destructible
+// GenDestructible randomized editable
 func GenDestructible(r *rand.Rand) bool {
 	return r.Int()%2 == 0
 }
 
-// GenDescription randomized destructible
+// GenDescription randomized editable
 func GenDescription(r *rand.Rand) string {
 	return simtypes.RandStringOfLength(r, 100)
 }
