@@ -61,10 +61,10 @@ func (rs RewardRules) Contains(reward sdk.Coins) bool {
 }
 
 func (rs RewardRules) UpdateWith(rewarPerBlockd sdk.Coins) RewardRules {
-	for _, r := range rs {
-		rewardAmt := rewarPerBlockd.AmountOf(r.Reward)
+	for i := range rs {
+		rewardAmt := rewarPerBlockd.AmountOf(rs[i].Reward)
 		if rewardAmt.IsPositive() {
-			r.RewardPerBlock = rewardAmt
+			rs[i].RewardPerBlock = rewardAmt
 		}
 	}
 	return rs
