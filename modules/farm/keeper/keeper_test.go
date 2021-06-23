@@ -19,7 +19,7 @@ var (
 	testInitCoinAmt     = sdk.NewInt(100000000_000_000)
 	testPoolName        = "USDT-IRIS"
 	testPoolDescription = "USDT/IRIS Farm Pool"
-	testBeginHeight     = uint64(1)
+	testBeginHeight     = int64(1)
 	testLPTokenDenom    = sdk.DefaultBondDenom
 	testRewardPerBlock  = sdk.NewCoins(
 		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1_000_000)),

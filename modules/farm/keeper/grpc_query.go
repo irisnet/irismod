@@ -19,7 +19,7 @@ func (k Keeper) Pools(goctx context.Context,
 	if len(request.Name) > 0 {
 		pool, exist := k.GetPool(ctx, request.Name)
 		if !exist {
-			return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not found pool: %s", request.Name)
+			return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not found pool: %s", request.Name)
 		}
 		pools = append(pools, pool)
 	} else {
@@ -75,17 +75,17 @@ func (k Keeper) Farmer(goctx context.Context,
 		}
 	}
 	if len(farmInfos) == 0 {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistFarmer, "not found farmer: %s", request.Farmer)
+		return nil, sdkerrors.Wrapf(types.ErrFarmerNotFound, "not found farmer: %s", request.Farmer)
 	}
 
 	for _, farmer := range farmInfos {
 		pool, exist := k.GetPool(cacheCtx, farmer.PoolName)
 		if !exist {
-			return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", farmer.PoolName)
+			return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", farmer.PoolName)
 		}
 
 		//The farm pool has not started, no reward
-		if pool.StartHeight > uint64(ctx.BlockHeight()) {
+		if pool.StartHeight > ctx.BlockHeight() {
 			list = append(list, &types.LockedInfo{
 				PoolName: farmer.PoolName,
 				Locked:   sdk.NewCoin(pool.TotalLpTokenLocked.Denom, farmer.Locked),

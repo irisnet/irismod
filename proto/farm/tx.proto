@@ -35,7 +35,7 @@ message MsgCreatePool {
   string name = 1;
   string description = 2;
   string lp_token_denom = 3;
-  uint64 start_height = 4;
+  int64 start_height = 4;
   repeated cosmos.base.v1beta1.Coin reward_per_block = 5 [
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
     (gogoproto.nullable) = false

@@ -13,11 +13,11 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 ) (reward sdk.Coins, err error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
-		return reward, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+		return reward, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
 	}
 
-	if pool.StartHeight > uint64(ctx.BlockHeight()) {
-		return reward, sdkerrors.Wrapf(types.ErrNotStartPool,
+	if pool.StartHeight > ctx.BlockHeight() {
+		return reward, sdkerrors.Wrapf(types.ErrPoolNotStart,
 			"farm pool [%s] will start at height[%d], current [%d]",
 			poolName,
 			pool.StartHeight,
@@ -26,7 +26,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 	}
 
 	if k.Expired(ctx, pool) {
-		return reward, sdkerrors.Wrapf(types.ErrExpiredPool,
+		return reward, sdkerrors.Wrapf(types.ErrPoolExpired,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
 			pool.EndHeight,
@@ -82,7 +82,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	sender sdk.AccAddress) (_ sdk.Coins, err error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, poolName)
+		return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, poolName)
 	}
 
 	//lpToken demon must be same as pool.TotalLpTokenLocked.Denom
@@ -95,7 +95,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	//farmInfo must be exist
 	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistFarmer,
+		return nil, sdkerrors.Wrapf(types.ErrFarmerNotFound,
 			"farmer [%s] not found in pool[%s]",
 			sender.String(),
 			poolName,
@@ -164,11 +164,11 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 	sender sdk.AccAddress) (sdk.Coins, error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+		return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
 	}
 
 	if k.Expired(ctx, pool) {
-		return nil, sdkerrors.Wrapf(types.ErrExpiredPool,
+		return nil, sdkerrors.Wrapf(types.ErrPoolExpired,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
 			pool.EndHeight,
@@ -178,7 +178,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 
 	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistFarmer,
+		return nil, sdkerrors.Wrapf(types.ErrFarmerNotFound,
 			"farmer [%s] not found in pool[%s]",
 			sender.String(),
 			poolName,

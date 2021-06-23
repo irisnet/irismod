@@ -65,8 +65,8 @@ func ValidateReward(rewardPerBlock, totalReward sdk.Coins) error {
 		}
 		//uint64 overflow check
 		h := totalReward[i].Amount.Quo(rewardPerBlock[i].Amount)
-		if !h.IsUint64() {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "Can not convert to uint64,owerflow")
+		if !h.IsInt64() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "Can not convert to int64, overflow")
 		}
 	}
 	return nil

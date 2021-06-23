@@ -71,7 +71,7 @@ func GetCmdCreateFarmPool() *cobra.Command {
 				Name:           args[0],
 				Description:    description,
 				LpTokenDenom:   lpTokenDenom,
-				StartHeight:    uint64(startHeight),
+				StartHeight:    startHeight,
 				RewardPerBlock: rewardPerBlock,
 				TotalReward:    totalReward,
 				Editable:       editable,

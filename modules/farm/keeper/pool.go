@@ -11,7 +11,7 @@ import (
 func (k Keeper) CreatePool(ctx sdk.Context, name string,
 	description string,
 	lpTokenDenom string,
-	startHeight uint64,
+	startHeight int64,
 	rewardPerBlock sdk.Coins,
 	totalReward sdk.Coins,
 	editable bool,
@@ -69,7 +69,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 	creator sdk.AccAddress) (sdk.Coins, error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+		return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
 	}
 
 	if creator.String() != pool.Creator {
@@ -82,7 +82,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 	}
 
 	if k.Expired(ctx, pool) {
-		return nil, sdkerrors.Wrapf(types.ErrExpiredPool,
+		return nil, sdkerrors.Wrapf(types.ErrPoolExpired,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
 			pool.EndHeight,
@@ -102,7 +102,7 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 	pool, exist := k.GetPool(ctx, poolName)
 	//check if the liquidity pool exists
 	if !exist {
-		return sdkerrors.Wrapf(types.ErrNotExistPool, "not exist pool [%s]", poolName)
+		return sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
 	}
 
 	if !pool.Editable {
@@ -117,7 +117,7 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 
 	//check for expiration
 	if k.Expired(ctx, pool) {
-		return sdkerrors.Wrapf(types.ErrExpiredPool,
+		return sdkerrors.Wrapf(types.ErrPoolExpired,
 			"pool [%s] has expired at height[%d], current [%d]",
 			poolName,
 			pool.EndHeight,
@@ -154,7 +154,7 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 	k.SetRewardRules(ctx, pool.Name, pool.Rules)
 	//if the expiration height does not change,
 	// there is no need to update the pool and the expired queue
-	expiredHeight := uint64(ctx.BlockHeight()) + pool.RemainingHeight()
+	expiredHeight := ctx.BlockHeight() + pool.RemainingHeight()
 	if expiredHeight == pool.EndHeight {
 		return nil
 	}
@@ -177,7 +177,7 @@ func (k Keeper) updatePool(ctx sdk.Context,
 	amount sdk.Int,
 	isDestroy bool,
 ) (types.FarmPool, sdk.Coins, error) {
-	height := uint64(ctx.BlockHeight())
+	height := ctx.BlockHeight()
 	if height < pool.LastHeightDistrRewards {
 		return pool, nil, sdkerrors.Wrapf(types.ErrExpiredHeight,
 			"invalid height: %d, last distribution height: %d",
@@ -188,7 +188,7 @@ func (k Keeper) updatePool(ctx sdk.Context,
 
 	rules := k.GetRewardRules(ctx, pool.Name)
 	if len(rules) == 0 {
-		return pool, nil, sdkerrors.Wrapf(types.ErrNotExistPool,
+		return pool, nil, sdkerrors.Wrapf(types.ErrPoolNotFound,
 			"the rule of the farm pool[%s] not exist", pool.Name)
 	}
 	var rewardTotal sdk.Coins
@@ -234,9 +234,9 @@ func (k Keeper) updatePool(ctx sdk.Context,
 		pool.TotalLpTokenLocked.Denom,
 		pool.TotalLpTokenLocked.Amount.Add(amount),
 	)
-	pool.LastHeightDistrRewards = uint64(ctx.BlockHeight())
+	pool.LastHeightDistrRewards = ctx.BlockHeight()
 	if isDestroy {
-		pool.EndHeight = uint64(ctx.BlockHeight())
+		pool.EndHeight = ctx.BlockHeight()
 		if pool.StartHeight > pool.EndHeight {
 			pool.StartHeight = pool.EndHeight
 		}

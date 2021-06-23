@@ -51,7 +51,7 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 	//check pool exist
 	if _, exist := m.Keeper.GetPool(ctx, msg.Name); exist {
 		return nil, sdkerrors.Wrapf(
-			types.ErrExistPool,
+			types.ErrPoolExist,
 			"pool: [%s]",
 			msg.Name,
 		)

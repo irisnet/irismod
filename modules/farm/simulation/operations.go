@@ -273,7 +273,7 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "farm pool is not exist"), nil, nil
 		}
 
-		if farmPool.StartHeight > uint64(ctx.BlockHeight()) {
+		if farmPool.StartHeight > ctx.BlockHeight() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "the farm activity has not yet started"), nil, nil
 		}
 
@@ -541,9 +541,9 @@ func GenLpToken(r *rand.Rand, spendableCoin sdk.Coins) sdk.Coin {
 }
 
 // GenStartHeight randomized startHeight
-func GenStartHeight(r *rand.Rand, ctx sdk.Context) uint64 {
+func GenStartHeight(r *rand.Rand, ctx sdk.Context) int64 {
 	curHeight := int(ctx.BlockHeight())
-	return uint64(r.Intn(curHeight) + curHeight)
+	return int64(r.Intn(curHeight) + curHeight)
 }
 
 // GenRewardPerBlock randomized rewardPerBlock
