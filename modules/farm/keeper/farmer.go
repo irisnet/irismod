@@ -13,7 +13,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 ) (reward sdk.Coins, err error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
-		return reward, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
+		return reward, sdkerrors.Wrapf(types.ErrPoolNotFound, poolName)
 	}
 
 	if pool.StartHeight > ctx.BlockHeight() {
@@ -164,7 +164,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 	sender sdk.AccAddress) (sdk.Coins, error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
+		return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, poolName)
 	}
 
 	if k.Expired(ctx, pool) {

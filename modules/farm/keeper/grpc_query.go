@@ -19,7 +19,7 @@ func (k Keeper) Pools(goctx context.Context,
 	if len(request.Name) > 0 {
 		pool, exist := k.GetPool(ctx, request.Name)
 		if !exist {
-			return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not found pool: %s", request.Name)
+			return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, request.Name)
 		}
 		pools = append(pools, pool)
 	} else {
@@ -81,7 +81,7 @@ func (k Keeper) Farmer(goctx context.Context,
 	for _, farmer := range farmInfos {
 		pool, exist := k.GetPool(cacheCtx, farmer.PoolName)
 		if !exist {
-			return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", farmer.PoolName)
+			return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, farmer.PoolName)
 		}
 
 		//The farm pool has not started, no reward

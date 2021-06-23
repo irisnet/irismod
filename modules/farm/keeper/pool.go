@@ -69,7 +69,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 	creator sdk.AccAddress) (sdk.Coins, error) {
 	pool, exist := k.GetPool(ctx, poolName)
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
+		return nil, sdkerrors.Wrapf(types.ErrPoolNotFound, poolName)
 	}
 
 	if creator.String() != pool.Creator {
@@ -102,7 +102,7 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 	pool, exist := k.GetPool(ctx, poolName)
 	//check if the liquidity pool exists
 	if !exist {
-		return sdkerrors.Wrapf(types.ErrPoolNotFound, "not exist pool [%s]", poolName)
+		return sdkerrors.Wrapf(types.ErrPoolNotFound, poolName)
 	}
 
 	if !pool.Editable {
@@ -188,8 +188,7 @@ func (k Keeper) updatePool(ctx sdk.Context,
 
 	rules := k.GetRewardRules(ctx, pool.Name)
 	if len(rules) == 0 {
-		return pool, nil, sdkerrors.Wrapf(types.ErrPoolNotFound,
-			"the rule of the farm pool[%s] not exist", pool.Name)
+		return pool, nil, sdkerrors.Wrapf(types.ErrPoolNotFound, pool.Name)
 	}
 	var rewardTotal sdk.Coins
 	//when there are multiple farm operations in the same block, the value needs to be updated once
