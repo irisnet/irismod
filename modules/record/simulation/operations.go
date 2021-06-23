@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/irisnet/irismod/modules/record/keeper"
+
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -27,7 +29,8 @@ func WeightedOperations(
 	appParams simtypes.AppParams,
 	cdc codec.JSONMarshaler,
 	ak types.AccountKeeper,
-	bk types.BankKeeper) simulation.WeightedOperations {
+	bk types.BankKeeper,
+	k keeper.Keeper) simulation.WeightedOperations {
 	var weightCreate int
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgCreateRecord, &weightCreate, nil,
@@ -38,21 +41,21 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightCreate,
-			SimulateCreateRecord(ak, bk),
+			SimulateCreateRecord(ak, bk, k),
 		),
 	}
 }
 
 // SimulateCreateRecord tests and runs a single msg create a new record
-func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-		record, err := genRecord(r, accs)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, err.Error()), nil, err
+		record := genRandomRecord(r, k, ctx)
+		if record.Size() == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, "record not exist"), nil, nil
 		}
 
 		creator, _ := sdk.AccAddressFromBech32(record.Creator)
@@ -60,7 +63,7 @@ func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.
 
 		simAccount, found := simtypes.FindAccount(accs, creator)
 		if !found {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, err.Error()), nil, fmt.Errorf("account %s not found", record.Creator)
+			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, "creator not found"), nil, fmt.Errorf("account %s not found", record.Creator)
 		}
 
 		account := ak.GetAccount(ctx, creator)
@@ -112,4 +115,20 @@ func genRecord(r *rand.Rand, accs []simtypes.Account) (types.Record, error) {
 	record.Creator = acc.Address.String()
 
 	return record, nil
+}
+
+func genRandomRecord(r *rand.Rand, k keeper.Keeper, ctx sdk.Context) types.Record {
+	recordsIterator := k.RecordsIterator(ctx)
+	defer recordsIterator.Close()
+
+	var records []types.Record
+	for ; recordsIterator.Valid(); recordsIterator.Next() {
+		var record types.Record
+		types.ModuleCdc.MustUnmarshalBinaryBare(recordsIterator.Value(), &record)
+		records = append(records, record)
+	}
+	if len(records) > 0 {
+		return records[r.Intn(len(records))]
+	}
+	return types.Record{}
 }
