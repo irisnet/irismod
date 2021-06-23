@@ -152,9 +152,18 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 		pool.Rules = types.RewardRules(rules).UpdateWith(rewardPerBlock)
 	}
 	k.SetRewardRules(ctx, pool.Name, pool.Rules)
+
+	//If the activity has already started,
+	//  use the current height as the starting point to calculate the end height,
+	//if it has not yet started,
+	//  use the planned start height to calculate the end height
+	var startHeight = ctx.BlockHeight()
+	if pool.StartHeight >= ctx.BlockHeight() {
+		startHeight = pool.StartHeight
+	}
+	expiredHeight := startHeight + pool.RemainingHeight()
 	//if the expiration height does not change,
 	// there is no need to update the pool and the expired queue
-	expiredHeight := ctx.BlockHeight() + pool.RemainingHeight()
 	if expiredHeight == pool.EndHeight {
 		return nil
 	}
