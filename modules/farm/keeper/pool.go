@@ -83,7 +83,7 @@ func (k Keeper) DestroyPool(ctx sdk.Context, poolName string,
 
 	if k.Expired(ctx, pool) {
 		return nil, sdkerrors.Wrapf(types.ErrPoolExpired,
-			"pool [%s] has expired at height[%d], current [%d]",
+			"pool [%s] has expired at height [%d], current [%d]",
 			poolName,
 			pool.EndHeight,
 			ctx.BlockHeight(),
