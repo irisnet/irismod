@@ -53,6 +53,9 @@ func (pool FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdk.Int) (rewards, 
 type RewardRules []RewardRule
 
 func (rs RewardRules) Contains(reward sdk.Coins) bool {
+	if len(rs) < len(reward) {
+		return false
+	}
 	var allRewards sdk.Coins
 	for _, r := range rs {
 		allRewards = allRewards.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
