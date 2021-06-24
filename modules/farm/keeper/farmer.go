@@ -18,7 +18,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 
 	if pool.StartHeight > ctx.BlockHeight() {
 		return reward, sdkerrors.Wrapf(types.ErrPoolNotStart,
-			"farm pool [%s] will start at height[%d], current [%d]",
+			"farm pool [%s] will start at height [%d], current [%d]",
 			poolName,
 			pool.StartHeight,
 			ctx.BlockHeight(),
@@ -27,7 +27,7 @@ func (k Keeper) Stake(ctx sdk.Context, poolName string,
 
 	if k.Expired(ctx, pool) {
 		return reward, sdkerrors.Wrapf(types.ErrPoolExpired,
-			"pool [%s] has expired at height[%d], current [%d]",
+			"pool [%s] has expired at height [%d], current [%d]",
 			poolName,
 			pool.EndHeight,
 			ctx.BlockHeight(),
@@ -96,7 +96,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
 		return nil, sdkerrors.Wrapf(types.ErrFarmerNotFound,
-			"farmer [%s] not found in pool[%s]",
+			"farmer [%s] not found in pool [%s]",
 			sender.String(),
 			poolName,
 		)
@@ -105,7 +105,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	//the lp token unstaked must be less than staked
 	if farmInfo.Locked.LT(lpToken.Amount) {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
-			"farmer locked lp token %s, but unstake %s",
+			"farmer locked lp token [%s], but unstake [%s]",
 			farmInfo.Locked.String(),
 			lpToken.Amount.String(),
 		)
@@ -114,7 +114,7 @@ func (k Keeper) Unstake(ctx sdk.Context, poolName string,
 	//the lp token unstaked must be less than pool
 	if pool.TotalLpTokenLocked.Amount.LT(lpToken.Amount) {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
-			"farmer locked lp token %s, but farm pool total: %s",
+			"farmer locked lp token [%s], but farm pool total: [%s]",
 			farmInfo.Locked.String(),
 			pool.TotalLpTokenLocked.Amount.String(),
 		)
@@ -169,7 +169,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 
 	if k.Expired(ctx, pool) {
 		return nil, sdkerrors.Wrapf(types.ErrPoolExpired,
-			"pool [%s] has expired at height[%d], current [%d]",
+			"pool [%s] has expired at height [%d], current [%d]",
 			poolName,
 			pool.EndHeight,
 			ctx.BlockHeight(),
@@ -179,7 +179,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolName string,
 	farmInfo, exist := k.GetFarmInfo(ctx, poolName, sender.String())
 	if !exist {
 		return nil, sdkerrors.Wrapf(types.ErrFarmerNotFound,
-			"farmer [%s] not found in pool[%s]",
+			"farmer [%s] not found in pool [%s]",
 			sender.String(),
 			poolName,
 		)

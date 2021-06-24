@@ -189,7 +189,7 @@ func (k Keeper) updatePool(ctx sdk.Context,
 	height := ctx.BlockHeight()
 	if height < pool.LastHeightDistrRewards {
 		return pool, nil, sdkerrors.Wrapf(types.ErrExpiredHeight,
-			"invalid height: %d, last distribution height: %d",
+			"invalid height: [%d], last distribution height: [%d]",
 			height,
 			pool.LastHeightDistrRewards,
 		)
@@ -214,7 +214,7 @@ func (k Keeper) updatePool(ctx sdk.Context,
 					"rewardCollected", rewardCollected.String(),
 				)
 				return pool, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
-					"the remaining reward of the pool[%s] is %s, but got %s",
+					"the remaining reward of the pool [%s] is [%s], but got [%s]",
 					pool.Name,
 					sdk.NewCoin(rules[i].Reward, rules[i].RemainingReward).String(),
 					coinCollected,
