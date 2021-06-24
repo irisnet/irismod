@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/irisnet/irismod/modules/oracle/simulation"
 	"math/rand"
 
 	"github.com/gorilla/mux"
@@ -91,15 +92,20 @@ type AppModule struct {
 	AppModuleBasic
 
 	keeper keeper.Keeper
+	accountKeeper types.AccountKeeper
+	bankKeeper types.BankKeeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(cdc codec.Marshaler, keeper keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Marshaler, keeper keeper.Keeper, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
+		accountKeeper : accountKeeper,
+		bankKeeper:     bankKeeper,
 	}
 }
+
 
 // Name returns the oracle module's name.
 func (AppModule) Name() string { return types.ModuleName }
@@ -173,5 +179,5 @@ func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {}
 
 // WeightedOperations returns the all the oracle module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return []simtypes.WeightedOperation{}
+	return simulation.WeightedOperations(simState.AppParams, simState.Cdc, am.keeper, am.accountKeeper, am.bankKeeper)
 }

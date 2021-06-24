@@ -1,6 +1,7 @@
 package types
 
 import (
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -75,3 +76,10 @@ type AuthKeeper interface {
 var (
 	RequestContextStateFromString = service.RequestContextStateFromString
 )
+
+type BankKeeper interface {
+	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+}
+type AccountKeeper interface {
+	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+}
