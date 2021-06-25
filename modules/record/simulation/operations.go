@@ -52,7 +52,7 @@ func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.
 
 		record, err := genRecord(r, accs)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, "creator not found"), nil, fmt.Errorf("account %s not found", record.Creator)
+			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, err.Error()), nil, err
 		}
 
 		creator, _ := sdk.AccAddressFromBech32(record.Creator)
