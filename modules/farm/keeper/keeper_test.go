@@ -19,7 +19,7 @@ var (
 	testInitCoinAmt     = sdk.NewInt(100000000_000_000)
 	testPoolName        = "USDT-IRIS"
 	testPoolDescription = "USDT/IRIS Farm Pool"
-	testBeginHeight     = uint64(1)
+	testBeginHeight     = int64(1)
 	testLPTokenDenom    = sdk.DefaultBondDenom
 	testRewardPerBlock  = sdk.NewCoins(
 		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1_000_000)),
@@ -55,7 +55,9 @@ func TestKeeperTestSuite(t *testing.T) {
 func (suite *KeeperTestSuite) SetupTest() {
 	app := simapp.Setup(isCheckTx)
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
-	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
+	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+		Height: 1,
+	})
 	suite.app = app
 	suite.keeper = &app.Farmkeeper
 	suite.keeper.SetParams(suite.ctx, types.DefaultParams())
@@ -95,7 +97,7 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 	suite.Require().Equal(testPoolDescription, pool.Description)
 	suite.Require().Equal(testLPTokenDenom, pool.TotalLpTokenLocked.Denom)
 	suite.Require().Equal(testBeginHeight, pool.StartHeight)
-	suite.Require().Equal(testDestructible, pool.Destructible)
+	suite.Require().Equal(testDestructible, pool.Editable)
 	suite.Require().Equal(testCreator.String(), pool.Creator)
 
 	//check reward rules
@@ -110,7 +112,8 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 	}
 
 	pool.Rules = rules
-	suite.Require().Equal(pool.ExpiredHeight(), pool.EndHeight)
+	endHeight, _ := pool.ExpiredHeight()
+	suite.Require().Equal(endHeight, pool.EndHeight)
 
 	//check queue
 	suite.keeper.IteratorExpiredPool(ctx, pool.EndHeight, func(pool types.FarmPool) {
@@ -157,6 +160,18 @@ func (suite *KeeperTestSuite) TestDestroyPool() {
 		Sub(sdk.NewCoins(suite.keeper.CreatePoolFee(ctx)))
 	actualBal := suite.app.BankKeeper.GetAllBalances(ctx, testCreator)
 	suite.Require().Equal(expectedBal, actualBal)
+
+	rewardAdded := sdk.NewCoins(
+		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
+		sdk.NewCoin("uiris", sdk.NewInt(10_000_000)),
+	)
+	err = suite.keeper.AdjustPool(newCtx,
+		testPoolName,
+		rewardAdded,
+		nil,
+		testCreator,
+	)
+	suite.Require().Error(err)
 }
 
 func (suite *KeeperTestSuite) TestAppendReward() {
@@ -182,9 +197,10 @@ func (suite *KeeperTestSuite) TestAppendReward() {
 		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
 		sdk.NewCoin("uiris", sdk.NewInt(10_000_000)),
 	)
-	_, err = suite.keeper.AppendReward(ctx,
+	err = suite.keeper.AdjustPool(ctx,
 		testPoolName,
 		rewardAdded,
+		nil,
 		testCreator,
 	)
 	suite.Require().Error(err)
@@ -192,13 +208,13 @@ func (suite *KeeperTestSuite) TestAppendReward() {
 	rewardAdded = sdk.NewCoins(
 		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
 	)
-	remaining, err := suite.keeper.AppendReward(ctx,
+	err = suite.keeper.AdjustPool(ctx,
 		testPoolName,
 		rewardAdded,
+		nil,
 		testCreator,
 	)
 	suite.Require().NoError(err)
-	suite.Require().Equal(testTotalReward.Add(rewardAdded...), remaining)
 
 	//check farm pool
 	pool2, exist := suite.keeper.GetPool(ctx, testPoolName)
