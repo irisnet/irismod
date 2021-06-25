@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/irisnet/irismod/modules/record/keeper"
-
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -15,9 +13,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/irisnet/irismod/simapp/helpers"
-
+	"github.com/irisnet/irismod/modules/record/keeper"
 	"github.com/irisnet/irismod/modules/record/types"
+	"github.com/irisnet/irismod/simapp/helpers"
 )
 
 // Simulation operation weights constants
