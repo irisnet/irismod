@@ -69,14 +69,18 @@ func SimulateCreateFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
+
+		providers1 ,_ :=simtypes.RandomAcc(r, accs)
+		providers2 ,_ :=simtypes.RandomAcc(r, accs)
+
 		simAccount, _ 	  := simtypes.RandomAcc(r, accs)
 		feedName 	      := simtypes.RandStringOfLength(r, 10)
 		latestHistory     := uint64(simtypes.RandIntBetween(r, 1, 100))
-		description       := simtypes.RandStringOfLength(r, 500)
+		description       := simtypes.RandStringOfLength(r, 50)
 		creator   	      := simAccount.Address.String()
-		serviceName       := simtypes.RandStringOfLength(r, 10) // ???
-		providers         := []string{"aaa", "bbb", "ccc"} // ????
-		input 		  	  := simtypes.RandStringOfLength(r, 10)// ???
+		serviceName       := simtypes.RandStringOfLength(r, 10) //
+		providers         := []string{providers1.Address.String(), providers2.Address.String()} //
+		input 		  	  := `{"header":{},"body":{}}` //
 		timeout 	  	  := int64(simtypes.RandIntBetween(r, 10, 100))
 		srvFeeCap 	  	  := sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 2, 10))))}
 		repeatedFrequency := uint64(100)
@@ -123,7 +127,7 @@ func SimulateCreateFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 		}
 
 		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateFeed, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateFeed, err.Error()), nil, nil
 		}
 
 		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
