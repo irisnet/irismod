@@ -8,13 +8,15 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	cosmossimappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/irisnet/irismod/simapp/helpers"
+
 	"github.com/irisnet/irismod/modules/service/keeper"
 	"github.com/irisnet/irismod/modules/service/types"
+	irishelper "github.com/irisnet/irismod/simapp/helpers"
 )
 
 // Simulation operation weights constants
@@ -236,7 +238,6 @@ func SimulateMsgDefineService(ak types.AccountKeeper, bk types.BankKeeper, k kee
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -265,7 +266,7 @@ func SimulateMsgBindService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
 		def := GenServiceDefinition(r, k, ctx)
-		if def.Size() == 0{
+		if def.Size() == 0 {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBindService, "def not exsit"), nil, nil
 		}
 
@@ -322,7 +323,6 @@ func SimulateMsgBindService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -394,7 +394,6 @@ func SimulateMsgUpdateServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -449,7 +448,6 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeper, bk types.BankKeeper, 
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -505,7 +503,6 @@ func SimulateMsgDisableServiceBinding(ak types.AccountKeeper, bk types.BankKeepe
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -576,7 +573,6 @@ func SimulateMsgEnableServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -642,7 +638,6 @@ func SimulateMsgRefundServiceDeposit(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -709,7 +704,7 @@ func SimulateMsgCallService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := irishelper.GenTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
@@ -739,7 +734,7 @@ func SimulateMsgRespondService(ak types.AccountKeeper, bk types.BankKeeper, k ke
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
 		request := GenRequest(r, k, ctx)
-		if request.Size() == 0{
+		if request.Size() == 0 {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRespondService, "request is not exsit"), nil, nil
 		}
 
@@ -767,7 +762,6 @@ func SimulateMsgRespondService(ak types.AccountKeeper, bk types.BankKeeper, k ke
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -827,7 +821,6 @@ func SimulateMsgPauseRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -890,7 +883,6 @@ func SimulateMsgStartRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -952,7 +944,6 @@ func SimulateMsgKillRequestContext(ak types.AccountKeeper, bk types.BankKeeper, 
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1032,7 +1023,6 @@ func SimulateMsgUpdateRequestContext(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1086,7 +1076,6 @@ func SimulateMsgWithdrawEarnedFees(ak types.AccountKeeper, bk types.BankKeeper, 
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
-			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1184,12 +1173,12 @@ func GenRequest(r *rand.Rand, k keeper.Keeper, ctx sdk.Context) types.Request {
 		return types.Request{}
 	}
 	var providerAddrs []sdk.AccAddress
-	if len(requestContext.Providers) == 0{
+	if len(requestContext.Providers) == 0 {
 		return types.Request{}
 	}
 	for _, provider := range requestContext.Providers {
-		providerAddr , err := sdk.AccAddressFromBech32(provider)
-		if err != nil{
+		providerAddr, err := sdk.AccAddressFromBech32(provider)
+		if err != nil {
 			return types.Request{}
 		}
 		providerAddrs = append(providerAddrs, providerAddr)
@@ -1197,12 +1186,12 @@ func GenRequest(r *rand.Rand, k keeper.Keeper, ctx sdk.Context) types.Request {
 	providerRequests := make(map[string][]string)
 	requestIds := k.InitiateRequests(ctx, requestContextId, providerAddrs, providerRequests)
 
-	if len(requestIds) == 0{
+	if len(requestIds) == 0 {
 		return types.Request{}
 	}
 	requestId := requestIds[r.Intn(len(requestIds))]
-	request,found := k.GetRequest(ctx, requestId)
-	if !found{
+	request, found := k.GetRequest(ctx, requestId)
+	if !found {
 		return types.Request{}
 	}
 	return request
