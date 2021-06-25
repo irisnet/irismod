@@ -13,7 +13,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/irisnet/irismod/modules/record/keeper"
 	"github.com/irisnet/irismod/modules/record/types"
 	"github.com/irisnet/irismod/simapp/helpers"
 )
@@ -28,8 +27,7 @@ func WeightedOperations(
 	appParams simtypes.AppParams,
 	cdc codec.JSONMarshaler,
 	ak types.AccountKeeper,
-	bk types.BankKeeper,
-	k keeper.Keeper) simulation.WeightedOperations {
+	bk types.BankKeeper) simulation.WeightedOperations {
 	var weightCreate int
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgCreateRecord, &weightCreate, nil,
@@ -40,13 +38,13 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightCreate,
-			SimulateCreateRecord(ak, bk, k),
+			SimulateCreateRecord(ak, bk),
 		),
 	}
 }
 
 // SimulateCreateRecord tests and runs a single msg create a new record
-func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
