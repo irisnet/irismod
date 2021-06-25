@@ -52,9 +52,9 @@ func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper, k keeper.
 		accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-		record := genRandomRecord(r, k, ctx)
-		if record.Size() == 0 {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, "record not exist"), nil, nil
+		record, err := genRecord(r, accs)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, err.Error()), nil, err
 		}
 
 		creator, _ := sdk.AccAddressFromBech32(record.Creator)
@@ -115,20 +115,4 @@ func genRecord(r *rand.Rand, accs []simtypes.Account) (types.Record, error) {
 	record.Creator = acc.Address.String()
 
 	return record, nil
-}
-
-func genRandomRecord(r *rand.Rand, k keeper.Keeper, ctx sdk.Context) types.Record {
-	recordsIterator := k.RecordsIterator(ctx)
-	defer recordsIterator.Close()
-
-	var records []types.Record
-	for ; recordsIterator.Valid(); recordsIterator.Next() {
-		var record types.Record
-		types.ModuleCdc.MustUnmarshalBinaryBare(recordsIterator.Value(), &record)
-		records = append(records, record)
-	}
-	if len(records) > 0 {
-		return records[r.Intn(len(records))]
-	}
-	return types.Record{}
 }
