@@ -66,6 +66,25 @@ type ServiceKeeper interface {
 		requestContextID tmbytes.HexBytes,
 		consumer sdk.AccAddress,
 	) error
+	AddServiceBinding(
+		ctx sdk.Context,
+		serviceName string,
+		provider sdk.AccAddress,
+		deposit sdk.Coins,
+		pricing string,
+		qos uint64,
+		options string,
+		owner sdk.AccAddress,
+	) error
+	AddServiceDefinition(
+		ctx sdk.Context,
+		name,
+		description string,
+		tags []string,
+		author sdk.AccAddress,
+		authorDescription,
+		schemas string,
+	) error
 }
 
 // AuthKeeper defines the expected auth keeper (noalias)

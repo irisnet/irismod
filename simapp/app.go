@@ -522,7 +522,7 @@ func NewSimApp(
 		//service.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper),
 		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		//random.NewAppModule(appCodec, app.RandomKeeper, app.AccountKeeper, app.BankKeeper),
-		farm.NewAppModule(appCodec, app.Farmkeeper, app.AccountKeeper, app.BankKeeper),
+		//farm.NewAppModule(appCodec, app.Farmkeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
