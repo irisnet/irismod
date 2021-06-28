@@ -4,22 +4,20 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/irisnet/irismod/modules/farm/keeper"
 	"github.com/irisnet/irismod/modules/farm/types"
-
-	"github.com/cosmos/cosmos-sdk/codec"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
 )
 
 // Simulation operation weights constants
 const (
 	OpWeightMsgCreatePool = "op_weight_msg_create_pool"
-	//OpWeightMsgAppendReward = "op_weight_msg_append_reward"
 	OpWeightMsgAdjustPool  = "op_weight_msg_adjust_pool"
 	OpWeightMsgStake       = "op_weight_msg_stake"
 	OpWeightMsgUnStake     = "op_weight_msg_unStake"
