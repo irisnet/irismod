@@ -226,6 +226,12 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
 		}
 
+		rewardPerBlock := GenRewardPerBlock(r, spendable[r.Intn(len(spendable))])
+
+		if rewardPerBlock.Amount.IsZero() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
+		}
+
 		rules := k.GetRewardRules(ctx, farmPool.Name)
 		amount := GenAppendReward(r, rules, spendable)
 		if amount.IsZero() {
@@ -241,6 +247,7 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		msg := &types.MsgAdjustPool{
 			PoolName:         farmPool.Name,
 			AdditionalReward: amount,
+			RewardPerBlock:   sdk.Coins{sdk.NewCoin(rewardPerBlock.Denom, rewardPerBlock.Amount)},
 			Creator:          farmPool.Creator,
 		}
 
