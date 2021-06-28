@@ -1,10 +1,10 @@
 package types
 
 import (
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	service "github.com/irisnet/irismod/modules/service/exported"
 )

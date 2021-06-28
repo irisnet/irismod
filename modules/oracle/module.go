@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/irisnet/irismod/modules/oracle/simulation"
 	"math/rand"
 
 	"github.com/gorilla/mux"
@@ -23,6 +22,7 @@ import (
 	"github.com/irisnet/irismod/modules/oracle/client/cli"
 	"github.com/irisnet/irismod/modules/oracle/client/rest"
 	"github.com/irisnet/irismod/modules/oracle/keeper"
+	"github.com/irisnet/irismod/modules/oracle/simulation"
 	"github.com/irisnet/irismod/modules/oracle/types"
 )
 
@@ -91,9 +91,9 @@ func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) 
 type AppModule struct {
 	AppModuleBasic
 
-	keeper keeper.Keeper
+	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
-	bankKeeper types.BankKeeper
+	bankKeeper    types.BankKeeper
 }
 
 // NewAppModule creates a new AppModule object
@@ -101,11 +101,10 @@ func NewAppModule(cdc codec.Marshaler, keeper keeper.Keeper, accountKeeper types
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
-		accountKeeper : accountKeeper,
+		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
 	}
 }
-
 
 // Name returns the oracle module's name.
 func (AppModule) Name() string { return types.ModuleName }

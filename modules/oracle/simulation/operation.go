@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -87,8 +88,14 @@ func SimulateCreateFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 		latestHistory := uint64(simtypes.RandIntBetween(r, 1, 100))
 		description := simtypes.RandStringOfLength(r, 50)
 		creator := simAccount.Address.String()
-		serviceName, err := GenServiceDefinition(r, k.GetServiceKeeper(), accs, ctx)
-		providers := GenProviders(r, accs)
+		serviceName, owner, err := GenServiceDefinition(r, k.GetServiceKeeper(), accs, ctx)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateFeed, "Failed to generate service definition"), nil, err
+		}
+		providers := GenServiceBindingsAndProviders(ctx, serviceName, owner,  k.GetServiceKeeper(), accs, r, bk)
+		if len(providers) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateFeed, "Failed to generate service bindings"), nil, nil
+		}
 		input := `{"header":{},"body":{}}`
 		timeout := int64(simtypes.RandIntBetween(r, 10, 100))
 		srvFeeCap := sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 2, 10))))}
@@ -331,7 +338,7 @@ func GenAggregateFunc(r *rand.Rand) string {
 	return slice[r.Intn(len(slice))]
 }
 
-func GenServiceDefinition(r *rand.Rand, sk types.ServiceKeeper, accs []simtypes.Account, ctx sdk.Context) (string, error) {
+func GenServiceDefinition(r *rand.Rand, sk types.ServiceKeeper, accs []simtypes.Account, ctx sdk.Context) (string, string, error) {
 	simAccount, _ := simtypes.RandomAcc(r, accs)
 	serviceName := simtypes.RandStringOfLength(r, 20)
 	serviceDescription := simtypes.RandStringOfLength(r, 50)
@@ -339,9 +346,36 @@ func GenServiceDefinition(r *rand.Rand, sk types.ServiceKeeper, accs []simtypes.
 	tags := []string{simtypes.RandStringOfLength(r, 20), simtypes.RandStringOfLength(r, 20)}
 	schemas := `{"input":{"type":"object"},"output":{"type":"object"}}`
 	if err := sk.AddServiceDefinition(ctx, serviceName, serviceDescription, tags, simAccount.Address, authorDescription, schemas); err != nil {
-		return "", err
+		return "", "", err
 	}
-	return serviceName, nil
+	return serviceName, simAccount.Address.String(), nil
+}
+
+func GenServiceBindingsAndProviders(ctx sdk.Context, serviceName, owner string, sk types.ServiceKeeper, accs []simtypes.Account, r *rand.Rand, bk types.BankKeeper) (providers []string) {
+	ownerAddr, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return
+	}
+	spendable := bk.SpendableCoins(ctx, ownerAddr)
+	if spendable.IsZero() {
+		return
+	}
+	token := spendable[r.Intn(len(spendable))]
+	if token.IsZero() {
+		return
+	}
+	for i := 0; i < 10; i++ {
+		provider, _ := simtypes.RandomAcc(r, accs)
+		deposit := sdk.NewCoins(sdk.NewCoin(token.Denom, simtypes.RandomAmount(r, token.Amount)))
+		pricing := fmt.Sprintf(`{"price":"%d%s"}`, simtypes.RandIntBetween(r, 100, 1000), sdk.DefaultBondDenom)
+		qos := uint64(simtypes.RandIntBetween(r, 10, 100))
+		options := "{}"
+		err := sk.AddServiceBinding(ctx, serviceName, provider.Address, deposit, pricing, qos, options, ownerAddr)
+		if err != nil {
+			providers = append(providers, provider.Address.String())
+		}
+	}
+	return
 }
 
 func GenFeed(k keeper.Keeper, r *rand.Rand, ctx sdk.Context) types.Feed {
