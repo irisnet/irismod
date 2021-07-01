@@ -3,6 +3,7 @@ package simulation
 import (
 	"encoding/hex"
 	"math/rand"
+	"time"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
@@ -48,7 +49,7 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightCreateHtlc,
-			SimulateMsgCreateHtlc(ak, bk),
+			SimulateMsgCreateHtlc(k, ak, bk),
 		),
 		simulation.NewWeightedOperation(
 			weightClaimHtlc,
@@ -57,7 +58,7 @@ func WeightedOperations(
 	}
 }
 
-func SimulateMsgCreateHtlc(ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgCreateHtlc(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -78,10 +79,10 @@ func SimulateMsgCreateHtlc(ak types.AccountKeeper, bk types.BankKeeper) simtypes
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateHTLC, "Insufficient funds"), nil, nil
 		}
-		timestamp := uint64(0)
+		timestamp := uint64(GenTimestamp(r, ctx))
 		secret := Gensecret()
 		hashLock := hex.EncodeToString(GenHashLock(secret, timestamp))
-		timeLock := uint64(220)
+		timeLock := uint64(simtypes.RandIntBetween(r, 50, 34560))
 		tranfer := false
 		msg := &types.MsgCreateHTLC{
 			Sender:               sender.Address.String(),
@@ -196,6 +197,12 @@ func GenRandomHtlc(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) types.HTLC {
 		return types.HTLC{}
 	}
 	return htlcs[r.Intn(len(htlcs))]
+}
+
+func GenTimestamp(r *rand.Rand, ctx sdk.Context) int{
+	minTimeStamp := int(ctx.BlockTime().Add(-15 * time.Minute).Unix())
+	maxTimeStamp := int(ctx.BlockTime().Add(30 * time.Minute).Unix())
+	return simtypes.RandIntBetween(r, minTimeStamp, maxTimeStamp)
 }
 
 func Gensecret() []byte {
