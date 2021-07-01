@@ -17,7 +17,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 			k.SetRewardRule(ctx, pool.Name, r)
 		}
 		k.SetPool(ctx, pool)
-		if !pool.IsExpired(ctx.BlockHeight()) {
+		if !k.Expired(ctx, pool) {
 			k.EnqueueActivePool(ctx, pool.Name, pool.EndHeight)
 		}
 	}
@@ -25,7 +25,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	for _, farmInfo := range data.FarmInfos {
 		_, exist := k.GetPool(ctx, farmInfo.PoolName)
 		if !exist {
-			panic(types.ErrNotExistPool)
+			panic(types.ErrPoolNotFound)
 		}
 		k.SetFarmInfo(ctx, farmInfo)
 	}

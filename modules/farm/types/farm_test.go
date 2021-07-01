@@ -10,13 +10,13 @@ import (
 func TestFarmPool_ExpiredHeight(t *testing.T) {
 	type fields struct {
 		Name        string
-		BeginHeight uint64
+		BeginHeight int64
 		Rules       []RewardRule
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   uint64
+		want   int64
 	}{
 		{
 			name: "test case 1",
@@ -61,7 +61,8 @@ func TestFarmPool_ExpiredHeight(t *testing.T) {
 				StartHeight: tt.fields.BeginHeight,
 				Rules:       tt.fields.Rules,
 			}
-			if got := fp.ExpiredHeight(); got != tt.want {
+			expiredHeight, _ := fp.ExpiredHeight()
+			if got := expiredHeight; got != tt.want {
 				t.Errorf("FarmPool.ExpiredHeight() = %v, want %v", got, tt.want)
 			}
 		})

@@ -6,7 +6,22 @@ import (
 	"github.com/irisnet/irismod/modules/farm/types"
 )
 
-func (k Keeper) EnqueueActivePool(ctx sdk.Context, poolName string, expiredHeight uint64) {
+func (k Keeper) Expired(ctx sdk.Context, pool types.FarmPool) bool {
+	height := ctx.BlockHeader().Height
+	switch {
+	case height > pool.EndHeight:
+		return true
+	case height == pool.EndHeight:
+		//When Destroy and other operations are at the same block height
+		key := types.KeyActiveFarmPool(pool.EndHeight, pool.Name)
+		store := ctx.KVStore(k.storeKey)
+		return !store.Has(key)
+	default:
+		return false
+	}
+}
+
+func (k Keeper) EnqueueActivePool(ctx sdk.Context, poolName string, expiredHeight int64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
 		types.KeyActiveFarmPool(expiredHeight, poolName),
@@ -14,12 +29,12 @@ func (k Keeper) EnqueueActivePool(ctx sdk.Context, poolName string, expiredHeigh
 	)
 }
 
-func (k Keeper) DequeueActivePool(ctx sdk.Context, poolName string, expiredHeight uint64) {
+func (k Keeper) DequeueActivePool(ctx sdk.Context, poolName string, expiredHeight int64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyActiveFarmPool(expiredHeight, poolName))
 }
 
-func (k Keeper) IteratorExpiredPool(ctx sdk.Context, height uint64, fun func(pool types.FarmPool)) {
+func (k Keeper) IteratorExpiredPool(ctx sdk.Context, height int64, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store,
 		types.PrefixActiveFarmPool(height))
