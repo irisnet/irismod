@@ -33,6 +33,8 @@ message MsgIssueDenom {
     string schema = 3;
     string sender = 4;
     string symbol = 5;
+    bool mint_restricted = 6 ;
+    bool update_restricted = 7 ;
 }
 
 // MsgIssueDenomResponse defines the Msg/IssueDenom response type.

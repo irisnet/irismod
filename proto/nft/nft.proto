@@ -26,6 +26,8 @@ message Denom {
     string schema = 3;
     string creator = 4;
     string symbol = 5;
+    bool mint_restricted = 6 ;
+    bool update_restricted = 7 ;
 }
 
 // IDCollection defines a type of collection with specified ID

@@ -34,8 +34,10 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // IssueDenom issues a denom according to the given params
 func (k Keeper) IssueDenom(ctx sdk.Context,
 	id, name, schema, symbol string,
-	creator sdk.AccAddress) error {
-	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, creator))
+	creator sdk.AccAddress,
+	mintRestricted, updateRestricted bool,
+) error {
+	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, creator, mintRestricted, updateRestricted))
 }
 
 // MintNFT mints an NFT and manages the NFT's existence within Collections and Owners
@@ -45,6 +47,11 @@ func (k Keeper) MintNFT(
 ) error {
 	if !k.HasDenomID(ctx, denomID) {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+	}
+
+	denom, _ := k.GetDenom(ctx, denomID)
+	if denom.MintRestricted && denom.Creator != owner.String(){
+		return sdkerrors.Wrapf(types.ErrNoPermission, "owner  %s don't  have permission to mint NFT", owner.String())
 	}
 
 	if k.HasNFT(ctx, denomID, tokenID) {
@@ -76,6 +83,14 @@ func (k Keeper) EditNFT(
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
+	denom, _ := k.GetDenom(ctx, denomID)
+
+	if denom.UpdateRestricted {
+		// if true , nobody can update the NFT under this denom
+		return sdkerrors.Wrapf(types.ErrNoPermission, "nobody can update the NFT under this denom %s", denom.Id)
+	}
+
+	// just the owner of NFT can edit
 	nft, err := k.Authorize(ctx, denomID, tokenID, owner)
 	if err != nil {
 		return err
