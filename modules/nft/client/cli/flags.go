@@ -11,21 +11,22 @@ const (
 	FlagRecipient = "recipient"
 	FlagOwner     = "owner"
 
-	FlagDenomName = "name"
-	FlagDenomID   = "denom-id"
-	FlagSchema    = "schema"
-	FlagSymbol    = "symbol"
-	FlagMintRestricted    = "mint-restricted"
-	FlagUpdateRestricted  = "update-restricted"
+	FlagDenomName        = "name"
+	FlagDenomID          = "denom-id"
+	FlagSchema           = "schema"
+	FlagSymbol           = "symbol"
+	FlagMintRestricted   = "mint-restricted"
+	FlagUpdateRestricted = "update-restricted"
 )
 
 var (
-	FsIssueDenom  = flag.NewFlagSet("", flag.ContinueOnError)
-	FsMintNFT     = flag.NewFlagSet("", flag.ContinueOnError)
-	FsEditNFT     = flag.NewFlagSet("", flag.ContinueOnError)
-	FsTransferNFT = flag.NewFlagSet("", flag.ContinueOnError)
-	FsQuerySupply = flag.NewFlagSet("", flag.ContinueOnError)
-	FsQueryOwner  = flag.NewFlagSet("", flag.ContinueOnError)
+	FsIssueDenom    = flag.NewFlagSet("", flag.ContinueOnError)
+	FsMintNFT       = flag.NewFlagSet("", flag.ContinueOnError)
+	FsEditNFT       = flag.NewFlagSet("", flag.ContinueOnError)
+	FsTransferNFT   = flag.NewFlagSet("", flag.ContinueOnError)
+	FsQuerySupply   = flag.NewFlagSet("", flag.ContinueOnError)
+	FsQueryOwner    = flag.NewFlagSet("", flag.ContinueOnError)
+	FsTransferDenom = flag.NewFlagSet("", flag.ContinueOnError)
 )
 
 func init() {

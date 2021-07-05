@@ -27,12 +27,12 @@ var (
 // NewMsgIssueDenom is a constructor function for MsgSetName
 func NewMsgIssueDenom(denomID, denomName, schema, sender, symbol string, mintRestricted, updateRestricted bool) *MsgIssueDenom {
 	return &MsgIssueDenom{
-		Sender: sender,
-		Id:     denomID,
-		Name:   denomName,
-		Schema: schema,
-		Symbol: symbol,
-		MintRestricted: mintRestricted,
+		Sender:           sender,
+		Id:               denomID,
+		Name:             denomName,
+		Schema:           schema,
+		Symbol:           symbol,
+		MintRestricted:   mintRestricted,
 		UpdateRestricted: updateRestricted,
 	}
 }

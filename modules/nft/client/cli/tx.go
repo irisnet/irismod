@@ -32,6 +32,7 @@ func NewTxCmd() *cobra.Command {
 		GetCmdEditNFT(),
 		GetCmdTransferNFT(),
 		GetCmdBurnNFT(),
+		GetCmdTransferDenom(),
 	)
 
 	return txCmd
@@ -319,6 +320,46 @@ func GetCmdBurnNFT() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdTransferDenom is the CLI command for sending a TransferDenom transaction
+func GetCmdTransferDenom() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "transfer-denom <denom-id> <recipient>",
+		Long: "Transfer an Denom to a recipient.",
+		Example: fmt.Sprintf(
+			"$ %s tx nft transfer-denom <denom-id> <recipient> "+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if _, err := sdk.AccAddressFromBech32(args[1]); err != nil {
+				return err
+			}
+
+			msg := types.NewMsgTransferDenom(
+				args[0],
+				clientCtx.GetFromAddress().String(),
+				args[1],
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsTransferDenom)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
