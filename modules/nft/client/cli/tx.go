@@ -40,13 +40,15 @@ func NewTxCmd() *cobra.Command {
 // GetCmdIssueDenom is the CLI command for an IssueDenom transaction
 func GetCmdIssueDenom() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "issue [denom-id]",
+		Use:  "issue [denom-id] ",
 		Long: "Issue a new denom.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft issue <denom-id> "+
+			"$ %s tx nft issue <denom-id>"+
 				"--from=<key-name> "+
 				"--name=<denom-name> "+
 				"--symbol=<denom-symbol> "+
+				"--mint-restricted=<mint-restricted>"+
+				"--update-restricted=<update-restricted>"+
 				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
@@ -71,6 +73,14 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			mintRestricted, err := cmd.Flags().GetBool(FlagMintRestricted)
+			if err != nil {
+				return err
+			}
+			updateRestricted, err := cmd.Flags().GetBool(FlagUpdateRestricted)
+			if err != nil {
+				return err
+			}
 			optionsContent, err := ioutil.ReadFile(schema)
 			if err == nil {
 				schema = string(optionsContent)
@@ -82,6 +92,8 @@ func GetCmdIssueDenom() *cobra.Command {
 				schema,
 				clientCtx.GetFromAddress().String(),
 				symbol,
+				mintRestricted,
+				updateRestricted,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -90,6 +102,8 @@ func GetCmdIssueDenom() *cobra.Command {
 		},
 	}
 	cmd.Flags().AddFlagSet(FsIssueDenom)
+	_ = cmd.MarkFlagRequired(FlagMintRestricted)
+	_ = cmd.MarkFlagRequired(FlagUpdateRestricted)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

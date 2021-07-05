@@ -180,7 +180,7 @@ func (k Keeper) TransferDenomOwner(
 
 	// authorize
 	if !srcOwner.Equals(creator) {
-		return sdkerrors.Wrapf(types.ErrUnauthorized, "s% authentication failed", srcOwner.String())
+		return sdkerrors.Wrapf(types.ErrUnauthorized, "srcOwner %s authentication failed", srcOwner.String())
 	}
 
 	denom.Creator = dstOwner.String()

@@ -26,6 +26,8 @@ type issueDenomReq struct {
 	Name    string       `json:"name"`
 	Schema  string       `json:"schema"`
 	Symbol  string       `json:"symbol"`
+	MintRestricted bool  `json:"mint_restricted"`
+	UpdateRestricted bool  `json:"update_restricted"`
 }
 
 type mintNFTReq struct {
