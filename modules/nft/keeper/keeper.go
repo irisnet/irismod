@@ -50,7 +50,7 @@ func (k Keeper) MintNFT(
 	}
 
 	denom, _ := k.GetDenom(ctx, denomID)
-	if denom.MintRestricted && denom.Creator != owner.String(){
+	if denom.MintRestricted && denom.Creator != owner.String() {
 		return sdkerrors.Wrapf(types.ErrNoPermission, "owner  %s don't  have permission to mint NFT", owner.String())
 	}
 
@@ -160,6 +160,35 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 	k.deleteNFT(ctx, denomID, nft)
 	k.deleteOwner(ctx, denomID, tokenID, owner)
 	k.decreaseSupply(ctx, denomID)
+
+	return nil
+}
+
+// TransferDenomOwner transfers the ownership of the given denom to the new owner
+func (k Keeper) TransferDenomOwner(
+	ctx sdk.Context, denomID string, srcOwner, dstOwner sdk.AccAddress,
+) error {
+	if !k.HasDenomID(ctx, denomID) {
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+	}
+
+	denom, _ := k.GetDenom(ctx, denomID)
+	creator, err := sdk.AccAddressFromBech32(denom.Creator)
+	if err != nil {
+		panic(err)
+	}
+
+	// authorize
+	if !srcOwner.Equals(creator) {
+		return sdkerrors.Wrapf(types.ErrUnauthorized, "s% authentication failed", srcOwner.String())
+	}
+
+	denom.Creator = dstOwner.String()
+
+	err = k.UpdateDenom(ctx, denom)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
