@@ -3,6 +3,7 @@ package simulation
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -22,6 +23,9 @@ const (
 	OpWeightMsgEditNFT     = "op_weight_msg_edit_nft_tokenData"
 	OpWeightMsgTransferNFT = "op_weight_msg_transfer_nft"
 	OpWeightMsgBurnNFT     = "op_weight_msg_transfer_burn_nft"
+	OpWeightMsgTransferDenom     = "op_weight_msg_transfer_denom"
+	OpWeightMsgIssueDenom     = "op_weight_msg_issue_denom"
+
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -30,7 +34,7 @@ func WeightedOperations(
 	cdc codec.JSONMarshaler,
 	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simulation.WeightedOperations {
 
-	var weightMint, weightEdit, weightBurn, weightTransfer int
+	var weightMint, weightEdit, weightBurn, weightTransfer, weightTransferDenom, weightIssueDenom int
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgMintNFT, &weightMint, nil,
 		func(_ *rand.Rand) {
@@ -58,6 +62,20 @@ func WeightedOperations(
 			weightBurn = 10
 		},
 	)
+	appParams.GetOrGenerate(
+		cdc, OpWeightMsgTransferDenom, &weightTransferDenom, nil,
+		func(_ *rand.Rand) {
+			weightTransferDenom = 10
+		},
+	)
+
+	appParams.GetOrGenerate(
+		cdc, OpWeightMsgIssueDenom, &weightIssueDenom, nil,
+		func(_ *rand.Rand) {
+			weightIssueDenom = 10
+		},
+	)
+
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
@@ -75,6 +93,14 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightBurn,
 			SimulateMsgBurnNFT(k, ak, bk),
+		),
+		simulation.NewWeightedOperation(
+			weightTransferDenom,
+			SimulateMsgTransferDenom(k, ak, bk),
+		),
+		simulation.NewWeightedOperation(
+			weightIssueDenom,
+			SimulateMsgIssueDenom(k, ak, bk),
 		),
 	}
 }
@@ -304,6 +330,126 @@ func SimulateMsgBurnNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 	}
 }
 
+// SimulateMsgTransferDenom simulates the transfer of an denom
+func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (
+		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
+	) {
+
+		denomId := getRandomDenom(ctx, k, r)
+		denom, err := k.GetDenom(ctx, denomId)
+		if err!=nil{
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
+		}
+
+		creator, err := sdk.AccAddressFromBech32(denom.Creator)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
+		}
+		account := ak.GetAccount(ctx, creator)
+		owner, found := simtypes.FindAccount(accs, account.GetAddress())
+		if !found {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "creator not found"), nil, nil
+		}
+
+		recipient, _ := simtypes.RandomAcc(r, accs)
+		msg := types.NewMsgTransferDenom(
+			denomId,
+			denom.Creator,
+			recipient.Address.String(),
+		)
+
+		spendable := bk.SpendableCoins(ctx, owner.Address)
+		fees, err := simtypes.RandomFees(r, ctx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
+		}
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			owner.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		}
+
+		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransfer, err.Error()), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+
+// SimulateMsgIssueDenom simulates issue an denom
+func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (
+		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
+	) {
+
+		denomId := strings.ToLower(simtypes.RandStringOfLength(r, 10))
+		denomName := strings.ToLower(simtypes.RandStringOfLength(r, 10))
+		symbol := simtypes.RandStringOfLength(r, 5)
+		sender, _ := simtypes.RandomAcc(r, accs)
+		mintRestricted := genRandomBool(r)
+		updateRestricted := genRandomBool(r)
+
+		denom, _ := k.GetDenom(ctx, denomId)
+		if denom.Size() != 0{
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "denom exist"), nil, nil
+		}
+
+		msg := types.NewMsgIssueDenom(
+			denomId,
+			denomName,
+			"Schema",
+			sender.Address.String(),
+			symbol,
+			mintRestricted,
+			updateRestricted,
+		)
+		account := ak.GetAccount(ctx, sender.Address)
+		spendable := bk.SpendableCoins(ctx, account.GetAddress())
+		fees, err := simtypes.RandomFees(r, ctx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
+		}
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			sender.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		}
+
+		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransfer, err.Error()), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
 func getRandomNFTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, tokenID string) {
 	owners := k.GetOwners(ctx)
 
@@ -343,4 +489,8 @@ func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) string {
 	var denoms = []string{kitties, doggos}
 	i := r.Intn(len(denoms))
 	return denoms[i]
+}
+
+func genRandomBool(r *rand.Rand) bool {
+	return r.Int() % 2 == 0
 }
