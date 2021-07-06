@@ -19,13 +19,12 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgMintNFT     = "op_weight_msg_mint_nft"
-	OpWeightMsgEditNFT     = "op_weight_msg_edit_nft_tokenData"
-	OpWeightMsgTransferNFT = "op_weight_msg_transfer_nft"
-	OpWeightMsgBurnNFT     = "op_weight_msg_transfer_burn_nft"
-	OpWeightMsgTransferDenom     = "op_weight_msg_transfer_denom"
-	OpWeightMsgIssueDenom     = "op_weight_msg_issue_denom"
-
+	OpWeightMsgMintNFT       = "op_weight_msg_mint_nft"
+	OpWeightMsgEditNFT       = "op_weight_msg_edit_nft_tokenData"
+	OpWeightMsgTransferNFT   = "op_weight_msg_transfer_nft"
+	OpWeightMsgBurnNFT       = "op_weight_msg_transfer_burn_nft"
+	OpWeightMsgTransferDenom = "op_weight_msg_transfer_denom"
+	OpWeightMsgIssueDenom    = "op_weight_msg_issue_denom"
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -75,7 +74,6 @@ func WeightedOperations(
 			weightIssueDenom = 10
 		},
 	)
-
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
@@ -340,7 +338,7 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 
 		denomId := getRandomDenom(ctx, k, r)
 		denom, err := k.GetDenom(ctx, denomId)
-		if err!=nil{
+		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
 		}
 
@@ -390,7 +388,6 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 	}
 }
 
-
 // SimulateMsgIssueDenom simulates issue an denom
 func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
@@ -407,7 +404,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		updateRestricted := genRandomBool(r)
 
 		denom, _ := k.GetDenom(ctx, denomId)
-		if denom.Size() != 0{
+		if denom.Size() != 0 {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "denom exist"), nil, nil
 		}
 
@@ -492,5 +489,5 @@ func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) string {
 }
 
 func genRandomBool(r *rand.Rand) bool {
-	return r.Int() % 2 == 0
+	return r.Int()%2 == 0
 }
