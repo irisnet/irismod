@@ -41,15 +41,15 @@ func NewTxCmd() *cobra.Command {
 // GetCmdIssueDenom is the CLI command for an IssueDenom transaction
 func GetCmdIssueDenom() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "issue [denom-id] ",
+		Use:  "issue [denom-id]",
 		Long: "Issue a new denom.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft issue <denom-id>"+
+			"$ %s tx nft issue <denom-id> "+
 				"--from=<key-name> "+
 				"--name=<denom-name> "+
 				"--symbol=<denom-symbol> "+
-				"--mint-restricted=<mint-restricted>"+
-				"--update-restricted=<update-restricted>"+
+				"--mint-restricted=<mint-restricted> "+
+				"--update-restricted=<update-restricted> "+
 				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
@@ -328,7 +328,7 @@ func GetCmdBurnNFT() *cobra.Command {
 // GetCmdTransferDenom is the CLI command for sending a TransferDenom transaction
 func GetCmdTransferDenom() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "transfer-denom <denom-id> <recipient>",
+		Use:  "transfer-denom [recipient] [denom-id]",
 		Long: "Transfer an Denom to a recipient.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft transfer-denom <denom-id> <recipient> "+

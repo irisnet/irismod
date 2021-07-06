@@ -205,6 +205,8 @@ func (m msgServer) TransferDenom(goCtx context.Context, msg *types.MsgTransferDe
 		sdk.NewEvent(
 			types.EventTypeTransferDenom,
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.Id),
+			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
