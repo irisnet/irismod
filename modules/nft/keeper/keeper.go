@@ -167,11 +167,11 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 func (k Keeper) TransferDenomOwner(
 	ctx sdk.Context, denomID string, srcOwner, dstOwner sdk.AccAddress,
 ) error {
-	if !k.HasDenomID(ctx, denomID) {
+	denom, err := k.GetDenom(ctx, denomID)
+	if err != nil {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
-	denom, _ := k.GetDenom(ctx, denomID)
 	creator, err := sdk.AccAddressFromBech32(denom.Creator)
 	if err != nil {
 		panic(err)
