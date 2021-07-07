@@ -51,7 +51,7 @@ func (k Keeper) MintNFT(
 	}
 
 	if denom.MintRestricted && denom.Creator != owner.String() {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", owner.String(), denomID)
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", denom.Creator, denomID)
 	}
 
 	if k.HasNFT(ctx, denomID, tokenID) {
@@ -172,19 +172,14 @@ func (k Keeper) TransferDenomOwner(
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
-	creator, err := sdk.AccAddressFromBech32(denom.Creator)
-	if err != nil {
-		panic(err)
-	}
-
 	// authorize
-	if !srcOwner.Equals(creator) {
+	if srcOwner.String() != denom.Creator {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to transfer denom %s", srcOwner.String(), denomID)
 	}
 
 	denom.Creator = dstOwner.String()
 
-	err = k.UpdateDenom(ctx, denom)
+	err := k.UpdateDenom(ctx, denom)
 	if err != nil {
 		return err
 	}
