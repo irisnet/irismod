@@ -19,12 +19,12 @@ import (
 
 // Simulation operation weights constants
 const (
+	OpWeightMsgIssueDenom    = "op_weight_msg_issue_denom"
 	OpWeightMsgMintNFT       = "op_weight_msg_mint_nft"
 	OpWeightMsgEditNFT       = "op_weight_msg_edit_nft_tokenData"
 	OpWeightMsgTransferNFT   = "op_weight_msg_transfer_nft"
 	OpWeightMsgBurnNFT       = "op_weight_msg_transfer_burn_nft"
 	OpWeightMsgTransferDenom = "op_weight_msg_transfer_denom"
-	OpWeightMsgIssueDenom    = "op_weight_msg_issue_denom"
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -33,7 +33,14 @@ func WeightedOperations(
 	cdc codec.JSONMarshaler,
 	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simulation.WeightedOperations {
 
-	var weightMint, weightEdit, weightBurn, weightTransfer, weightTransferDenom, weightIssueDenom int
+	var weightIssueDenom, weightMint, weightEdit, weightBurn, weightTransfer, weightTransferDenom int
+	appParams.GetOrGenerate(
+		cdc, OpWeightMsgIssueDenom, &weightIssueDenom, nil,
+		func(_ *rand.Rand) {
+			weightIssueDenom = 50
+		},
+	)
+
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgMintNFT, &weightMint, nil,
 		func(_ *rand.Rand) {
@@ -68,14 +75,11 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(
-		cdc, OpWeightMsgIssueDenom, &weightIssueDenom, nil,
-		func(_ *rand.Rand) {
-			weightIssueDenom = 10
-		},
-	)
-
 	return simulation.WeightedOperations{
+		simulation.NewWeightedOperation(
+			weightIssueDenom,
+			SimulateMsgIssueDenom(k, ak, bk),
+		),
 		simulation.NewWeightedOperation(
 			weightMint,
 			SimulateMsgMintNFT(k, ak, bk),
@@ -95,10 +99,6 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightTransferDenom,
 			SimulateMsgTransferDenom(k, ak, bk),
-		),
-		simulation.NewWeightedOperation(
-			weightIssueDenom,
-			SimulateMsgIssueDenom(k, ak, bk),
 		),
 	}
 }
