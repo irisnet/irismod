@@ -45,8 +45,8 @@ func (k Keeper) MintNFT(
 	ctx sdk.Context, denomID, tokenID, tokenNm,
 	tokenURI, tokenData string, owner sdk.AccAddress,
 ) error {
-	denom, err := k.GetDenom(ctx, denomID)
-	if err != nil {
+	denom, found := k.GetDenom(ctx, denomID)
+	if !found {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
@@ -79,8 +79,8 @@ func (k Keeper) EditNFT(
 	ctx sdk.Context, denomID, tokenID, tokenNm,
 	tokenURI, tokenData string, owner sdk.AccAddress,
 ) error {
-	denom, err := k.GetDenom(ctx, denomID)
-	if err != nil {
+	denom, found := k.GetDenom(ctx, denomID)
+	if !found {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
@@ -167,8 +167,8 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 func (k Keeper) TransferDenomOwner(
 	ctx sdk.Context, denomID string, srcOwner, dstOwner sdk.AccAddress,
 ) error {
-	denom, err := k.GetDenom(ctx, denomID)
-	if err != nil {
+	denom, found := k.GetDenom(ctx, denomID)
+	if !found {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 

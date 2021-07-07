@@ -180,8 +180,7 @@ func (suite *KeeperSuite) TestTransferDenom() {
 	err = suite.keeper.TransferDenomOwner(suite.ctx, denomID, address, address3)
 	suite.NoError(err)
 
-	denom, err := suite.keeper.GetDenom(suite.ctx, denomID)
-	suite.NoError(err)
+	denom, _ := suite.keeper.GetDenom(suite.ctx, denomID)
 
 	// denom.Creator should equal to address3 after transfer
 	suite.Equal(denom.Creator, address3.String())

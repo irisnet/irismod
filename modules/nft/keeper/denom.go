@@ -37,16 +37,16 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 }
 
 // GetDenom returns the denom by id
-func (k Keeper) GetDenom(ctx sdk.Context, id string) (denom types.Denom, err error) {
+func (k Keeper) GetDenom(ctx sdk.Context, id string) (denom types.Denom, found bool) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.KeyDenomID(id))
 	if len(bz) == 0 {
-		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denomID: %s", id)
+		return denom, false
 	}
 
 	k.cdc.MustUnmarshalBinaryBare(bz, &denom)
-	return denom, nil
+	return denom, true
 }
 
 // GetDenoms returns all the denoms

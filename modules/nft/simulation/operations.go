@@ -337,8 +337,8 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 	) {
 
 		denomId := getRandomDenom(ctx, k, r)
-		denom, err := k.GetDenom(ctx, denomId)
-		if err != nil {
+		denom, found := k.GetDenom(ctx, denomId)
+		if !found {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
 		}
 
