@@ -82,7 +82,11 @@ func SimulateMsgCreateHtlc(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		timestamp := uint64(GenTimestamp(r, ctx))
 		secret := Gensecret()
 		hashLock := hex.EncodeToString(GenHashLock(secret, timestamp))
-		timeLock := uint64(simtypes.RandIntBetween(r, 50, 34560))
+
+		assert := genRandomAssert(k, ctx, r)
+		minLock := int(assert.MinBlockLock)
+		maxLock := int(assert.MaxBlockLock)
+		timeLock := uint64(simtypes.RandIntBetween(r, minLock, maxLock))
 		tranfer := false
 		msg := &types.MsgCreateHTLC{
 			Sender:               sender.Address.String(),
@@ -199,7 +203,7 @@ func GenRandomHtlc(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) types.HTLC {
 	return htlcs[r.Intn(len(htlcs))]
 }
 
-func GenTimestamp(r *rand.Rand, ctx sdk.Context) int{
+func GenTimestamp(r *rand.Rand, ctx sdk.Context) int {
 	minTimeStamp := int(ctx.BlockTime().Add(-15 * time.Minute).Unix())
 	maxTimeStamp := int(ctx.BlockTime().Add(30 * time.Minute).Unix())
 	return simtypes.RandIntBetween(r, minTimeStamp, maxTimeStamp)
@@ -211,4 +215,11 @@ func Gensecret() []byte {
 		bytes[i] = 0
 	}
 	return bytes
+}
+func genRandomAssert(k keeper.Keeper, ctx sdk.Context, r *rand.Rand) types.AssetParam {
+	assetParams := k.AssetParams(ctx)
+	if len(assetParams) > 0 {
+		return assetParams[r.Intn(len(assetParams))]
+	}
+	return types.AssetParam{}
 }
