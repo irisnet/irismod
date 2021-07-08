@@ -157,11 +157,11 @@ func (suite *KeeperSuite) TestTransferOwner() {
 	err := suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address)
 	suite.NoError(err)
 
-	//invalid owner
+	// invalid owner
 	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address3)
 	suite.Error(err)
 
-	//right
+	// right
 	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, tokenNm2, tokenURI2, tokenData, address, address2)
 	suite.NoError(err)
 
@@ -172,11 +172,11 @@ func (suite *KeeperSuite) TestTransferOwner() {
 
 func (suite *KeeperSuite) TestTransferDenom() {
 
-	//invalid owner
+	// invalid owner
 	err := suite.keeper.TransferDenomOwner(suite.ctx, denomID, address3, address)
 	suite.Error(err)
 
-	//right
+	// right
 	err = suite.keeper.TransferDenomOwner(suite.ctx, denomID, address, address3)
 	suite.NoError(err)
 
