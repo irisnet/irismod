@@ -127,6 +127,7 @@ func SimulateMsgCreateHtlc(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
+
 func SimulateMsgClaimHtlc(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -216,6 +217,7 @@ func Gensecret() []byte {
 	}
 	return bytes
 }
+
 func genRandomAssert(k keeper.Keeper, ctx sdk.Context, r *rand.Rand) types.AssetParam {
 	assetParams := k.AssetParams(ctx)
 	if len(assetParams) > 0 {
