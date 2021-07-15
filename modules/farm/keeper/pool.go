@@ -157,9 +157,9 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 	}
 	k.SetRewardRules(ctx, pool.Name, pool.Rules)
 
-	//expiredHeight = [(srcEndHeight-curHeight)*srcRewardPerBlock +curReward]/RewardPerBlock + curHeight
-	coinPerBlock := types.RewardRules(pool.Rules).CoinPerBlock()
+	//expiredHeight = [(srcEndHeight-curHeight)*srcRewardPerBlock +appendReward]/RewardPerBlock + curHeight
 	availableReward = availableReward.Add(reward...)
+	coinPerBlock := types.RewardRules(pool.Rules).CoinPerBlock()
 	availableHeight := availableReward[0].Amount.
 		Quo(coinPerBlock.AmountOf(availableReward[0].Denom)).Int64()
 	for _, c := range availableReward[1:] {
