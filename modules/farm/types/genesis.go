@@ -39,7 +39,7 @@ func ValidateGenesis(data GenesisState) error {
 			return err
 		}
 
-		if err := ValidateCoins(pool.TotalLpTokenLocked); err != nil {
+		if err := ValidateCoins(sdk.NewCoins(pool.TotalLpTokenLocked), "TotalLpTokenLocked"); err != nil {
 			return err
 		}
 
@@ -79,10 +79,10 @@ func ValidateGenesis(data GenesisState) error {
 			return fmt.Errorf("locked must be positive, but got %s", info.Locked.String())
 		}
 
-		if err := ValidateCoins(info.RewardDebt...); err != nil {
+		if err := ValidateCoins(info.RewardDebt, "RewardDebt"); err != nil {
 			return err
 		}
 	}
 
-	return ValidateCoins(data.Params.CreatePoolFee)
+	return ValidateCoins(sdk.NewCoins(data.Params.CreatePoolFee), "CreatePoolFee")
 }
