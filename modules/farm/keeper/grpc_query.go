@@ -64,7 +64,7 @@ func (k Keeper) Pool(goctx context.Context,
 	}
 
 	if len(request.Name) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "class id can not be empty")
+		return nil, status.Error(codes.InvalidArgument, "pool name can not be empty")
 	}
 	ctx := sdk.UnwrapSDKContext(goctx)
 
