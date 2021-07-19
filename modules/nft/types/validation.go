@@ -19,7 +19,6 @@ const (
 
 	ReservedPeg  = "peg"
 	ReservedIBC  = "ibc"
-	ReservedSwap = "swap"
 	ReservedHTLT = "htlt"
 	ReservedTIBC = "tibc"
 )
@@ -30,7 +29,7 @@ var (
 	// IsBeginWithAlpha only begin with [a-z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-z].*`).MatchString
 
-	keywords          = strings.Join([]string{ReservedPeg, ReservedIBC, ReservedSwap, ReservedHTLT, ReservedTIBC}, "|")
+	keywords          = strings.Join([]string{ReservedPeg, ReservedIBC, ReservedHTLT, ReservedTIBC}, "|")
 	regexpKeywordsFmt = fmt.Sprintf("^(%s).*", keywords)
 	regexpKeyword     = regexp.MustCompile(regexpKeywordsFmt).MatchString
 )
@@ -43,7 +42,7 @@ func ValidateDenomID(denomID string) error {
 	if !IsBeginWithAlpha(denomID) || !IsAlphaNumeric(denomID) {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "the denom(%s) only accepts alphanumeric characters, and begin with an english letter", denomID)
 	}
-	return nil
+	return ValidateKeywords(denomID)
 }
 
 // ValidateDenomName verifies whether the  parameters are legal
