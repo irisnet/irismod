@@ -133,7 +133,7 @@ func (k Keeper) AdjustPool(ctx sdk.Context,
 
 	rules := types.RewardRules(pool.Rules)
 	if rewardPerBlock != nil && !rewardPerBlock.DenomsSubsetOf(rules.RewardsPerBlock()) {
-		return sdkerrors.Wrapf(types.ErrInvalidAppend, "rewardPerBlock:%s", rewardPerBlock.String())
+		return sdkerrors.Wrapf(types.ErrInvalidAppend, "rewardPerBlock: %s", rewardPerBlock.String())
 	}
 
 	availableReward := sdk.NewCoins()
