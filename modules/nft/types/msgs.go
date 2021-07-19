@@ -49,6 +49,10 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 		return err
 	}
 
+	if err := ValidateKeywords(msg.Id); err != nil {
+		return err
+	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}

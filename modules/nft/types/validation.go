@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -15,6 +16,12 @@ const (
 	MaxDenomLen = 64
 
 	MaxTokenURILen = 256
+
+	ReservedPeg  = "peg"
+	ReservedIBC  = "ibc"
+	ReservedSwap = "swap"
+	ReservedHTLT = "htlt"
+	ReservedTIBC = "tibc"
 )
 
 var (
@@ -22,6 +29,10 @@ var (
 	IsAlphaNumeric = regexp.MustCompile(`^[a-z0-9]+$`).MatchString
 	// IsBeginWithAlpha only begin with [a-z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-z].*`).MatchString
+
+	keywords          = strings.Join([]string{ReservedPeg, ReservedIBC, ReservedSwap, ReservedHTLT, ReservedTIBC}, "|")
+	regexpKeywordsFmt = fmt.Sprintf("^(%s).*", keywords)
+	regexpKeyword     = regexp.MustCompile(regexpKeywordsFmt).MatchString
 )
 
 // ValidateDenomID verifies whether the  parameters are legal
@@ -66,4 +77,12 @@ func ValidateTokenURI(tokenURI string) error {
 // Modified returns whether the field is modified
 func Modified(target string) bool {
 	return target != types.DoNotModify
+}
+
+// ValidateKeywords checks if the given denomId begins with `DenomKeywords`
+func ValidateKeywords(denomId string) error {
+	if regexpKeyword(denomId) {
+		return sdkerrors.Wrapf(ErrInvalidDenom, "invalid denomId: %s, can not begin with keyword: (%s)", denomId, keywords)
+	}
+	return nil
 }
