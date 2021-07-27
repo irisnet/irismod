@@ -117,8 +117,14 @@ func (k Keeper) TransferOwner(
 	ctx sdk.Context, denomID, tokenID, tokenNm, tokenURI,
 	tokenData string, srcOwner, dstOwner sdk.AccAddress,
 ) error {
-	if !k.HasDenomID(ctx, denomID) {
+	denom, found := k.GetDenom(ctx, denomID)
+	if !found {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+	}
+
+	if denom.UpdateRestricted {
+		// if true , nobody can update the NFT under this denom
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "nobody can update the NFT under this denom %s", denom.Id)
 	}
 
 	nft, err := k.Authorize(ctx, denomID, tokenID, srcOwner)
