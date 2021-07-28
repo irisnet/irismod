@@ -129,28 +129,18 @@ func (k Keeper) TransferOwner(
 
 	nft.Owner = dstOwner.String()
 
-	if !denom.UpdateRestricted {
-		if types.Modified(tokenNm) {
-			nft.Name = tokenNm
-		}
+	if denom.UpdateRestricted && (types.Modified(tokenNm) || types.Modified(tokenURI) || types.Modified(tokenData)) {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "It is restricted to update NFT under this denom %s", denom.Id)
+	}
 
-		if types.Modified(tokenURI) {
-			nft.URI = tokenURI
-		}
-
-		if types.Modified(tokenData) {
-			nft.Data = tokenData
-		}
-	} else {
-		if types.Modified(tokenNm) {
-			return sdkerrors.Wrapf(types.ErrNoPermissionToChange, "There are restrictions on denom, tokenNm %s cannot be changed", tokenNm)
-		}
-		if types.Modified(tokenURI) {
-			return sdkerrors.Wrapf(types.ErrNoPermissionToChange, "There are restrictions on denom, tokenURI %s cannot be changed", tokenURI)
-		}
-		if types.Modified(tokenData) {
-			return sdkerrors.Wrapf(types.ErrNoPermissionToChange, "There are restrictions on denom, tokenData %s cannot be changed", tokenData)
-		}
+	if types.Modified(tokenNm) {
+		nft.Name = tokenNm
+	}
+	if types.Modified(tokenURI) {
+		nft.URI = tokenURI
+	}
+	if types.Modified(tokenData) {
+		nft.Data = tokenData
 	}
 
 	k.setNFT(ctx, denomID, nft)
