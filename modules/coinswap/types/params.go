@@ -13,6 +13,8 @@ import (
 var (
 	KeyFee           = []byte("Fee")           // fee key
 	KeyStandardDenom = []byte("StandardDenom") // standard token denom key
+	KeyLptId         = []byte("LptId")         // LptId key
+	KeyTibcId        = []byte("TibcId")        // TibcId key
 )
 
 // NewParams is the coinswap params constructor

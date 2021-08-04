@@ -13,9 +13,9 @@ var (
 
 const (
 	// FormatUniABSPrefix defines the prefix of liquidity token
-	FormatUniABSPrefix = "swap"
+	FormatUniABSPrefix = "lpt-"
 	// FormatUniDenom defines the name of liquidity token
-	FormatUniDenom = "swap%s"
+	FormatUniDenom = "lpt-%s"
 
 	// TypeMsgAddLiquidity defines the type of MsgAddLiquidity
 	TypeMsgAddLiquidity = "add_liquidity"
