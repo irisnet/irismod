@@ -183,7 +183,6 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 			inputCoin, outputCoin sdk.Coin
 			isBuyOrder            bool
 		)
-		k.GetAutoIncrementId(ctx)
 
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)

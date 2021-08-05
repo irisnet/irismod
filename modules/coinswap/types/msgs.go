@@ -16,7 +16,8 @@ const (
 	FormatUniABSPrefix = "lpt-"
 	// FormatUniDenom defines the name of liquidity token
 	FormatUniDenom = "lpt-%s"
-
+	// FormatTibcPrefix defines the prefix of liquidity token
+	FormatTibcPrefix = "tibc"
 	// TypeMsgAddLiquidity defines the type of MsgAddLiquidity
 	TypeMsgAddLiquidity = "add_liquidity"
 	// TypeMsgRemoveLiquidity defines the type of MsgRemoveLiquidity
