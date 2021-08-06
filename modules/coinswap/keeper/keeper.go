@@ -321,47 +321,29 @@ func (k Keeper) GetUniDenomFromDenoms(ctx sdk.Context, denom1, denom2 string) (s
 	if denom1 != standardDenom && denom2 != standardDenom {
 		return "", sdkerrors.Wrap(types.ErrNotContainStandardDenom, fmt.Sprintf("standard denom: %s,denom1: %s,denom2: %s", standardDenom, denom1, denom2))
 	}
-	Value := k.GetAutoIncrementId(ctx)
+	Value := k.GetlptID(ctx)
 	LptId, _ := strconv.Atoi(Value)
-	defer k.SetAutoIncrementId(ctx, strconv.Itoa(LptId+1))
+	defer k.SetlptID(ctx, strconv.Itoa(LptId+1))
 	if denom1 == standardDenom {
 		return fmt.Sprintf(types.FormatUniDenom, strconv.Itoa(LptId+1)), nil
 	}
 	return fmt.Sprintf(types.FormatUniDenom, strconv.Itoa(LptId+1)), nil
 }
 
-// SetAutoIncrementId sets Lpt AutoIncrementId for the coinswap module.
-func (k Keeper) SetAutoIncrementId(ctx sdk.Context, AutoIncrementId string) {
+// SetlptID sets Lpt lptID for the coinswap module.
+func (k Keeper) SetlptID(ctx sdk.Context, lptID string) {
 	store := ctx.KVStore(k.storeKey)
-	IdWrap := gogotypes.StringValue{Value: AutoIncrementId}
+	IdWrap := gogotypes.StringValue{Value: lptID}
 	bz := k.cdc.MustMarshalBinaryBare(&IdWrap)
 	store.Set(types.KeyLptId, bz)
 }
 
-// GetAutoIncrementId returns Lpt AutoIncrementId of the coinswap module.
-func (k Keeper) GetAutoIncrementId(ctx sdk.Context) string {
+// GetlptID returns Lpt lptID of the coinswap module.
+func (k Keeper) GetlptID(ctx sdk.Context) string {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.KeyLptId)
 
 	var LptId = gogotypes.StringValue{}
 	k.cdc.MustUnmarshalBinaryBare(bz, &LptId)
 	return LptId.Value
-}
-
-// SetAutoIncrementId sets Tibcid AutoIncrementId for the coinswap module.
-func (k Keeper) SetTibcAutoIncrementId(ctx sdk.Context, AutoIncrementId string) {
-	store := ctx.KVStore(k.storeKey)
-	IdWrap := gogotypes.StringValue{Value: AutoIncrementId}
-	bz := k.cdc.MustMarshalBinaryBare(&IdWrap)
-	store.Set(types.KeyTibcId, bz)
-}
-
-// GetAutoIncrementId returns Tibcid AutoIncrementId of the coinswap module.
-func (k Keeper) GetTibcAutoIncrementId(ctx sdk.Context) string {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.KeyTibcId)
-
-	var tibcid = gogotypes.StringValue{}
-	k.cdc.MustUnmarshalBinaryBare(bz, &tibcid)
-	return tibcid.Value
 }
