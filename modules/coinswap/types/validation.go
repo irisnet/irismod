@@ -90,7 +90,7 @@ func ValidateWithdrawLiquidity(liquidity sdk.Coin) error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid withdrawLiquidity (%s)", liquidity.String())
 	}
 
-	if err := ValidateUniDenom(liquidity.Denom); err != nil {
+	if err := ValidateLptDenom(liquidity.Denom); err != nil {
 		return err
 	}
 	return nil
@@ -104,8 +104,8 @@ func ValidateMinStandardAmt(minStandardAmt sdk.Int) error {
 	return nil
 }
 
-// ValidateUniDenom returns nil if the uni denom is valid
-func ValidateUniDenom(lptDenom string) error {
+// ValidateLptDenom returns nil if the Liquidity pool token denom is valid
+func ValidateLptDenom(lptDenom string) error {
 	if !strings.HasPrefix(lptDenom, LptTokenPrefix) {
 		return sdkerrors.Wrap(ErrInvalidDenom, lptDenom)
 	}

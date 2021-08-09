@@ -273,24 +273,6 @@ func (k Keeper) removeLiquidity(ctx sdk.Context, poolAddr, sender sdk.AccAddress
 	return coins, k.bk.SendCoins(ctx, poolAddr, sender, coins)
 }
 
-// ValidatePool Verify the legitimacy of the liquidity pool
-func (k Keeper) ValidatePool(ctx sdk.Context, lptDenom string) error {
-	if err := types.ValidateUniDenom(lptDenom); err != nil {
-		return err
-	}
-
-	pool, has := k.GetPoolByLptDenom(ctx, lptDenom)
-	if !has {
-		return sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", lptDenom)
-	}
-
-	_, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // GetParams gets the parameters for the coinswap module.
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	var swapParams types.Params

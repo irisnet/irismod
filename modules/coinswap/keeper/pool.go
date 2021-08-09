@@ -96,6 +96,24 @@ func (k Keeper) GetLptDenomFromDenoms(ctx sdk.Context, denom1, denom2 string) (s
 	return pool.LptDenom, nil
 }
 
+// ValidatePool Verify the legitimacy of the liquidity pool
+func (k Keeper) ValidatePool(ctx sdk.Context, lptDenom string) error {
+	if err := types.ValidateLptDenom(lptDenom); err != nil {
+		return err
+	}
+
+	pool, has := k.GetPoolByLptDenom(ctx, lptDenom)
+	if !has {
+		return sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", lptDenom)
+	}
+
+	_, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (k Keeper) setPool(ctx sdk.Context, pool *types.Pool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(pool)
