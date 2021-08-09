@@ -123,10 +123,10 @@ func (suite *TestSuite) TestLiquidity() {
 	pool, has := suite.app.CoinswapKeeper.GetPool(suite.ctx, poolId)
 	suite.Require().True(has)
 
-	poolAddr, err := sdk.AccAddressFromBech32(pool.ReserveAccountAddress)
+	poolAddr, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
 	suite.Require().NoError(err)
 
-	lptDenom := pool.PoolCoinDenom
+	lptDenom := pool.LptDenom
 
 	supply := suite.app.BankKeeper.GetSupply(suite.ctx).GetTotal()
 	reservePoolBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, poolAddr)

@@ -122,14 +122,14 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 		depositToken = sdk.NewCoin(msg.MaxToken.Denom, msg.MaxToken.Amount)
 		pool = k.CreatePool(ctx, msg.MaxToken.Denom)
 	} else {
-		balances, err := k.GetPoolBalances(ctx, pool.ReserveAccountAddress)
+		balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
 		if err != nil {
 			return sdk.Coin{}, err
 		}
 
 		standardReserveAmt := balances.AmountOf(standardDenom)
 		tokenReserveAmt := balances.AmountOf(msg.MaxToken.Denom)
-		liquidity := k.bk.GetSupply(ctx).GetTotal().AmountOf(pool.PoolCoinDenom)
+		liquidity := k.bk.GetSupply(ctx).GetTotal().AmountOf(pool.LptDenom)
 
 		mintLiquidityAmt = (liquidity.Mul(msg.ExactStandardAmt)).Quo(standardReserveAmt)
 		if mintLiquidityAmt.LT(msg.MinLiquidity) {
@@ -148,7 +148,7 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 		return sdk.Coin{}, err
 	}
 
-	reservePoolAddress, err := sdk.AccAddressFromBech32(pool.ReserveAccountAddress)
+	reservePoolAddress, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
 	if err != nil {
 		return sdk.Coin{}, err
 	}
@@ -160,7 +160,7 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 			sdk.NewAttribute(types.AttributeValueTokenPair, types.GetTokenPairByDenom(msg.MaxToken.Denom, standardDenom)),
 		),
 	)
-	return k.addLiquidity(ctx, sender, reservePoolAddress, standardCoin, depositToken, pool.PoolCoinDenom, mintLiquidityAmt)
+	return k.addLiquidity(ctx, sender, reservePoolAddress, standardCoin, depositToken, pool.LptDenom, mintLiquidityAmt)
 }
 
 func (k Keeper) addLiquidity(ctx sdk.Context,
@@ -197,13 +197,13 @@ func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) 
 		return nil, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", msg.WithdrawLiquidity.Denom)
 	}
 
-	balances, err := k.GetPoolBalances(ctx, pool.ReserveAccountAddress)
+	balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
 	if err != nil {
 		return nil, err
 	}
 
 	lptDenom := msg.WithdrawLiquidity.Denom
-	minTokenDenom := pool.AnotherCoinDenom
+	minTokenDenom := pool.CounterpartyDenom
 
 	standardReserveAmt := balances.AmountOf(standardDenom)
 	tokenReserveAmt := balances.AmountOf(minTokenDenom)
@@ -247,7 +247,7 @@ func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) 
 		return nil, err
 	}
 
-	poolAddr, err := sdk.AccAddressFromBech32(pool.ReserveAccountAddress)
+	poolAddr, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -284,7 +284,7 @@ func (k Keeper) ValidatePool(ctx sdk.Context, lptDenom string) error {
 		return sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", lptDenom)
 	}
 
-	_, err := k.GetPoolBalances(ctx, pool.ReserveAccountAddress)
+	_, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
 	if err != nil {
 		return err
 	}

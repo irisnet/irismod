@@ -21,13 +21,14 @@ message Output {
 
 message Pool {
   string id = 1;
-  // denoms of reserve coin pair of the pool
-  string standard_coin_denom = 2;
-  string another_coin_denom = 3;
-  // reserve account address of the pool
-  string reserve_account_address = 4;
-  // denom of pool coin of the pool
-  string pool_coin_denom = 5;
+  // denom of base coin of the pool
+  string standard_denom = 2;
+  // denom of counterparty coin of the pool
+  string counterparty_denom = 3;
+  // escrow account for deposit tokens
+  string escrow_address = 4;
+  // denom of the liquidity pool coin
+  string lpt_denom = 5;
 }
 
 // Params defines token module's parameters

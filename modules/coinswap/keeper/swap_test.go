@@ -91,7 +91,7 @@ func (suite *TestSuite) TestSwap() {
 	pool, has := suite.app.CoinswapKeeper.GetPool(suite.ctx, poolId)
 	suite.Require().True(has)
 
-	lptDenom := pool.PoolCoinDenom
+	lptDenom := pool.LptDenom
 
 	// first swap buy order
 	err := suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
@@ -197,7 +197,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 	poolETH, has := suite.app.CoinswapKeeper.GetPool(suite.ctx, poolIdETH)
 	suite.Require().True(has)
 
-	lptDenom := pool.PoolCoinDenom
+	lptDenom := pool.LptDenom
 
 	// first swap buy order
 	err := suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
@@ -282,7 +282,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 		sdk.NewInt64Coin(denomBTC, 643),
 		sdk.NewInt64Coin(denomETH, 99998000),
 		sdk.NewInt64Coin(denomStandard, 99999000),
-		sdk.NewInt64Coin(poolETH.PoolCoinDenom, 1000),
+		sdk.NewInt64Coin(poolETH.LptDenom, 1000),
 	)
 	suite.Equal(expCoins.Sort().String(), sender2Balances.Sort().String())
 
@@ -308,7 +308,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 		sdk.NewInt64Coin(denomBTC, 726),
 		sdk.NewInt64Coin(denomETH, 99997000),
 		sdk.NewInt64Coin(denomStandard, 99999000),
-		sdk.NewInt64Coin(poolETH.PoolCoinDenom, 1000),
+		sdk.NewInt64Coin(poolETH.LptDenom, 1000),
 	)
 	suite.Equal(expCoins.Sort().String(), sender2Balances.Sort().String())
 }
@@ -339,12 +339,12 @@ func createReservePool(suite *TestSuite, denom string) (sdk.AccAddress, sdk.AccA
 	poolId := types.GetPoolId(denom)
 	pool, has := suite.app.CoinswapKeeper.GetPool(suite.ctx, poolId)
 	suite.Require().True(has)
-	reservePoolAddr := types.GetReservePoolAddr(pool.PoolCoinDenom)
+	reservePoolAddr := types.GetReservePoolAddr(pool.LptDenom)
 
 	moduleAccountBalances := suite.app.BankKeeper.GetSupply(suite.ctx).GetTotal()
 	reservePoolBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddr)
 	senderBlances := suite.app.BankKeeper.GetAllBalances(suite.ctx, addrSender)
-	suite.Equal("1000", moduleAccountBalances.AmountOf(pool.PoolCoinDenom).String())
+	suite.Equal("1000", moduleAccountBalances.AmountOf(pool.LptDenom).String())
 
 	expCoins := sdk.NewCoins(
 		sdk.NewInt64Coin(denom, 1000),
@@ -355,7 +355,7 @@ func createReservePool(suite *TestSuite, denom string) (sdk.AccAddress, sdk.AccA
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denom, 99999000),
 		sdk.NewInt64Coin(denomStandard, 99999000),
-		sdk.NewInt64Coin(pool.PoolCoinDenom, 1000),
+		sdk.NewInt64Coin(pool.LptDenom, 1000),
 	)
 	suite.Equal(expCoins.Sort().String(), senderBlances.Sort().String())
 	return addrSender, reservePoolAddr

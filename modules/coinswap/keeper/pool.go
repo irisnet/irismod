@@ -10,15 +10,15 @@ import (
 )
 
 // CreatePool create a liquidity that saves relevant information about popular pool tokens
-func (k Keeper) CreatePool(ctx sdk.Context, anotherCoinDenom string) types.Pool {
+func (k Keeper) CreatePool(ctx sdk.Context, counterpartyDenom string) types.Pool {
 	nextSequence := k.getNextPoolSequence(ctx)
-	poolCoinDenom := types.GetPoolCoinDenom(nextSequence)
+	lptDenom := types.GetLptDenom(nextSequence)
 	pool := &types.Pool{
-		Id:                    types.GetPoolId(anotherCoinDenom),
-		StandardCoinDenom:     k.GetStandardDenom(ctx),
-		AnotherCoinDenom:      anotherCoinDenom,
-		ReserveAccountAddress: types.GetReservePoolAddr(poolCoinDenom).String(),
-		PoolCoinDenom:         poolCoinDenom,
+		Id:                types.GetPoolId(counterpartyDenom),
+		StandardDenom:     k.GetStandardDenom(ctx),
+		CounterpartyDenom: counterpartyDenom,
+		EscrowAddress:     types.GetReservePoolAddr(lptDenom).String(),
+		LptDenom:          lptDenom,
 	}
 	k.setNextPoolSequence(ctx, nextSequence+1)
 	k.setPool(ctx, pool)
@@ -92,7 +92,7 @@ func (k Keeper) GetLptDenomFromDenoms(ctx sdk.Context, denom1, denom2 string) (s
 	if !has {
 		return "", sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", anotherCoinDenom)
 	}
-	return pool.PoolCoinDenom, nil
+	return pool.LptDenom, nil
 }
 
 func (k Keeper) setPool(ctx sdk.Context, pool *types.Pool) {
@@ -103,7 +103,7 @@ func (k Keeper) setPool(ctx sdk.Context, pool *types.Pool) {
 	// save by lpt denom
 	poolId := &gogotypes.StringValue{Value: pool.Id}
 	poolIdBz := k.cdc.MustMarshalBinaryBare(poolId)
-	store.Set([]byte(pool.PoolCoinDenom), poolIdBz)
+	store.Set([]byte(pool.LptDenom), poolIdBz)
 }
 
 // getNextPoolSequence gets the next pool sequence from the store.

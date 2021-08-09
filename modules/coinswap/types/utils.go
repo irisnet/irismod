@@ -23,7 +23,7 @@ func GetPoolId(anotherCoinDenom string) string {
 	return fmt.Sprintf("pool-%s", anotherCoinDenom)
 }
 
-// GetPoolCoinDenom returns the pool coin denom by specified sequence.
-func GetPoolCoinDenom(sequence uint64) string {
+// GetLptDenom returns the pool coin denom by specified sequence.
+func GetLptDenom(sequence uint64) string {
 	return fmt.Sprintf(LptTokenFormat, sequence)
 }

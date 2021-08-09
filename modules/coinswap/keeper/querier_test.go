@@ -31,9 +31,6 @@ func (suite *TestSuite) TestNewQuerier() {
 	suite.Error(err)
 	suite.Nil(res)
 
-	// init liquidity.
-
-	//initVars(suite)
 	btcAmt, _ := sdk.NewIntFromString("100")
 	standardAmt, _ := sdk.NewIntFromString("10000000000000000000")
 	depositCoin := sdk.NewCoin(denomBTC, btcAmt)

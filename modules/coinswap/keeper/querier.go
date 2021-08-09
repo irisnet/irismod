@@ -37,14 +37,14 @@ func queryLiquidity(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuer
 	}
 
 	standardDenom := k.GetStandardDenom(ctx)
-	reservePool, err := k.GetPoolBalancesByLptDenom(ctx, pool.PoolCoinDenom)
+	reservePool, err := k.GetPoolBalancesByLptDenom(ctx, pool.LptDenom)
 	if err != nil {
 		return nil, err
 	}
 
 	standard := sdk.NewCoin(standardDenom, reservePool.AmountOf(standardDenom))
 	token := sdk.NewCoin(params.Denom, reservePool.AmountOf(params.Denom))
-	liquidity := sdk.NewCoin(pool.PoolCoinDenom, k.bk.GetSupply(ctx).GetTotal().AmountOf(pool.PoolCoinDenom))
+	liquidity := sdk.NewCoin(pool.LptDenom, k.bk.GetSupply(ctx).GetTotal().AmountOf(pool.LptDenom))
 
 	swapParams := k.GetParams(ctx)
 	fee := swapParams.Fee.String()

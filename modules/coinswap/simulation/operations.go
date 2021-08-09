@@ -118,13 +118,13 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "pool not found"), nil, err
 		}
 
-		reservePool, err := k.GetPoolBalances(ctx, pool.ReserveAccountAddress)
+		reservePool, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
 
 		if err != nil {
 			minLiquidity = exactStandardAmt
 		} else {
 			standardReserveAmt := reservePool.AmountOf(standardDenom)
-			liquidity := bk.GetSupply(ctx).GetTotal().AmountOf(pool.PoolCoinDenom)
+			liquidity := bk.GetSupply(ctx).GetTotal().AmountOf(pool.LptDenom)
 			minLiquidity = liquidity.Mul(exactStandardAmt).Quo(standardReserveAmt)
 
 			if !maxToken.Amount.Sub(reservePool.AmountOf(maxToken.GetDenom()).Mul(exactStandardAmt).Quo(standardReserveAmt)).IsPositive() {
@@ -214,7 +214,7 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
 
-		if _, err := k.GetPoolBalancesByLptDenom(ctx, pool.PoolCoinDenom); err != nil {
+		if _, err := k.GetPoolBalancesByLptDenom(ctx, pool.LptDenom); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
 
@@ -238,7 +238,7 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
 
-		if _, err := k.GetPoolBalancesByLptDenom(ctx, pool.PoolCoinDenom); err != nil {
+		if _, err := k.GetPoolBalancesByLptDenom(ctx, pool.LptDenom); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
 
@@ -356,13 +356,13 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
 
-		reservePool, err := k.GetPoolBalancesByLptDenom(ctx, pool.PoolCoinDenom)
+		reservePool, err := k.GetPoolBalancesByLptDenom(ctx, pool.LptDenom)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
 
 		standardReserveAmt := reservePool.AmountOf(standardDenom)
-		tokenReserveAmt := reservePool.AmountOf(pool.AnotherCoinDenom)
+		tokenReserveAmt := reservePool.AmountOf(pool.CounterpartyDenom)
 
 		withdrawLiquidity = sdk.NewCoin(token.GetDenom(), simtypes.RandomAmount(r, token.Amount))
 		liquidityReserve := bk.GetSupply(ctx).GetTotal().AmountOf(token.Denom)
@@ -394,7 +394,7 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 		)
 
 		var fees sdk.Coins
-		coinsTemp, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin(pool.AnotherCoinDenom, minToken), sdk.NewCoin(standardDenom, minStandardAmt)))
+		coinsTemp, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin(pool.CounterpartyDenom, minToken), sdk.NewCoin(standardDenom, minStandardAmt)))
 		if !hasNeg {
 			fees, err = simtypes.RandomFees(r, ctx, coinsTemp)
 			if err != nil {
