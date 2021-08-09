@@ -14,8 +14,8 @@ func ValidateInput(input Input) error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid input (%s)", input.Coin.String())
 	}
 
-	if strings.HasPrefix(input.Coin.Denom, FormatUniABSPrefix) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid input denom, should not begin with (%s)", FormatUniABSPrefix)
+	if strings.HasPrefix(input.Coin.Denom, LptTokenPrefix) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid input denom, should not begin with (%s)", LptTokenPrefix)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(input.Address); err != nil {
@@ -30,8 +30,8 @@ func ValidateOutput(output Output) error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid output (%s)", output.Coin.String())
 	}
 
-	if strings.HasPrefix(output.Coin.Denom, FormatUniABSPrefix) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid output denom, should not begin with (%s)", FormatUniABSPrefix)
+	if strings.HasPrefix(output.Coin.Denom, LptTokenPrefix) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid output denom, should not begin with (%s)", LptTokenPrefix)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(output.Address); err != nil {
@@ -54,7 +54,7 @@ func ValidateMaxToken(maxToken sdk.Coin) error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid maxToken (%s)", maxToken.String())
 	}
 
-	if strings.HasPrefix(maxToken.Denom, FormatUniABSPrefix) {
+	if strings.HasPrefix(maxToken.Denom, LptTokenPrefix) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max token must be non-liquidity token")
 	}
 	return nil
@@ -105,9 +105,9 @@ func ValidateMinStandardAmt(minStandardAmt sdk.Int) error {
 }
 
 // ValidateUniDenom returns nil if the uni denom is valid
-func ValidateUniDenom(uniDenom string) error {
-	if !strings.HasPrefix(uniDenom, FormatUniABSPrefix) {
-		return sdkerrors.Wrap(ErrInvalidDenom, uniDenom)
+func ValidateUniDenom(lptDenom string) error {
+	if !strings.HasPrefix(lptDenom, LptTokenPrefix) {
+		return sdkerrors.Wrap(ErrInvalidDenom, lptDenom)
 	}
 	return nil
 }

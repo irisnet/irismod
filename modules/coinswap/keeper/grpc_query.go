@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/irisnet/irismod/modules/coinswap/types"
 )
@@ -19,19 +20,30 @@ func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	tokenDenom := req.Denom
-	uniDenom := types.GetUniDenomFromDenom(tokenDenom)
+	// tokenDenom := req.Denom
+	// uniDenom := types.GetPoolCoinDenom(tokenDenom)
+
+	// ctx := sdk.UnwrapSDKContext(c)
+	// reservePool, err := k.GetReservePool(ctx, uniDenom)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	ctx := sdk.UnwrapSDKContext(c)
-	reservePool, err := k.GetReservePool(ctx, uniDenom)
+	pool, has := k.GetPoolByLptDenom(ctx, req.Denom)
+	if !has {
+		return nil, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", req.Denom)
+	}
+
+	standardDenom := k.GetStandardDenom(ctx)
+	reservePool, err := k.GetPoolBalances(ctx, pool.PoolCoinDenom)
 	if err != nil {
 		return nil, err
 	}
 
-	standardDenom := k.GetStandardDenom(ctx)
 	standard := sdk.NewCoin(standardDenom, reservePool.AmountOf(standardDenom))
-	token := sdk.NewCoin(tokenDenom, reservePool.AmountOf(tokenDenom))
-	liquidity := sdk.NewCoin(uniDenom, k.bk.GetSupply(ctx).GetTotal().AmountOf(uniDenom))
+	token := sdk.NewCoin(req.Denom, reservePool.AmountOf(req.Denom))
+	liquidity := sdk.NewCoin(pool.PoolCoinDenom, k.bk.GetSupply(ctx).GetTotal().AmountOf(pool.PoolCoinDenom))
 
 	swapParams := k.GetParams(ctx)
 	fee := swapParams.Fee.String()

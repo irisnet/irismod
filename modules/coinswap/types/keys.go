@@ -12,4 +12,12 @@ const (
 
 	// QuerierRoute is the querier route for the coinswap module.
 	QuerierRoute = StoreKey
+
+	// KeyNextPoolSequence is the key used to store the next pool sequence in
+	// the keeper.
+	KeyNextPoolSequence = "nextPoolSequence"
+
+	// KeyPool is the key used to store the pool information  in
+	// the keeper.
+	KeyPool = "pool"
 )

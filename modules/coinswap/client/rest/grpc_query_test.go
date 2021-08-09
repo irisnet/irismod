@@ -73,7 +73,6 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	maxSupply := int64(200000000)
 	mintable := true
 	baseURL := val.APIAddress
-	uniKitty := coinswaptypes.GetUniDenomFromDenom(symbol)
 
 	//------test GetCmdIssueToken()-------------
 	args := []string{
