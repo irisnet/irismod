@@ -41,7 +41,7 @@ func (suite *TestSuite) TestNewQuerier() {
 
 	// test queryLiquidity
 
-	bz, errRes := legacyAmino.MarshalJSON(types.QueryLiquidityParams{Denom: lptCoin.Denom})
+	bz, errRes := legacyAmino.MarshalJSON(types.QueryLiquidityParams{Denom: denomBTC})
 	suite.NoError(errRes)
 
 	req.Path = fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryLiquidity)
@@ -50,14 +50,14 @@ func (suite *TestSuite) TestNewQuerier() {
 	res, err = querier(suite.ctx, []string{types.QueryLiquidity}, req)
 	suite.NoError(err)
 
-	// var redelRes types.QueryLiquidityResponse
-	// errRes = suite.app.LegacyAmino().UnmarshalJSON(res, &redelRes)
-	// suite.NoError(errRes)
-	// standard := sdk.NewCoin(denomStandard, standardAmt)
-	// token := sdk.NewCoin(denomBTC, btcAmt)
-	// liquidity := sdk.NewCoin(unidenomBTC, standardAmt)
-	// suite.Equal(standard, redelRes.Standard)
-	// suite.Equal(token, redelRes.Token)
-	// suite.Equal(liquidity, redelRes.Liquidity)
-	// suite.Equal(suite.app.CoinswapKeeper.GetParams(suite.ctx).Fee.String(), redelRes.Fee)
+	var respone types.QueryLiquidityResponse
+	errRes = suite.app.LegacyAmino().UnmarshalJSON(res, &respone)
+	suite.NoError(errRes)
+	standard := sdk.NewCoin(denomStandard, standardAmt)
+	token := sdk.NewCoin(denomBTC, btcAmt)
+	liquidity := sdk.NewCoin(lptCoin.Denom, standardAmt)
+	suite.Equal(standard, respone.Standard)
+	suite.Equal(token, respone.Token)
+	suite.Equal(liquidity, respone.Liquidity)
+	suite.Equal(suite.app.CoinswapKeeper.GetParams(suite.ctx).Fee.String(), respone.Fee)
 }

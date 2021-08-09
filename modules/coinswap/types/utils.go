@@ -19,8 +19,8 @@ func GetTokenPairByDenom(inputDenom, outputDenom string) string {
 }
 
 // GetPoolId returns the pool coin denom by specified sequence.
-func GetPoolId(anotherCoinDenom string) string {
-	return fmt.Sprintf("pool-%s", anotherCoinDenom)
+func GetPoolId(counterpartyDenom string) string {
+	return fmt.Sprintf("pool-%s", counterpartyDenom)
 }
 
 // GetLptDenom returns the pool coin denom by specified sequence.

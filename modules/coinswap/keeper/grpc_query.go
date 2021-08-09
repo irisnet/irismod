@@ -21,7 +21,8 @@ func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	pool, has := k.GetPoolByLptDenom(ctx, req.Denom)
+	poolId := types.GetPoolId(req.Denom)
+	pool, has := k.GetPool(ctx, poolId)
 	if !has {
 		return nil, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", req.Denom)
 	}
@@ -33,7 +34,7 @@ func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (
 	}
 
 	standard := sdk.NewCoin(standardDenom, reservePool.AmountOf(standardDenom))
-	token := sdk.NewCoin(req.Denom, reservePool.AmountOf(req.Denom))
+	token := sdk.NewCoin(pool.CounterpartyDenom, reservePool.AmountOf(pool.CounterpartyDenom))
 	liquidity := sdk.NewCoin(pool.LptDenom, k.bk.GetSupply(ctx).GetTotal().AmountOf(pool.LptDenom))
 
 	swapParams := k.GetParams(ctx)

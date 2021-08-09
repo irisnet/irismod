@@ -28,7 +28,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, counterpartyDenom string) types.Pool
 // GetPool return the liquidity pool by the specified anotherCoinDenom
 func (k Keeper) GetPool(ctx sdk.Context, poolId string) (types.Pool, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get([]byte(poolId))
+	bz := store.Get(types.GetPoolKey(poolId))
 	if bz == nil {
 		return types.Pool{}, false
 	}
@@ -41,7 +41,7 @@ func (k Keeper) GetPool(ctx sdk.Context, poolId string) (types.Pool, bool) {
 // GetPoolByLptDenom return the liquidity pool by the specified anotherCoinDenom
 func (k Keeper) GetPoolByLptDenom(ctx sdk.Context, lptDenom string) (types.Pool, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get([]byte(lptDenom))
+	bz := store.Get(types.GetLptDenomKey(lptDenom))
 	if bz == nil {
 		return types.Pool{}, false
 	}
@@ -51,14 +51,15 @@ func (k Keeper) GetPoolByLptDenom(ctx sdk.Context, lptDenom string) (types.Pool,
 	return k.GetPool(ctx, poolId.Value)
 }
 
-func (k Keeper) GetPoolBalances(ctx sdk.Context, reserveAccountAddress string) (coins sdk.Coins, err error) {
-	address, err := sdk.AccAddressFromBech32(reserveAccountAddress)
+// GetPoolBalances return the liquidity pool by the specified anotherCoinDenom
+func (k Keeper) GetPoolBalances(ctx sdk.Context, escrowAddress string) (coins sdk.Coins, err error) {
+	address, err := sdk.AccAddressFromBech32(escrowAddress)
 	if err != nil {
 		return coins, err
 	}
 	acc := k.ak.GetAccount(ctx, address)
 	if acc == nil {
-		return nil, sdkerrors.Wrap(types.ErrReservePoolNotExists, reserveAccountAddress)
+		return nil, sdkerrors.Wrap(types.ErrReservePoolNotExists, escrowAddress)
 	}
 	return k.bk.GetAllBalances(ctx, acc.GetAddress()), nil
 }
@@ -83,14 +84,14 @@ func (k Keeper) GetLptDenomFromDenoms(ctx sdk.Context, denom1, denom2 string) (s
 		return "", sdkerrors.Wrap(types.ErrNotContainStandardDenom, fmt.Sprintf("standard denom: %s,denom1: %s,denom2: %s", standardDenom, denom1, denom2))
 	}
 
-	anotherCoinDenom := denom1
-	if anotherCoinDenom == standardDenom {
-		anotherCoinDenom = denom2
+	counterpartyDenom := denom1
+	if counterpartyDenom == standardDenom {
+		counterpartyDenom = denom2
 	}
-	poolId := types.GetPoolId(anotherCoinDenom)
+	poolId := types.GetPoolId(counterpartyDenom)
 	pool, has := k.GetPool(ctx, poolId)
 	if !has {
-		return "", sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", anotherCoinDenom)
+		return "", sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", counterpartyDenom)
 	}
 	return pool.LptDenom, nil
 }
@@ -98,12 +99,12 @@ func (k Keeper) GetLptDenomFromDenoms(ctx sdk.Context, denom1, denom2 string) (s
 func (k Keeper) setPool(ctx sdk.Context, pool *types.Pool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(pool)
-	store.Set([]byte(pool.Id), bz)
+	store.Set(types.GetPoolKey(pool.Id), bz)
 
 	// save by lpt denom
 	poolId := &gogotypes.StringValue{Value: pool.Id}
 	poolIdBz := k.cdc.MustMarshalBinaryBare(poolId)
-	store.Set([]byte(pool.LptDenom), poolIdBz)
+	store.Set(types.GetLptDenomKey(pool.LptDenom), poolIdBz)
 }
 
 // getNextPoolSequence gets the next pool sequence from the store.
