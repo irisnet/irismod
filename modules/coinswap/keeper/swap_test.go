@@ -49,7 +49,6 @@ func (suite *TestSuite) TestGetInputPrice() {
 	for _, tcase := range datas {
 		data := tcase.data
 		actual := keeper.GetInputPrice(data.delta, data.x, data.y, data.fee)
-		_, _ = fmt.Println("expect:", tcase.expect.String(), "actual:", actual.String())
 		suite.Equal(tcase.expect, actual)
 	}
 }
@@ -71,7 +70,6 @@ func (suite *TestSuite) TestGetOutputPrice() {
 	for _, tcase := range datas {
 		data := tcase.data
 		actual := keeper.GetOutputPrice(data.delta, data.x, data.y, data.fee)
-		_, _ = fmt.Printf("expect: %s,actual: %s", tcase.expect.String(), actual.String())
 		suite.Equal(tcase.expect, actual)
 	}
 }

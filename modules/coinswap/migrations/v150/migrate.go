@@ -1,4 +1,4 @@
-package v1110
+package v150
 
 import (
 	"strings"
@@ -14,17 +14,17 @@ import (
 
 func Migrate(ctx sdk.Context, k coinswapkeeper.Keeper, bk bankkeeper.Keeper, ak authkeeper.AccountKeeper) error {
 	// 1. Query all current liquidity tokens
-	var ltpDenoms []string
+	var lptDenoms []string
 	for _, coin := range bk.GetSupply(ctx).GetTotal() {
 		if strings.HasPrefix(coin.GetDenom(), FormatUniABSPrefix) {
-			ltpDenoms = append(ltpDenoms, coin.GetDenom())
+			lptDenoms = append(lptDenoms, coin.GetDenom())
 		}
 	}
 
 	// 2. Create a new liquidity pool based on the results of the first step
 	standardDenom := k.GetStandardDenom(ctx)
-	var pools = make(map[string]coinswaptypes.Pool, len(ltpDenoms))
-	for _, ltpDenom := range ltpDenoms {
+	var pools = make(map[string]coinswaptypes.Pool, len(lptDenoms))
+	for _, ltpDenom := range lptDenoms {
 		counterpartyDenom := strings.TrimPrefix(ltpDenom, FormatUniABSPrefix)
 		pools[ltpDenom] = k.CreatePool(ctx, counterpartyDenom)
 		//3. Transfer tokens from the old liquidity to the newly created liquidity pool
@@ -37,9 +37,9 @@ func Migrate(ctx sdk.Context, k coinswapkeeper.Keeper, bk bankkeeper.Keeper, ak 
 	// 4. Traverse all accounts and modify the old liquidity token to the new liquidity token
 	ak.IterateAccounts(ctx, func(account authtypes.AccountI) (stop bool) {
 		balances := bk.GetAllBalances(ctx, account.GetAddress())
-		for _, ltpDenom := range ltpDenoms {
+		for _, ltpDenom := range lptDenoms {
 			amount := balances.AmountOf(ltpDenom)
-			if sdk.ZeroInt().Equal(amount) {
+			if amount.IsZero() {
 				continue
 			}
 			originLptCoin := sdk.NewCoin(ltpDenom, amount)

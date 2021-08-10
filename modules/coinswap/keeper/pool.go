@@ -81,7 +81,7 @@ func (k Keeper) GetLptDenomFromDenoms(ctx sdk.Context, denom1, denom2 string) (s
 
 	standardDenom := k.GetStandardDenom(ctx)
 	if denom1 != standardDenom && denom2 != standardDenom {
-		return "", sdkerrors.Wrap(types.ErrNotContainStandardDenom, fmt.Sprintf("standard denom: %s,denom1: %s,denom2: %s", standardDenom, denom1, denom2))
+		return "", sdkerrors.Wrap(types.ErrNotContainStandardDenom, fmt.Sprintf("standard denom: %s, denom1: %s, denom2: %s", standardDenom, denom1, denom2))
 	}
 
 	counterpartyDenom := denom1
