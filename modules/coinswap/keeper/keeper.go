@@ -110,11 +110,11 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 	var standardCoin = sdk.NewCoin(standardDenom, msg.ExactStandardAmt)
 
 	poolId := types.GetPoolId(msg.MaxToken.Denom)
-	pool, has := k.GetPool(ctx, poolId)
+	pool, exists := k.GetPool(ctx, poolId)
 
 	// calculate amount of UNI to be minted for sender
 	// and coin amount to be deposited
-	if !has {
+	if !exists {
 		mintLiquidityAmt = msg.ExactStandardAmt
 		if mintLiquidityAmt.LT(msg.MinLiquidity) {
 			return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("liquidity amount not met, user expected: no less than %s, actual: %s", msg.MinLiquidity.String(), mintLiquidityAmt.String()))
@@ -192,8 +192,8 @@ func (k Keeper) addLiquidity(ctx sdk.Context,
 func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) (sdk.Coins, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 
-	pool, has := k.GetPoolByLptDenom(ctx, msg.WithdrawLiquidity.Denom)
-	if !has {
+	pool, exists := k.GetPoolByLptDenom(ctx, msg.WithdrawLiquidity.Denom)
+	if !exists {
 		return nil, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", msg.WithdrawLiquidity.Denom)
 	}
 

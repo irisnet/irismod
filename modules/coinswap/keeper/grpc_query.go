@@ -22,8 +22,8 @@ func (k Keeper) Liquidity(c context.Context, req *types.QueryLiquidityRequest) (
 
 	ctx := sdk.UnwrapSDKContext(c)
 	poolId := types.GetPoolId(req.Denom)
-	pool, has := k.GetPool(ctx, poolId)
-	if !has {
+	pool, exists := k.GetPool(ctx, poolId)
+	if !exists {
 		return nil, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", req.Denom)
 	}
 
