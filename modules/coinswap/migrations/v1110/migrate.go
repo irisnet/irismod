@@ -12,7 +12,7 @@ import (
 	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
 )
 
-func Migrate(ctx sdk.Context, k coinswapkeeper.Keeper, bk bankkeeper.Keeper, ak authkeeper.AccountKeeper) {
+func Migrate(ctx sdk.Context, k coinswapkeeper.Keeper, bk bankkeeper.Keeper, ak authkeeper.AccountKeeper) error {
 	// 1. Query all current liquidity tokens
 	var ltpDenoms []string
 	for _, coin := range bk.GetSupply(ctx).GetTotal() {
@@ -28,7 +28,10 @@ func Migrate(ctx sdk.Context, k coinswapkeeper.Keeper, bk bankkeeper.Keeper, ak 
 		counterpartyDenom := strings.TrimPrefix(ltpDenom, FormatUniABSPrefix)
 		pools[ltpDenom] = k.CreatePool(ctx, counterpartyDenom)
 		//3. Transfer tokens from the old liquidity to the newly created liquidity pool
-		migratePool(ctx, bk, pools[ltpDenom], ltpDenom, standardDenom)
+		err := migratePool(ctx, bk, pools[ltpDenom], ltpDenom, standardDenom)
+		if err != nil {
+			return err
+		}
 	}
 
 	// 4. Traverse all accounts and modify the old liquidity token to the new liquidity token
@@ -40,10 +43,14 @@ func Migrate(ctx sdk.Context, k coinswapkeeper.Keeper, bk bankkeeper.Keeper, ak 
 				return false
 			}
 			originLptCoin := sdk.NewCoin(ltpDenom, amount)
-			migrateProvider(ctx, originLptCoin, bk, pools[ltpDenom], account.GetAddress())
+			err := migrateProvider(ctx, originLptCoin, bk, pools[ltpDenom], account.GetAddress())
+			if err != nil {
+				panic(err)
+			}
 		}
 		return false
 	})
+	return nil
 }
 
 func migrateProvider(ctx sdk.Context,
@@ -51,34 +58,35 @@ func migrateProvider(ctx sdk.Context,
 	bk bankkeeper.Keeper,
 	pool coinswaptypes.Pool,
 	provider sdk.AccAddress,
-) {
+) error {
 	//1. Burn the old liquidity tokens
 	burnCoins := sdk.NewCoins(originLptCoin)
 	// send liquidity vouchers to be burned from sender account to module account
 	if err := bk.SendCoinsFromAccountToModule(ctx, provider, coinswaptypes.ModuleName, burnCoins); err != nil {
-		panic(err)
+		return err
 	}
 	// burn liquidity vouchers of reserve pool from module account
 	if err := bk.BurnCoins(ctx, coinswaptypes.ModuleName, burnCoins); err != nil {
-		panic(err)
+		return err
 	}
 
 	//2. Issue new liquidity tokens
 	mintToken := sdk.NewCoin(pool.LptDenom, originLptCoin.Amount)
 	mintTokens := sdk.NewCoins(mintToken)
 	if err := bk.MintCoins(ctx, coinswaptypes.ModuleName, mintTokens); err != nil {
-		panic(err)
+		return err
 	}
 	if err := bk.SendCoinsFromModuleToAccount(ctx, coinswaptypes.ModuleName, provider, mintTokens); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 func migratePool(ctx sdk.Context,
 	bk bankkeeper.Keeper,
 	pool coinswaptypes.Pool,
 	ltpDenom, standardDenom string,
-) {
+) error {
 	counterpartyDenom := strings.TrimPrefix(ltpDenom, FormatUniABSPrefix)
 	originPoolAddress := GetReservePoolAddr(ltpDenom)
 
@@ -91,11 +99,12 @@ func migratePool(ctx sdk.Context,
 
 	dstPoolAddress, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = bk.SendCoins(ctx, originPoolAddress, dstPoolAddress, transferCoins)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
