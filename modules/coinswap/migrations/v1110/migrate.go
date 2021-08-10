@@ -40,7 +40,7 @@ func Migrate(ctx sdk.Context, k coinswapkeeper.Keeper, bk bankkeeper.Keeper, ak 
 		for _, ltpDenom := range ltpDenoms {
 			amount := balances.AmountOf(ltpDenom)
 			if sdk.ZeroInt().Equal(amount) {
-				return false
+				continue
 			}
 			originLptCoin := sdk.NewCoin(ltpDenom, amount)
 			err := migrateProvider(ctx, originLptCoin, bk, pools[ltpDenom], account.GetAddress())

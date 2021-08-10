@@ -45,6 +45,8 @@ func TestMigrate(t *testing.T) {
 
 	//app.BaseApp.Commit()
 	verify(ctx, t)
+	//perform an Invariants check
+	app.CrisisKeeper.AssertInvariants(ctx)
 }
 
 func setupWithGenesisAccounts() (*simapp.SimApp, verifyFunc) {
