@@ -44,7 +44,7 @@ func WeightedOperations(
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgIssueToken, &weightIssue, nil,
 		func(_ *rand.Rand) {
-			weightIssue = 100
+			weightIssue = 10
 		},
 	)
 
@@ -77,10 +77,10 @@ func WeightedOperations(
 	)
 
 	return simulation.WeightedOperations{
-		//simulation.NewWeightedOperation(
-		//	weightIssue,
-		//	SimulateIssueToken(k, ak, bk),
-		//),
+		simulation.NewWeightedOperation(
+			weightIssue,
+			SimulateIssueToken(k, ak, bk),
+		),
 		simulation.NewWeightedOperation(
 			weightEdit,
 			SimulateEditToken(k, ak, bk),
