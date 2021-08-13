@@ -72,7 +72,7 @@ func TestValidateKeywords(t *testing.T) {
 		{name: "denom is ibc", args: args{denom: "ibc"}, wantErr: true},
 		{name: "denom is IBC", args: args{denom: "Peg"}, wantErr: false},
 		{name: "denom begin with ibc", args: args{denom: "ibctoken"}, wantErr: true},
-		{name: "denom is swap", args: args{denom: "swap"}, wantErr: true},
+		{name: "denom is lpt", args: args{denom: "lpt"}, wantErr: true},
 		{name: "denom is SWAP", args: args{denom: "SWAP"}, wantErr: false},
 		{name: "denom begin with swap", args: args{denom: "swaptoken"}, wantErr: true},
 	}
