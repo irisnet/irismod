@@ -16,7 +16,11 @@ func NewGenesisState(params Params, denom string) *GenesisState {
 
 // DefaultGenesisState creates a default GenesisState object
 func DefaultGenesisState() *GenesisState {
-	return NewGenesisState(DefaultParams(), sdk.DefaultBondDenom)
+	return &GenesisState{
+		Params:        DefaultParams(),
+		StandardDenom: sdk.DefaultBondDenom,
+		Sequence:      1,
+	}
 }
 
 // ValidateGenesis validates the given genesis state
@@ -27,7 +31,7 @@ func ValidateGenesis(data GenesisState) error {
 
 	var poolIds = make(map[string]bool, len(data.Pool))
 	var lptDenoms = make(map[string]bool, len(data.Pool))
-	var maxSequence = uint64(0)
+	var maxSequence = uint64(1)
 	for _, pool := range data.Pool {
 		if poolIds[pool.Id] {
 			return fmt.Errorf("duplicate pool: %s", pool.Id)
