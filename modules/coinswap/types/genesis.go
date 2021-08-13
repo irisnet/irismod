@@ -31,7 +31,7 @@ func ValidateGenesis(data GenesisState) error {
 
 	var poolIds = make(map[string]bool, len(data.Pool))
 	var lptDenoms = make(map[string]bool, len(data.Pool))
-	var maxSequence = uint64(1)
+	var maxSequence = uint64(0)
 	for _, pool := range data.Pool {
 		if poolIds[pool.Id] {
 			return fmt.Errorf("duplicate pool: %s", pool.Id)
@@ -67,7 +67,7 @@ func ValidateGenesis(data GenesisState) error {
 			return err
 		}
 	}
-	if maxSequence != data.Sequence {
+	if maxSequence+1 != data.Sequence {
 		return fmt.Errorf("invalid sequence: %d", data.Sequence)
 	}
 	return data.Params.Validate()

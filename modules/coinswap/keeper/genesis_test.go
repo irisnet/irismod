@@ -26,7 +26,7 @@ func (suite *TestSuite) TestInitGenesisAndExportGenesis() {
 			EscrowAddress:     types.GetReservePoolAddr("lpt-1").String(),
 			LptDenom:          "lpt-1",
 		}},
-		Sequence: 1,
+		Sequence: 2,
 	}
 	suite.app.CoinswapKeeper.InitGenesis(suite.ctx, expGenesis)
 	actGenesis := suite.app.CoinswapKeeper.ExportGenesis(suite.ctx)
