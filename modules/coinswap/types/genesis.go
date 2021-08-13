@@ -39,6 +39,9 @@ func ValidateGenesis(data GenesisState) error {
 		if lptDenoms[pool.LptDenom] {
 			return fmt.Errorf("duplicate lptDenom: %s", pool.LptDenom)
 		}
+		poolIds[pool.Id] = true
+		lptDenoms[pool.LptDenom] = true
+
 		//validate the liquidity pool token denom
 		seq, err := ParseLptDenom(pool.LptDenom)
 		if err != nil {
