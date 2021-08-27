@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -80,6 +81,17 @@ func GetCmdCreateFarmPool() *cobra.Command {
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
+			if err != nil {
+				return err
+			}
+
+			fmt.Printf(
+				"The farm creation transaction will consume extra fee: %s\n",
+				res.Params.CreatePoolFee.String(),
+			)
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
