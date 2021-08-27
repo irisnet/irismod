@@ -88,10 +88,12 @@ func GetCmdCreateFarmPool() *cobra.Command {
 				return err
 			}
 
-			fmt.Printf(
-				"The farm creation transaction will consume extra fee: %s\n",
-				res.Params.CreatePoolFee.String(),
-			)
+			if res.Params.CreatePoolFee.IsPositive() {
+				fmt.Printf(
+					"The farm creation transaction will consume extra fee: %s\n",
+					res.Params.CreatePoolFee.String(),
+				)
+			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
