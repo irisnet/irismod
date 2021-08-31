@@ -166,3 +166,4 @@ Ref: https://keepachangelog.com/en/1.0.0/
 [v1.3.0]: https://github.com/irisnet/irismod/releases/tag/v1.3.0
 [v1.3.1]: https://github.com/irisnet/irismod/releases/tag/v1.3.1
 [v1.4.0]: https://github.com/irisnet/irismod/releases/tag/v1.4.0
+[v1.5.0]: https://github.com/irisnet/irismod/releases/tag/v1.5.0
