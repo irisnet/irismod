@@ -18,7 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
@@ -121,7 +120,6 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 	deadline := status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
-	txConfig := legacytx.StdTxConfig{Cdc: s.cfg.LegacyAmino}
 	msgAddLiquidity := &coinswaptypes.MsgAddLiquidity{
 		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(1000)),
 		ExactStandardAmt: sdk.NewInt(1000),
@@ -131,7 +129,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	}
 
 	// prepare txBuilder with msg
-	txBuilder := txConfig.NewTxBuilder()
+	txBuilder := val.ClientCtx.TxConfig.NewTxBuilder()
 	feeAmount := sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgAddLiquidity)
 	s.Require().NoError(err)
@@ -142,11 +140,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txFactory := clienttx.Factory{}.
 		WithChainID(val.ClientCtx.ChainID).
 		WithKeybase(val.ClientCtx.Keyring).
-		WithTxConfig(txConfig).
-		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithTxConfig(val.ClientCtx.TxConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT).
 		WithSequence(account.GetSequence())
 
-	// sign Tx (offline mode so we can manually set sequence number)
+	// Sign Tx.
 	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, false, true)
 	s.Require().NoError(err)
 
@@ -189,7 +187,6 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 	deadline = status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
-	txConfig = legacytx.StdTxConfig{Cdc: s.cfg.LegacyAmino}
 	msgAddLiquidity = &coinswaptypes.MsgAddLiquidity{
 		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(2001)),
 		ExactStandardAmt: sdk.NewInt(2000),
@@ -199,7 +196,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	}
 
 	// prepare txBuilder with msg
-	txBuilder = txConfig.NewTxBuilder()
+	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
 	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgAddLiquidity)
 	s.Require().NoError(err)
@@ -210,11 +207,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txFactory = clienttx.Factory{}.
 		WithChainID(val.ClientCtx.ChainID).
 		WithKeybase(val.ClientCtx.Keyring).
-		WithTxConfig(txConfig).
-		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithTxConfig(val.ClientCtx.TxConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT).
 		WithSequence(account.GetSequence() + 1)
 
-	// sign Tx (offline mode so we can manually set sequence number)
+	// sign Tx
 	err = authclient.SignTx(txFactory, val.ClientCtx, val.Moniker, txBuilder, false, true)
 	s.Require().NoError(err)
 
@@ -265,7 +262,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	}
 
 	// prepare txBuilder with msg
-	txBuilder = txConfig.NewTxBuilder()
+	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
 	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgSellOrder)
 	s.Require().NoError(err)
@@ -276,8 +273,8 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txFactory = clienttx.Factory{}.
 		WithChainID(val.ClientCtx.ChainID).
 		WithKeybase(val.ClientCtx.Keyring).
-		WithTxConfig(txConfig).
-		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithTxConfig(val.ClientCtx.TxConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT).
 		WithSequence(account.GetSequence() + 2)
 
 	// sign Tx (offline mode so we can manually set sequence number)
@@ -331,7 +328,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	}
 
 	// prepare txBuilder with msg
-	txBuilder = txConfig.NewTxBuilder()
+	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
 	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgBuyOrder)
 	s.Require().NoError(err)
@@ -342,8 +339,8 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txFactory = clienttx.Factory{}.
 		WithChainID(val.ClientCtx.ChainID).
 		WithKeybase(val.ClientCtx.Keyring).
-		WithTxConfig(txConfig).
-		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithTxConfig(val.ClientCtx.TxConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT).
 		WithSequence(account.GetSequence() + 3)
 
 	// sign Tx (offline mode so we can manually set sequence number)
@@ -392,7 +389,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	}
 
 	// prepare txBuilder with msg
-	txBuilder = txConfig.NewTxBuilder()
+	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
 	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgRemoveLiquidity)
 	s.Require().NoError(err)
@@ -403,8 +400,8 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txFactory = clienttx.Factory{}.
 		WithChainID(val.ClientCtx.ChainID).
 		WithKeybase(val.ClientCtx.Keyring).
-		WithTxConfig(txConfig).
-		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithTxConfig(val.ClientCtx.TxConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT).
 		WithSequence(account.GetSequence() + 4)
 
 	// sign Tx (offline mode so we can manually set sequence number)
@@ -453,7 +450,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	}
 
 	// prepare txBuilder with msg
-	txBuilder = txConfig.NewTxBuilder()
+	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
 	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgRemoveLiquidity)
 	s.Require().NoError(err)
@@ -464,8 +461,8 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txFactory = clienttx.Factory{}.
 		WithChainID(val.ClientCtx.ChainID).
 		WithKeybase(val.ClientCtx.Keyring).
-		WithTxConfig(txConfig).
-		WithSignMode(signing.SignMode_SIGN_MODE_LEGACY_AMINO_JSON).
+		WithTxConfig(val.ClientCtx.TxConfig).
+		WithSignMode(signing.SignMode_SIGN_MODE_DIRECT).
 		WithSequence(account.GetSequence() + 5)
 
 	// sign Tx (offline mode so we can manually set sequence number)
