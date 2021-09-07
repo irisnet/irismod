@@ -3,9 +3,11 @@ package keeper
 import (
 	"fmt"
 
+	gogotypes "github.com/gogo/protobuf/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	gogotypes "github.com/gogo/protobuf/types"
+
 	"github.com/irisnet/irismod/modules/coinswap/types"
 )
 

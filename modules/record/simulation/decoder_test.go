@@ -10,10 +10,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
-	"github.com/irisnet/irismod/simapp"
 
 	"github.com/irisnet/irismod/modules/record/simulation"
 	"github.com/irisnet/irismod/modules/record/types"
+	"github.com/irisnet/irismod/simapp"
 )
 
 var (
