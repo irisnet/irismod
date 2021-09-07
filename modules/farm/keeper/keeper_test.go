@@ -42,7 +42,7 @@ var (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	cdc    codec.Marshaler
+	cdc    codec.BinaryCodec
 	ctx    sdk.Context
 	keeper *keeper.Keeper
 	app    *simapp.SimApp

@@ -25,9 +25,10 @@ const (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	ak types.AccountKeeper,
-	bk types.BankKeeper) simulation.WeightedOperations {
+	bk types.BankKeeper,
+) simulation.WeightedOperations {
 	var weightCreate int
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgCreateRecord, &weightCreate, nil,
@@ -48,7 +49,9 @@ func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+	) (
+		simtypes.OperationMsg, []simtypes.FutureOperation, error,
+	) {
 
 		record, err := genRecord(r, accs)
 		if err != nil {
@@ -87,7 +90,7 @@ func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, err.Error()), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate issue token"), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate issue token", nil), nil, nil
 	}
 }
 

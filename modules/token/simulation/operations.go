@@ -34,12 +34,11 @@ var (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	k keeper.Keeper,
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 ) simulation.WeightedOperations {
-
 	var weightIssue, weightEdit, weightMint, weightTransfer, weightBurn int
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgIssueToken, &weightIssue, nil,
@@ -103,10 +102,16 @@ func WeightedOperations(
 // SimulateIssueToken tests and runs a single msg issue a new token
 func SimulateIssueToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
-		accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+		r *rand.Rand,
+		app *baseapp.BaseApp,
+		ctx sdk.Context,
+		accs []simtypes.Account,
+		chainID string,
+	) (
+		simtypes.OperationMsg,
+		[]simtypes.FutureOperation,
+		error,
+	) {
 		token, maxFees := genToken(ctx, r, k, ak, bk, accs)
 		msg := types.NewMsgIssueToken(token.Symbol, token.MinUnit, token.Name, token.Scale, token.InitialSupply, token.MaxSupply, token.Mintable, token.GetOwner().String())
 
@@ -141,7 +146,7 @@ func SimulateIssueToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate issue token"), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate issue token", nil), nil, nil
 	}
 }
 
@@ -191,7 +196,7 @@ func SimulateEditToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate edit token"), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate edit token", nil), nil, nil
 	}
 }
 
@@ -240,7 +245,7 @@ func SimulateMintToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate mint token"), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate mint token", nil), nil, nil
 	}
 }
 
@@ -295,7 +300,7 @@ func SimulateTransferTokenOwner(k keeper.Keeper, ak types.AccountKeeper, bk type
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate transfer token"), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate transfer token", nil), nil, nil
 	}
 }
 
@@ -355,7 +360,7 @@ func SimulateBurnToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate mint token"), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate mint token", nil), nil, nil
 	}
 }
 

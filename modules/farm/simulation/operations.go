@@ -28,7 +28,7 @@ const (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simulation.WeightedOperations {
 
 	var (
@@ -184,7 +184,7 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 		keeper.RewardInvariant(k)
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 
 	}
 }
@@ -274,7 +274,7 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 		keeper.RewardInvariant(k)
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -347,7 +347,7 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 		}
 
 		keeper.RewardInvariant(k)
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -415,7 +415,7 @@ func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 		keeper.RewardInvariant(k)
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
@@ -471,7 +471,7 @@ func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 		keeper.RewardInvariant(k)
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
@@ -539,7 +539,7 @@ func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 		keeper.RewardInvariant(k)
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 

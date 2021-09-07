@@ -6,13 +6,12 @@ import (
 	"strings"
 	"time"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -29,7 +28,7 @@ const (
 
 func WeightedOperations(
 	appParams simtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simulation.WeightedOperations {
 
 	var (
@@ -124,7 +123,7 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 			minLiquidity = exactStandardAmt
 		} else {
 			standardReserveAmt := reservePool.AmountOf(standardDenom)
-			liquidity := bk.GetSupply(ctx).GetTotal().AmountOf(pool.LptDenom)
+			liquidity := bk.GetSupply(ctx, pool.LptDenom).Amount
 			minLiquidity = liquidity.Mul(exactStandardAmt).Quo(standardReserveAmt)
 
 			if !maxToken.Amount.Sub(reservePool.AmountOf(maxToken.GetDenom()).Mul(exactStandardAmt).Quo(standardReserveAmt)).IsPositive() {
@@ -171,7 +170,7 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 
 }
@@ -218,10 +217,18 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
 
+		// if bk.GetSupply(ctx, inputCoin.Denom).IsZero() || bk.GetSupply(ctx, outputCoin.Denom).IsZero() {
+		// 	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "total supply is zero"), nil, err
+		// }
+
 		// bought coin
-		coins := bk.GetSupply(ctx).GetTotal()
+		var coins sdk.Coins
+		bk.IterateTotalSupply(ctx, func(coin sdk.Coin) bool {
+			coins = append(coins, coin)
+			return false
+		})
 		if coins.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "total supply  is zero"), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "total supply is zero"), nil, err
 		}
 		outputCoin = RandomTotalToken(r, coins)
 		if strings.HasPrefix(outputCoin.Denom, types.LptTokenPrefix) {
@@ -319,7 +326,7 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -365,7 +372,7 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 		tokenReserveAmt := reservePool.AmountOf(pool.CounterpartyDenom)
 
 		withdrawLiquidity = sdk.NewCoin(token.GetDenom(), simtypes.RandomAmount(r, token.Amount))
-		liquidityReserve := bk.GetSupply(ctx).GetTotal().AmountOf(token.Denom)
+		liquidityReserve := bk.GetSupply(ctx, token.Denom).Amount
 
 		if !withdrawLiquidity.IsValid() || !withdrawLiquidity.IsPositive() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveLiquidity, "invalid withdrawLiquidity"), nil, nil
@@ -423,7 +430,7 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 
 	}
 }

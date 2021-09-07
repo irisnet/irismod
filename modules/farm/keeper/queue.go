@@ -65,7 +65,7 @@ func (k Keeper) IteratorAllPools(ctx sdk.Context, fun func(pool types.FarmPool))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var pool types.FarmPool
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &pool)
+		k.cdc.MustUnmarshal(iterator.Value(), &pool)
 		fun(pool)
 	}
 }

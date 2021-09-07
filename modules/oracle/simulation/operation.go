@@ -26,7 +26,7 @@ const (
 
 func WeightedOperations(
 	appParams simtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	k keeper.Keeper,
 	ak types.AccountKeeper,
 	bk types.BankKeeper) simulation.WeightedOperations {
@@ -147,7 +147,7 @@ func SimulateCreateFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateFeed, err.Error()), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -201,7 +201,7 @@ func SimulateStartFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -257,7 +257,7 @@ func SimulatePauseFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -328,7 +328,7 @@ func SimulateEditFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateFeed, err.Error()), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 
 	}
 }

@@ -57,7 +57,7 @@ func WeightedOperations(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 					return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 				}
 
-				return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+				return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 			},
 		),
 	}

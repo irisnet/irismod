@@ -3,12 +3,13 @@ package keeper
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/irisnet/irismod/modules/farm/types"
 )
@@ -23,7 +24,7 @@ func (k Keeper) FarmPools(goctx context.Context,
 	prefixStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.FarmPoolKey)
 	pageRes, err := query.Paginate(prefixStore, request.Pagination, func(_ []byte, value []byte) error {
 		var pool types.FarmPool
-		k.cdc.MustUnmarshalBinaryBare(value, &pool)
+		k.cdc.MustUnmarshal(value, &pool)
 		var totalReward sdk.Coins
 		var remainingReward sdk.Coins
 		var rewardPerBlock sdk.Coins
