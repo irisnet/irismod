@@ -81,7 +81,8 @@ func (s *IntegrationTestSuite) TestFarm() {
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := testutil.CreateFarmPoolExec(clientCtx,
+	bz, err := testutil.CreateFarmPoolExec(
+		clientCtx,
 		creator.String(),
 		farmPool,
 		args...,
@@ -119,7 +120,8 @@ func (s *IntegrationTestSuite) TestFarm() {
 		fmt.Sprintf("--%s=%v", farmcli.FlagAdditionalReward, reward.String()),
 	}
 	args = append(args, globalFlags...)
-	bz, err = testutil.AppendRewardExec(clientCtx,
+	bz, err = testutil.AppendRewardExec(
+		clientCtx,
 		creator.String(),
 		farmPool,
 		args...,
@@ -133,7 +135,8 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().NoError(err)
 
 	lpToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(100))
-	bz, err = testutil.StakeExec(clientCtx,
+	bz, err = testutil.StakeExec(
+		clientCtx,
 		creator.String(),
 		farmPool,
 		lpToken.String(),
@@ -144,7 +147,8 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	unstakeLPToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(50))
-	bz, err = testutil.UnstakeExec(clientCtx,
+	bz, err = testutil.UnstakeExec(
+		clientCtx,
 		creator.String(),
 		farmPool,
 		unstakeLPToken.String(),
@@ -153,10 +157,11 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	s.Require().Equal(expectedCode, txResp.Code)
-	rewardGot := gjson.Get(txResp.RawLog, "0.events.2.attributes.3.value").String()
+	rewardGot := gjson.Get(txResp.RawLog, "0.events.4.attributes.3.value").String()
 	s.Require().Equal(rewardPerBlock.String(), rewardGot)
 
-	bz, err = testutil.HarvestExec(clientCtx,
+	bz, err = testutil.HarvestExec(
+		clientCtx,
 		creator.String(),
 		farmPool,
 		globalFlags...,
@@ -164,7 +169,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	s.Require().Equal(expectedCode, txResp.Code)
-	rewardGot = gjson.Get(txResp.RawLog, "0.events.0.attributes.2.value").String()
+	rewardGot = gjson.Get(txResp.RawLog, "0.events.2.attributes.2.value").String()
 	s.Require().Equal(rewardPerBlock.String(), rewardGot)
 
 	queryFarmerArgs := []string{
@@ -183,7 +188,8 @@ func (s *IntegrationTestSuite) TestFarm() {
 	result1 := queryFarmerRespType.(*farmtypes.QueryFarmerResponse)
 	s.Require().EqualValues(expectFarmer, *result1.List[0])
 
-	bz, err = testutil.DestroyExec(clientCtx,
+	bz, err = testutil.DestroyExec(
+		clientCtx,
 		creator.String(),
 		farmPool,
 		globalFlags...,
