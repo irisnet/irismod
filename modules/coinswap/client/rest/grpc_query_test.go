@@ -104,8 +104,9 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
 	balances := respType.(*banktypes.QueryAllBalancesResponse)
-	s.Require().Equal("100000000", balances.Balances[0].Amount.String())
-	s.Require().Equal("399986975", balances.Balances[2].Amount.String())
+	fmt.Println(balances.Balances)
+	s.Require().Equal("100000000", balances.Balances.AmountOf(symbol).String())
+	s.Require().Equal("399986975", balances.Balances.AmountOf(sdk.DefaultBondDenom).String())
 
 	var account authtypes.AccountI
 	respType = proto.Message(&codectype.Any{})
@@ -157,8 +158,12 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err := val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	res, err := rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
+	var result tx.BroadcastTxResponse
+	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -167,6 +172,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	balances = respType.(*banktypes.QueryAllBalancesResponse)
 	coins := balances.Balances
+	fmt.Println(coins)
 	s.Require().Equal("99999000", coins.AmountOf(symbol).String())
 	s.Require().Equal("399985965", coins.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", coins.AmountOf(lptDenom).String())
@@ -224,8 +230,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	res, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
+	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -234,6 +243,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	balances = respType.(*banktypes.QueryAllBalancesResponse)
 	coins = balances.Balances
+	fmt.Println(coins)
 	s.Require().Equal("99996999", coins.AmountOf(symbol).String())
 	s.Require().Equal("399983955", coins.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
@@ -290,8 +300,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
+	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -300,6 +313,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	balances = respType.(*banktypes.QueryAllBalancesResponse)
 	coins = balances.Balances
+	fmt.Println(coins)
 	s.Require().Equal("99995999", coins.AmountOf(symbol).String())
 	s.Require().Equal("399984693", coins.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
@@ -356,8 +370,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
+	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -366,6 +383,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	balances = respType.(*banktypes.QueryAllBalancesResponse)
 	coins = balances.Balances
+	fmt.Println(coins)
 	s.Require().Equal("99996999", coins.AmountOf(symbol).String())
 	s.Require().Equal("399983930", coins.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
@@ -417,8 +435,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
+	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -427,6 +448,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	balances = respType.(*banktypes.QueryAllBalancesResponse)
 	coins = balances.Balances
+	fmt.Println(coins)
 	s.Require().Equal("99998999", coins.AmountOf(symbol).String())
 	s.Require().Equal("399985923", coins.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", coins.AmountOf(lptDenom).String())
@@ -478,8 +500,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/txs", baseURL), "application/json", reqBz)
+	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
+	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -488,6 +513,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	balances = respType.(*banktypes.QueryAllBalancesResponse)
 	coins = balances.Balances
+	fmt.Println(coins)
 	s.Require().Equal("100000000", coins.AmountOf(symbol).String())
 	s.Require().Equal("399986915", coins.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("0", coins.AmountOf(lptDenom).String())
