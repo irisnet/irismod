@@ -16,6 +16,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
 	"github.com/irisnet/irismod/modules/service/keeper"
 	"github.com/irisnet/irismod/modules/service/types"
@@ -107,10 +108,17 @@ func (suite *KeeperTestSuite) setTestAddrs() {
 	testConsumer = testAddrs[4]
 }
 
-func (suite *KeeperTestSuite) addCoins(addr sdk.AccAddress, coins sdk.Coins) {
-	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, coins)
+func (suite *KeeperTestSuite) addCoinsToAddr(addr sdk.AccAddress, coins sdk.Coins) {
+	err := suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, coins)
 	suite.NoError(err)
-	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, addr, coins)
+	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, minttypes.ModuleName, addr, coins)
+	suite.NoError(err)
+}
+
+func (suite *KeeperTestSuite) addCoinsToModule(name string, coins sdk.Coins) {
+	err := suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, coins)
+	suite.NoError(err)
+	err = suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, minttypes.ModuleName, name, coins)
 	suite.NoError(err)
 }
 
@@ -243,18 +251,13 @@ func (suite *KeeperTestSuite) TestEnableServiceBinding() {
 func (suite *KeeperTestSuite) TestRefundDeposit() {
 	disabledTime := time.Now().UTC()
 	suite.setServiceBinding(false, disabledTime, testProvider, testOwner)
-
-	addr := suite.keeper.GetServiceDepositAccount(suite.ctx).GetAddress()
-	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, testDeposit)
-	suite.NoError(err)
-	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, addr, testDeposit)
-	suite.NoError(err)
+	suite.addCoinsToModule(types.DepositAccName, testDeposit)
 
 	params := suite.keeper.GetParams(suite.ctx)
 	blockTime := disabledTime.Add(params.ArbitrationTimeLimit).Add(params.ComplaintRetrospect)
 	suite.ctx = suite.ctx.WithBlockTime(blockTime)
 
-	err = suite.keeper.RefundDeposit(suite.ctx, testServiceName, testProvider, testOwner)
+	err := suite.keeper.RefundDeposit(suite.ctx, testServiceName, testProvider, testOwner)
 	suite.NoError(err)
 
 	svcBinding, found := suite.keeper.GetServiceBinding(suite.ctx, testServiceName, testProvider)
@@ -474,7 +477,7 @@ func (suite *KeeperTestSuite) TestKeeperRespondService() {
 	requestContext.BatchCounter++
 	suite.keeper.SetRequestContext(ctx, requestContextID, requestContext)
 
-	suite.addCoins(consumer, testServiceFee2)
+	suite.addCoinsToAddr(consumer, testServiceFee2)
 
 	requestID1 := suite.setRequest(ctx, consumer, provider, requestContextID, testServiceFee)
 	requestID2 := suite.setRequest(ctx, consumer, provider, requestContextID, testServiceFee)
@@ -642,31 +645,33 @@ func (suite *KeeperTestSuite) TestGetMinDeposit() {
 	suite.NoError(err)
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing3)
+	suite.NoError(err)
 	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0))), minDeposit)
 
 	pricing4, err := types.ParsePricing(testPricing4)
 	suite.NoError(err)
 
-	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing4)
-	suite.NoError(err)
+	_, err = suite.keeper.GetMinDeposit(suite.ctx, pricing4)
 	suite.NotNil(err, "should error when the exchange rate is zero")
 
 	pricing5, err := types.ParsePricing(testPricing5)
 	suite.NoError(err)
 
-	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing5)
+	_, err = suite.keeper.GetMinDeposit(suite.ctx, pricing5)
 	suite.NotNil(err, "should error when the feed does not exist")
 
 	pricing6, err := types.ParsePricing(testPricing6)
 	suite.NoError(err)
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing6)
+	suite.NoError(err)
 	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(500000))), minDeposit)
 
 	pricing7, err := types.ParsePricing(testPricing7)
 	suite.NoError(err)
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing7)
+	suite.NoError(err)
 	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000))), minDeposit)
 }
 
