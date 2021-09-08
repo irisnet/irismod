@@ -87,7 +87,7 @@ func (s *IntegrationTestSuite) TestToken() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
-	tokenSymbol := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
+	tokenSymbol := gjson.Get(txResp.RawLog, "0.events.4.attributes.0.value").String()
 
 	//------test GetCmdQueryTokens()-------------
 	tokens := &[]tokentypes.TokenI{}
