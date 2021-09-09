@@ -37,8 +37,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v1.5.0] - 2021-08-31
-
 ### Improvements
 
 * [\#218](https://github.com/irisnet/irismod/pull/218) Bump cosmos-sdk version to [v0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9).
@@ -166,4 +164,3 @@ Ref: https://keepachangelog.com/en/1.0.0/
 [v1.3.0]: https://github.com/irisnet/irismod/releases/tag/v1.3.0
 [v1.3.1]: https://github.com/irisnet/irismod/releases/tag/v1.3.1
 [v1.4.0]: https://github.com/irisnet/irismod/releases/tag/v1.4.0
-[v1.5.0]: https://github.com/irisnet/irismod/releases/tag/v1.5.0
