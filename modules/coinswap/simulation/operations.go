@@ -29,8 +29,10 @@ const (
 func WeightedOperations(
 	appParams simtypes.AppParams,
 	cdc codec.JSONCodec,
-	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simulation.WeightedOperations {
-
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simulation.WeightedOperations {
 	var (
 		weightSwap   int
 		weightAdd    int
@@ -75,7 +77,7 @@ func WeightedOperations(
 	}
 }
 
-//SimulateMsgAddLiquidity  simulates  the addition of liquidity
+// SimulateMsgAddLiquidity  simulates  the addition of liquidity
 func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -175,7 +177,7 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 
 }
 
-//SimulateMsgSwapOrder  simulates  the swap of order
+// SimulateMsgSwapOrder  simulates  the swap of order
 func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -196,7 +198,7 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "spendable  is zero"), nil, err
 		}
 
-		//sold coin
+		// sold coin
 		inputCoin = RandomSpendableToken(r, spendable)
 
 		if strings.HasPrefix(inputCoin.Denom, types.LptTokenPrefix) {
@@ -216,10 +218,6 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 		if _, err := k.GetPoolBalancesByLptDenom(ctx, pool.LptDenom); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "inputCoin should exist in the pool"), nil, nil
 		}
-
-		// if bk.GetSupply(ctx, inputCoin.Denom).IsZero() || bk.GetSupply(ctx, outputCoin.Denom).IsZero() {
-		// 	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapOrder, "total supply is zero"), nil, err
-		// }
 
 		// bought coin
 		var coins sdk.Coins
@@ -282,7 +280,6 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 		}
 
 		deadline := randDeadline(r)
-
 		msg := types.NewMsgSwapOrder(
 			types.Input{
 				Address: simAccount.Address.String(),
@@ -306,7 +303,6 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-
 		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{msg},
@@ -330,7 +326,7 @@ func SimulateMsgSwapOrder(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 	}
 }
 
-//SimulateMsgRemoveLiquidity  simulates  the removal of liquidity
+// SimulateMsgRemoveLiquidity  simulates  the removal of liquidity
 func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -454,12 +450,12 @@ func randBoolean(r *rand.Rand) bool {
 	return r.Int()%2 == 0
 }
 
-//Double swap bill
+// Double swap bill
 func doubleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 	param := k.GetParams(ctx)
 
-	//generate sold standard Coin
+	// generate sold standard Coin
 	lptDenom, _ := k.GetLptDenomFromDenoms(ctx, outputCoin.Denom, standardDenom)
 	reservePool, _ := k.GetPoolBalancesByLptDenom(ctx, lptDenom)
 	outputReserve := reservePool.AmountOf(outputCoin.Denom)
@@ -470,7 +466,7 @@ func doubleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Ke
 	soldStandardAmount := keeper.GetOutputPrice(outputCoin.Amount, inputReserve, outputReserve, param.Fee)
 	soldStandardCoin := sdk.NewCoin(standardDenom, soldStandardAmount)
 
-	//generate input coin
+	// generate input coin
 	lptDenom2, _ := k.GetLptDenomFromDenoms(ctx, soldStandardCoin.Denom, inputCoin.Denom)
 	reservePool2, _ := k.GetPoolBalancesByLptDenom(ctx, lptDenom2)
 	outputReserve2 := reservePool2.AmountOf(soldStandardCoin.Denom)
@@ -481,7 +477,7 @@ func doubleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Ke
 	return inputCoin, outputCoin, nil
 }
 
-//A single swap bill
+// A single swap bill
 func singleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin, error) {
 	param := k.GetParams(ctx)
 
@@ -495,7 +491,7 @@ func singleSwapBill(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Ke
 	return inputCoin, outputCoin, nil
 }
 
-//Double swap sell orders
+// Double swap sell orders
 func doubleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 
@@ -518,7 +514,7 @@ func doubleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keep
 	return inputCoin, outputCoin, nil
 }
 
-//A single swap sell order
+// A single swap sell order
 func singleSwapSellOrder(inputCoin, outputCoin sdk.Coin, ctx sdk.Context, k keeper.Keeper) (sdk.Coin, sdk.Coin, error) {
 	param := k.GetParams(ctx)
 

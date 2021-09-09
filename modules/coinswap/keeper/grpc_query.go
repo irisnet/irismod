@@ -56,7 +56,6 @@ func (k Keeper) LiquidityPools(c context.Context, req *types.QueryLiquidityPools
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	// supply := k.bk.GetSupply(ctx).GetTotal()
 	params := k.GetParams(ctx)
 
 	var pools []types.PoolInfo
