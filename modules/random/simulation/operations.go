@@ -20,9 +20,11 @@ func WeightedOperations(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgRequestRandom,
-			func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
-				accs []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+			func(
+				r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+			) (
+				simtypes.OperationMsg, []simtypes.FutureOperation, error,
+			) {
 				simAccount, _ := simtypes.RandomAcc(r, accs)
 				blockInterval := simtypes.RandIntBetween(r, 10, 100)
 
@@ -37,10 +39,9 @@ func WeightedOperations(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 					return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate fees"), nil, err
 				}
 
-				txGen := simappparams.MakeTestEncodingConfig().TxConfig
+				txConfig := simappparams.MakeTestEncodingConfig().TxConfig
 				tx, err := helpers.GenTx(
-					r,
-					txGen,
+					txConfig,
 					[]sdk.Msg{msg},
 					fees,
 					helpers.DefaultGenTxGas,
@@ -53,7 +54,7 @@ func WeightedOperations(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 					return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 				}
 
-				if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+				if _, _, err := app.Deliver(txConfig.TxEncoder(), tx); err != nil {
 					return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 				}
 

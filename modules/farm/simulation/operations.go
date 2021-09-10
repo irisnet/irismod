@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/irisnet/irismod/modules/farm/keeper"
 	"github.com/irisnet/irismod/modules/farm/types"
+	"github.com/irisnet/irismod/simapp/helpers"
 )
 
 // Simulation operation weights constants
@@ -27,10 +27,9 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams,
-	cdc codec.JSONCodec,
-	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simulation.WeightedOperations {
-
+	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper,
+) simulation.WeightedOperations {
 	var (
 		weightMsgCreatePool  int
 		weightMsgAdjustPool  int
@@ -107,8 +106,9 @@ func WeightedOperations(
 func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+	) (
+		simtypes.OperationMsg, []simtypes.FutureOperation, error,
+	) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
@@ -179,8 +179,7 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
-		if err != nil {
+		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 		keeper.RewardInvariant(k)
@@ -192,8 +191,9 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+	) (
+		simtypes.OperationMsg, []simtypes.FutureOperation, error,
+	) {
 		farmPool, exist := genRandomFarmPool(ctx, k, r)
 		if !exist {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "farm pool is not exist"), nil, nil
@@ -219,13 +219,11 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		account := ak.GetAccount(ctx, simAccount.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
-
 		if spendable.IsZero() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
 		}
 
 		rewardPerBlock := GenRewardPerBlock(r, spendable[r.Intn(len(spendable))])
-
 		if rewardPerBlock.Amount.IsZero() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
 		}
@@ -281,8 +279,9 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+	) (
+		simtypes.OperationMsg, []simtypes.FutureOperation, error,
+	) {
 		farmPool, exist := genRandomFarmPool(ctx, k, r)
 		if !exist {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "farm pool is not exist"), nil, nil
@@ -354,8 +353,9 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+	) (
+		simtypes.OperationMsg, []simtypes.FutureOperation, error,
+	) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 
@@ -421,8 +421,9 @@ func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+	) (
+		simtypes.OperationMsg, []simtypes.FutureOperation, error,
+	) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 
@@ -477,8 +478,9 @@ func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
+	) (
+		simtypes.OperationMsg, []simtypes.FutureOperation, error,
+	) {
 		farmPool, exist := genRandomFarmPool(ctx, k, r)
 		if !exist {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "farm pool is not exist"), nil, nil
@@ -575,10 +577,9 @@ func GenRewardRule(r *rand.Rand, rules types.RewardRules) types.RewardRule {
 func GenAppendReward(r *rand.Rand, rules types.RewardRules, spendable sdk.Coins) sdk.Coins {
 	rule := GenRewardRule(r, rules)
 	for _, coin := range spendable {
-		if coin.Denom != rule.Reward {
-			break
+		if coin.Denom == rule.Reward {
+			return sdk.Coins{sdk.NewCoin(coin.Denom, simtypes.RandomAmount(r, coin.Amount))}
 		}
-		return sdk.Coins{sdk.NewCoin(coin.Denom, simtypes.RandomAmount(r, coin.Amount))}
 	}
 	return sdk.Coins{}
 }
@@ -586,10 +587,9 @@ func GenAppendReward(r *rand.Rand, rules types.RewardRules, spendable sdk.Coins)
 // GenStake randomized stake
 func GenStake(r *rand.Rand, pool types.FarmPool, spendable sdk.Coins) sdk.Coin {
 	for _, coin := range spendable {
-		if coin.Denom != pool.TotalLptLocked.Denom {
-			break
+		if coin.Denom == pool.TotalLptLocked.Denom {
+			return sdk.NewCoin(pool.TotalLptLocked.Denom, simtypes.RandomAmount(r, coin.Amount))
 		}
-		return sdk.NewCoin(pool.TotalLptLocked.Denom, simtypes.RandomAmount(r, coin.Amount))
 	}
 	return sdk.NewCoin(pool.TotalLptLocked.Denom, sdk.ZeroInt())
 }

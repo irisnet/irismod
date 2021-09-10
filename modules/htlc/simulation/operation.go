@@ -9,7 +9,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -17,6 +16,7 @@ import (
 
 	"github.com/irisnet/irismod/modules/htlc/keeper"
 	"github.com/irisnet/irismod/modules/htlc/types"
+	"github.com/irisnet/irismod/simapp/helpers"
 )
 
 // Simulation operation weights constants
@@ -27,12 +27,10 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams,
-	cdc codec.JSONCodec,
-	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simulation.WeightedOperations {
-
+	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper,
+) simulation.WeightedOperations {
 	var weightCreateHtlc, weightClaimHtlc int
-
 	appParams.GetOrGenerate(
 		cdc, OpWeightMsgCreateHTLC, &weightCreateHtlc, nil,
 		func(_ *rand.Rand) {

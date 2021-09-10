@@ -16,8 +16,7 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-func (k Keeper) FarmPools(goctx context.Context,
-	request *types.QueryFarmPoolsRequest) (*types.QueryFarmPoolsResponse, error) {
+func (k Keeper) FarmPools(goctx context.Context, request *types.QueryFarmPoolsRequest) (*types.QueryFarmPoolsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	var list []*types.FarmPoolEntry
@@ -99,8 +98,7 @@ func (k Keeper) FarmPool(goctx context.Context,
 	return &types.QueryFarmPoolResponse{Pool: poolEntry}, nil
 }
 
-func (k Keeper) Farmer(goctx context.Context,
-	request *types.QueryFarmerRequest) (*types.QueryFarmerResponse, error) {
+func (k Keeper) Farmer(goctx context.Context, request *types.QueryFarmerRequest) (*types.QueryFarmerResponse, error) {
 	var list []*types.LockedInfo
 	var err error
 	var farmInfos []types.FarmInfo
@@ -159,10 +157,7 @@ func (k Keeper) Farmer(goctx context.Context,
 	}, nil
 }
 
-func (k Keeper) Params(goctx context.Context,
-	request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) Params(goctx context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
-	return &types.QueryParamsResponse{
-		Params: k.GetParams(ctx),
-	}, nil
+	return &types.QueryParamsResponse{Params: k.GetParams(ctx)}, nil
 }
