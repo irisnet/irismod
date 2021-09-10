@@ -8,6 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	cosmossimappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -15,7 +16,7 @@ import (
 
 	"github.com/irisnet/irismod/modules/service/keeper"
 	"github.com/irisnet/irismod/modules/service/types"
-	"github.com/irisnet/irismod/simapp/helpers"
+	irishelpers "github.com/irisnet/irismod/simapp/helpers"
 )
 
 // Simulation operation weights constants
@@ -703,7 +704,8 @@ func SimulateMsgCallService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 		}
 
 		txConfig := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := irishelpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{msg},
 			fees,

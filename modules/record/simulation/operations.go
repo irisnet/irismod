@@ -8,13 +8,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/irisnet/irismod/modules/record/types"
-	"github.com/irisnet/irismod/simapp/helpers"
+	irishelpers "github.com/irisnet/irismod/simapp/helpers"
 )
 
 // Simulation operation weights constants
@@ -74,7 +75,8 @@ func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreateRecord, err.Error()), nil, err
 		}
 		txConfig := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, _ := helpers.GenTx(
+		tx, _ := irishelpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{msg},
 			fees,

@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -11,7 +12,7 @@ import (
 
 	"github.com/irisnet/irismod/modules/random/keeper"
 	"github.com/irisnet/irismod/modules/random/types"
-	"github.com/irisnet/irismod/simapp/helpers"
+	irishelpers "github.com/irisnet/irismod/simapp/helpers"
 )
 
 // WeightedOperations generates a MsgRequestRandom with random values.
@@ -40,7 +41,8 @@ func WeightedOperations(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 				}
 
 				txConfig := simappparams.MakeTestEncodingConfig().TxConfig
-				tx, err := helpers.GenTx(
+				tx, err := irishelpers.GenTx(
+					r,
 					txConfig,
 					[]sdk.Msg{msg},
 					fees,

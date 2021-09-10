@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/irisnet/irismod/modules/farm/keeper"
 	"github.com/irisnet/irismod/modules/farm/types"
-	"github.com/irisnet/irismod/simapp/helpers"
 )
 
 // Simulation operation weights constants
@@ -220,24 +220,28 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		account := ak.GetAccount(ctx, simAccount.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		if spendable.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
-		}
-
-		rewardPerBlock := GenRewardPerBlock(r, spendable[r.Intn(len(spendable))])
-		if rewardPerBlock.Amount.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
 		}
 
 		rules := k.GetRewardRules(ctx, farmPool.Name)
+		rewardPerBlock := GenRewardPerBlock(r, spendable[r.Intn(len(spendable))])
+		if rewardPerBlock.Amount.IsZero() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
+		}
+
+		if rewardPerBlock.Denom != GenRewardRule(r, rules).Reward {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "invalid reward"), nil, nil
+		}
+
 		amount := GenAppendReward(r, rules, spendable)
 		if amount.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
 		}
 
 		// Need to subtract the appendReward balance
 		balance, hasNeg := spendable.SafeSub(amount)
 		if hasNeg {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
 		}
 
 		msg := &types.MsgAdjustPool{
