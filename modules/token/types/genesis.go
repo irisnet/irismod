@@ -33,7 +33,7 @@ func SetNativeToken(
 	Initialized = true
 }
 
-//GetNativeToken returns the system's default native token
+// GetNativeToken returns the system's default native token
 func GetNativeToken() Token {
 	if !Initialized {
 		nativeToken = Token{
