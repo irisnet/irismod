@@ -3,7 +3,7 @@ module github.com/irisnet/irismod
 go 1.16
 
 require (
-	github.com/cosmos/cosmos-sdk v0.44.2
+	github.com/cosmos/cosmos-sdk v0.44.3
 	github.com/cosmos/ibc-go v1.1.0
 	github.com/gin-gonic/gin v1.7.3 // indirect
 	github.com/gogo/protobuf v1.3.3
@@ -16,7 +16,7 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
-	github.com/tendermint/tendermint v0.34.13
+	github.com/tendermint/tendermint v0.34.14
 	github.com/tendermint/tm-db v0.6.4
 	github.com/tendermint/tmlibs v0.9.0
 	github.com/tidwall/gjson v1.6.7
