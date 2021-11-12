@@ -9,6 +9,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
 
 	"github.com/irisnet/irismod/modules/nft/types"
 )
@@ -17,6 +18,7 @@ import (
 type Keeper struct {
 	storeKey storetypes.StoreKey // Unexposed key to access store from sdk.Context
 	cdc      codec.Codec
+	nk       nftkeeper.Keeper
 }
 
 // NewKeeper creates a new instance of the NFT Keeper
