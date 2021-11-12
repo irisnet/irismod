@@ -9,6 +9,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
 
 	"github.com/irisnet/irismod/modules/nft/types"
@@ -22,10 +23,15 @@ type Keeper struct {
 }
 
 // NewKeeper creates a new instance of the NFT Keeper
-func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey) Keeper {
+func NewKeeper(cdc codec.Codec,
+	storeKey storetypes.StoreKey,
+	ak nft.AccountKeeper,
+	bk nft.BankKeeper,
+) Keeper {
 	return Keeper{
 		storeKey: storeKey,
 		cdc:      cdc,
+		nk:       nftkeeper.NewKeeper(storeKey, cdc, ak, bk),
 	}
 }
 

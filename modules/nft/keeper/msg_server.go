@@ -33,6 +33,16 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 		return nil, err
 	}
 
+	// m.Keeper.nk.SaveClass(ctx, nft.Class{
+	// 	Id:          msg.Id,
+	// 	Name:        msg.Name,
+	// 	Symbol:      msg.Symbol,
+	// 	Description: "",
+	// 	Uri:         "",
+	// 	UriHash:     "",
+	// 	//Data:        &types.Any{},
+	// })
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeIssueDenom,
