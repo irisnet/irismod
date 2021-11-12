@@ -1,51 +1,39 @@
 package rest
 
-import (
-	"fmt"
-	"net/http"
+// func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
+// 	// query pool
+// 	r.HandleFunc(fmt.Sprintf("/%s/pools/{%s}", types.ModuleName, RestPoolID), queryPoolsHandlerFn(cliCtx)).Methods("GET")
+// }
 
-	"github.com/gorilla/mux"
+// // HTTP request handler to query liquidity information.
+// func queryPoolsHandlerFn(cliCtx client.Context) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		vars := mux.Vars(r)
+// 		denom := vars[RestPoolID]
 
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/types/rest"
+// 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+// 		if !ok {
+// 			return
+// 		}
 
-	"github.com/irisnet/irismod/modules/coinswap/types"
-)
+// 		params := types.QueryPoolParams{
+// 			LptDenom: denom,
+// 		}
 
-func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
-	// query pool
-	r.HandleFunc(fmt.Sprintf("/%s/pools/{%s}", types.ModuleName, RestPoolID), queryPoolsHandlerFn(cliCtx)).Methods("GET")
-}
+// 		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-// HTTP request handler to query liquidity information.
-func queryPoolsHandlerFn(cliCtx client.Context) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		denom := vars[RestPoolID]
+// 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryPool)
+// 		res, height, err := cliCtx.QueryWithData(route, bz)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		if !ok {
-			return
-		}
-
-		params := types.QueryPoolParams{
-			LptDenom: denom,
-		}
-
-		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryPool)
-		res, height, err := cliCtx.QueryWithData(route, bz)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
-	}
-}
+// 		cliCtx = cliCtx.WithHeight(height)
+// 		rest.PostProcessResponse(w, cliCtx, res)
+// 	}
+// }

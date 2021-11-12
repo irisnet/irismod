@@ -12,7 +12,7 @@ package rest_test
 // 	"github.com/cosmos/cosmos-sdk/client/flags"
 // 	"github.com/cosmos/cosmos-sdk/testutil/network"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	"github.com/cosmos/cosmos-sdk/types/rest"
+// 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
 // 	htlccli "github.com/irisnet/irismod/modules/htlc/client/cli"
 // 	htlctestutil "github.com/irisnet/irismod/modules/htlc/client/testutil"

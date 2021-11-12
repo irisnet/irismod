@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 
-	v040 "github.com/cosmos/cosmos-sdk/x/auth/legacy/v040"
+	v040 "github.com/cosmos/cosmos-sdk/x/auth/migrations/v040"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
