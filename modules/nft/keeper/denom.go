@@ -44,7 +44,6 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&denom)
 	store.Set(types.KeyDenomID(denom.Id), bz)
-	store.Set(types.KeyDenomName(denom.Name), []byte(denom.Id))
 	return nil
 }
 

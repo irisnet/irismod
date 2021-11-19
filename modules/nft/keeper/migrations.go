@@ -17,5 +17,9 @@ func NewMigrator(k Keeper) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	return v160.Migrate(ctx)
+	return v160.MigrateStore(ctx, m.k.storeKey,
+		m.k.cdc,
+		m.k.IssueDenom,
+		m.k.MintNFT,
+	)
 }
