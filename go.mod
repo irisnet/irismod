@@ -15,13 +15,13 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
-	github.com/tendermint/tendermint v0.34.14
+	github.com/tendermint/tendermint v0.35.0
 	github.com/tendermint/tm-db v0.6.4
 	github.com/tendermint/tmlibs v0.9.0
 	github.com/tidwall/gjson v1.11.0
 	github.com/xeipuuv/gojsonschema v1.2.0
-	google.golang.org/genproto v0.0.0-20210828152312-66f60bf46e71
-	google.golang.org/grpc v1.41.0
+	google.golang.org/genproto v0.0.0-20210917145530-b395a37504d4
+	google.golang.org/grpc v1.42.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 

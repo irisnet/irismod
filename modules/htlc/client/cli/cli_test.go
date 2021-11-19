@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	tmtime "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"

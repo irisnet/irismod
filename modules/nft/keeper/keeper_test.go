@@ -63,7 +63,7 @@ type KeeperSuite struct {
 
 func (suite *KeeperSuite) SetupTest() {
 
-	app := simapp.Setup(isCheckTx)
+	app := simapp.Setup(suite.T(),isCheckTx)
 
 	suite.app = app
 	suite.legacyAmino = app.LegacyAmino()
