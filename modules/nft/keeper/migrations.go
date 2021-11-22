@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	v160 "github.com/irisnet/irismod/modules/nft/migrations/v160"
 )
 
