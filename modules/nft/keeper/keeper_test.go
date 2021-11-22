@@ -144,18 +144,18 @@ func (suite *KeeperSuite) TestUpdateNFT() {
 	suite.Error(err)
 }
 
-func (suite *KeeperSuite) TestTransferOwner() {
+func (suite *KeeperSuite) TestTransferOwnership() {
 
 	// MintNFT shouldn't fail when collection does not exist
 	err := suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address, address)
 	suite.NoError(err)
 
 	// invalid owner
-	err = suite.keeper.TransferNFTOwner(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address3)
+	err = suite.keeper.TransferOwnership(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address3)
 	suite.Error(err)
 
 	// right
-	err = suite.keeper.TransferNFTOwner(suite.ctx, denomID, tokenID, tokenNm2, tokenURI2, tokenData, address, address2)
+	err = suite.keeper.TransferOwnership(suite.ctx, denomID, tokenID, tokenNm2, tokenURI2, tokenData, address, address2)
 	suite.NoError(err)
 
 	nft, err := suite.keeper.GetNFT(suite.ctx, denomID, tokenID)

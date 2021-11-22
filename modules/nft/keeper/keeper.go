@@ -148,8 +148,8 @@ func (k Keeper) EditNFT(
 	return k.nk.Update(ctx, token)
 }
 
-// TransferNFTOwner transfers the ownership of the given NFT to the new owner
-func (k Keeper) TransferNFTOwner(
+// TransferOwnership transfers the ownership of the given NFT to the new owner
+func (k Keeper) TransferOwnership(
 	ctx sdk.Context, denomID, tokenID, tokenNm, tokenURI,
 	tokenData string, srcOwner, dstOwner sdk.AccAddress,
 ) error {

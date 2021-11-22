@@ -6,7 +6,7 @@ import (
 
 var (
 	PrefixNFT        = []byte{0x01}
-	PrefixOwners     = []byte{0x02} // key for a owner
+	PrefixOwners     = []byte{0x02} // key for an owner
 	PrefixCollection = []byte{0x03} // key for balance of NFTs held by the denom
 	PrefixDenom      = []byte{0x04} // key for denom of the nft
 	PrefixDenomName  = []byte{0x05} // key for denom name of the nft
