@@ -192,8 +192,8 @@ func (suite *KeeperSuite) TestBurnNFT() {
 	isNFT := suite.keeper.HasNFT(suite.ctx, denomID, tokenID)
 	suite.False(isNFT)
 
-	//msg, fail := keeper.SupplyInvariant(suite.keeper)(suite.ctx)
-	//suite.False(fail, msg)
+	msg, fail := keeper.SupplyInvariant(suite.keeper)(suite.ctx)
+	suite.False(fail, msg)
 }
 
 // CreateTestAddrs creates test addresses
