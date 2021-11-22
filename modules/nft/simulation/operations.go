@@ -456,7 +456,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 func getRandomNFTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, tokenID string) {
 	goctx := sdk.WrapSDKContext(ctx)
-	result,_ := k.Denoms(goctx,&types.QueryDenomsRequest{})
+	result, _ := k.Denoms(goctx, &types.QueryDenomsRequest{})
 
 	denomsLen := len(result.Denoms)
 	if denomsLen == 0 {

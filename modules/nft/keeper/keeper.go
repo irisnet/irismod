@@ -58,10 +58,10 @@ func (k Keeper) IssueDenom(ctx sdk.Context,
 		return err
 	}
 	return k.nk.SaveClass(ctx, nft.Class{
-		Id:          id,
-		Name:        name,
-		Symbol:      symbol,
-		Data:        data,
+		Id:     id,
+		Name:   name,
+		Symbol: symbol,
+		Data:   data,
 	})
 }
 
@@ -69,16 +69,16 @@ func (k Keeper) IssueDenom(ctx sdk.Context,
 func (k Keeper) MintNFT(
 	ctx sdk.Context,
 	denomID, tokenID, tokenNm, tokenURI, tokenData string,
-	sender,receiver sdk.AccAddress,
+	sender, receiver sdk.AccAddress,
 ) error {
-	denom,err := k.GetDenomInfo(ctx,denomID)
+	denom, err := k.GetDenomInfo(ctx, denomID)
 	if err != nil {
 		return err
 	}
 	if denom.MintRestricted && denom.Creator != sender.String() {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", sender, denomID)
 	}
-	
+
 	nftMetadata := &types.NFTMetadata{
 		Name:        tokenNm,
 		Description: tokenData,
@@ -101,7 +101,7 @@ func (k Keeper) EditNFT(
 	ctx sdk.Context, denomID, tokenID, tokenNm,
 	tokenURI, tokenData string, owner sdk.AccAddress,
 ) error {
-	denom,err := k.GetDenomInfo(ctx,denomID)
+	denom, err := k.GetDenomInfo(ctx, denomID)
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ func (k Keeper) EditNFT(
 
 	if types.Modified(tokenNm) || types.Modified(tokenData) {
 		var nftMetadata types.NFTMetadata
-		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata);err != nil {
+		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 			return err
 		}
 
@@ -161,7 +161,7 @@ func (k Keeper) TransferNFTOwner(
 		return sdkerrors.Wrapf(types.ErrInvalidTokenID, "nft ID %s not exists", tokenID)
 	}
 
-	denom,err := k.GetDenomInfo(ctx,denomID)
+	denom, err := k.GetDenomInfo(ctx, denomID)
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func (k Keeper) TransferNFTOwner(
 	}
 
 	var nftMetadata types.NFTMetadata
-	if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata);err != nil {
+	if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 		return err
 	}
 
@@ -216,7 +216,7 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 func (k Keeper) TransferDenomOwner(
 	ctx sdk.Context, denomID string, srcOwner, dstOwner sdk.AccAddress,
 ) error {
-	denom,err := k.GetDenomInfo(ctx,denomID)
+	denom, err := k.GetDenomInfo(ctx, denomID)
 	if err != nil {
 		return err
 	}
@@ -237,9 +237,9 @@ func (k Keeper) TransferDenomOwner(
 		return err
 	}
 	return k.nk.UpdateClass(ctx, nft.Class{
-		Id:          denom.Id,
-		Name:        denom.Name,
-		Symbol:      denom.Symbol,
-		Data:        data,
+		Id:     denom.Id,
+		Name:   denom.Name,
+		Symbol: denom.Symbol,
+		Data:   data,
 	})
 }

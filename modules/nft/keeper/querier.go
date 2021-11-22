@@ -123,7 +123,7 @@ func queryDenom(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierC
 
 func queryDenoms(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
 	goCtx := sdk.WrapSDKContext(ctx)
-	result,err := k.Denoms(goCtx, &types.QueryDenomsRequest{})
+	result, err := k.Denoms(goCtx, &types.QueryDenomsRequest{})
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

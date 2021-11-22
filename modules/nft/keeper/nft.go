@@ -15,7 +15,7 @@ func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.N
 	}
 
 	var nftMetadata types.NFTMetadata
-	if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata);err != nil {
+	if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 		return nil, err
 	}
 
@@ -34,7 +34,7 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT, err
 	tokens := k.nk.GetNFTsOfClass(ctx, denom)
 	for _, token := range tokens {
 		var nftMetadata types.NFTMetadata
-		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata);err != nil {
+		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 			return nil, err
 		}
 		nfts = append(nfts, types.BaseNFT{

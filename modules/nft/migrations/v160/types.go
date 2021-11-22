@@ -11,7 +11,6 @@ var (
 	PrefixDenom      = []byte{0x04} // key for denom of the nft
 	PrefixDenomName  = []byte{0x05} // key for denom name of the nft
 
-
 	delimiter = []byte("/")
 )
 
@@ -25,7 +24,7 @@ type (
 
 	MintNFTFn = func(
 		ctx sdk.Context, denomID, tokenID, tokenNm,
-		tokenURI, tokenData string, sender,receiver sdk.AccAddress,
+		tokenURI, tokenData string, sender, receiver sdk.AccAddress,
 	) error
 )
 

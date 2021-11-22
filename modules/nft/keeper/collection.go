@@ -7,7 +7,7 @@ import (
 
 // SetCollection saves all NFTs and returns an error if there already exists
 func (k Keeper) SetCollection(ctx sdk.Context, collection types.Collection) error {
-	creator,err := sdk.AccAddressFromBech32(collection.Denom.Creator)
+	creator, err := sdk.AccAddressFromBech32(collection.Denom.Creator)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func (k Keeper) GetCollection(ctx sdk.Context, denomID string) (types.Collection
 		return types.Collection{}, err
 	}
 
-	nfts,err := k.GetNFTs(ctx, denomID)
+	nfts, err := k.GetNFTs(ctx, denomID)
 	if err != nil {
 		return types.Collection{}, err
 	}
@@ -44,21 +44,21 @@ func (k Keeper) GetCollection(ctx sdk.Context, denomID string) (types.Collection
 }
 
 // GetCollections returns all the collections
-func (k Keeper) GetCollections(ctx sdk.Context) (cs []types.Collection,err error) {
+func (k Keeper) GetCollections(ctx sdk.Context) (cs []types.Collection, err error) {
 	for _, class := range k.nk.GetClasses(ctx) {
-		nfts,err := k.GetNFTs(ctx, class.Id)
+		nfts, err := k.GetNFTs(ctx, class.Id)
 		if err != nil {
 			return nil, err
 		}
 
-		denom,err := k.GetDenomInfo(ctx,class.Id)
+		denom, err := k.GetDenomInfo(ctx, class.Id)
 		if err != nil {
 			return nil, err
 		}
 
 		cs = append(cs, types.NewCollection(*denom, nfts))
 	}
-	return cs,nil
+	return cs, nil
 }
 
 // GetTotalSupply returns the number of NFTs by the specified denom ID

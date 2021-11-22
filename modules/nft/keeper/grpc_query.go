@@ -68,7 +68,7 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 
 func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequest) (*types.QueryCollectionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	denom,err :=k.GetDenomInfo(ctx, request.DenomId)
+	denom, err := k.GetDenomInfo(ctx, request.DenomId)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 
 func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*types.QueryDenomResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	denom,err :=k.GetDenomInfo(ctx, request.DenomId)
+	denom, err := k.GetDenomInfo(ctx, request.DenomId)
 	if err != nil {
 		return nil, err
 	}
@@ -124,21 +124,21 @@ func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*typ
 func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types.QueryDenomsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	result,err := k.nk.Classes(c, &nft.QueryClassesRequest{
+	result, err := k.nk.Classes(c, &nft.QueryClassesRequest{
 		Pagination: req.Pagination,
 	})
 	if err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
 	var denoms []types.Denom
 	for _, denom := range result.Classes {
-		denom,err :=k.GetDenomInfo(ctx, denom.Id)
+		denom, err := k.GetDenomInfo(ctx, denom.Id)
 		if err != nil {
 			return nil, err
 		}
-        denoms = append(denoms, *denom)
-    }
+		denoms = append(denoms, *denom)
+	}
 
 	return &types.QueryDenomsResponse{
 		Denoms:     denoms,
