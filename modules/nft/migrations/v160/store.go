@@ -4,7 +4,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/nft/example/nft/types"
+
+	"github.com/irisnet/irismod/modules/nft/types"
 )
 
 func MigrateStore(ctx sdk.Context,
@@ -30,7 +31,7 @@ func migrateDenoms(ctx sdk.Context,
 	cdc codec.BinaryCodec,
 	issueDenom IssueDenomFn,
 ) (denoms []types.Denom, err error) {
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyDenomID(""))
+	iterator := sdk.KVStorePrefixIterator(store, KeyDenomID(""))
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
