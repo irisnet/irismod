@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
@@ -63,7 +62,7 @@ func cs(coins ...sdk.Coin) sdk.Coins {
 }
 
 func ts(minOffset int) uint64 {
-	return uint64(tmtime.Now().Add(time.Duration(minOffset) * time.Minute).Unix())
+	return uint64(time.Now().Add(time.Duration(minOffset) * time.Minute).Unix())
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -76,9 +75,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.GenesisState[htlctypes.ModuleName] = cfg.Codec.MustMarshalJSON(NewHTLTGenesis(Deputy))
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 

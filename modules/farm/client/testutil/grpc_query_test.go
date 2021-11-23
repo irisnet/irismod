@@ -1,21 +1,21 @@
-package rest_test
+package testutil
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/irisnet/irismod/simapp"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/rest"
 
 	farmcli "github.com/irisnet/irismod/modules/farm/client/cli"
-	"github.com/irisnet/irismod/modules/farm/client/testutil"
 	farmtypes "github.com/irisnet/irismod/modules/farm/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -32,9 +32,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -82,7 +84,7 @@ func (s *IntegrationTestSuite) TestRest() {
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := testutil.CreateFarmPoolExec(clientCtx,
+	bz, err := CreateFarmPoolExec(clientCtx,
 		creator.String(),
 		farmPool,
 		args...,
@@ -120,7 +122,7 @@ func (s *IntegrationTestSuite) TestRest() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 	lpToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(100))
-	bz, err = testutil.StakeExec(clientCtx,
+	bz, err = StakeExec(clientCtx,
 		creator.String(),
 		farmPool,
 		lpToken.String(),

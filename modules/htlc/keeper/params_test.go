@@ -3,11 +3,11 @@ package keeper_test
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,8 +27,8 @@ type ParamsTestSuite struct {
 }
 
 func (suite *ParamsTestSuite) SetupTest() {
-	app := simapp.SetupWithGenesisHTLC(NewHTLTGenesis(TestDeputy))
-	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: tmtime.Now()})
+	app := simapp.SetupWithGenesisHTLC(suite.T(), NewHTLTGenesis(TestDeputy))
+	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: time.Now()})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
 	suite.keeper = &app.HTLCKeeper

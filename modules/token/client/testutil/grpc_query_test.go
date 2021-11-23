@@ -1,9 +1,11 @@
-package rest_test
+package testutil
 
 import (
 	"encoding/json"
 	"fmt"
 	"testing"
+
+	"github.com/irisnet/irismod/simapp"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -11,13 +13,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/rest"
 
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
-	tokentestutil "github.com/irisnet/irismod/modules/token/client/testutil"
 	tokentypes "github.com/irisnet/irismod/modules/token/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -34,9 +34,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -80,7 +82,7 @@ func (s *IntegrationTestSuite) TestToken() {
 	}
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
-	bz, err := tokentestutil.IssueTokenExec(clientCtx, from.String(), args...)
+	bz, err := IssueTokenExec(clientCtx, from.String(), args...)
 
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())

@@ -1,4 +1,4 @@
-package rest_test
+package testutil
 
 import (
 	"context"
@@ -7,7 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/irisnet/irismod/simapp"
+
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -21,10 +23,8 @@ import (
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
 	servicecli "github.com/irisnet/irismod/modules/service/client/cli"
-	servicetestutil "github.com/irisnet/irismod/modules/service/client/testutil"
 	"github.com/irisnet/irismod/modules/service/types"
 	servicetypes "github.com/irisnet/irismod/modules/service/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -48,9 +48,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.GenesisState[servicetypes.ModuleName] = cfg.Codec.MustMarshalJSON(&serviceGenesisState)
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -85,7 +87,9 @@ func (s *IntegrationTestSuite) TestService() {
 	provider := author
 
 	consumerInfo, _, _ := val.ClientCtx.Keyring.NewMnemonic("NewValidator", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	consumer := sdk.AccAddress(consumerInfo.GetPubKey().Address())
+	pubKey, err := consumerInfo.GetPubKey()
+	s.Require().NoError(err)
+	consumer := sdk.AccAddress(pubKey.Address())
 
 	reqServiceFee := fmt.Sprintf("50%s", serviceDenom)
 	reqInput := `{"header":{},"body":{}}`
@@ -109,7 +113,7 @@ func (s *IntegrationTestSuite) TestService() {
 	}
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
-	bz, err := servicetestutil.DefineServiceExec(clientCtx, author.String(), args...)
+	bz, err := DefineServiceExec(clientCtx, author.String(), args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
@@ -139,7 +143,7 @@ func (s *IntegrationTestSuite) TestService() {
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = servicetestutil.BindServiceExec(clientCtx, provider.String(), args...)
+	bz, err = BindServiceExec(clientCtx, provider.String(), args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -172,7 +176,7 @@ func (s *IntegrationTestSuite) TestService() {
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = servicetestutil.DisableServiceExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
+	bz, err = DisableServiceExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -194,7 +198,7 @@ func (s *IntegrationTestSuite) TestService() {
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = servicetestutil.RefundDepositExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
+	bz, err = RefundDepositExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -218,7 +222,7 @@ func (s *IntegrationTestSuite) TestService() {
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = servicetestutil.EnableServiceExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
+	bz, err = EnableServiceExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -264,7 +268,7 @@ func (s *IntegrationTestSuite) TestService() {
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = servicetestutil.CallServiceExec(clientCtx, consumer.String(), args...)
+	bz, err = CallServiceExec(clientCtx, consumer.String(), args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -282,7 +286,7 @@ func (s *IntegrationTestSuite) TestService() {
 			var requestsBz []byte
 			for _, attribute := range event.Attributes {
 				if string(attribute.Key) == types.AttributeKeyRequests {
-					requestsBz = attribute.GetValue()
+					requestsBz = []byte(attribute.GetValue())
 				}
 				if string(attribute.Key) == types.AttributeKeyRequestContextID &&
 					string(attribute.GetValue()) == requestContextId {
@@ -323,7 +327,7 @@ func (s *IntegrationTestSuite) TestService() {
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = servicetestutil.RespondServiceExec(clientCtx, provider.String(), args...)
+	bz, err = RespondServiceExec(clientCtx, provider.String(), args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)

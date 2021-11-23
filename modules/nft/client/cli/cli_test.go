@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/irisnet/irismod/simapp"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
@@ -17,7 +19,6 @@ import (
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
 	nfttestutil "github.com/irisnet/irismod/modules/nft/client/testutil"
 	nfttypes "github.com/irisnet/irismod/modules/nft/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -34,9 +35,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 2
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
