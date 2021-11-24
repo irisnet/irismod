@@ -3,7 +3,7 @@ module github.com/irisnet/irismod
 go 1.16
 
 require (
-	github.com/cosmos/cosmos-sdk v0.44.0
+	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20211123182056-d03469165a54
 	github.com/gin-gonic/gin v1.7.3 // indirect
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -27,6 +27,6 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/cosmos/cosmos-sdk => /Users/zhangzhiqiang/workspace/github/dreamer-zq/cosmos-sdk
+//replace github.com/cosmos/cosmos-sdk => /Users/zhangzhiqiang/workspace/github/dreamer-zq/cosmos-sdk
 
-replace github.com/cosmos/cosmos-sdk/db => /Users/zhangzhiqiang/workspace/github/dreamer-zq/cosmos-sdk/db
+replace github.com/cosmos/cosmos-sdk/db => github.com/cosmos/cosmos-sdk/db v0.0.0-20211115141318-ccd94b8cfb67
