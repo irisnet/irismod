@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,7 +17,7 @@ import (
 
 // Keeper defines the service keeper
 type Keeper struct {
-	storeKey         sdk.StoreKey
+	storeKey         storetypes.StoreKey
 	cdc              codec.Codec
 	accountKeeper    types.AccountKeeper
 	bankKeeper       types.BankKeeper
@@ -30,7 +32,7 @@ type Keeper struct {
 // NewKeeper creates a new service Keeper instance
 func NewKeeper(
 	cdc codec.Codec,
-	key sdk.StoreKey,
+	key storetypes.StoreKey,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	paramSpace paramstypes.Subspace,

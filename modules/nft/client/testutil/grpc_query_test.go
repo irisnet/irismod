@@ -1,8 +1,10 @@
-package rest_test
+package testutil
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/irisnet/irismod/simapp"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -12,13 +14,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/rest"
 
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
-	nfttestutil "github.com/irisnet/irismod/modules/nft/client/testutil"
 	nfttypes "github.com/irisnet/irismod/modules/nft/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -35,9 +35,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 2
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -85,7 +87,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := nfttestutil.IssueDenomExec(val.ClientCtx, from.String(), denom, args...)
+	bz, err := IssueDenomExec(val.ClientCtx, from.String(), denom, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
@@ -130,7 +132,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 
-	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
+	bz, err = MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -187,14 +189,14 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 
-	bz, err = nfttestutil.TransferDenomExec(val.ClientCtx, from.String(), recipient.String(), denomID, args...)
+	bz, err = TransferDenomExec(val.ClientCtx, from.String(), recipient.String(), denomID, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	respType = proto.Message(&nfttypes.Denom{})
-	bz, err = nfttestutil.QueryDenomExec(val.ClientCtx, denomID)
+	bz, err = QueryDenomExec(val.ClientCtx, denomID)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	denomItem2 := respType.(*nfttypes.Denom)

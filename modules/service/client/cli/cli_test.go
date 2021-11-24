@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/irisnet/irismod/simapp"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
@@ -26,7 +28,6 @@ import (
 	servicetestutil "github.com/irisnet/irismod/modules/service/client/testutil"
 	"github.com/irisnet/irismod/modules/service/types"
 	servicetypes "github.com/irisnet/irismod/modules/service/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -50,9 +51,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.GenesisState[servicetypes.ModuleName] = cfg.Codec.MustMarshalJSON(&serviceGenesisState)
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -86,7 +89,9 @@ func (s *IntegrationTestSuite) TestService() {
 	provider := author
 
 	consumerInfo, _, _ := val.ClientCtx.Keyring.NewMnemonic("NewValidator", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	consumer := sdk.AccAddress(consumerInfo.GetPubKey().Address())
+	pubKey, err := consumerInfo.GetPubKey()
+	s.Require().NoError(err)
+	consumer := sdk.AccAddress(pubKey.Address())
 
 	reqServiceFee := fmt.Sprintf("50%s", serviceDenom)
 	reqInput := `{"header":{},"body":{}}`
@@ -280,7 +285,7 @@ func (s *IntegrationTestSuite) TestService() {
 			var requestsBz []byte
 			for _, attribute := range event.Attributes {
 				if string(attribute.Key) == types.AttributeKeyRequests {
-					requestsBz = attribute.GetValue()
+					requestsBz = []byte(attribute.GetValue())
 				}
 				if string(attribute.Key) == types.AttributeKeyRequestContextID &&
 					string(attribute.GetValue()) == requestContextId {

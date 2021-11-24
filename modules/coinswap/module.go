@@ -19,7 +19,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/irisnet/irismod/modules/coinswap/client/rest"
 	"github.com/irisnet/irismod/modules/coinswap/keeper"
 	"github.com/irisnet/irismod/modules/coinswap/simulation"
 	"github.com/irisnet/irismod/modules/coinswap/types"
@@ -61,7 +60,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 
 // RegisterRESTRoutes registers the REST routes for the coinswap module.
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-	rest.RegisterHandlers(clientCtx, rtr)
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the coinswap module.

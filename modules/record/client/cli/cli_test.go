@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/irisnet/irismod/simapp"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
@@ -15,7 +17,6 @@ import (
 	recordcli "github.com/irisnet/irismod/modules/record/client/cli"
 	recordtestutil "github.com/irisnet/irismod/modules/record/client/testutil"
 	recordtypes "github.com/irisnet/irismod/modules/record/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -32,9 +33,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 

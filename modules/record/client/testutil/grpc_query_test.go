@@ -1,8 +1,10 @@
-package rest_test
+package testutil
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/irisnet/irismod/simapp"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -10,13 +12,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/rest"
 
 	recordcli "github.com/irisnet/irismod/modules/record/client/cli"
-	recordtestutil "github.com/irisnet/irismod/modules/record/client/testutil"
 	recordtypes "github.com/irisnet/irismod/modules/record/types"
-	"github.com/irisnet/irismod/simapp"
 )
 
 type IntegrationTestSuite struct {
@@ -33,9 +33,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -72,7 +74,7 @@ func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := recordtestutil.MsgCreateRecordExec(clientCtx, from.String(), digest, digestAlgo, args...)
+	bz, err := MsgCreateRecordExec(clientCtx, from.String(), digest, digestAlgo, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
