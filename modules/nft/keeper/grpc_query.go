@@ -3,13 +3,13 @@ package keeper
 import (
 	"context"
 
+	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 
 	"github.com/irisnet/irismod/modules/nft/types"
 )
@@ -34,83 +34,116 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 }
 
 func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*types.QueryOwnerResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
+	r := &nft.QueryNFTsOfClassRequest{
+		ClassId:    request.DenomId,
+		Owner:      request.Owner,
+		Pagination: request.Pagination,
+	}
 
-	ownerAddress, err := sdk.AccAddressFromBech32(request.Owner)
+	// TODO DenomId should be optional
+	result, err := k.nk.NFTsOfClass(c, r)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid owner address %s", request.Owner)
+		return nil, err
 	}
 
-	owner := types.Owner{
-		Address:       ownerAddress.String(),
-		IDCollections: types.IDCollections{},
+	var denomMap = make(map[string][]string)
+	for _, token := range result.Nfts {
+		denomMap[token.ClassId] = append(denomMap[token.ClassId], token.Id)
 	}
-	idsMap := make(map[string][]string)
-	store := ctx.KVStore(k.storeKey)
-	nftStore := prefix.NewStore(store, types.KeyOwner(ownerAddress, request.DenomId, ""))
-	pageRes, err := query.Paginate(nftStore, request.Pagination, func(key []byte, value []byte) error {
-		denomID := request.DenomId
-		tokenID := string(key)
-		if len(request.DenomId) == 0 {
-			denomID, tokenID, _ = types.SplitKeyDenom(key)
-		}
-		if ids, ok := idsMap[denomID]; ok {
-			idsMap[denomID] = append(ids, tokenID)
-		} else {
-			idsMap[denomID] = []string{tokenID}
-			owner.IDCollections = append(
-				owner.IDCollections,
-				types.IDCollection{DenomId: denomID},
-			)
-		}
-		return nil
-	})
-	for i := 0; i < len(owner.IDCollections); i++ {
-		owner.IDCollections[i].TokenIds = idsMap[owner.IDCollections[i].DenomId]
+
+	var idc []types.IDCollection
+	for denom, ids := range denomMap {
+		idc = append(idc, types.IDCollection{DenomId: denom, TokenIds: ids})
 	}
-	return &types.QueryOwnerResponse{Owner: &owner, Pagination: pageRes}, nil
+
+	response := &types.QueryOwnerResponse{
+		Owner: &types.Owner{
+			Address:       request.Owner,
+			IDCollections: idc,
+		},
+		Pagination: result.Pagination,
+	}
+
+	return response, nil
 }
 
 func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequest) (*types.QueryCollectionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
-	collection, pageRes, err := k.GetPaginateCollection(ctx, request, request.DenomId)
+	denom, err := k.GetDenomInfo(ctx, request.DenomId)
 	if err != nil {
 		return nil, err
 	}
-	return &types.QueryCollectionResponse{Collection: &collection, Pagination: pageRes}, nil
+
+	r := &nft.QueryNFTsOfClassRequest{
+		ClassId:    request.DenomId,
+		Pagination: request.Pagination,
+	}
+
+	result, err := k.nk.NFTsOfClass(c, r)
+	if err != nil {
+		return nil, err
+	}
+
+	var nfts []types.BaseNFT
+	for _, token := range result.Nfts {
+		owner := k.nk.GetOwner(ctx, request.DenomId, token.Id)
+
+		var data = &gogotypes.StringValue{}
+		if err := k.cdc.Unmarshal(token.GetData().Value, data); err != nil {
+			return nil, err
+		}
+		nfts = append(nfts, types.BaseNFT{
+			Id:    token.Id,
+			URI:   token.Uri,
+			Owner: owner.String(),
+			Data:  data.GetValue(),
+		})
+	}
+
+	collection := &types.Collection{
+		Denom: *denom,
+		NFTs:  nfts,
+	}
+
+	response := &types.QueryCollectionResponse{
+		Collection: collection,
+		Pagination: result.Pagination,
+	}
+
+	return response, nil
 }
 
 func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*types.QueryDenomResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
-	denomObject, found := k.GetDenom(ctx, request.DenomId)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", request.DenomId)
+	denom, err := k.GetDenomInfo(ctx, request.DenomId)
+	if err != nil {
+		return nil, err
 	}
-
-	return &types.QueryDenomResponse{Denom: &denomObject}, nil
+	return &types.QueryDenomResponse{Denom: denom}, nil
 }
 
 func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types.QueryDenomsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	var denoms []types.Denom
-	store := ctx.KVStore(k.storeKey)
-	denomStore := prefix.NewStore(store, types.KeyDenomID(""))
-	pageRes, err := query.Paginate(denomStore, req.Pagination, func(key []byte, value []byte) error {
-		var denom types.Denom
-		k.cdc.MustUnmarshal(value, &denom)
-		denoms = append(denoms, denom)
-		return nil
+	result, err := k.nk.Classes(c, &nft.QueryClassesRequest{
+		Pagination: req.Pagination,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
+		return nil, err
+	}
+
+	var denoms []types.Denom
+	for _, denom := range result.Classes {
+		denom, err := k.GetDenomInfo(ctx, denom.Id)
+		if err != nil {
+			return nil, err
+		}
+		denoms = append(denoms, *denom)
 	}
 
 	return &types.QueryDenomsResponse{
 		Denoms:     denoms,
-		Pagination: pageRes,
+		Pagination: result.Pagination,
 	}, nil
 }
 

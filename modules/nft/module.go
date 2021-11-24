@@ -61,6 +61,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 
 // RegisterRESTRoutes registers the REST routes for the NFT module.
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+	//rest.RegisterHandlers(clientCtx, rtr, types.RouterKey)
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the NFT module.
@@ -111,6 +112,11 @@ func (AppModule) Name() string { return types.ModuleName }
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	m := keeper.NewMigrator(am.keeper)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/bank from version 1 to 2: %v", err))
+	}
 }
 
 // RegisterInvariants registers the NFT module invariants.
@@ -178,7 +184,7 @@ func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
 
 // RegisterStoreDecoder registers a decoder for NFT module's types
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
+	//sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
 // WeightedOperations returns the all the NFT module operations with their respective weights.

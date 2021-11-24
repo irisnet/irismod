@@ -17,6 +17,13 @@ message BaseNFT {
     string owner = 5;
 }
 
+message NFTMetadata {
+    option (gogoproto.equal) = true;
+
+    string name = 1;
+    string description = 2;
+}
+
 // Denom defines a type of NFT
 message Denom {
     option (gogoproto.equal) = true;
@@ -28,6 +35,15 @@ message Denom {
     string symbol = 5;
     bool mint_restricted = 6 ;
     bool update_restricted = 7 ;
+}
+
+message DenomMetadata {
+    option (gogoproto.equal) = true;
+
+    string creator = 1;
+    string schema = 2;
+    bool mint_restricted = 3 ;
+    bool update_restricted = 4 ;
 }
 
 // IDCollection defines a type of collection with specified ID
