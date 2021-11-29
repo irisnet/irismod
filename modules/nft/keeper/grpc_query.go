@@ -47,13 +47,15 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 	}
 
 	var denomMap = make(map[string][]string)
+	var denoms = make([]string, 0, len(result.Nfts))
 	for _, token := range result.Nfts {
 		denomMap[token.ClassId] = append(denomMap[token.ClassId], token.Id)
+		denoms = append(denoms, token.ClassId)
 	}
 
 	var idc []types.IDCollection
-	for denom, ids := range denomMap {
-		idc = append(idc, types.IDCollection{DenomId: denom, TokenIds: ids})
+	for _, denomId := range denoms {
+		idc = append(idc, types.IDCollection{DenomId: denomId, TokenIds: denomMap[denomId]})
 	}
 
 	response := &types.QueryOwnerResponse{

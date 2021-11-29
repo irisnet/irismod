@@ -42,7 +42,7 @@ func migrateDenoms(ctx sdk.Context,
 		// delete denom from store
 		store.Delete(iterator.Key())
 		store.Delete(KeyDenomName(denom.Name))
-		store.Delete(keyCollection(denom.Id))
+		store.Delete(KeyCollection(denom.Id))
 
 		creator, err := sdk.AccAddressFromBech32(denom.Creator)
 		if err != nil {
@@ -72,7 +72,7 @@ func migrateNFTs(ctx sdk.Context,
 	mintNFT MintNFTFn,
 ) error {
 	for _, denom := range denoms {
-		iterator := sdk.KVStorePrefixIterator(store, keyNFT(denom.Id, ""))
+		iterator := sdk.KVStorePrefixIterator(store, KeyNFT(denom.Id, ""))
 		defer iterator.Close()
 
 		for ; iterator.Valid(); iterator.Next() {
@@ -93,7 +93,7 @@ func migrateNFTs(ctx sdk.Context,
 			}
 
 			// delete owner from store
-			store.Delete(keyOwner(receiver, denom.Id, baseNFT.Id))
+			store.Delete(KeyOwner(receiver, denom.Id, baseNFT.Id))
 
 			if err = mintNFT(ctx,
 				denom.Id,

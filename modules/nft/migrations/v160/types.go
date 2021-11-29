@@ -28,13 +28,13 @@ type (
 	) error
 )
 
-func keyCollection(denomID string) []byte {
+func KeyCollection(denomID string) []byte {
 	key := append(PrefixCollection, delimiter...)
 	return append(key, []byte(denomID)...)
 }
 
 // KeyOwner gets the key of a collection owned by an account address
-func keyOwner(address sdk.AccAddress, denomID, tokenID string) []byte {
+func KeyOwner(address sdk.AccAddress, denomID, tokenID string) []byte {
 	key := append(PrefixOwners, delimiter...)
 	if address != nil {
 		key = append(key, []byte(address.String())...)
@@ -53,7 +53,7 @@ func keyOwner(address sdk.AccAddress, denomID, tokenID string) []byte {
 }
 
 // KeyNFT gets the key of nft stored by an denom and id
-func keyNFT(denomID, tokenID string) []byte {
+func KeyNFT(denomID, tokenID string) []byte {
 	key := append(PrefixNFT, delimiter...)
 	if len(denomID) > 0 {
 		key = append(key, []byte(denomID)...)

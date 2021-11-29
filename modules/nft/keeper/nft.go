@@ -43,7 +43,7 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT, err
 			Name:  nftMetadata.Name,
 			URI:   token.GetUri(),
 			Data:  nftMetadata.Description,
-			Owner: k.nk.GetOwner(ctx, denom, token.GetClassId()).String(),
+			Owner: k.nk.GetOwner(ctx, denom, token.GetId()).String(),
 		})
 	}
 	return nfts, nil
