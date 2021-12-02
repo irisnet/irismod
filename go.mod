@@ -18,7 +18,7 @@ require (
 	github.com/tendermint/tendermint v0.35.0
 	github.com/tendermint/tm-db v0.6.4
 	github.com/tendermint/tmlibs v0.9.0
-	github.com/tidwall/gjson v1.11.0
+	github.com/tidwall/gjson v1.12.1
 	github.com/xeipuuv/gojsonschema v1.2.0
 	google.golang.org/genproto v0.0.0-20210917145530-b395a37504d4
 	google.golang.org/grpc v1.42.0
