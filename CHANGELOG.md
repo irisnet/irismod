@@ -36,8 +36,12 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* (modules/nft)  [\#243](https://github.com/irisnet/irismod/pull/243) Refactor nft module with cosmos-sdk x/nft
 
 ### Improvements
+
+### API Breaking Changes
+* (modules/nft)  [\#243](https://github.com/irisnet/irismod/pull/243) GRPC interface `Owner` query conditions have been changed, the original parameter `Owner `is mandatory,`DenomID` is optional, now `DenomID` is mandatory, `Owner` is optional
 
 ## [v1.5.0] - 2021-11-01
 
