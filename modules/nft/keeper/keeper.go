@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -167,12 +166,10 @@ func (k Keeper) TransferOwnership(
 		return err
 	}
 
-	if denom.UpdateRestricted && (types.Modified(tokenNm) || types.Modified(tokenURI) || types.Modified(tokenData)) {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "It is restricted to update NFT under this denom %s", denom.Id)
-	}
-
+	var changed bool
 	if types.Modified(tokenURI) {
 		token.Uri = tokenURI
+		changed = true
 	}
 
 	var nftMetadata types.NFTMetadata
@@ -182,23 +179,25 @@ func (k Keeper) TransferOwnership(
 
 	if types.Modified(tokenNm) {
 		nftMetadata.Name = tokenNm
+		changed = true
 	}
 
 	if types.Modified(tokenData) {
 		nftMetadata.Description = tokenData
+		changed = true
 	}
 
-	data, err := codectypes.NewAnyWithValue(&nftMetadata)
-	if err != nil {
-		return err
+	if denom.UpdateRestricted && changed {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "It is restricted to update NFT under this denom %s", denom.Id)
 	}
-	if !reflect.DeepEqual(token, nft.NFT{
-		ClassId: denomID,
-		Id:      tokenID,
-		Uri:     tokenURI,
-		Data:    data,
-	}) {
-		if err := k.EditNFT(ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, srcOwner); err != nil {
+
+	if changed {
+		data, err := codectypes.NewAnyWithValue(&nftMetadata)
+		if err != nil {
+			return err
+		}
+		token.Data = data
+		if err := k.nk.Update(ctx, token); err != nil {
 			return err
 		}
 	}
