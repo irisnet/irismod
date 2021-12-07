@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -90,15 +89,17 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 	for _, token := range result.Nfts {
 		owner := k.nk.GetOwner(ctx, request.DenomId, token.Id)
 
-		var data = &gogotypes.StringValue{}
-		if err := k.cdc.Unmarshal(token.GetData().Value, data); err != nil {
+		var nftMetadata types.NFTMetadata
+		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 			return nil, err
 		}
+
 		nfts = append(nfts, types.BaseNFT{
 			Id:    token.Id,
 			URI:   token.Uri,
+			Name:  nftMetadata.Name,
 			Owner: owner.String(),
-			Data:  data.GetValue(),
+			Data:  nftMetadata.Description,
 		})
 	}
 
