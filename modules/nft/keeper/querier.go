@@ -63,11 +63,11 @@ func queryOwner(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierC
 	}
 
 	goCtx := sdk.WrapSDKContext(ctx)
-	request := &types.QueryOwnerRequest{
+	request := &types.QueryNFTsOfOwnerRequest{
 		DenomId: params.Denom,
 		Owner:   params.Owner.String(),
 	}
-	owner, err := k.Owner(goCtx, request)
+	owner, err := k.NFTsOfOwner(goCtx, request)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

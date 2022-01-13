@@ -32,14 +32,13 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 	return &types.QuerySupplyResponse{Amount: supply}, nil
 }
 
-func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*types.QueryOwnerResponse, error) {
+func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRequest) (*types.QueryNFTsOfOwnerResponse, error) {
 	r := &nft.QueryNFTsOfClassRequest{
 		ClassId:    request.DenomId,
 		Owner:      request.Owner,
 		Pagination: request.Pagination,
 	}
 
-	// TODO DenomId should be optional
 	result, err := k.nk.NFTsOfClass(c, r)
 	if err != nil {
 		return nil, err
@@ -57,7 +56,7 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 		idc = append(idc, types.IDCollection{DenomId: denomId, TokenIds: denomMap[denomId]})
 	}
 
-	response := &types.QueryOwnerResponse{
+	response := &types.QueryNFTsOfOwnerResponse{
 		Owner: &types.Owner{
 			Address:       request.Owner,
 			IDCollections: idc,
