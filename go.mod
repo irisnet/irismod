@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20211123182056-d03469165a54
-	github.com/gin-gonic/gin v1.7.3 // indirect
+	github.com/gin-gonic/gin v1.7.7 // indirect
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
