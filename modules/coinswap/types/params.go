@@ -83,7 +83,7 @@ func validatePoolCreationFee(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.IsPositive() {
+	if !v.IsPositive() {
 		return fmt.Errorf("poolCreationFee must be positive: %s", v.String())
 	}
 	return nil
