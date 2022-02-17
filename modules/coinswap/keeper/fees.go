@@ -7,7 +7,7 @@ import (
 	"github.com/irisnet/irismod/modules/token/types"
 )
 
-// DeductPoolCreationFee performs fee handling for issuing token
+// DeductPoolCreationFee performs fee handling for creating liquidity pool
 func (k Keeper) DeductPoolCreationFee(ctx sdk.Context, creator sdk.AccAddress) error {
 	params := k.GetParams(ctx)
 	poolCreationFee := params.PoolCreationFee
