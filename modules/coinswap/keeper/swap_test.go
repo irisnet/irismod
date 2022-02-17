@@ -105,7 +105,7 @@ func (suite *TestSuite) TestSwap() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 99999100),
-		sdk.NewInt64Coin(denomStandard, 99998888),
+		sdk.NewInt64Coin(denomStandard, 99993888),
 		sdk.NewInt64Coin(lptDenom, 1000),
 	)
 	suite.Equal(expCoins.Sort().String(), senderBalances.Sort().String())
@@ -124,7 +124,7 @@ func (suite *TestSuite) TestSwap() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 99999200),
-		sdk.NewInt64Coin(denomStandard, 99998748),
+		sdk.NewInt64Coin(denomStandard, 99993748),
 		sdk.NewInt64Coin(lptDenom, 1000),
 	)
 	suite.Equal(expCoins.Sort().String(), senderBalances.Sort().String())
@@ -150,7 +150,7 @@ func (suite *TestSuite) TestSwap() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 99999554),
-		sdk.NewInt64Coin(denomStandard, 99997748),
+		sdk.NewInt64Coin(denomStandard, 99992748),
 		sdk.NewInt64Coin(lptDenom, 1000),
 	)
 	suite.Equal(expCoins.Sort().String(), senderBalances.Sort().String())
@@ -169,7 +169,7 @@ func (suite *TestSuite) TestSwap() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 99999690),
-		sdk.NewInt64Coin(denomStandard, 99996748),
+		sdk.NewInt64Coin(denomStandard, 99991748),
 		sdk.NewInt64Coin(lptDenom, 1000),
 	)
 	suite.Equal(expCoins.Sort().String(), senderBalances.Sort().String())
