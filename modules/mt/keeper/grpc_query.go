@@ -47,7 +47,7 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 		IdCollections: types.IDCollections{},
 	}
 
-	idsMap := make(map[string][]string)
+	idsMap := make(map[string][]types.Balance)
 	store := ctx.KVStore(k.storeKey)
 	mtStore := prefix.NewStore(store, types.KeyOwner(ownerAddress, request.DenomId, ""))
 	pageRes, err := query.Paginate(mtStore, request.Pagination, func(key []byte, value []byte) error {
@@ -56,24 +56,22 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 		if len(request.DenomId) == 0 {
 			denomID, mtId, _ = types.SplitKeyDenom(key)
 		}
-		if ids, ok := idsMap[denomID]; ok {
-			idsMap[denomID] = append(ids, mtId)
-		} else {
-			balance := k.getBalance(ctx, ownerAddress, denomID, mtId)
 
-			idsMap[denomID] = []string{mtId}
+		balance := k.getBalance(ctx, ownerAddress, denomID, mtId)
+		if ids, ok := idsMap[denomID]; ok {
+			idsMap[denomID] = append(ids, balance)
+		} else {
+			idsMap[denomID] = append([]types.Balance{}, balance)
 			owner.IdCollections = append(
 				owner.IdCollections,
-				types.IDCollection{
-					DenomId:  denomID,
-					Balances: balance,
-				},
+				types.IDCollection{DenomId: denomID},
 			)
 		}
 		return nil
 	})
+
 	for i := 0; i < len(owner.IdCollections); i++ {
-		owner.IDCollections[i].TokenIds = idsMap[owner.IDCollections[i].DenomId]
+		owner.IdCollections[i].Balances = idsMap[owner.IdCollections[i].DenomId]
 	}
 	return &types.QueryOwnerResponse{Owner: &owner, Pagination: pageRes}, nil
 }

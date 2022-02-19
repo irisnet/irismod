@@ -23,15 +23,17 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 // IssueDenom issue a new denom.
 func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (*types.MsgIssueDenomResponse, error) {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	sender, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, msg.Symbol, sender,
-		msg.MintRestricted, msg.UpdateRestricted,
-		msg.Description, msg.Uri, msg.UriHash, msg.Data,
+	if err := m.Keeper.IssueDenom(ctx,
+		msg.Id,
+		msg.Name,
+		sender,
+		msg.Data,
 	); err != nil {
 		return nil, err
 	}
@@ -41,12 +43,12 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 			types.EventTypeIssueDenom,
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.Id),
 			sdk.NewAttribute(types.AttributeKeyDenomName, msg.Name),
-			sdk.NewAttribute(types.AttributeKeyCreator, msg.Sender),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
 		),
 	})
 
@@ -71,17 +73,16 @@ func (m msgServer) MintMT(goCtx context.Context, msg *types.MsgMintMT) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
 	}
 
-	if denom.MintRestricted && denom.Creator != sender.String() {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint MT of denom %s", denom.Creator, msg.DenomId)
+	if denom.Creator != sender.String() {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", denom.Creator, msg.DenomId)
 	}
 
-	if err := m.Keeper.MintMT(ctx, msg.DenomId, msg.Id,
-		msg.Name,
-		msg.URI,
-		msg.UriHash,
+	if err := m.Keeper.MintMT(ctx,
+		msg.DenomId,
+		msg.Id,
+		msg.Supply,
 		msg.Data,
-		recipient,
-	); err != nil {
+		recipient); err != nil {
 		return nil, err
 	}
 
@@ -90,7 +91,7 @@ func (m msgServer) MintMT(goCtx context.Context, msg *types.MsgMintMT) (*types.M
 			types.EventTypeMintMT,
 			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeyTokenURI, msg.URI),
+			sdk.NewAttribute(types.AttributeKeySupply, msg.Supply),
 			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),
 		),
 		sdk.NewEvent(
@@ -110,10 +111,9 @@ func (m msgServer) EditMT(goCtx context.Context, msg *types.MsgEditMT) (*types.M
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.EditMT(ctx, msg.DenomId, msg.Id,
-		msg.Name,
-		msg.URI,
-		msg.UriHash,
+	if err := m.Keeper.EditMT(ctx,
+		msg.DenomId,
+		msg.Id,
 		msg.Data,
 		sender,
 	); err != nil {
@@ -125,7 +125,6 @@ func (m msgServer) EditMT(goCtx context.Context, msg *types.MsgEditMT) (*types.M
 			types.EventTypeEditMT,
 			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeyTokenURI, msg.URI),
 			sdk.NewAttribute(types.AttributeKeyOwner, msg.Sender),
 		),
 		sdk.NewEvent(
@@ -150,11 +149,10 @@ func (m msgServer) TransferMT(goCtx context.Context, msg *types.MsgTransferMT) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id,
-		msg.Name,
-		msg.URI,
-		msg.UriHash,
-		msg.Data,
+	if err := m.Keeper.TransferOwner(ctx,
+		msg.DenomId,
+		msg.Id,
+		msg.Amount,
 		sender,
 		recipient,
 	); err != nil {

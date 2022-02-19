@@ -16,7 +16,7 @@ var (
 	AttributeKeyRecipient = "recipient"
 	AttributeKeyOwner     = "owner"
 	AttributeKeyTokenID   = "token_id"
-	AttributeKeyTokenURI  = "token_uri"
 	AttributeKeyDenomID   = "denom_id"
+	AttributeKeySupply    = "supply"
 	AttributeKeyDenomName = "denom_name"
 )

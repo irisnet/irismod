@@ -36,13 +36,13 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) IssueDenom(ctx sdk.Context,
 	id, name string,
 	creator sdk.AccAddress,
-	data string,
+	data []byte,
 ) error {
 	return k.SetDenom(ctx, types.Denom{
 		Id:      id,
 		Name:    name,
 		Creator: creator.String(),
-		Data:    []byte(data),
+		Data:    data,
 	})
 }
 
@@ -122,7 +122,6 @@ func (k Keeper) BurnMT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAd
 	k.deleteOwner(ctx, denomID, tokenID, owner)
 
 	// todo 这个是删除 collection 中mt 不是减少supply
-	// 还剩这个和 TransferDenomOwner 没有改，keeper 层改完修改 msg_server 和 grpc_query 的东西
 	k.decreaseSupply(ctx, denomID)
 
 	return nil

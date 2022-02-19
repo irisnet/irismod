@@ -79,8 +79,6 @@ func (k Keeper) GetTotalSupply(ctx sdk.Context, denomID string) uint64 {
 	collection := types.Collection{}
 	k.cdc.MustUnmarshal(bz, &collection)
 
-	types
-
 	if len(bz) == 0 {
 		return 0
 	}
