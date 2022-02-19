@@ -37,8 +37,8 @@ message Balance {
 message IDCollection {
   option (gogoproto.equal) = true;
 
-  string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-  repeated Balance Balances = 2;
+  string denom_id = 1;
+  repeated Balance Balances = 2 [(gogoproto.nullable) = false];
 }
 
 // Owner defines a type of owner
@@ -46,7 +46,7 @@ message Owner {
   option (gogoproto.equal) = true;
 
   string address = 1;
-  repeated IDCollection id_collections = 2;
+  repeated IDCollection id_collections = 2 [(gogoproto.nullable) = false];
 }
 
 // Collection defines a type of collection
