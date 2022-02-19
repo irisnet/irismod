@@ -52,7 +52,7 @@ func (k Keeper) MintMT(ctx sdk.Context,
 	denomID, tokenID string,
 	amout uint64,
 	data []byte,
-	owner sdk.AccAddress,
+	recipient sdk.AccAddress,
 ) error {
 
 	if k.HasMT(ctx, denomID, tokenID) {
@@ -76,13 +76,12 @@ func (k Keeper) MintMT(ctx sdk.Context,
 			types.NewMT(
 				tokenID,
 				amout,
-				owner,
+				recipient,
 				data,
 			),
 		)
 
-		k.setOwner(ctx, denomID, tokenID, amout, owner)
-		// todo 确定是否还需要 collection
+		k.setOwner(ctx, denomID, tokenID, amout, recipient)
 		k.increaseSupply(ctx, denomID)
 	}
 
