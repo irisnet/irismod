@@ -74,8 +74,9 @@ message MsgMintMT {
     string id = 1;
     string denom_id = 2;
     bytes data = 3;
-    string sender = 4;
-    string recipient = 5;
+    uint64 supply = 4;
+    string sender = 5;
+    string recipient = 6;
 }
 
 // MsgMintMTResponse defines the Msg/MintMT response type.
