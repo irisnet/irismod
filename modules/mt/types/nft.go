@@ -3,14 +3,14 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/irisnet/irismod/modules/nft/exported"
+	"github.com/irisnet/irismod/modules/mt/exported"
 )
 
-var _ exported.NFT = BaseNFT{}
+var _ exported.MT = BaseMT{}
 
-// NewBaseNFT creates a new NFT instance
-func NewBaseNFT(id, name string, owner sdk.AccAddress, uri, uriHash, data string) BaseNFT {
-	return BaseNFT{
+// NewBaseMT creates a new MT instance
+func NewBaseMT(id, name string, owner sdk.AccAddress, uri, uriHash, data string) BaseMT {
+	return BaseMT{
 		Id:      id,
 		Name:    name,
 		Owner:   owner.String(),
@@ -20,47 +20,47 @@ func NewBaseNFT(id, name string, owner sdk.AccAddress, uri, uriHash, data string
 	}
 }
 
-// GetID return the id of BaseNFT
-func (bnft BaseNFT) GetID() string {
-	return bnft.Id
+// GetID return the id of BaseMT
+func (bmt BaseMT) GetID() string {
+	return bmt.Id
 }
 
-// GetName return the name of BaseNFT
-func (bnft BaseNFT) GetName() string {
-	return bnft.Name
+// GetName return the name of BaseMT
+func (bmt BaseMT) GetName() string {
+	return bmt.Name
 }
 
-// GetOwner return the owner of BaseNFT
-func (bnft BaseNFT) GetOwner() sdk.AccAddress {
-	owner, _ := sdk.AccAddressFromBech32(bnft.Owner)
+// GetOwner return the owner of BaseMT
+func (bmt BaseMT) GetOwner() sdk.AccAddress {
+	owner, _ := sdk.AccAddressFromBech32(bmt.Owner)
 	return owner
 }
 
-// GetURI return the URI of BaseNFT
-func (bnft BaseNFT) GetURI() string {
-	return bnft.URI
+// GetURI return the URI of BaseMT
+func (bmt BaseMT) GetURI() string {
+	return bmt.URI
 }
 
-// GetURIHash return the UriHash of BaseNFT
-func (bnft BaseNFT) GetURIHash() string {
-	return bnft.UriHash
+// GetURIHash return the UriHash of BaseMT
+func (bmt BaseMT) GetURIHash() string {
+	return bmt.UriHash
 }
 
-// GetData return the Data of BaseNFT
-func (bnft BaseNFT) GetData() string {
-	return bnft.Data
+// GetData return the Data of BaseMT
+func (bmt BaseMT) GetData() string {
+	return bmt.Data
 }
 
 // ----------------------------------------------------------------------------
-// NFT
+// MT
 
-// NFTs define a list of NFT
-type NFTs []exported.NFT
+// MTs define a list of MT
+type MTs []exported.MT
 
-// NewNFTs creates a new set of NFTs
-func NewNFTs(nfts ...exported.NFT) NFTs {
-	if len(nfts) == 0 {
-		return NFTs{}
+// NewMTs creates a new set of MTs
+func NewMTs(mts ...exported.MT) MTs {
+	if len(mts) == 0 {
+		return MTs{}
 	}
-	return NFTs(nfts)
+	return MTs(mts)
 }

@@ -4,70 +4,70 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/irisnet/irismod/modules/nft/exported"
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/modules/mt/exported"
+	"github.com/irisnet/irismod/modules/mt/types"
 )
 
-// GetNFT gets the the specified NFT
-func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.NFT, err error) {
+// GetMT gets the the specified MT
+func (k Keeper) GetMT(ctx sdk.Context, denomID, tokenID string) (mt exported.MT, err error) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.KeyNFT(denomID, tokenID))
+	bz := store.Get(types.KeyMT(denomID, tokenID))
 	if bz == nil {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownCollection, "not found NFT: %s", denomID)
+		return nil, sdkerrors.Wrapf(types.ErrUnknownCollection, "not found MT: %s", denomID)
 	}
 
-	var baseNFT types.BaseNFT
-	k.cdc.MustUnmarshal(bz, &baseNFT)
+	var baseMT types.BaseMT
+	k.cdc.MustUnmarshal(bz, &baseMT)
 
-	return baseNFT, nil
+	return baseMT, nil
 }
 
-// GetNFTs returns all NFTs by the specified denom ID
-func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT) {
+// GetMTs returns all MTs by the specified denom ID
+func (k Keeper) GetMTs(ctx sdk.Context, denom string) (mts []exported.MT) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyNFT(denom, ""))
+	iterator := sdk.KVStorePrefixIterator(store, types.KeyMT(denom, ""))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
-		var baseNFT types.BaseNFT
-		k.cdc.MustUnmarshal(iterator.Value(), &baseNFT)
-		nfts = append(nfts, baseNFT)
+		var baseMT types.BaseMT
+		k.cdc.MustUnmarshal(iterator.Value(), &baseMT)
+		mts = append(mts, baseMT)
 	}
 
-	return nfts
+	return mts
 }
 
-// Authorize checks if the sender is the owner of the given NFT
-// Return the NFT if true, an error otherwise
-func (k Keeper) Authorize(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) (types.BaseNFT, error) {
-	nft, err := k.GetNFT(ctx, denomID, tokenID)
+// Authorize checks if the sender is the owner of the given MT
+// Return the MT if true, an error otherwise
+func (k Keeper) Authorize(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) (types.BaseMT, error) {
+	mt, err := k.GetMT(ctx, denomID, tokenID)
 	if err != nil {
-		return types.BaseNFT{}, err
+		return types.BaseMT{}, err
 	}
 
-	if !owner.Equals(nft.GetOwner()) {
-		return types.BaseNFT{}, sdkerrors.Wrap(types.ErrUnauthorized, owner.String())
+	if !owner.Equals(mt.GetOwner()) {
+		return types.BaseMT{}, sdkerrors.Wrap(types.ErrUnauthorized, owner.String())
 	}
 
-	return nft.(types.BaseNFT), nil
+	return mt.(types.BaseMT), nil
 }
 
-// HasNFT checks if the specified NFT exists
-func (k Keeper) HasNFT(ctx sdk.Context, denomID, tokenID string) bool {
+// HasMT checks if the specified MT exists
+func (k Keeper) HasMT(ctx sdk.Context, denomID, tokenID string) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.KeyNFT(denomID, tokenID))
+	return store.Has(types.KeyMT(denomID, tokenID))
 }
 
-func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
+func (k Keeper) setMT(ctx sdk.Context, denomID string, mt types.BaseMT) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := k.cdc.MustMarshal(&nft)
-	store.Set(types.KeyNFT(denomID, nft.GetID()), bz)
+	bz := k.cdc.MustMarshal(&mt)
+	store.Set(types.KeyMT(denomID, mt.GetID()), bz)
 }
 
-// deleteNFT deletes an existing NFT from store
-func (k Keeper) deleteNFT(ctx sdk.Context, denomID string, nft exported.NFT) {
+// deleteMT deletes an existing MT from store
+func (k Keeper) deleteMT(ctx sdk.Context, denomID string, mt exported.MT) {
 	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.KeyNFT(denomID, nft.GetID()))
+	store.Delete(types.KeyMT(denomID, mt.GetID()))
 }
