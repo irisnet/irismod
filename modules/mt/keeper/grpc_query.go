@@ -11,7 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/modules/mt/types"
 )
 
 var _ types.QueryServer = Keeper{}
@@ -35,37 +35,44 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 
 func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*types.QueryOwnerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	DenomOwner, _ := k.GetDenom(ctx, request.DenomId)
 
-	ownerAddress, err := sdk.AccAddressFromBech32(request.Owner)
+	ownerAddress, err := sdk.AccAddressFromBech32(DenomOwner.Creator)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid owner address %s", request.Owner)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid owner address %s", DenomOwner.Creator)
 	}
 
 	owner := types.Owner{
 		Address:       ownerAddress.String(),
-		IDCollections: types.IDCollections{},
+		IdCollections: types.IDCollections{},
 	}
+
 	idsMap := make(map[string][]string)
 	store := ctx.KVStore(k.storeKey)
-	nftStore := prefix.NewStore(store, types.KeyOwner(ownerAddress, request.DenomId, ""))
-	pageRes, err := query.Paginate(nftStore, request.Pagination, func(key []byte, value []byte) error {
+	mtStore := prefix.NewStore(store, types.KeyOwner(ownerAddress, request.DenomId, ""))
+	pageRes, err := query.Paginate(mtStore, request.Pagination, func(key []byte, value []byte) error {
 		denomID := request.DenomId
-		tokenID := string(key)
+		mtId := string(key)
 		if len(request.DenomId) == 0 {
-			denomID, tokenID, _ = types.SplitKeyDenom(key)
+			denomID, mtId, _ = types.SplitKeyDenom(key)
 		}
 		if ids, ok := idsMap[denomID]; ok {
-			idsMap[denomID] = append(ids, tokenID)
+			idsMap[denomID] = append(ids, mtId)
 		} else {
-			idsMap[denomID] = []string{tokenID}
-			owner.IDCollections = append(
-				owner.IDCollections,
-				types.IDCollection{DenomId: denomID},
+			balance := k.getBalance(ctx, ownerAddress, denomID, mtId)
+
+			idsMap[denomID] = []string{mtId}
+			owner.IdCollections = append(
+				owner.IdCollections,
+				types.IDCollection{
+					DenomId:  denomID,
+					Balances: balance,
+				},
 			)
 		}
 		return nil
 	})
-	for i := 0; i < len(owner.IDCollections); i++ {
+	for i := 0; i < len(owner.IdCollections); i++ {
 		owner.IDCollections[i].TokenIds = idsMap[owner.IDCollections[i].DenomId]
 	}
 	return &types.QueryOwnerResponse{Owner: &owner, Pagination: pageRes}, nil
@@ -114,18 +121,36 @@ func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types
 	}, nil
 }
 
-func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.QueryNFTResponse, error) {
+func (k Keeper) MT(c context.Context, request *types.QueryMTRequest) (*types.QueryMTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	nft, err := k.GetNFT(ctx, request.DenomId, request.TokenId)
+	mt, err := k.GetMT(ctx, request.DenomId, request.MtId)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, sdkerrors.Wrapf(types.ErrUnknownMT, "invalid MT %s from collection %s", request.MtId, request.DenomId)
 	}
 
-	baseNFT, ok := nft.(types.BaseNFT)
+	baseMT, ok := mt.(types.MT)
 	if !ok {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid type NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, sdkerrors.Wrapf(types.ErrUnknownMT, "invalid type MT %s from collection %s", request.MtId, request.DenomId)
 	}
 
-	return &types.QueryNFTResponse{NFT: &baseNFT}, nil
+	return &types.QueryMTResponse{MT: &baseMT}, nil
+}
+
+func (k Keeper) MTSupply(c context.Context, request *types.QueryMtsRequest) (*types.QueryMtsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	mt, err := k.GetMT(ctx, request.DenomId, request.MtId)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownMT, "invalid MT %s from collection %s", request.MtId, request.DenomId)
+	}
+
+	baseMT, ok := mt.(types.MT)
+	if !ok {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownMT, "invalid type MT %s from collection %s", request.MtId, request.DenomId)
+	}
+
+	return &types.QueryMtsResponse{
+		Amount: baseMT.GetSupply(),
+	}, nil
 }

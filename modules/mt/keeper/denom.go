@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/modules/mt/types"
 )
 
 // HasDenomID returns whether the specified denom ID exists
@@ -22,7 +22,6 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&denom)
 	store.Set(types.KeyDenomID(denom.Id), bz)
-	store.Set(types.KeyDenomName(denom.Name), []byte(denom.Id))
 	return nil
 }
 

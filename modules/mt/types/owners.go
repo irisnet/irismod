@@ -7,22 +7,62 @@ import (
 )
 
 // NewIDCollection creates a new IDCollection instance
-func NewIDCollection(denomID string, tokenIDs []string) IDCollection {
+func NewIDCollection(denomId string, balances ...Balance) IDCollection {
 	return IDCollection{
-		DenomId:  denomID,
-		TokenIds: tokenIDs,
+		DenomId:  denomId,
+		Balances: balances,
 	}
 }
 
 // Supply return the amount of the denom
 func (idc IDCollection) Supply() int {
-	return len(idc.TokenIds)
+	return len(idc.Balances)
 }
 
-// AddID adds an tokenID to the idCollection
-func (idc IDCollection) AddID(tokenID string) IDCollection {
-	idc.TokenIds = append(idc.TokenIds, tokenID)
+// AddBalance adds an tokenID to the idCollection
+func (idc IDCollection) AddBalance(balances Balance) IDCollection {
+	idc.Balances = append(idc.Balances, balances)
 	return idc
+}
+
+//// AddBalance adds an tokenID to the idCollection
+//func (b Balance) AddAmount(amount uint64) Balance {
+//	b.Amount = append(b.Amount, amount)
+//	return b
+//}
+
+// ----------------------------------------------------------------------------
+// Balances is an array of ID Balances
+type Balances []Balance
+
+// Add adds an ID to the idCollection
+func (b Balances) Add(mtId string, amount uint64) Balances {
+	//for i, mt := range b {
+	//	if mt.MtId == mtId {
+	//		b[i] = mt.AddAmount(amount)
+	//		return b
+	//	}
+	//}
+	return append(b, Balance{
+		MtId:   mtId,
+		Amount: amount,
+	})
+}
+
+// String follows stringer interface
+func (b Balances) String() string {
+	if len(b) == 0 {
+		return ""
+	}
+
+	var buf bytes.Buffer
+	for _, idCollection := range b {
+		if buf.Len() > 0 {
+			buf.WriteString("\n")
+		}
+		buf.WriteString(idCollection.String())
+	}
+	return buf.String()
 }
 
 // ----------------------------------------------------------------------------
@@ -30,16 +70,16 @@ func (idc IDCollection) AddID(tokenID string) IDCollection {
 type IDCollections []IDCollection
 
 // Add adds an ID to the idCollection
-func (idcs IDCollections) Add(denomID, tokenID string) IDCollections {
+func (idcs IDCollections) Add(denomID string, balances Balance) IDCollections {
 	for i, idc := range idcs {
 		if idc.DenomId == denomID {
-			idcs[i] = idc.AddID(tokenID)
+			idcs[i] = idc.AddBalance(balances)
 			return idcs
 		}
 	}
 	return append(idcs, IDCollection{
 		DenomId:  denomID,
-		TokenIds: []string{tokenID},
+		Balances: []Balance{balances},
 	})
 }
 
@@ -69,7 +109,7 @@ func (idcs IDCollections) String() string {
 func NewOwner(owner sdk.AccAddress, idCollections ...IDCollection) Owner {
 	return Owner{
 		Address:       owner.String(),
-		IDCollections: idCollections,
+		IdCollections: idCollections,
 	}
 }
 

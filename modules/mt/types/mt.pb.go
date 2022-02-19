@@ -146,8 +146,8 @@ var xxx_messageInfo_Balance proto.InternalMessageInfo
 
 // IDCollection defines a type of collection with specified ID
 type IDCollection struct {
-	DenomId  string     `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-	Balances []*Balance `protobuf:"bytes,2,rep,name=Balances,proto3" json:"Balances,omitempty"`
+	DenomId  string    `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	Balances []Balance `protobuf:"bytes,2,rep,name=Balances,proto3" json:"Balances,omitempty"`
 }
 
 func (m *IDCollection) Reset()         { *m = IDCollection{} }
@@ -185,8 +185,8 @@ var xxx_messageInfo_IDCollection proto.InternalMessageInfo
 
 // Owner defines a type of owner
 type Owner struct {
-	Address       string          `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	IdCollections []*IDCollection `protobuf:"bytes,2,rep,name=id_collections,json=idCollections,proto3" json:"id_collections,omitempty"`
+	Address       string         `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	IdCollections []IDCollection `protobuf:"bytes,2,rep,name=id_collections,json=idCollections,proto3" json:"id_collections,omitempty"`
 }
 
 func (m *Owner) Reset()         { *m = Owner{} }
@@ -1438,7 +1438,7 @@ func (m *IDCollection) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Balances = append(m.Balances, &Balance{})
+			m.Balances = append(m.Balances, Balance{})
 			if err := m.Balances[len(m.Balances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1554,7 +1554,7 @@ func (m *Owner) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.IdCollections = append(m.IdCollections, &IDCollection{})
+			m.IdCollections = append(m.IdCollections, IDCollection{})
 			if err := m.IdCollections[len(m.IdCollections)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
