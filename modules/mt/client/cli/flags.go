@@ -5,7 +5,6 @@ import (
 )
 
 const (
-	FlagDenomID   = "denom-id"
 	FlagRecipient = "recipient"
 	FlagData      = "data"
 	FlagName      = "name"
@@ -17,10 +16,9 @@ var (
 	FsIssueDenom    = flag.NewFlagSet("", flag.ContinueOnError)
 	FsTransferDenom = flag.NewFlagSet("", flag.ContinueOnError)
 
-	FsMintMT        = flag.NewFlagSet("", flag.ContinueOnError)
-	FsEditMT        = flag.NewFlagSet("", flag.ContinueOnError)
-	FsTransferMT    = flag.NewFlagSet("", flag.ContinueOnError)
-	FsQueryMTSupply = flag.NewFlagSet("", flag.ContinueOnError)
+	FsMintMT     = flag.NewFlagSet("", flag.ContinueOnError)
+	FsEditMT     = flag.NewFlagSet("", flag.ContinueOnError)
+	FsTransferMT = flag.NewFlagSet("", flag.ContinueOnError)
 )
 
 func init() {
@@ -33,6 +31,4 @@ func init() {
 	FsMintMT.String(FlagRecipient, "", "The recipient of the MT, default to the sender of the tx")
 
 	FsEditMT.String(FlagData, "[do-not-modify]", "The metadata of the MT")
-
-	FsQueryMTSupply.String(FlagDenomID, "", "The denom ID")
 }

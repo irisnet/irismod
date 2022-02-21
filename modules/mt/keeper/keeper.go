@@ -79,7 +79,6 @@ func (k Keeper) IssueMT(ctx sdk.Context,
 func (k Keeper) MintMT(ctx sdk.Context,
 	denomID, mtID string,
 	amount uint64,
-	data []byte,
 	recipient sdk.AccAddress,
 ) {
 
@@ -111,17 +110,17 @@ func (k Keeper) EditMT(ctx sdk.Context,
 
 // TransferOwner transfers the ownership of the given MT to the new owner
 func (k Keeper) TransferOwner(ctx sdk.Context,
-	denomID, tokenID string,
+	denomID, mtID string,
 	amount uint64,
 	srcOwner, dstOwner sdk.AccAddress,
 ) error {
 
-	srcOwnerAmount := k.getBalance(ctx, denomID, tokenID, srcOwner)
+	srcOwnerAmount := k.getBalance(ctx, denomID, mtID, srcOwner)
 	if srcOwnerAmount < amount {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "Insufficient balance: %d", srcOwnerAmount)
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "insufficient balance: %d", srcOwnerAmount)
 	}
 
-	k.transfer(ctx, denomID, tokenID, amount, srcOwner, dstOwner)
+	k.transfer(ctx, denomID, mtID, amount, srcOwner, dstOwner)
 	return nil
 }
 
@@ -131,16 +130,17 @@ func (k Keeper) BurnMT(ctx sdk.Context,
 	amount uint64,
 	owner sdk.AccAddress) error {
 
-	// TODO what happens if denom of mt not exists?
 	srcOwnerAmount := k.getBalance(ctx, denomID, mtID, owner)
 	if srcOwnerAmount < amount {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "Insufficient balance: %d", srcOwnerAmount)
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "insufficient balance: %d", srcOwnerAmount)
 	}
 
 	// sub balance
 	k.subBalance(ctx, denomID, mtID, amount, owner)
 
-	// TODO sub total supply
+	// sub total supply
+	k.decreaseMTSupply(ctx, denomID, mtID, amount)
+
 	return nil
 }
 

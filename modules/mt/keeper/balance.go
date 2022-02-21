@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/binary"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/irisnet/irismod/modules/mt/types"
 )
@@ -11,8 +10,11 @@ func (k Keeper) addBalance(ctx sdk.Context,
 	amount uint64,
 	addr sdk.AccAddress) {
 
+	balance := k.getBalance(ctx, denomID, mtID, addr)
+	balance += amount
+
 	store := ctx.KVStore(k.storeKey)
-	bz := types.MustMarshalAmount(k.cdc, amount)
+	bz := types.MustMarshalAmount(k.cdc, balance)
 	store.Set(types.KeyBalance(addr, denomID, mtID), bz)
 }
 
@@ -22,7 +24,8 @@ func (k Keeper) subBalance(ctx sdk.Context,
 	addr sdk.AccAddress) {
 
 	store := ctx.KVStore(k.storeKey)
-	balance := k.getBalance(ctx, denomID, mtID, addr) - amount
+	balance := k.getBalance(ctx, denomID, mtID, addr)
+	balance -= amount
 
 	bz := types.MustMarshalAmount(k.cdc, balance)
 	store.Set(types.KeyBalance(addr, denomID, mtID), bz)
@@ -34,8 +37,12 @@ func (k Keeper) getBalance(ctx sdk.Context,
 
 	store := ctx.KVStore(k.storeKey)
 
-	ownerMt := store.Get(types.KeyBalance(addr, denomID, mtID))
-	return binary.BigEndian.Uint64(ownerMt)
+	amount := store.Get(types.KeyBalance(addr, denomID, mtID))
+	if len(amount) == 0 {
+		return 0
+	}
+
+	return types.MustUnMarshalAmount(k.cdc, amount)
 }
 
 func (k Keeper) transfer(ctx sdk.Context,

@@ -232,8 +232,8 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		// TODO refactor
 		msg := types.NewMsgMintMT(
-			RandnMTID(r, types.MinDenomLen, types.MaxDenomLen), // mt ID
-			getRandomDenom(ctx, k, r),                          // denom
+			RandnMTID(r, 1, 32),       // mt ID
+			getRandomDenom(ctx, k, r), // denom
 			1,
 			simtypes.RandStringOfLength(r, 10), // tokenData
 			randomSender.Address.String(),      // sender
@@ -401,10 +401,6 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		sender, _ := simtypes.RandomAcc(r, accs)
 		data := simtypes.RandStringOfLength(r, 20)
 
-		if err := types.ValidateDenomID(denomId); err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "invalid denom"), nil, nil
-		}
-
 		denom, _ := k.GetDenom(ctx, denomId)
 		if denom.Size() != 0 {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "denom exist"), nil, nil
@@ -412,7 +408,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		msg := types.NewMsgIssueDenom(
 			denomName,
-			[]byte(data),
+			data,
 			sender.Address.String(),
 		)
 		account := ak.GetAccount(ctx, sender.Address)
@@ -445,7 +441,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	}
 }
 
-func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, tokenID string) {
+func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, mtID string) {
 	//owners := k.GetOwners(ctx)
 	//
 	//ownersLen := len(owners)
@@ -474,10 +470,10 @@ func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (addre
 	//
 	//// get random mt from collection
 	//i = r.Intn(idsLen)
-	//tokenID = idCollection.TokenIds[i]
+	//mtID = idCollection.TokenIds[i]
 	//
 	//ownerAddress, _ := sdk.AccAddressFromBech32(owner.Address)
-	//return ownerAddress, denomID, tokenID
+	//return ownerAddress, denomID, mtID
 	//TODO
 	return nil, "", ""
 }
