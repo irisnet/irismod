@@ -37,9 +37,11 @@ func Migrate(ctx sdk.Context, k FarmKeeper, ak types.AccountKeeper, paramSpace p
 
 	//Grant burner permissions to the farm module account
 	acc := ak.GetModuleAccount(ctx, types.ModuleName)
-	moduleAcc, _ := acc.(*authtypes.ModuleAccount)
-	moduleAcc.Permissions = append(moduleAcc.Permissions, authtypes.Burner)
-	ak.SetModuleAccount(ctx, moduleAcc)
+	if !acc.HasPermission(authtypes.Burner) {
+		moduleAcc, _ := acc.(*authtypes.ModuleAccount)
+		moduleAcc.Permissions = append(moduleAcc.Permissions, authtypes.Burner)
+	}
+	ak.SetModuleAccount(ctx, acc)
 	return nil
 }
 
