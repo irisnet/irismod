@@ -232,7 +232,7 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		// TODO refactor
 		msg := types.NewMsgMintMT(
-			RandnMTID(r, 1, 32),       // mt ID
+			RandMTID(r, 1, 32),        // mt ID
 			getRandomDenom(ctx, k, r), // denom
 			1,
 			simtypes.RandStringOfLength(r, 10), // tokenData

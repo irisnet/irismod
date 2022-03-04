@@ -1,13 +1,12 @@
 package simulation
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"math/rand"
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"math/rand"
 
 	"github.com/irisnet/irismod/modules/mt/types"
 )
@@ -25,14 +24,27 @@ func RandomizedGenState(simState *module.SimulationState) {
 				Id:   doggos,
 				Name: doggos,
 			},
-			types.MTs{},
+			types.MTs{types.MT{
+				Id:     RandMTID(simState.Rand, 1, 10),
+				Supply: 100,
+				Data:   nil,
+			}, types.MT{
+				Id:     RandMTID(simState.Rand, 1, 10),
+				Supply: 100,
+				Data:   nil,
+			}},
 		),
 		types.NewCollection(
 			types.Denom{
 				Id:   kitties,
 				Name: kitties,
 			},
-			types.MTs{}),
+			types.MTs{types.MT{
+				Id:     RandMTID(simState.Rand, 1, 10),
+				Supply: 100,
+				Data:   nil,
+			}},
+		),
 	)
 
 	mtGenesis := types.NewGenesisState(collections, []types.Owner{})
@@ -46,8 +58,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(mtGenesis)
 }
 
-func RandnMTID(r *rand.Rand, min, max int) string {
+func RandMTID(r *rand.Rand, min, max int) string {
 	n := simtypes.RandIntBetween(r, min, max)
 	id := simtypes.RandStringOfLength(r, n)
-	return strings.ToLower(id)
+	return fmt.Sprintf("%x", sha256.Sum256([]byte(id)))
 }
