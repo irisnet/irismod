@@ -52,12 +52,13 @@ func (k Keeper) IssueDenom(ctx sdk.Context,
 // IssueMT issues a new MT
 func (k Keeper) IssueMT(ctx sdk.Context,
 	denomID string,
+	mtID string,
 	amount uint64,
 	data []byte,
 	recipient sdk.AccAddress,
 ) types.MT {
 
-	mt := types.NewMT(k.genMTID(ctx), amount, data)
+	mt := types.NewMT(mtID, amount, data)
 
 	// store MT
 	k.SetMT(ctx, denomID, mt)
