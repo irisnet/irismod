@@ -399,15 +399,9 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
 
-		//denomId := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		denomName := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		sender, _ := simtypes.RandomAcc(r, accs)
 		data := simtypes.RandStringOfLength(r, 20)
-
-		//denom, _ := k.GetDenom(ctx, denomId)
-		//if denom.Size() != 0 {
-		//	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "denom exist"), nil, nil
-		//}
 
 		msg := types.NewMsgIssueDenom(
 			denomName,
@@ -486,7 +480,7 @@ func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (addre
 	//
 	//// get random collection from owner's balance
 	//i = r.Intn(idDenomsLen)
-	//idDenom := owner.Denoms[i] // nfts IDs
+	//idDenom := owner.Denoms[i] // mts IDs
 	//denomID = idDenom.DenomId
 	//
 	//balancesLen := len(idDenom.Balances)
@@ -494,7 +488,7 @@ func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (addre
 	//	return nil, "", ""
 	//}
 	//
-	//// get random nft from collection
+	//// get random mt from collection
 	//i = r.Intn(balancesLen)
 	//mtID = idDenom.Balances[i].MtId
 	//
@@ -511,10 +505,8 @@ func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) string {
 
 func getRandomMT(ctx sdk.Context, r *rand.Rand, k keeper.Keeper, denomID string) string {
 	mts := k.GetMTs(ctx, denomID)
-
-	var denoms = []string{kitties, doggos}
-	i := r.Intn(len(denoms))
-	return denoms[i]
+	i := r.Intn(len(mts))
+	return mts[i].GetID()
 }
 
 func genRandomBool(r *rand.Rand) bool {
