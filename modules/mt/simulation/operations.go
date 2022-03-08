@@ -171,7 +171,7 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, mtID := getRandomMTFromOwner(ctx, k, r)
+		ownerAddr, denomID, mtID := getRandomMTFromOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("account invalid")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeEditMT, err.Error()), nil, err
@@ -179,8 +179,8 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		msg := types.NewMsgEditMT(
 			mtID,
-			denom,
-			simtypes.RandStringOfLength(r, 10), // tokenData
+			denomID,
+			simtypes.RandStringOfLength(r, 10),
 			ownerAddr.String(),
 		)
 
@@ -230,11 +230,14 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		randomSender, _ := simtypes.RandomAcc(r, accs)
 		randomRecipient, _ := simtypes.RandomAcc(r, accs)
 
-		// TODO refactor
+		denomID := getRandomDenom(ctx, k, r)
+
+		mtID := getRandomMT(ctx, r, k, denomID)
+
 		msg := types.NewMsgMintMT(
-			RandMTID(r, 1, 32),        // mt ID
-			getRandomDenom(ctx, k, r), // denom
-			1,
+			mtID,
+			denomID,
+			uint64(simtypes.RandIntBetween(r, 1, 100)),
 			simtypes.RandStringOfLength(r, 10), // tokenData
 			randomSender.Address.String(),      // sender
 			randomRecipient.Address.String(),   // recipient
@@ -396,15 +399,15 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
 
-		denomId := strings.ToLower(simtypes.RandStringOfLength(r, 10))
+		//denomId := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		denomName := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		sender, _ := simtypes.RandomAcc(r, accs)
 		data := simtypes.RandStringOfLength(r, 20)
 
-		denom, _ := k.GetDenom(ctx, denomId)
-		if denom.Size() != 0 {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "denom exist"), nil, nil
-		}
+		//denom, _ := k.GetDenom(ctx, denomId)
+		//if denom.Size() != 0 {
+		//	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "denom exist"), nil, nil
+		//}
 
 		msg := types.NewMsgIssueDenom(
 			denomName,
@@ -442,7 +445,30 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 }
 
 func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, mtID string) {
-	//owners := k.GetOwners(ctx)
+	denoms := k.GetDenoms(ctx)
+
+	denomsLen := len(denoms)
+	if denomsLen == 0 {
+		return nil, "", ""
+	}
+
+	i := r.Intn(denomsLen)
+	owner := denoms[i].Owner
+	denomID = denoms[i].Id
+
+	mts := k.GetMTs(ctx, denomID)
+
+	mtLen := len(mts)
+	if mtLen == 0 {
+		return nil, "", ""
+	}
+	i = r.Intn(mtLen)
+	mtID = mts[i].GetID()
+
+	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
+
+	//// 把 getBalances 改为显式时可使用
+	//owners := k.GetBalances(ctx)
 	//
 	//ownersLen := len(owners)
 	//if ownersLen == 0 {
@@ -453,32 +479,39 @@ func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (addre
 	//i := r.Intn(ownersLen)
 	//owner := owners[i]
 	//
-	//idCollectionsLen := len(owner.IDCollections)
-	//if idCollectionsLen == 0 {
+	//idDenomsLen := len(owner.Denoms)
+	//if idDenomsLen == 0 {
 	//	return nil, "", ""
 	//}
 	//
 	//// get random collection from owner's balance
-	//i = r.Intn(idCollectionsLen)
-	//idCollection := owner.IDCollections[i] // mts IDs
-	//denomID = idCollection.DenomId
+	//i = r.Intn(idDenomsLen)
+	//idDenom := owner.Denoms[i] // nfts IDs
+	//denomID = idDenom.DenomId
 	//
-	//idsLen := len(idCollection.TokenIds)
-	//if idsLen == 0 {
+	//balancesLen := len(idDenom.Balances)
+	//if balancesLen == 0 {
 	//	return nil, "", ""
 	//}
 	//
-	//// get random mt from collection
-	//i = r.Intn(idsLen)
-	//mtID = idCollection.TokenIds[i]
+	//// get random nft from collection
+	//i = r.Intn(balancesLen)
+	//mtID = idDenom.Balances[i].MtId
 	//
 	//ownerAddress, _ := sdk.AccAddressFromBech32(owner.Address)
-	//return ownerAddress, denomID, mtID
-	//TODO
-	return nil, "", ""
+
+	return ownerAddress, denomID, mtID
 }
 
 func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) string {
+	var denoms = []string{kitties, doggos}
+	i := r.Intn(len(denoms))
+	return denoms[i]
+}
+
+func getRandomMT(ctx sdk.Context, r *rand.Rand, k keeper.Keeper, denomID string) string {
+	mts := k.GetMTs(ctx, denomID)
+
 	var denoms = []string{kitties, doggos}
 	i := r.Intn(len(denoms))
 	return denoms[i]
