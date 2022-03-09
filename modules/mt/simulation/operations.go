@@ -113,7 +113,7 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, mtID := getRandomMTFromOwner(ctx, k, r)
+		ownerAddr, denomID, mtID, supply := getRandomMTFromOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransfer, err.Error()), nil, err
@@ -122,10 +122,10 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		recipientAccount, _ := simtypes.RandomAcc(r, accs)
 		msg := types.NewMsgTransferMT(
 			mtID,
-			denom,
+			denomID,
 			ownerAddr.String(),                // sender
 			recipientAccount.Address.String(), // recipient
-			1,                                 // TODO
+			uint64(simtypes.RandIntBetween(r, 1, int(supply))),
 		)
 		account := ak.GetAccount(ctx, ownerAddr)
 
@@ -171,7 +171,7 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denomID, mtID := getRandomMTFromOwner(ctx, k, r)
+		ownerAddr, denomID, mtID, _ := getRandomMTFromOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("account invalid")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeEditMT, err.Error()), nil, err
@@ -286,14 +286,13 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, mtID := getRandomMTFromOwner(ctx, k, r)
+		ownerAddr, denomID, mtID, supply := getRandomMTFromOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeBurnMT, err.Error()), nil, err
 		}
 
-		// TODO
-		msg := types.NewMsgBurnMT(ownerAddr.String(), mtID, denom, 1)
+		msg := types.NewMsgBurnMT(ownerAddr.String(), mtID, denomID, uint64(simtypes.RandIntBetween(r, 1, int(supply))))
 
 		account := ak.GetAccount(ctx, ownerAddr)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
@@ -438,12 +437,12 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	}
 }
 
-func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, mtID string) {
+func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, mtID string, supply uint64) {
 	denoms := k.GetDenoms(ctx)
 
 	denomsLen := len(denoms)
 	if denomsLen == 0 {
-		return nil, "", ""
+		return nil, "", "", 0
 	}
 
 	i := r.Intn(denomsLen)
@@ -454,10 +453,11 @@ func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (addre
 
 	mtLen := len(mts)
 	if mtLen == 0 {
-		return nil, "", ""
+		return nil, "", "", 0
 	}
 	i = r.Intn(mtLen)
 	mtID = mts[i].GetID()
+	supply = mts[i].GetSupply()
 
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 
@@ -494,7 +494,7 @@ func getRandomMTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (addre
 	//
 	//ownerAddress, _ := sdk.AccAddressFromBech32(owner.Address)
 
-	return ownerAddress, denomID, mtID
+	return ownerAddress, denomID, mtID, supply
 }
 
 func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) string {
