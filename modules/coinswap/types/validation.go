@@ -60,6 +60,18 @@ func ValidateMaxToken(maxToken sdk.Coin) error {
 	return nil
 }
 
+// ValidateToken verifies whether the exact token is legal
+func ValidateToken(exactToken sdk.Coin) error {
+	if !(exactToken.IsValid() && exactToken.IsPositive()) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid exactToken (%s)", exactToken.String())
+	}
+
+	if strings.HasPrefix(exactToken.Denom, LptTokenPrefix) {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "token must be non-liquidity token")
+	}
+	return nil
+}
+
 // ValidateExactStandardAmt verifies whether the standard token amount is legal
 func ValidateExactStandardAmt(standardAmt sdk.Int) error {
 	if !standardAmt.IsPositive() {
@@ -68,10 +80,10 @@ func ValidateExactStandardAmt(standardAmt sdk.Int) error {
 	return nil
 }
 
-// ValidateMinLiquidity verifies whether the minimum liquidity is legal
-func ValidateMinLiquidity(minLiquidity sdk.Int) error {
+// ValidateLiquidity verifies whether the minimum liquidity is legal
+func ValidateLiquidity(minLiquidity sdk.Int) error {
 	if minLiquidity.IsNegative() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "minimum liquidity can not be negative")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "liquidity can not be negative")
 	}
 	return nil
 }
@@ -108,6 +120,14 @@ func ValidateMinStandardAmt(minStandardAmt sdk.Int) error {
 func ValidateLptDenom(lptDenom string) error {
 	if _, err := ParseLptDenom(lptDenom); err != nil {
 		return sdkerrors.Wrap(ErrInvalidDenom, lptDenom)
+	}
+	return nil
+}
+
+// ValidatePoolSequenceId returns nil if the pool id is valid
+func ValidatePoolSequenceId(poolId uint64) error {
+	if poolId == 0 {
+		return sdkerrors.Wrap(ErrReservePoolNotExists, "pool-id is not valid")
 	}
 	return nil
 }
