@@ -209,7 +209,7 @@ func (k Keeper) addLiquidity(ctx sdk.Context,
 func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilateralLiquidity) (sdk.Coin, error) {
 
 	pool, exist := k.GetPoolBySequenceId(ctx, msg.PoolId)
-	if exist != true {
+	if !exist {
 		return sdk.Coin{}, sdkerrors.Wrap(types.ErrReservePoolNotExists, fmt.Sprintf("liquidity pool id: %d ", msg.PoolId))
 	}
 
