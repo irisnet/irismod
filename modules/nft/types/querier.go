@@ -16,6 +16,11 @@ const (
 	QueryNFT        = "nft"
 )
 
+type QueryPagesParams struct {
+	Offset uint64
+	Limit  uint64
+}
+
 // QuerySupplyParams defines the params for queries:
 type QuerySupplyParams struct {
 	Denom string
@@ -49,9 +54,10 @@ func NewQueryOwnerParams(denom string, owner sdk.AccAddress) QueryOwnerParams {
 	}
 }
 
-// QuerySupplyParams defines the params for queries:
+// QueryCollectionParams defines the params for queries:
 type QueryCollectionParams struct {
 	Denom string
+	QueryPagesParams
 }
 
 // NewQueryCollectionParams creates a new instance of QueryCollectionParams

@@ -8,9 +8,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/irisnet/irismod/modules/nft/types"
 )
+
+const DefaultLimit = 100
+
+const MaxLimit = 200
 
 // NewQuerier is the module level router for state queries
 func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
@@ -79,7 +84,21 @@ func queryCollection(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQue
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	collection, err := k.GetCollection(ctx, params.Denom)
+	pageReq := &query.PageRequest{}
+	pageReq.Offset = params.Offset
+	pageReq.Limit = params.Limit
+	if pageReq.Limit == 0 {
+		pageReq.Limit = DefaultLimit
+	}
+	if pageReq.Limit > MaxLimit {
+		pageReq.Limit = MaxLimit
+	}
+	request := &types.QueryCollectionRequest{
+		DenomId:    params.Denom,
+		Pagination: pageReq,
+	}
+
+	collection, _, err := k.GetPaginateCollection(ctx, request, params.Denom)
 	if err != nil {
 		return nil, err
 	}
@@ -110,9 +129,35 @@ func queryDenom(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierC
 }
 
 func queryDenoms(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	denoms := k.GetDenoms(ctx)
+	params := types.QueryPagesParams{}
+	if len(req.Data) != 0 {
+		err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
+		if err != nil {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+		}
+	}
+	pageReq := &query.PageRequest{}
+	pageReq.Offset = params.Offset
+	pageReq.Limit = params.Limit
+	if pageReq.Limit == 0 {
+		pageReq.Limit = DefaultLimit
+	}
+	if pageReq.Limit > MaxLimit {
+		pageReq.Limit = MaxLimit
+	}
 
-	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, denoms)
+	request := &types.QueryDenomsRequest{
+		Pagination: pageReq,
+	}
+
+	denomsResp, err := k.Denoms(sdk.WrapSDKContext(ctx), request)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	//denoms := k.GetDenoms(ctx)
+
+	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, denomsResp.Denoms)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
