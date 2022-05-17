@@ -17,8 +17,8 @@ const (
 )
 
 type QueryPagesParams struct {
-	Offset uint64
-	Limit  uint64
+	Offset uint64 `json:"offset"`
+	Limit  uint64 `json:"limit"`
 }
 
 // QuerySupplyParams defines the params for queries:

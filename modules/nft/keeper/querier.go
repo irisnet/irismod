@@ -15,8 +15,6 @@ import (
 
 const DefaultLimit = 100
 
-const MaxLimit = 200
-
 // NewQuerier is the module level router for state queries
 func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err error) {
@@ -87,12 +85,7 @@ func queryCollection(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQue
 	pageReq := &query.PageRequest{}
 	pageReq.Offset = params.Offset
 	pageReq.Limit = params.Limit
-	if pageReq.Limit == 0 {
-		pageReq.Limit = DefaultLimit
-	}
-	if pageReq.Limit > MaxLimit {
-		pageReq.Limit = MaxLimit
-	}
+
 	request := &types.QueryCollectionRequest{
 		DenomId:    params.Denom,
 		Pagination: pageReq,
@@ -141,9 +134,6 @@ func queryDenoms(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerier
 	pageReq.Limit = params.Limit
 	if pageReq.Limit == 0 {
 		pageReq.Limit = DefaultLimit
-	}
-	if pageReq.Limit > MaxLimit {
-		pageReq.Limit = MaxLimit
 	}
 
 	request := &types.QueryDenomsRequest{
