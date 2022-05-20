@@ -46,6 +46,20 @@ type MsgAddLiquidity struct {
 }
 ```
 
+## MsgAddUnilateralLiquidity
+
+The liquidity can be added unilaterally using the `MsgAddUnilateralLiquidity` message
+
+```go
+type MsgAddUnilateralLiquidity struct {
+	PoolId       uint64
+	ExactToken   types.Coin
+	MinLiquidity sdk.Int
+	Deadline     int64
+	Sender       string
+}
+```
+
 ## MsgRemoveLiquidity
 
 The liquidity can be removed using the `MsgAddLiquidity` message
@@ -57,5 +71,19 @@ type MsgRemoveLiquidity struct {
     MinStandardAmt    sdk.Int
     Deadline          int64
     Sender            string
+}
+```
+
+## MsgRemoveUnilateralLiquidity
+
+The liquidity can be removed unilaterally using the `MsgRemoveUnilateralLiquidity` message
+
+```go
+type MsgRemoveUnilateralLiquidity struct {
+    PoolId         uint64
+    MinToken       types.Coin
+    ExactLiquidity sdk.Int
+    Deadline       int64
+    Sender         string
 }
 ```
