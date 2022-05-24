@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/big"
 	"math/rand"
-	"strconv"
 	"strings"
 	"time"
 
@@ -491,23 +490,19 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddUnilateralLiquidity, "exact token shall not be lp token"), nil, nil
 		}
 
-		// pick a pool: pool-id is 1 if exactToken is IRIS, otherwise get the real pool-id
-		poolId := uint64(1)
-		if exactToken.Denom != k.GetStandardDenom(ctx) {
-			pool, exist := k.GetPool(ctx, exactToken.Denom)
-			if !exist {
-				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "pool not found"), nil, err
-			}
-			poolId, _ = strconv.ParseUint(strings.TrimPrefix(pool.LptDenom, "lpt-"), 10, 64)
+		// pick a pool
+		standardDenom := k.GetStandardDenom(ctx)
+		if exactToken.Denom == standardDenom {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "tokenDenom should not be standardDenom"), nil, err
 		}
 
-		_, exist := k.GetPoolBySequenceId(ctx, poolId)
+		poolId := types.GetPoolId(exactToken.Denom)
+		pool, exist := k.GetPool(ctx, poolId)
 		if !exist {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "pool not found"), nil, err
 		}
 
 		// minimum lpt amount
-		pool, _ := k.GetPoolBySequenceId(ctx, poolId)
 		balances, _ := k.GetPoolBalances(ctx, pool.EscrowAddress)
 
 		tokenBalanceAmt := balances.AmountOf(exactToken.Denom)
@@ -536,7 +531,7 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 		deadline := randDeadline(r)
 
 		msg := types.NewMsgAddUnilateralLiquidity(
-			poolId,
+			exactToken.Denom,
 			exactToken,
 			mintLptAmt,
 			deadline,
@@ -598,21 +593,17 @@ func SimulateMsgRemoveUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeepe
 		targetToken := RandomSpendableToken(r, spendable)
 
 		// pick a pool: if target token is iris, select the pool-1
-		poolId := uint64(1)
-		if targetToken.Denom != k.GetStandardDenom(ctx) {
-			pool, exist := k.GetPool(ctx, targetToken.Denom)
-			if !exist {
-				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "pool not found"), nil, err
-			}
-			poolId, _ = strconv.ParseUint(strings.TrimPrefix(pool.LptDenom, "lpt-"), 10, 64)
+		standardDenom := k.GetStandardDenom(ctx)
+		if targetToken.Denom == standardDenom {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "tokenDenom should not be standardDenom"), nil, err
 		}
 
-		_, exist := k.GetPoolBySequenceId(ctx, poolId)
+		poolId := types.GetPoolId(targetToken.Denom)
+		pool, exist := k.GetPool(ctx, poolId)
 		if !exist {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddLiquidity, "pool not found"), nil, err
 		}
 
-		pool, _ := k.GetPoolBySequenceId(ctx, poolId)
 		balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
 
 		lptDenom := pool.LptDenom
@@ -653,7 +644,7 @@ func SimulateMsgRemoveUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeepe
 		deadline := randDeadline(r)
 
 		msg := types.NewMsgRemoveUnilateralLiquidity(
-			poolId,
+			targetToken.Denom,
 			sdk.NewCoin(targetTokenDenom, targetTokenAmt),
 			exactLptAmt,
 			deadline,

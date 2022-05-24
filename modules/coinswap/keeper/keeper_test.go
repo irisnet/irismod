@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	"strconv"
-	"strings"
 	"testing"
 	"time"
 
@@ -273,12 +271,10 @@ func (suite *TestSuite) TestLiquidity2() {
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
 	// 2. add liquidity unilaterally
-	poolSequenceId, err := strconv.ParseUint(strings.TrimPrefix(pool.LptDenom, "lpt-"), 10, 64)
-	suite.NoError(err)
 
 	btcAmt, _ = sdk.NewIntFromString("100")
 	addMsg := types.NewMsgAddUnilateralLiquidity(
-		poolSequenceId,
+		denomBTC,
 		sdk.NewCoin(denomBTC, btcAmt),
 		sdk.NewInt(1),
 		time.Now().Add(1*time.Minute).Unix(),
@@ -353,12 +349,10 @@ func (suite *TestSuite) TestLiquidity3() {
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
 	// 2. remove liquidity unilaterally
-	poolSequenceId, err := strconv.ParseUint(strings.TrimPrefix(pool.LptDenom, "lpt-"), 10, 64)
-	suite.NoError(err)
 
 	btcAmt, _ = sdk.NewIntFromString("1")
 	removeMsg := types.NewMsgRemoveUnilateralLiquidity(
-		poolSequenceId,
+		denomBTC,
 		sdk.NewCoin(denomBTC, btcAmt),   // at least 1
 		sdk.NewInt(5000000000000000000), // 5 * 10^18
 		time.Now().Add(1*time.Minute).Unix(),
