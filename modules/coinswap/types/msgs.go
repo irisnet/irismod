@@ -122,9 +122,6 @@ func (msg MsgAddLiquidity) Type() string { return TypeMsgAddLiquidity }
 
 // ValidateBasic implements Msg.
 func (msg MsgAddLiquidity) ValidateBasic() error {
-	if err := ValidateMaxToken(msg.MaxToken); err != nil {
-		return err
-	}
 
 	if err := ValidateExactStandardAmt(msg.ExactStandardAmt); err != nil {
 		return err
@@ -162,18 +159,18 @@ func (msg MsgAddLiquidity) GetSigners() []sdk.AccAddress {
 // MsgAddUnilateralLiquidity
 /* --------------------------------------------------------------------------- */
 func NewMsgAddUnilateralLiquidity(
-	poolId uint64,
+	counterpartyDenom string,
 	exactToken sdk.Coin,
 	minLiquidity sdk.Int,
 	deadline int64,
 	sender string,
 ) *MsgAddUnilateralLiquidity {
 	return &MsgAddUnilateralLiquidity{
-		PoolId:       poolId,
-		ExactToken:   exactToken,
-		MinLiquidity: minLiquidity,
-		Deadline:     deadline,
-		Sender:       sender,
+		CounterpartyDenom: counterpartyDenom,
+		ExactToken:        exactToken,
+		MinLiquidity:      minLiquidity,
+		Deadline:          deadline,
+		Sender:            sender,
 	}
 }
 
@@ -182,9 +179,6 @@ func (m MsgAddUnilateralLiquidity) Route() string { return RouterKey }
 func (m MsgAddUnilateralLiquidity) Type() string { return TypeMsgAddUnilateralLiquidity }
 
 func (m MsgAddUnilateralLiquidity) ValidateBasic() error {
-	if err := ValidatePoolSequenceId(m.PoolId); err != nil {
-		return nil
-	}
 
 	if err := ValidateToken(m.ExactToken); err != nil {
 		return err
@@ -285,18 +279,18 @@ func (msg MsgRemoveLiquidity) GetSigners() []sdk.AccAddress {
 // MsgRemoveUnilateralLiquidity
 /* --------------------------------------------------------------------------- */
 func NewMsgRemoveUnilateralLiquidity(
-	poolId uint64,
+	couterpartyDenom string,
 	minToken sdk.Coin,
 	exactLiquidity sdk.Int,
 	deadline int64,
 	sender string,
 ) *MsgRemoveUnilateralLiquidity {
 	return &MsgRemoveUnilateralLiquidity{
-		PoolId:         poolId,
-		MinToken:       minToken,
-		ExactLiquidity: exactLiquidity,
-		Deadline:       deadline,
-		Sender:         sender,
+		CounterpartyDenom: couterpartyDenom,
+		MinToken:          minToken,
+		ExactLiquidity:    exactLiquidity,
+		Deadline:          deadline,
+		Sender:            sender,
 	}
 }
 
@@ -305,9 +299,6 @@ func (m MsgRemoveUnilateralLiquidity) Route() string { return RouterKey }
 func (m MsgRemoveUnilateralLiquidity) Type() string { return TypeMsgRemoveUnilateralLiquidity }
 
 func (m MsgRemoveUnilateralLiquidity) ValidateBasic() error {
-	if err := ValidatePoolSequenceId(m.PoolId); err != nil {
-		return nil
-	}
 
 	if err := ValidateToken(m.MinToken); err != nil {
 		return err

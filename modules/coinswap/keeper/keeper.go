@@ -209,9 +209,10 @@ func (k Keeper) addLiquidity(ctx sdk.Context,
 
 func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilateralLiquidity) (sdk.Coin, error) {
 
-	pool, exist := k.GetPoolBySequenceId(ctx, msg.PoolId)
+	poolId := types.GetPoolId(msg.CounterpartyDenom)
+	pool, exist := k.GetPool(ctx, poolId)
 	if !exist {
-		return sdk.Coin{}, sdkerrors.Wrap(types.ErrReservePoolNotExists, fmt.Sprintf("liquidity pool id: %d ", msg.PoolId))
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrReservePoolNotExists, fmt.Sprintf("liquidity pool: %s ", poolId))
 	}
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
@@ -378,9 +379,10 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 		counterpartTokenDenom string
 	)
 
-	pool, exist := k.GetPoolBySequenceId(ctx, msg.PoolId)
+	poolId := types.GetPoolId(msg.CounterpartyDenom)
+	pool, exist := k.GetPool(ctx, poolId)
 	if exist != true {
-		return sdk.Coins{}, sdkerrors.Wrap(types.ErrReservePoolNotExists, fmt.Sprintf("liquidity pool id: %d ", msg.PoolId))
+		return sdk.Coins{}, sdkerrors.Wrap(types.ErrReservePoolNotExists, fmt.Sprintf("liquidity pool: %s ", poolId))
 	}
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
