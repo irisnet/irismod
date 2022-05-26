@@ -57,8 +57,8 @@ message MsgAddUnilateralLiquidity {
     string counterparty_denom = 1 [ (gogoproto.moretags) = "yaml:\"conuterparty_denom\"" ];
     cosmos.base.v1beta1.Coin exact_token = 2 [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"exact_token\"" ]; // exact amount of token
     string min_liquidity = 3 [ (gogoproto.moretags) = "yaml:\"min_liquidity\"", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false ];
-    int64 deadline = 5;
-    string sender = 6;
+    int64 deadline = 4;
+    string sender = 5;
 }
 
 // MsgAddLiquidityUniResponse defines the Msg/AddLiquidityUni response type
