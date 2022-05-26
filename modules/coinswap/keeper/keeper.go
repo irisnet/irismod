@@ -256,6 +256,7 @@ func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 			types.EventTypeAddUnilateralLiquidity,
 			sdk.NewAttribute(types.AttributeValueSender, msg.Sender),
 			sdk.NewAttribute(types.AttributeValueTokenUnilateral, msg.ExactToken.Denom),
+			sdk.NewAttribute(types.AttributeValueLptDenom, pool.LptDenom),
 		),
 	)
 
@@ -440,6 +441,7 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 			types.EventTypeRemoveUnilateralLiquidity,
 			sdk.NewAttribute(types.AttributeValueSender, msg.Sender),
 			sdk.NewAttribute(types.AttributeValueTokenUnilateral, targetTokenDenom),
+			sdk.NewAttribute(types.AttributeValueLptDenom, pool.LptDenom),
 		),
 	)
 

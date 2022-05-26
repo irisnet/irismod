@@ -17,4 +17,5 @@ const (
 	AttributeValueIsBuyOrder      = "is_buy_order"
 	AttributeValueTokenPair       = "token_pair"
 	AttributeValueTokenUnilateral = "token_unilateral"
+	AttributeValueLptDenom        = "lpt_denom"
 )

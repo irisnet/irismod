@@ -52,11 +52,11 @@ The liquidity can be added unilaterally using the `MsgAddUnilateralLiquidity` me
 
 ```go
 type MsgAddUnilateralLiquidity struct {
-	PoolId       uint64
-	ExactToken   types.Coin
-	MinLiquidity sdk.Int
-	Deadline     int64
-	Sender       string
+	CounterpartyDenom  string
+	ExactToken         types.Coin
+	MinLiquidity       sdk.Int
+	Deadline           int64
+	Sender             string
 }
 ```
 
@@ -80,10 +80,10 @@ The liquidity can be removed unilaterally using the `MsgRemoveUnilateralLiquidit
 
 ```go
 type MsgRemoveUnilateralLiquidity struct {
-    PoolId         uint64
-    MinToken       types.Coin
-    ExactLiquidity sdk.Int
-    Deadline       int64
-    Sender         string
+    CounterpartyDenom  string
+    MinToken           types.Coin
+    ExactLiquidity     sdk.Int
+    Deadline           int64
+    Sender             string
 }
 ```
