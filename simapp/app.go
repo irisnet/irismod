@@ -16,7 +16,6 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -497,26 +496,14 @@ func NewSimApp(
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
-		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
-		distrtypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
-		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
-		genutiltypes.ModuleName, evidencetypes.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, upgradetypes.ModuleName, vestingtypes.ModuleName,
-		ibchost.ModuleName, ibctransfertypes.ModuleName, tokentypes.ModuleName,
-		nfttypes.ModuleName, htlctypes.ModuleName, recordtypes.ModuleName,
-		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
+		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName,
+		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
+		ibchost.ModuleName, htlctypes.ModuleName, randomtypes.ModuleName,
+		farmtypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
-		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
-		distrtypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
-		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
-		genutiltypes.ModuleName, evidencetypes.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, upgradetypes.ModuleName, vestingtypes.ModuleName,
-		ibchost.ModuleName, ibctransfertypes.ModuleName, tokentypes.ModuleName,
-		nfttypes.ModuleName, htlctypes.ModuleName, recordtypes.ModuleName,
-		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
+		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
+		servicetypes.ModuleName, farmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -528,12 +515,11 @@ func NewSimApp(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
 		distrtypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
 		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
-		genutiltypes.ModuleName, evidencetypes.ModuleName, feegrant.ModuleName,
-		paramstypes.ModuleName, upgradetypes.ModuleName, vestingtypes.ModuleName,
-		ibchost.ModuleName, ibctransfertypes.ModuleName, tokentypes.ModuleName,
-		nfttypes.ModuleName, htlctypes.ModuleName, recordtypes.ModuleName,
-		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
+		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
+		ibctransfertypes.ModuleName, tokentypes.ModuleName, nfttypes.ModuleName,
+		htlctypes.ModuleName, recordtypes.ModuleName, coinswaptypes.ModuleName,
+		servicetypes.ModuleName, oracletypes.ModuleName, randomtypes.ModuleName,
+		farmtypes.ModuleName, feegrant.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
