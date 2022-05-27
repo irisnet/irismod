@@ -47,6 +47,31 @@ func (m msgServer) AddLiquidity(goCtx context.Context, msg *types.MsgAddLiquidit
 	}, nil
 }
 
+func (m msgServer) AddUnilateralLiquidity(goCtx context.Context, msg *types.MsgAddUnilateralLiquidity) (*types.MsgAddUnilateralLiquidityResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	// check that deadline has not passed
+	if ctx.BlockHeader().Time.After(time.Unix(msg.Deadline, 0)) {
+		return nil, sdkerrors.Wrap(types.ErrInvalidDeadline, "deadline has passed for MsgAddUnilateralLiquidity")
+	}
+
+	mintToken, err := m.Keeper.AddLiquidity(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	)
+
+	return &types.MsgAddUnilateralLiquidityResponse{
+		MintToken: &mintToken,
+	}, nil
+}
+
 func (m msgServer) RemoveLiquidity(goCtx context.Context, msg *types.MsgRemoveLiquidity) (*types.MsgRemoveLiquidityResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// check that deadline has not passed
@@ -72,6 +97,35 @@ func (m msgServer) RemoveLiquidity(goCtx context.Context, msg *types.MsgRemoveLi
 	}
 
 	return &types.MsgRemoveLiquidityResponse{
+		WithdrawCoins: coins,
+	}, nil
+}
+
+func (m msgServer) RemoveUnilateralLiquidity(goCtx context.Context, msg *types.MsgRemoveUnilateralLiquidity) (*types.MsgRemoveUnilateralLiquidityResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	// check that deadline has not passed
+	if ctx.BlockHeader().Time.After(time.Unix(msg.Deadline, 0)) {
+		return nil, sdkerrors.Wrap(types.ErrInvalidDeadline, "deadline has passed for MsgRemoveLiquidity")
+	}
+	withdrawCoins, err := m.Keeper.RemoveLiquidity(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	)
+
+	var coins = make([]*sdk.Coin, 0, withdrawCoins.Len())
+	for _, coin := range withdrawCoins {
+		coins = append(coins, &coin)
+	}
+
+	return &types.MsgRemoveUnilateralLiquidityResponse{
 		WithdrawCoins: coins,
 	}, nil
 }

@@ -8,7 +8,9 @@ import (
 var (
 	_ sdk.Msg = &MsgSwapOrder{}
 	_ sdk.Msg = &MsgAddLiquidity{}
+	_ sdk.Msg = &MsgAddUnilateralLiquidity{}
 	_ sdk.Msg = &MsgRemoveLiquidity{}
+	_ sdk.Msg = &MsgRemoveUnilateralLiquidity{}
 )
 
 const (
@@ -19,8 +21,12 @@ const (
 
 	// TypeMsgAddLiquidity defines the type of MsgAddLiquidity
 	TypeMsgAddLiquidity = "add_liquidity"
+	// TypeMsgAddUnilateralLiquidity defines the type of MsgAddUnilateralLiquidity
+	TypeMsgAddUnilateralLiquidity = "add_unilateral_liquidity"
 	// TypeMsgRemoveLiquidity defines the type of MsgRemoveLiquidity
 	TypeMsgRemoveLiquidity = "remove_liquidity"
+	// TypeMsgRemoveUnilateralLiquidity defines the type of MsgRemoveUnilateralLiquidity
+	TypeMsgRemoveUnilateralLiquidity = "remove_unilateral_liquidity"
 	// TypeMsgSwapOrder defines the type of MsgSwapOrder
 	TypeMsgSwapOrder = "swap_order"
 )
@@ -116,15 +122,12 @@ func (msg MsgAddLiquidity) Type() string { return TypeMsgAddLiquidity }
 
 // ValidateBasic implements Msg.
 func (msg MsgAddLiquidity) ValidateBasic() error {
-	if err := ValidateMaxToken(msg.MaxToken); err != nil {
-		return err
-	}
 
 	if err := ValidateExactStandardAmt(msg.ExactStandardAmt); err != nil {
 		return err
 	}
 
-	if err := ValidateMinLiquidity(msg.MinLiquidity); err != nil {
+	if err := ValidateLiquidity(msg.MinLiquidity); err != nil {
 		return err
 	}
 
@@ -146,6 +149,61 @@ func (msg MsgAddLiquidity) GetSignBytes() []byte {
 // GetSigners implements Msg.
 func (msg MsgAddLiquidity) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
+}
+
+/* --------------------------------------------------------------------------- */
+// MsgAddUnilateralLiquidity
+/* --------------------------------------------------------------------------- */
+func NewMsgAddUnilateralLiquidity(
+	counterpartyDenom string,
+	exactToken sdk.Coin,
+	minLiquidity sdk.Int,
+	deadline int64,
+	sender string,
+) *MsgAddUnilateralLiquidity {
+	return &MsgAddUnilateralLiquidity{
+		CounterpartyDenom: counterpartyDenom,
+		ExactToken:        exactToken,
+		MinLiquidity:      minLiquidity,
+		Deadline:          deadline,
+		Sender:            sender,
+	}
+}
+
+func (m MsgAddUnilateralLiquidity) Route() string { return RouterKey }
+
+func (m MsgAddUnilateralLiquidity) Type() string { return TypeMsgAddUnilateralLiquidity }
+
+func (m MsgAddUnilateralLiquidity) ValidateBasic() error {
+
+	if err := ValidateToken(m.ExactToken); err != nil {
+		return err
+	}
+
+	if err := ValidateLiquidity(m.MinLiquidity); err != nil {
+		return err
+	}
+
+	if err := ValidateDeadline(m.Deadline); err != nil {
+		return err
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
+	}
+	return nil
+}
+
+func (m MsgAddUnilateralLiquidity) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgAddUnilateralLiquidity) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)
 	}
@@ -211,6 +269,61 @@ func (msg MsgRemoveLiquidity) GetSignBytes() []byte {
 // GetSigners implements Msg.
 func (msg MsgRemoveLiquidity) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
+}
+
+/* --------------------------------------------------------------------------- */
+// MsgRemoveUnilateralLiquidity
+/* --------------------------------------------------------------------------- */
+func NewMsgRemoveUnilateralLiquidity(
+	couterpartyDenom string,
+	minToken sdk.Coin,
+	exactLiquidity sdk.Int,
+	deadline int64,
+	sender string,
+) *MsgRemoveUnilateralLiquidity {
+	return &MsgRemoveUnilateralLiquidity{
+		CounterpartyDenom: couterpartyDenom,
+		MinToken:          minToken,
+		ExactLiquidity:    exactLiquidity,
+		Deadline:          deadline,
+		Sender:            sender,
+	}
+}
+
+func (m MsgRemoveUnilateralLiquidity) Route() string { return RouterKey }
+
+func (m MsgRemoveUnilateralLiquidity) Type() string { return TypeMsgRemoveUnilateralLiquidity }
+
+func (m MsgRemoveUnilateralLiquidity) ValidateBasic() error {
+
+	if err := ValidateToken(m.MinToken); err != nil {
+		return err
+	}
+
+	if err := ValidateLiquidity(m.ExactLiquidity); err != nil {
+		return err
+	}
+
+	if err := ValidateDeadline(m.Deadline); err != nil {
+		return err
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
+	}
+	return nil
+}
+
+func (m MsgRemoveUnilateralLiquidity) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgRemoveUnilateralLiquidity) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)
 	}

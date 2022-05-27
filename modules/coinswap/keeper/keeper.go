@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 
 	gogotypes "github.com/gogo/protobuf/types"
@@ -102,7 +103,16 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 }
 
 // AddLiquidity adds liquidity to the specified pool
-func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.Coin, error) {
+func (k Keeper) AddLiquidity(ctx sdk.Context, imsg interface{}) (sdk.Coin, error) {
+	var msg *types.MsgAddLiquidity
+
+	switch i := imsg.(type) {
+	case *types.MsgAddUnilateralLiquidity:
+		return k.addUnilateralLiquidity(ctx, i)
+	case *types.MsgAddLiquidity:
+		msg = i
+	}
+
 	standardDenom := k.GetStandardDenom(ctx)
 	if standardDenom == msg.MaxToken.Denom {
 		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom,
@@ -196,8 +206,90 @@ func (k Keeper) addLiquidity(ctx sdk.Context,
 	return mintToken, nil
 }
 
+func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilateralLiquidity) (sdk.Coin, error) {
+
+	poolId := types.GetPoolId(msg.CounterpartyDenom)
+	pool, exist := k.GetPool(ctx, poolId)
+	if !exist {
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrReservePoolNotExists, fmt.Sprintf("liquidity pool: %s ", poolId))
+	}
+
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	poolAddr, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	// square = ( token_balance + ( 1- fee_unilateral ) * exact_token ) / token_balance * lpt_balance^2
+	// 1 - fee_unilateral = numerator / denominator
+	tokenBalanceAmt := balances.AmountOf(msg.ExactToken.Denom)
+	lptBalanceAmt := k.bk.GetSupply(ctx, pool.LptDenom).Amount
+	exactTokenAmt := msg.ExactToken.Amount
+
+	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
+	numerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
+	denominator := sdk.NewIntWithDecimal(1, sdk.Precision)
+
+	square := denominator.Mul(tokenBalanceAmt).Add(numerator.Mul(exactTokenAmt)).Mul(lptBalanceAmt).Mul(lptBalanceAmt).Quo(denominator.Mul(tokenBalanceAmt))
+
+	// lpt = square^0.5 - lpt_balance
+	var squareBigInt = &big.Int{}
+	squareBigInt.Sqrt(square.BigInt())
+	mintLptAmt := sdk.NewIntFromBigInt(squareBigInt).Sub(lptBalanceAmt)
+
+	if mintLptAmt.LT(msg.MinLiquidity) {
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("liquidity amount not met, user expected: no less than %s, actual: %s", msg.MinLiquidity.String(), mintLptAmt.String()))
+	}
+
+	// event
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeAddUnilateralLiquidity,
+			sdk.NewAttribute(types.AttributeValueSender, msg.Sender),
+			sdk.NewAttribute(types.AttributeValueTokenUnilateral, msg.ExactToken.Denom),
+			sdk.NewAttribute(types.AttributeValueLptDenom, pool.LptDenom),
+		),
+	)
+
+	// add liquidity
+	exactCoins := sdk.NewCoins(msg.ExactToken)
+	if err := k.bk.SendCoins(ctx, sender, poolAddr, exactCoins); err != nil {
+		return sdk.Coin{}, err
+	}
+
+	// mint and send lpt
+	mintLpt := sdk.NewCoin(pool.LptDenom, mintLptAmt)
+	mintLpts := sdk.NewCoins(mintLpt)
+	if err := k.bk.MintCoins(ctx, types.ModuleName, mintLpts); err != nil {
+		return sdk.Coin{}, err
+	}
+	if err := k.bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sender, mintLpts); err != nil {
+		return sdk.Coin{}, err
+	}
+
+	return mintLpt, nil
+}
+
 // RemoveLiquidity removes liquidity from the specified pool
-func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) (sdk.Coins, error) {
+func (k Keeper) RemoveLiquidity(ctx sdk.Context, imsg interface{}) (sdk.Coins, error) {
+	var msg *types.MsgRemoveLiquidity
+
+	switch i := imsg.(type) {
+	case *types.MsgRemoveUnilateralLiquidity:
+		return k.removeUnilateralLiquidity(ctx, i)
+	case *types.MsgRemoveLiquidity:
+		msg = i
+	}
+
 	standardDenom := k.GetStandardDenom(ctx)
 
 	pool, exists := k.GetPoolByLptDenom(ctx, msg.WithdrawLiquidity.Denom)
@@ -277,6 +369,93 @@ func (k Keeper) removeLiquidity(ctx sdk.Context, poolAddr, sender sdk.AccAddress
 
 	// transfer withdrawn liquidity from coinswap reserve pool account to sender account
 	coins := sdk.NewCoins(irisWithdrawCoin, tokenWithdrawCoin)
+
+	return coins, k.bk.SendCoins(ctx, poolAddr, sender, coins)
+}
+
+func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveUnilateralLiquidity) (sdk.Coins, error) {
+	var (
+		targetTokenDenom      string
+		counterpartTokenDenom string
+	)
+
+	poolId := types.GetPoolId(msg.CounterpartyDenom)
+	pool, exist := k.GetPool(ctx, poolId)
+	if exist != true {
+		return sdk.Coins{}, sdkerrors.Wrap(types.ErrReservePoolNotExists, fmt.Sprintf("liquidity pool: %s ", poolId))
+	}
+
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return sdk.Coins{}, err
+	}
+
+	poolAddr, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
+	if err != nil {
+		return sdk.Coins{}, err
+	}
+
+	balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
+	if err != nil {
+		return sdk.Coins{}, err
+	}
+
+	lptDenom := pool.LptDenom
+	targetTokenDenom = msg.MinToken.Denom
+	counterpartTokenDenom = pool.CounterpartyDenom
+
+	if targetTokenDenom != pool.StandardDenom {
+		counterpartTokenDenom = pool.StandardDenom
+	}
+
+	targetBalanceAmt := balances.AmountOf(targetTokenDenom)
+	counterpartBalanceAmt := balances.AmountOf(counterpartTokenDenom)
+	lptBalanceAmt := k.bk.GetSupply(ctx, lptDenom).Amount
+
+	// Calculate Withdrawn Amount
+	// t_withdrawn = t_balance * delta_lpt / lpt_balance
+	// c_withdrawn = c_balance * delta_lpt / lpt_balance
+	//
+	// Calculate Swap Amount
+	// As `(t_balance - t_withdraw)(c_balance - c_withdraw) = (t_balance - t_withdraw - t_swap) * c_balance`,
+	// We get `t_swap = (t_balance - t_withdraw) * c_withdraw / c_balance`
+	targetWithdrawnAmt := targetBalanceAmt.Mul(msg.ExactLiquidity).Quo(lptBalanceAmt)
+	counterpartWithdrawnAmt := counterpartBalanceAmt.Mul(msg.ExactLiquidity).Quo(lptBalanceAmt)
+	targetSwapAmt := targetBalanceAmt.Sub(targetWithdrawnAmt).Mul(counterpartWithdrawnAmt).Quo(counterpartBalanceAmt)
+
+	// deduce with fee
+	// target_amt = (target_withdraw + target_swap ) * ( 1 - fee_unilateral)
+	// fee_unilateral = numerator / denominator
+	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
+	numerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
+	denominator := sdk.NewIntWithDecimal(1, sdk.Precision)
+	targetTokenAmt := targetWithdrawnAmt.Add(targetSwapAmt).Mul(numerator).Quo(denominator)
+
+	if targetTokenAmt.LT(msg.MinToken.Amount) {
+		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("token withdrawn amount not met, user expected: no less than %s, actual: %s", msg.MinToken.String(), sdk.NewCoin(targetTokenDenom, targetTokenAmt).String()))
+	}
+
+	// event
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeRemoveUnilateralLiquidity,
+			sdk.NewAttribute(types.AttributeValueSender, msg.Sender),
+			sdk.NewAttribute(types.AttributeValueTokenUnilateral, targetTokenDenom),
+			sdk.NewAttribute(types.AttributeValueLptDenom, pool.LptDenom),
+		),
+	)
+
+	// send lpt and burn lpt
+	lptCoins := sdk.NewCoins(sdk.NewCoin(lptDenom, msg.ExactLiquidity))
+	if err := k.bk.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, lptCoins); err != nil {
+		return nil, err
+	}
+	if err := k.bk.BurnCoins(ctx, types.ModuleName, lptCoins); err != nil {
+		return nil, err
+	}
+
+	// send withdraw coins
+	coins := sdk.NewCoins(sdk.NewCoin(targetTokenDenom, targetTokenAmt))
 
 	return coins, k.bk.SendCoins(ctx, poolAddr, sender, coins)
 }
