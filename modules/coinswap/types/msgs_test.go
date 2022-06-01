@@ -238,6 +238,198 @@ func TestMsgRemoveLiquidity_ValidateBasic(t *testing.T) {
 	}
 }
 
+func TestMsgAddUnilateralLiquidity_ValidateBasic(t *testing.T) {
+	type fields struct {
+		CounterpartyDenom string
+		ExactToken        sdk.Coin
+		MinLiquidity      sdk.Int
+		Deadline          int64
+		Sender            string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "invalid Counterparty Denom",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "",
+				ExactToken:        buildCoin("stake", 1000),
+				MinLiquidity:      sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid Exact Token Denom",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				ExactToken:        buildCoin("131stake", 1000),
+				MinLiquidity:      sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid Exact Token Amount",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				ExactToken:        buildCoin("stake", -1000),
+				MinLiquidity:      sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid MinLiquidity",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				ExactToken:        buildCoin("stake", 1000),
+				MinLiquidity:      sdk.NewInt(-100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid Deadline",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				ExactToken:        buildCoin("stake", 1000),
+				MinLiquidity:      sdk.NewInt(100),
+				Deadline:          0,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid Sender",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				ExactToken:        buildCoin("stake", 1000),
+				MinLiquidity:      sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            "",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			msg := MsgAddUnilateralLiquidity{
+				CounterpartyDenom: tt.fields.CounterpartyDenom,
+				ExactToken:        tt.fields.ExactToken,
+				MinLiquidity:      tt.fields.MinLiquidity,
+				Deadline:          tt.fields.Deadline,
+				Sender:            tt.fields.Sender,
+			}
+			if err := msg.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("MsgAddUnilateralLiquidity.ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgRemoveUnilateralLiquidity_ValidateBasic(t *testing.T) {
+	type fields struct {
+		CounterpartyDenom string
+		MinToken          sdk.Coin
+		ExactLiquidity    sdk.Int
+		Deadline          int64
+		Sender            string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "invalid Counterparty Denom",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "",
+				MinToken:          buildCoin("stake", 1000),
+				ExactLiquidity:    sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid MinToken Denom",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				MinToken:          buildCoin("", 1000),
+				ExactLiquidity:    sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid MinToken Amount",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				MinToken:          buildCoin("stake", -1000),
+				ExactLiquidity:    sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid ExactLiquidity",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				MinToken:          buildCoin("stake", -1000),
+				ExactLiquidity:    sdk.NewInt(-100),
+				Deadline:          1611213344,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid Deadline",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				MinToken:          buildCoin("stake", 1000),
+				ExactLiquidity:    sdk.NewInt(100),
+				Deadline:          0,
+				Sender:            sender,
+			},
+		},
+		{
+			name:    "invalid Sender",
+			wantErr: true,
+			fields: fields{
+				CounterpartyDenom: "bnb",
+				MinToken:          buildCoin("stake", 1000),
+				ExactLiquidity:    sdk.NewInt(100),
+				Deadline:          1611213344,
+				Sender:            "",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			msg := MsgRemoveUnilateralLiquidity{
+				CounterpartyDenom: tt.fields.CounterpartyDenom,
+				MinToken:          tt.fields.MinToken,
+				ExactLiquidity:    tt.fields.ExactLiquidity,
+				Deadline:          tt.fields.Deadline,
+				Sender:            tt.fields.Sender,
+			}
+			if err := msg.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("MsgRemoveLiquidity.ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func buildCoin(denom string, amt int64) sdk.Coin {
 	return sdk.Coin{
 		Denom:  denom,
