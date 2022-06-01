@@ -72,6 +72,14 @@ func ValidateToken(exactToken sdk.Coin) error {
 	return nil
 }
 
+// ValidateCounterpartyDenom verifies whether the counterparty denom is legal
+func ValidateCounterpartyDenom(counterpartydenom string) error {
+	if counterpartydenom == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "counterparty denom should not be empty")
+	}
+	return nil
+}
+
 // ValidateExactStandardAmt verifies whether the standard token amount is legal
 func ValidateExactStandardAmt(standardAmt sdk.Int) error {
 	if !standardAmt.IsPositive() {

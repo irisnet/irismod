@@ -123,6 +123,10 @@ func (msg MsgAddLiquidity) Type() string { return TypeMsgAddLiquidity }
 // ValidateBasic implements Msg.
 func (msg MsgAddLiquidity) ValidateBasic() error {
 
+	if err := ValidateToken(msg.MaxToken); err != nil {
+		return err
+	}
+
 	if err := ValidateExactStandardAmt(msg.ExactStandardAmt); err != nil {
 		return err
 	}
@@ -179,6 +183,9 @@ func (m MsgAddUnilateralLiquidity) Route() string { return RouterKey }
 func (m MsgAddUnilateralLiquidity) Type() string { return TypeMsgAddUnilateralLiquidity }
 
 func (m MsgAddUnilateralLiquidity) ValidateBasic() error {
+	if err := ValidateCounterpartyDenom(m.CounterpartyDenom); err != nil {
+		return err
+	}
 
 	if err := ValidateToken(m.ExactToken); err != nil {
 		return err
@@ -299,7 +306,10 @@ func (m MsgRemoveUnilateralLiquidity) Route() string { return RouterKey }
 func (m MsgRemoveUnilateralLiquidity) Type() string { return TypeMsgRemoveUnilateralLiquidity }
 
 func (m MsgRemoveUnilateralLiquidity) ValidateBasic() error {
-
+	if err := ValidateCounterpartyDenom(m.CounterpartyDenom); err != nil {
+		return err
+	}
+	
 	if err := ValidateToken(m.MinToken); err != nil {
 		return err
 	}
