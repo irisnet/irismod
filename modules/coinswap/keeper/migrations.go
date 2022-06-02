@@ -5,6 +5,7 @@ import (
 
 	v150 "github.com/irisnet/irismod/modules/coinswap/migrations/v150"
 	v152 "github.com/irisnet/irismod/modules/coinswap/migrations/v152"
+	v153 "github.com/irisnet/irismod/modules/coinswap/migrations/v153"
 )
 
 // Migrator is a struct for handling in-place store migrations.
@@ -27,5 +28,5 @@ func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 }
 
 func (m Migrator) Migrate3to4(ctx sdk.Context) error {
-	return nil
+	return v153.Migrate(ctx, m.k, m.k.paramSpace)
 }
