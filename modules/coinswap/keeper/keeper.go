@@ -229,6 +229,10 @@ func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 		return sdk.Coin{}, err
 	}
 
+	if msg.ExactToken.Denom != msg.CounterpartyDenom && msg.ExactToken.Denom != k.GetStandardDenom(ctx) {
+		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom, fmt.Sprintf("liquidity pool %s dosen't have %s", poolId, msg.ExactToken.Denom))
+	}
+
 	// square = ( token_balance + ( 1- fee_unilateral ) * exact_token ) / token_balance * lpt_balance^2
 	// 1 - fee_unilateral = numerator / denominator
 	tokenBalanceAmt := balances.AmountOf(msg.ExactToken.Denom)
@@ -398,6 +402,10 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
 	if err != nil {
 		return sdk.Coins{}, err
+	}
+
+	if msg.MinToken.Denom != msg.CounterpartyDenom && msg.MinToken.Denom != k.GetStandardDenom(ctx) {
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidDenom, fmt.Sprintf("liquidity pool %s dosen't have %s", poolId, msg.MinToken.Denom))
 	}
 
 	lptDenom := pool.LptDenom
