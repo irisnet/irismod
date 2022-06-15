@@ -231,7 +231,7 @@ func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 	}
 
 	if msg.ExactToken.Denom != msg.CounterpartyDenom && msg.ExactToken.Denom != k.GetStandardDenom(ctx) {
-		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom, fmt.Sprintf("liquidity pool %s dosen't have %s", poolId, msg.ExactToken.Denom))
+		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom, fmt.Sprintf("liquidity pool %s has no %s", poolId, msg.ExactToken.Denom))
 	}
 
 	// square = ( token_balance + ( 1- fee_unilateral ) * exact_token ) / token_balance * lpt_balance^2
@@ -379,10 +379,7 @@ func (k Keeper) removeLiquidity(ctx sdk.Context, poolAddr, sender sdk.AccAddress
 }
 
 func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveUnilateralLiquidity) (sdk.Coins, error) {
-	var (
-		targetTokenDenom      string
-		counterpartTokenDenom string
-	)
+	var targetTokenDenom string
 
 	poolId := types.GetPoolId(msg.CounterpartyDenom)
 	pool, exist := k.GetPool(ctx, poolId)
@@ -406,19 +403,13 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	}
 
 	if msg.MinToken.Denom != msg.CounterpartyDenom && msg.MinToken.Denom != k.GetStandardDenom(ctx) {
-		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidDenom, fmt.Sprintf("liquidity pool %s dosen't have %s", poolId, msg.MinToken.Denom))
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidDenom, fmt.Sprintf("liquidity pool %s has no %s", poolId, msg.MinToken.Denom))
 	}
 
 	lptDenom := pool.LptDenom
 	targetTokenDenom = msg.MinToken.Denom
-	counterpartTokenDenom = pool.CounterpartyDenom
-
-	if targetTokenDenom != pool.StandardDenom {
-		counterpartTokenDenom = pool.StandardDenom
-	}
 
 	targetBalanceAmt := balances.AmountOf(targetTokenDenom)
-	counterpartBalanceAmt := balances.AmountOf(counterpartTokenDenom)
 	lptBalanceAmt := k.bk.GetSupply(ctx, lptDenom).Amount
 
 	// Calculate Withdrawn Amount
@@ -427,21 +418,22 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	//
 	// Calculate Swap Amount
 	// As `(t_balance - t_withdraw)(c_balance - c_withdraw) = (t_balance - t_withdraw - t_swap) * c_balance`,
-	// We get `t_swap = (t_balance - t_withdraw) * c_withdraw / c_balance`
-	targetWithdrawnAmt := targetBalanceAmt.Mul(msg.ExactLiquidity).Quo(lptBalanceAmt)
-	counterpartWithdrawnAmt := counterpartBalanceAmt.Mul(msg.ExactLiquidity).Quo(lptBalanceAmt)
-	targetSwapAmt := targetBalanceAmt.Sub(targetWithdrawnAmt).Mul(counterpartWithdrawnAmt).Quo(counterpartBalanceAmt)
+	// we get `t_swap = (t_balance - t_withdraw) * c_withdraw / c_balance`
+	//
+	// Simplify the formula:
+	// target_amt = t_balance * (2 * lpt_balance - delta_lpt) * delta_lpt / (lpt_balance^2)
+	targetTokenAmt := lptBalanceAmt.Add(lptBalanceAmt).Sub(msg.ExactLiquidity).Mul(msg.ExactLiquidity).Mul(targetBalanceAmt).Quo(lptBalanceAmt).Quo(lptBalanceAmt)
 
 	// deduce with fee
-	// target_amt = (target_withdraw + target_swap ) * ( 1 - fee_unilateral)
+	// target_amt' = target_amt * ( 1 - fee_unilateral)
 	// fee_unilateral = numerator / denominator
 	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
 	numerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
 	denominator := sdk.NewIntWithDecimal(1, sdk.Precision)
-	targetTokenAmt := targetWithdrawnAmt.Add(targetSwapAmt).Mul(numerator).Quo(denominator)
+	targetTokenAmtAfterFee := targetTokenAmt.Mul(numerator).Quo(denominator)
 
-	if targetTokenAmt.LT(msg.MinToken.Amount) {
-		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("token withdrawn amount not met, user expected: no less than %s, actual: %s", msg.MinToken.String(), sdk.NewCoin(targetTokenDenom, targetTokenAmt).String()))
+	if targetTokenAmtAfterFee.LT(msg.MinToken.Amount) {
+		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("token withdrawn amount not met, user expected: no less than %s, actual: %s", msg.MinToken.String(), sdk.NewCoin(targetTokenDenom, targetTokenAmtAfterFee).String()))
 	}
 
 	// event
@@ -464,7 +456,7 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	}
 
 	// send withdraw coins
-	coins := sdk.NewCoins(sdk.NewCoin(targetTokenDenom, targetTokenAmt))
+	coins := sdk.NewCoins(sdk.NewCoin(targetTokenDenom, targetTokenAmtAfterFee))
 
 	return coins, k.bk.SendCoins(ctx, poolAddr, sender, coins)
 }
