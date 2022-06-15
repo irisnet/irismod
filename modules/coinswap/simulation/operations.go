@@ -573,6 +573,7 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 }
 
 // SimulateMsgRemoveUnilateralLiquidity  simulates the removal of unilateral liquidity
+// TODO: formula need update
 func SimulateMsgRemoveUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainId string,
