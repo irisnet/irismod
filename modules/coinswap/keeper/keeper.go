@@ -403,7 +403,8 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	}
 
 	if msg.MinToken.Denom != msg.CounterpartyDenom && msg.MinToken.Denom != k.GetStandardDenom(ctx) {
-		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidDenom, fmt.Sprintf("liquidity pool %s has no %s", poolId, msg.MinToken.Denom))
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidDenom,
+			fmt.Sprintf("liquidity pool %s has no %s", poolId, msg.MinToken.Denom))
 	}
 
 	lptDenom := pool.LptDenom
@@ -411,6 +412,20 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 
 	targetBalanceAmt := balances.AmountOf(targetTokenDenom)
 	lptBalanceAmt := k.bk.GetSupply(ctx, lptDenom).Amount
+
+	if lptBalanceAmt.LT(msg.ExactLiquidity) {
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInsufficientFunds,
+			fmt.Sprintf("insufficient %s funds, user expected: %s, actual: %s",
+				lptDenom, msg.ExactLiquidity.String(), lptBalanceAmt.String()))
+	}
+
+	// TODO: what if lptBalance equals msg.ExactLiquidity
+
+	if targetBalanceAmt.LT(msg.MinToken.Amount) {
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInsufficientFunds,
+			fmt.Sprintf("insufficient %s funds, user expected: %s, actual: %s",
+				targetTokenDenom, msg.MinToken.Amount.String(), targetBalanceAmt.String()))
+	}
 
 	// Calculate Withdrawn Amount
 	// t_withdrawn = t_balance * delta_lpt / lpt_balance
@@ -422,7 +437,8 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	//
 	// Simplify the formula:
 	// target_amt = t_balance * (2 * lpt_balance - delta_lpt) * delta_lpt / (lpt_balance^2)
-	targetTokenAmt := lptBalanceAmt.Add(lptBalanceAmt).Sub(msg.ExactLiquidity).Mul(msg.ExactLiquidity).Mul(targetBalanceAmt).Quo(lptBalanceAmt).Quo(lptBalanceAmt)
+	targetTokenAmt := lptBalanceAmt.Add(lptBalanceAmt).Sub(msg.ExactLiquidity).
+		Mul(msg.ExactLiquidity).Mul(targetBalanceAmt).Quo(lptBalanceAmt).Quo(lptBalanceAmt)
 
 	// deduce with fee
 	// target_amt' = target_amt * ( 1 - fee_unilateral)
@@ -433,7 +449,9 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	targetTokenAmtAfterFee := targetTokenAmt.Mul(numerator).Quo(denominator)
 
 	if targetTokenAmtAfterFee.LT(msg.MinToken.Amount) {
-		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("token withdrawn amount not met, user expected: no less than %s, actual: %s", msg.MinToken.String(), sdk.NewCoin(targetTokenDenom, targetTokenAmtAfterFee).String()))
+		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet,
+			fmt.Sprintf("token withdrawn amount not met, user expected: no less than %s, actual: %s",
+				msg.MinToken.String(), sdk.NewCoin(targetTokenDenom, targetTokenAmtAfterFee).String()))
 	}
 
 	// event
