@@ -112,7 +112,8 @@ func validateUnilateraLiquiditylFee(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if !v.GT(sdk.ZeroDec()) || !v.LT(sdk.OneDec()) {
+	// unilateral fee should be in range of [0, 1)
+	if !v.GTE(sdk.ZeroDec()) || !v.LT(sdk.OneDec()) {
 		return fmt.Errorf("unilateral liquidity fee must be positive and less than 1: %s", v.String())
 	}
 
