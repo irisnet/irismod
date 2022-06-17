@@ -33,7 +33,7 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 	return &types.QuerySupplyResponse{Amount: supply}, nil
 }
 
-func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*types.QueryOwnerResponse, error) {
+func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRequest) (*types.QueryNFTsOfOwnerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	ownerAddress, err := sdk.AccAddressFromBech32(request.Owner)
@@ -71,7 +71,7 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 	for i := 0; i < len(owner.IDCollections); i++ {
 		owner.IDCollections[i].TokenIds = idsMap[owner.IDCollections[i].DenomId]
 	}
-	return &types.QueryOwnerResponse{Owner: &owner, Pagination: pageRes}, nil
+	return &types.QueryNFTsOfOwnerResponse{Owner: &owner, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequest) (*types.QueryCollectionResponse, error) {
