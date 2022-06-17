@@ -419,7 +419,10 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 				lptDenom, msg.ExactLiquidity.String(), lptBalanceAmt.String()))
 	}
 
-	// TODO: what if lptBalance equals msg.ExactLiquidity
+	if lptBalanceAmt.Equal(msg.ExactLiquidity) {
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrConstraintNotMet,
+			fmt.Sprintf("forbid to withdraw all liquidity unilaterally"))
+	}
 
 	if targetBalanceAmt.LT(msg.MinToken.Amount) {
 		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInsufficientFunds,
@@ -437,16 +440,19 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	//
 	// Simplify the formula:
 	// target_amt = t_balance * (2 * lpt_balance - delta_lpt) * delta_lpt / (lpt_balance^2)
-	targetTokenAmt := lptBalanceAmt.Add(lptBalanceAmt).Sub(msg.ExactLiquidity).
-		Mul(msg.ExactLiquidity).Mul(targetBalanceAmt).Quo(lptBalanceAmt).Quo(lptBalanceAmt)
-
-	// deduce with fee
+	//
+	// Deduce with fee
 	// target_amt' = target_amt * ( 1 - fee_unilateral)
 	// fee_unilateral = numerator / denominator
 	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
-	numerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-	denominator := sdk.NewIntWithDecimal(1, sdk.Precision)
-	targetTokenAmtAfterFee := targetTokenAmt.Mul(numerator).Quo(denominator)
+	feeNumerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
+	feeDenominator := sdk.NewIntWithDecimal(1, sdk.Precision)
+
+	targetTokenNumerator := lptBalanceAmt.Add(lptBalanceAmt).Sub(msg.ExactLiquidity).
+		Mul(msg.ExactLiquidity).Mul(targetBalanceAmt).Mul(feeNumerator)
+	targetTokenDenominator := lptBalanceAmt.Mul(lptBalanceAmt).Mul(feeDenominator)
+
+	targetTokenAmtAfterFee := targetTokenNumerator.Quo(targetTokenDenominator)
 
 	if targetTokenAmtAfterFee.LT(msg.MinToken.Amount) {
 		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet,
