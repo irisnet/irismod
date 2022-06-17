@@ -4,7 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 // BankKeeper defines the expected bank keeper (noalias)
@@ -35,7 +36,7 @@ type DistrKeeper interface {
 
 // GovKeeper defines the expected gov keeper (noalias)
 type GovKeeper interface {
-	SubmitProposal(ctx sdk.Context, content govtypes.Content) (govtypes.Proposal, error)
+	SubmitProposal(ctx sdk.Context, content govv1beta1.Content) (v1.Proposal, error)
 	AddDeposit(ctx sdk.Context, proposalID uint64, depositorAddr sdk.AccAddress, depositAmount sdk.Coins) (bool, error)
-	GetProposal(ctx sdk.Context, proposalID uint64) (govtypes.Proposal, bool)
+	GetProposal(ctx sdk.Context, proposalID uint64) (v1.Proposal, bool)
 }

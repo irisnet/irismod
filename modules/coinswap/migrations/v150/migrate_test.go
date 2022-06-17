@@ -7,6 +7,7 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -51,11 +52,11 @@ func TestMigrate(t *testing.T) {
 }
 
 func setupWithGenesisAccounts() (*simapp.SimApp, verifyFunc) {
-	standardCoin := sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 18))
-	ethCoin := sdk.NewCoin(denomETH, sdk.NewIntWithDecimal(1, 18))
-	btcCoin := sdk.NewCoin(denomBTC, sdk.NewIntWithDecimal(1, 18))
-	lptBTCCoin := sdk.NewCoin(denomLptBTC, sdk.NewIntWithDecimal(1, 18))
-	lptETHCoin := sdk.NewCoin(denomLptETH, sdk.NewIntWithDecimal(1, 18))
+	standardCoin := sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 18))
+	ethCoin := sdk.NewCoin(denomETH, sdkmath.NewIntWithDecimal(1, 18))
+	btcCoin := sdk.NewCoin(denomBTC, sdkmath.NewIntWithDecimal(1, 18))
+	lptBTCCoin := sdk.NewCoin(denomLptBTC, sdkmath.NewIntWithDecimal(1, 18))
+	lptETHCoin := sdk.NewCoin(denomLptETH, sdkmath.NewIntWithDecimal(1, 18))
 
 	sender1Balances := banktypes.Balance{
 		Address: addrSender1.String(),

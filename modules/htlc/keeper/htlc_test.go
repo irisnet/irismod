@@ -8,7 +8,6 @@ import (
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -47,7 +46,7 @@ func TestHTLCTestSuite(t *testing.T) {
 
 func (suite *HTLCTestSuite) SetupTest() {
 	app := simapp.SetupWithGenesisHTLC(NewHTLTGenesis(TestDeputy))
-	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: tmtime.Now()})
+	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: time.Now()})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
 	suite.keeper = &app.HTLCKeeper
@@ -92,7 +91,7 @@ func (suite *HTLCTestSuite) GenerateHTLCDetails() {
 }
 
 func (suite *HTLCTestSuite) TestCreateHTLC() {
-	currentTmTime := tmtime.Now()
+	currentTmTime := time.Now()
 	type args struct {
 		sender             sdk.AccAddress
 		receiver           sdk.AccAddress
@@ -478,7 +477,7 @@ func (suite *HTLCTestSuite) TestCreateHTLC() {
 
 func (suite *HTLCTestSuite) TestClaimHtlc() {
 	suite.SetupTest()
-	currentTmTime := tmtime.Now()
+	currentTmTime := time.Now()
 	invalidSecret, _ := GenerateRandomSecret()
 	type args struct {
 		amount    sdk.Coins

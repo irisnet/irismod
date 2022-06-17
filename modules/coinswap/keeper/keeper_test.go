@@ -9,6 +9,7 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -133,14 +134,14 @@ func (suite *TestSuite) TestLiquidity() {
 
 	expCoins := sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 100),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 2999999900),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000))),
-		sdk.NewCoin(lptDenom, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000))),
+		sdk.NewCoin(lptDenom, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
@@ -163,14 +164,14 @@ func (suite *TestSuite) TestLiquidity() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 301),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(3, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(3, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 2999999799),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
-		sdk.NewCoin(lptDenom, sdk.NewIntWithDecimal(2, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(lptDenom, sdkmath.NewIntWithDecimal(2, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), sender2Balances.Sort().String())
 
@@ -193,13 +194,13 @@ func (suite *TestSuite) TestLiquidity() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 3000000000),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000))),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000))),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 201),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(2, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(2, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.String())
 
@@ -222,7 +223,7 @@ func (suite *TestSuite) TestLiquidity() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 3000000000),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000))),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000))),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 	suite.Equal("", reservePoolBalances.String())

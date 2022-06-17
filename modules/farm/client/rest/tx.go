@@ -1,11 +1,11 @@
 package rest
 
-import (
-	"github.com/gorilla/mux"
+// import (
+// 	"github.com/gorilla/mux"
 
-	"github.com/cosmos/cosmos-sdk/client"
-)
+// 	"github.com/cosmos/cosmos-sdk/client"
+// )
 
-func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
+// func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 
-}
+// }

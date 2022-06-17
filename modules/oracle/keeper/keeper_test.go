@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	testAddr1, _ = sdk.AccAddressFromHex(crypto.AddressHash([]byte("test1")).String())
-	testAddr2, _ = sdk.AccAddressFromHex(crypto.AddressHash([]byte("test2")).String())
+	testAddr1, _ = sdk.AccAddressFromHexUnsafe(crypto.AddressHash([]byte("test1")).String())
+	testAddr2, _ = sdk.AccAddressFromHexUnsafe(crypto.AddressHash([]byte("test2")).String())
 
 	addrs = []string{testAddr1.String(), testAddr2.String()}
 

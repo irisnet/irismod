@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -265,7 +266,7 @@ func GetInputPrice(inputAmt, inputReserve, outputReserve sdk.Int, fee sdk.Dec) s
 	deltaFee := sdk.OneDec().Sub(fee)
 	inputAmtWithFee := inputAmt.Mul(sdk.NewIntFromBigInt(deltaFee.BigInt()))
 	numerator := inputAmtWithFee.Mul(outputReserve)
-	denominator := inputReserve.Mul(sdk.NewIntWithDecimal(1, sdk.Precision)).Add(inputAmtWithFee)
+	denominator := inputReserve.Mul(sdkmath.NewIntWithDecimal(1, sdk.Precision)).Add(inputAmtWithFee)
 	return numerator.Quo(denominator)
 }
 
@@ -273,7 +274,7 @@ func GetInputPrice(inputAmt, inputReserve, outputReserve sdk.Int, fee sdk.Dec) s
 // The fee is included in the output coins being bought
 func GetOutputPrice(outputAmt, inputReserve, outputReserve sdk.Int, fee sdk.Dec) sdk.Int {
 	deltaFee := sdk.OneDec().Sub(fee)
-	numerator := inputReserve.Mul(outputAmt).Mul(sdk.NewIntWithDecimal(1, sdk.Precision))
+	numerator := inputReserve.Mul(outputAmt).Mul(sdkmath.NewIntWithDecimal(1, sdk.Precision))
 	denominator := (outputReserve.Sub(outputAmt)).Mul(sdk.NewIntFromBigInt(deltaFee.BigInt()))
 	return numerator.Quo(denominator).Add(sdk.OneInt())
 }
