@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
 	"github.com/irisnet/irismod/modules/farm/types"
 )
@@ -121,8 +123,20 @@ func (m msgServer) CreatePoolWithCommunityPool(goCtx context.Context,
 		return nil, err
 	}
 
+	data, err := codectypes.NewAnyWithValue(&msg.Content)
+	if err != nil {
+		return nil, err
+	}
+
+	msgs := []sdk.Msg{
+		&govv1.MsgExecLegacyContent{
+			Content:   data,
+			Authority: m.gk.GetGovernanceAccount(ctx).GetAddress().String(),
+		},
+	}
+
 	//create new proposal given a content
-	proposal, err := m.gk.SubmitProposal(ctx, &msg.Content)
+	proposal, err := m.gk.SubmitProposal(ctx, msgs, "")
 	if err != nil {
 		return nil, err
 	}
