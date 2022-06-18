@@ -90,7 +90,8 @@ func (suite *KeeperSuite) SetupTest() {
 	suite.NoError(err)
 
 	// collections should equal 3
-	collections := suite.keeper.GetCollections(suite.ctx)
+	collections, err := suite.keeper.GetCollections(suite.ctx)
+	suite.NoError(err)
 	suite.NotEmpty(collections)
 	suite.Equal(len(collections), 3)
 }
@@ -148,18 +149,18 @@ func (suite *KeeperSuite) TestUpdateNFT() {
 	suite.Error(err)
 }
 
-func (suite *KeeperSuite) TestTransferOwner() {
+func (suite *KeeperSuite) TestTransferOwnership() {
 
 	// MintNFT shouldn't fail when collection does not exist
 	err := suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
 	suite.NoError(err)
 
 	// invalid owner
-	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address2, address3)
+	err = suite.keeper.TransferOwnership(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address2, address3)
 	suite.Error(err)
 
 	// right
-	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, tokenNm2, tokenURI2, tokenURIHash2, tokenData, address, address2)
+	err = suite.keeper.TransferOwnership(suite.ctx, denomID, tokenID, tokenNm2, tokenURI2, tokenURIHash2, tokenData, address, address2)
 	suite.NoError(err)
 
 	nft, err := suite.keeper.GetNFT(suite.ctx, denomID, tokenID)
@@ -177,7 +178,7 @@ func (suite *KeeperSuite) TestTransferDenom() {
 	err = suite.keeper.TransferDenomOwner(suite.ctx, denomID, address, address3)
 	suite.NoError(err)
 
-	denom, _ := suite.keeper.GetDenom(suite.ctx, denomID)
+	denom, _ := suite.keeper.GetDenomInfo(suite.ctx, denomID)
 
 	// denom.Creator should equal to address3 after transfer
 	suite.Equal(denom.Creator, address3.String())

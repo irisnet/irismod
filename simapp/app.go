@@ -347,7 +347,7 @@ func NewSimApp(
 	)
 	app.RecordKeeper = recordkeeper.NewKeeper(appCodec, keys[recordtypes.StoreKey])
 
-	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
+	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey], app.AccountKeeper, app.BankKeeper)
 
 	app.HTLCKeeper = htlckeeper.NewKeeper(
 		appCodec,
