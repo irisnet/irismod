@@ -45,7 +45,7 @@ type HandlerSuite struct {
 }
 
 func (suite *HandlerSuite) SetupTest() {
-	app := simapp.Setup(isCheckTx)
+	app := simapp.Setup(suite.T(), isCheckTx)
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
 	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{})

@@ -98,7 +98,7 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 			URI:   token.Uri,
 			Name:  nftMetadata.Name,
 			Owner: owner.String(),
-			Data:  nftMetadata.Description,
+			Data:  nftMetadata.Data,
 		})
 	}
 

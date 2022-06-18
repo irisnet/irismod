@@ -25,5 +25,6 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 		Symbol:           class.Symbol,
 		MintRestricted:   denomMetadata.MintRestricted,
 		UpdateRestricted: denomMetadata.UpdateRestricted,
+		Data:             denomMetadata.Data,
 	}, nil
 }

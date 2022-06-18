@@ -22,7 +22,7 @@ message NFTMetadata {
     option (gogoproto.equal) = true;
 
     string name = 1;
-    string description = 2;
+    string data = 2;
 }
 
 // Denom defines a type of NFT
@@ -49,6 +49,7 @@ message DenomMetadata {
     string schema = 2;
     bool mint_restricted = 3 ;
     bool update_restricted = 4 ;
+    string data = 5;
 }
 
 // IDCollection defines a type of collection with specified ID

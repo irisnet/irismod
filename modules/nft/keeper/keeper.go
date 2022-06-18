@@ -61,6 +61,7 @@ func (k Keeper) IssueDenom(
 		Schema:           schema,
 		MintRestricted:   mintRestricted,
 		UpdateRestricted: updateRestricted,
+		Data:             data,
 	}
 	metadata, err := codectypes.NewAnyWithValue(denomMetadata)
 	if err != nil {
@@ -89,8 +90,8 @@ func (k Keeper) MintNFT(
 	receiver sdk.AccAddress,
 ) error {
 	nftMetadata := &types.NFTMetadata{
-		Name:        tokenNm,
-		Description: tokenData,
+		Name: tokenNm,
+		Data: tokenData,
 	}
 	data, err := codectypes.NewAnyWithValue(nftMetadata)
 	if err != nil {
@@ -155,7 +156,7 @@ func (k Keeper) EditNFT(
 		}
 
 		if types.Modified(tokenData) {
-			nftMetadata.Description = tokenData
+			nftMetadata.Data = tokenData
 		}
 
 		data, err := codectypes.NewAnyWithValue(&nftMetadata)
@@ -214,7 +215,7 @@ func (k Keeper) TransferOwnership(
 	}
 
 	if types.Modified(tokenData) {
-		nftMetadata.Description = tokenData
+		nftMetadata.Data = tokenData
 		changed = true
 	}
 
