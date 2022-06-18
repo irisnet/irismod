@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
+	"os"
 	"time"
 
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -14,7 +14,6 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	sdksimapp "github.com/cosmos/cosmos-sdk/simapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -28,17 +27,9 @@ import (
 // It panics if the user provides files for both of them.
 // If a file is not given for the genesis or the sim params, it creates a randomized one.
 func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simtypes.AppStateFn {
-	return func(
-		r *rand.Rand, accs []simtypes.Account, config simtypes.Config,
-	) (
-		appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time,
-	) {
-
-		if sdksimapp.FlagGenesisTimeValue == 0 {
-			genesisTimestamp = simtypes.RandTimestamp(r)
-		} else {
-			genesisTimestamp = time.Unix(sdksimapp.FlagGenesisTimeValue, 0)
-		}
+	return func(r *rand.Rand, accs []simtypes.Account, config simtypes.Config,
+	) (appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time) {
+		genesisTimestamp = simtypes.RandTimestamp(r)
 
 		chainID = config.ChainID
 		switch {
@@ -49,18 +40,13 @@ func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simty
 			// override the default chain-id from simapp to set it later to the config
 			genesisDoc, accounts := AppStateFromGenesisFileFn(r, cdc, config.GenesisFile)
 
-			if sdksimapp.FlagGenesisTimeValue == 0 {
-				// use genesis timestamp if no custom timestamp is provided (i.e no random timestamp)
-				genesisTimestamp = genesisDoc.GenesisTime
-			}
-
 			appState = genesisDoc.AppState
 			chainID = genesisDoc.ChainID
 			simAccs = accounts
 
 		case config.ParamsFile != "":
 			appParams := make(simtypes.AppParams)
-			bz, err := ioutil.ReadFile(config.ParamsFile)
+			bz, err := os.ReadFile(config.ParamsFile)
 			if err != nil {
 				panic(err)
 			}
@@ -202,7 +188,7 @@ func AppStateRandomizedFn(
 // AppStateFromGenesisFileFn util function to generate the genesis AppState
 // from a genesis.json file.
 func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONCodec, genesisFile string) (tmtypes.GenesisDoc, []simtypes.Account) {
-	bytes, err := ioutil.ReadFile(genesisFile)
+	bytes, err := os.ReadFile(genesisFile)
 	if err != nil {
 		panic(err)
 	}

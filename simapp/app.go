@@ -178,6 +178,7 @@ var (
 		farmtypes.ModuleName:           {authtypes.Burner},
 		farmtypes.RewardCollector:      nil,
 		farmtypes.EscrowCollector:      nil,
+		nfttypes.ModuleName:            nil,
 	}
 )
 
