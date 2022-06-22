@@ -36,6 +36,11 @@ func NewKeeper(cdc codec.Codec,
 	}
 }
 
+// NFTkeeper returns a cosmos-sdk nftkeeper.Keeper.
+func (k Keeper) NFTkeeper() nftkeeper.Keeper {
+	return k.nk
+}
+
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("irismod/%s", types.ModuleName))
