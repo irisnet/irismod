@@ -36,7 +36,7 @@ func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRe
 	r := &nft.QueryNFTsRequest{
 		ClassId:    request.DenomId,
 		Owner:      request.Owner,
-		Pagination: request.Pagination,
+		Pagination: shapePageRequest(request.Pagination),
 	}
 
 	result, err := k.nk.NFTs(c, r)
@@ -76,7 +76,7 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 
 	r := &nft.QueryNFTsRequest{
 		ClassId:    request.DenomId,
-		Pagination: request.Pagination,
+		Pagination: shapePageRequest(request.Pagination),
 	}
 
 	result, err := k.nk.NFTs(c, r)
@@ -128,7 +128,7 @@ func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types
 	ctx := sdk.UnwrapSDKContext(c)
 
 	result, err := k.nk.Classes(c, &nft.QueryClassesRequest{
-		Pagination: req.Pagination,
+		Pagination: shapePageRequest(req.Pagination),
 	})
 	if err != nil {
 		return nil, err
