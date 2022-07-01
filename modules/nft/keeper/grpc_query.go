@@ -48,7 +48,7 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 	idsMap := make(map[string][]string)
 	store := ctx.KVStore(k.storeKey)
 	nftStore := prefix.NewStore(store, types.KeyOwner(ownerAddress, request.DenomId, ""))
-	pageRes, err := query.Paginate(nftStore, request.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(nftStore, shapePageRequest(request.Pagination), func(key []byte, value []byte) error {
 		denomID := request.DenomId
 		tokenID := string(key)
 		if len(request.DenomId) == 0 {
