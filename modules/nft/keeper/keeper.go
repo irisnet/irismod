@@ -17,13 +17,16 @@ import (
 type Keeper struct {
 	storeKey storetypes.StoreKey // Unexposed key to access store from sdk.Context
 	cdc      codec.Codec
+
+	ddcKeeper types.DDCKeeper
 }
 
 // NewKeeper creates a new instance of the NFT Keeper
-func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey) Keeper {
+func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, ddcKeeper types.DDCKeeper) Keeper {
 	return Keeper{
-		storeKey: storeKey,
-		cdc:      cdc,
+		storeKey:  storeKey,
+		cdc:       cdc,
+		ddcKeeper: ddcKeeper,
 	}
 }
 

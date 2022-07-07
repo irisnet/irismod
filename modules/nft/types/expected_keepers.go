@@ -17,3 +17,8 @@ type BankKeeper interface {
 	LockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }
+
+// DDCKeeper defines the expected interface needed to retrieve ddc balances.
+type DDCKeeper interface {
+	Hooks() Hook
+}

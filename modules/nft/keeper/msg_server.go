@@ -65,6 +65,11 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeTokenMint(ctx, types.Protocol, msg.DenomId, sender, recipient); err != nil {
+		return nil, err
+	}
 
 	denom, found := m.Keeper.GetDenom(ctx, msg.DenomId)
 	if !found {
@@ -110,6 +115,11 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+	if err := hooks.BeforeTokenEdit(ctx, types.Protocol, msg.DenomId, msg.Id, sender); err != nil {
+		return nil, err
+	}
+
 	if err := m.Keeper.EditNFT(ctx, msg.DenomId, msg.Id,
 		msg.Name,
 		msg.URI,
@@ -150,6 +160,12 @@ func (m msgServer) TransferNFT(goCtx context.Context, msg *types.MsgTransferNFT)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeTokenTransfer(ctx, types.Protocol, msg.DenomId, msg.Id, sender, recipient); err != nil {
+		return nil, err
+	}
+
 	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id,
 		msg.Name,
 		msg.URI,
@@ -186,6 +202,12 @@ func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeTokenBurn(ctx, types.Protocol, msg.DenomId, msg.Id, sender); err != nil {
+		return nil, err
+	}
+
 	if err := m.Keeper.BurnNFT(ctx, msg.DenomId, msg.Id, sender); err != nil {
 		return nil, err
 	}
@@ -219,6 +241,12 @@ func (m msgServer) TransferDenom(goCtx context.Context, msg *types.MsgTransferDe
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeDenomTransfer(ctx, types.Protocol, msg.Id, sender); err != nil {
+		return nil, err
+	}
+
 	if err := m.Keeper.TransferDenomOwner(ctx, msg.Id, sender, recipient); err != nil {
 		return nil, err
 	}
