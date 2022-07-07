@@ -69,6 +69,11 @@ func (m msgServer) MintMT(goCtx context.Context, msg *types.MsgMintMT) (*types.M
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeTokenMint(ctx, types.Protocol, msg.DenomId, sender, recipient); err != nil {
+		return nil, err
+	}
 
 	// only denom owner can issue/mint MTs
 	if err := m.Keeper.Authorize(ctx, msg.DenomId, sender); err != nil {
@@ -126,6 +131,10 @@ func (m msgServer) EditMT(goCtx context.Context, msg *types.MsgEditMT) (*types.M
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+	if err := hooks.BeforeTokenEdit(ctx, types.Protocol, msg.DenomId, msg.Id, sender); err != nil {
+		return nil, err
+	}
 
 	// only denom owner can edit MTs
 	if err := m.Keeper.Authorize(ctx, msg.DenomId, sender); err != nil {
@@ -165,6 +174,12 @@ func (m msgServer) TransferMT(goCtx context.Context, msg *types.MsgTransferMT) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeTokenTransfer(ctx, types.Protocol, msg.DenomId, msg.Id, sender, recipient); err != nil {
+		return nil, err
+	}
+
 	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id, msg.Amount, sender, recipient); err != nil {
 		return nil, err
 	}
@@ -195,6 +210,12 @@ func (m msgServer) BurnMT(goCtx context.Context, msg *types.MsgBurnMT) (*types.M
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeTokenBurn(ctx, types.Protocol, msg.DenomId, msg.Id, sender); err != nil {
+		return nil, err
+	}
+
 	if err := m.Keeper.BurnMT(ctx, msg.DenomId, msg.Id, msg.Amount, sender); err != nil {
 		return nil, err
 	}
@@ -229,6 +250,12 @@ func (m msgServer) TransferDenom(goCtx context.Context, msg *types.MsgTransferDe
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	hooks := m.ddcKeeper.Hooks()
+
+	if err := hooks.BeforeDenomTransfer(ctx, types.Protocol, msg.Id, sender); err != nil {
+		return nil, err
+	}
+
 	if err := m.Keeper.TransferDenomOwner(ctx, msg.Id, sender, recipient); err != nil {
 		return nil, err
 	}
