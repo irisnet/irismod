@@ -43,7 +43,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-* [\#290](https://github.com/irisnet/irismod/pull/290) Bump cosmos-sdk version to [v0.40.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1).
+* [\#290](https://github.com/irisnet/irismod/pull/290) Bump cosmos-sdk version to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1).
 
 ### Bug Fixes
 
