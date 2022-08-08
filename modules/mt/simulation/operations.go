@@ -143,6 +143,7 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -199,6 +200,7 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -255,6 +257,7 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -307,6 +310,7 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -367,6 +371,7 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -420,6 +425,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,

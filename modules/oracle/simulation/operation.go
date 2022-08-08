@@ -184,6 +184,7 @@ func SimulateStartFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -240,6 +241,7 @@ func SimulatePauseFeed(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,

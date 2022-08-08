@@ -238,6 +238,7 @@ func SimulateMsgDefineService(ak types.AccountKeeper, bk types.BankKeeper, k kee
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -323,6 +324,7 @@ func SimulateMsgBindService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -394,6 +396,7 @@ func SimulateMsgUpdateServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -448,6 +451,7 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeper, bk types.BankKeeper, 
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -503,6 +507,7 @@ func SimulateMsgDisableServiceBinding(ak types.AccountKeeper, bk types.BankKeepe
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -573,6 +578,7 @@ func SimulateMsgEnableServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -638,6 +644,7 @@ func SimulateMsgRefundServiceDeposit(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -762,6 +769,7 @@ func SimulateMsgRespondService(ak types.AccountKeeper, bk types.BankKeeper, k ke
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -823,6 +831,7 @@ func SimulateMsgPauseRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -888,6 +897,7 @@ func SimulateMsgStartRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -952,6 +962,7 @@ func SimulateMsgKillRequestContext(ak types.AccountKeeper, bk types.BankKeeper, 
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1033,6 +1044,7 @@ func SimulateMsgUpdateRequestContext(ak types.AccountKeeper, bk types.BankKeeper
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1086,6 +1098,7 @@ func SimulateMsgWithdrawEarnedFees(ak types.AccountKeeper, bk types.BankKeeper, 
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,

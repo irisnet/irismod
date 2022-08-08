@@ -126,6 +126,7 @@ func SimulateIssueToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -176,6 +177,7 @@ func SimulateEditToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -225,6 +227,7 @@ func SimulateMintToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -280,6 +283,7 @@ func SimulateTransferTokenOwner(k keeper.Keeper, ak types.AccountKeeper, bk type
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -342,6 +346,7 @@ func SimulateBurnToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
