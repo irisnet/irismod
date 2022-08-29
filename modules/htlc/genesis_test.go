@@ -27,7 +27,7 @@ type GenesisTestSuite struct {
 }
 
 func (suite *GenesisTestSuite) SetupTest() {
-	app := simapp.Setup(false)
+	app := simapp.Setup(suite.T(), false)
 	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: time.Now()})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
@@ -353,14 +353,14 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				if tc.expectPass {
 					suite.NotPanics(
 						func() {
-							simapp.SetupWithGenesisHTLC(tc.genState())
+							simapp.SetupWithGenesisHTLC(suite.T(), tc.genState())
 						},
 						tc.name,
 					)
 				} else {
 					suite.Panics(
 						func() {
-							simapp.SetupWithGenesisHTLC(tc.genState())
+							simapp.SetupWithGenesisHTLC(suite.T(), tc.genState())
 						},
 						tc.name,
 					)

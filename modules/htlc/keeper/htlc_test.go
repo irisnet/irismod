@@ -45,7 +45,7 @@ func TestHTLCTestSuite(t *testing.T) {
 }
 
 func (suite *HTLCTestSuite) SetupTest() {
-	app := simapp.SetupWithGenesisHTLC(NewHTLTGenesis(TestDeputy))
+	app := simapp.SetupWithGenesisHTLC(suite.T(), NewHTLTGenesis(TestDeputy))
 	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: time.Now()})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())

@@ -160,6 +160,7 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -252,6 +253,7 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -325,6 +327,7 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -395,6 +398,7 @@ func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -452,6 +456,7 @@ func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -521,6 +526,7 @@ func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,

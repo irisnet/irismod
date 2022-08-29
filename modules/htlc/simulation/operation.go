@@ -105,6 +105,7 @@ func SimulateMsgCreateHtlc(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -162,6 +163,7 @@ func SimulateMsgClaimHtlc(k keeper.Keeper, ak types.AccountKeeper, bk types.Bank
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
