@@ -133,7 +133,14 @@ func SetupWithGenesisStateFn(t *testing.T, merge func(cdc codec.Codec, state Gen
 			AppStateBytes:   stateBytes,
 		},
 	)
-
+	// commit genesis changes
+	app.Commit()
+	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
+		Height:             app.LastBlockHeight() + 1,
+		AppHash:            app.LastCommitID().Hash,
+		ValidatorsHash:     valSet.Hash(),
+		NextValidatorsHash: valSet.Hash(),
+	}})
 	return app
 }
 
