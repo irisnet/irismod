@@ -27,13 +27,15 @@ type ParamsTestSuite struct {
 }
 
 func (suite *ParamsTestSuite) SetupTest() {
-	app := simapp.SetupWithGenesisHTLC(suite.T(), NewHTLTGenesis(TestDeputy))
+	app := simapp.SetupWithGenesisStateFn(suite.T(), func(cdc codec.Codec, state simapp.GenesisState) simapp.GenesisState {
+		state[types.ModuleName] = cdc.MustMarshalJSON(NewHTLTGenesis(TestDeputy))
+		return state
+	})
 	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: time.Now()})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
 	suite.keeper = &app.HTLCKeeper
 	suite.app = app
-
 }
 
 func TestParamsTestSuite(t *testing.T) {
