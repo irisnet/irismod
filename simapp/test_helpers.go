@@ -19,6 +19,7 @@ import (
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -39,8 +40,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	htlctypes "github.com/irisnet/irismod/modules/htlc/types"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
@@ -97,7 +96,7 @@ func Setup(t *testing.T, isCheckTx bool) *SimApp {
 	return app
 }
 
-func SetupWithGenesisHTLC(t *testing.T, htlcGenesis *htlctypes.GenesisState) *SimApp {
+func SetupWithGenesisStateFn(t *testing.T, merge func(cdc codec.Codec, state GenesisState) GenesisState) *SimApp {
 	app, genesisState := setup(true, 5)
 
 	privVal := mock.NewPV()
@@ -115,10 +114,11 @@ func SetupWithGenesisHTLC(t *testing.T, htlcGenesis *htlctypes.GenesisState) *Si
 		Address: acc.GetAddress().String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
-
 	genesisState = genesisStateWithValSet(t, app, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
-	genesisState[htlctypes.ModuleName] = app.AppCodec().MustMarshalJSON(htlcGenesis)
 
+	if merge != nil {
+		genesisState = merge(app.appCodec, genesisState)
+	}
 	// init chain must be called to stop deliverState from being nil
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
 	if err != nil {

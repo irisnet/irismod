@@ -353,14 +353,20 @@ func (suite *GenesisTestSuite) TestGenesisState() {
 				if tc.expectPass {
 					suite.NotPanics(
 						func() {
-							simapp.SetupWithGenesisHTLC(suite.T(), tc.genState())
+							simapp.SetupWithGenesisStateFn(suite.T(), func(cdc codec.Codec, state simapp.GenesisState) simapp.GenesisState {
+								state[types.ModuleName] = cdc.MustMarshalJSON(tc.genState())
+								return state
+							})
 						},
 						tc.name,
 					)
 				} else {
 					suite.Panics(
 						func() {
-							simapp.SetupWithGenesisHTLC(suite.T(), tc.genState())
+							simapp.SetupWithGenesisStateFn(suite.T(), func(cdc codec.Codec, state simapp.GenesisState) simapp.GenesisState {
+								state[types.ModuleName] = cdc.MustMarshalJSON(tc.genState())
+								return state
+							})
 						},
 						tc.name,
 					)
