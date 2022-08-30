@@ -106,7 +106,8 @@ func (m *MsgIssueDenomResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgIssueDenomResponse proto.InternalMessageInfo
 
-// MsgTransferDenom defines an SDK message for transferring an denom to recipient.
+// MsgTransferDenom defines an SDK message for transferring an denom to
+// recipient.
 type MsgTransferDenom struct {
 	Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Sender    string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
@@ -769,7 +770,8 @@ type MsgClient interface {
 	IssueDenom(ctx context.Context, in *MsgIssueDenom, opts ...grpc.CallOption) (*MsgIssueDenomResponse, error)
 	// TransferDenom defines a method for transferring a denom.
 	TransferDenom(ctx context.Context, in *MsgTransferDenom, opts ...grpc.CallOption) (*MsgTransferDenomResponse, error)
-	// MintMT defines a method for creating a new MT or minting amounts of an existing MT
+	// MintMT defines a method for creating a new MT or minting amounts of an
+	// existing MT
 	MintMT(ctx context.Context, in *MsgMintMT, opts ...grpc.CallOption) (*MsgMintMTResponse, error)
 	// EditMT defines a method for editing an MT.
 	EditMT(ctx context.Context, in *MsgEditMT, opts ...grpc.CallOption) (*MsgEditMTResponse, error)
@@ -847,7 +849,8 @@ type MsgServer interface {
 	IssueDenom(context.Context, *MsgIssueDenom) (*MsgIssueDenomResponse, error)
 	// TransferDenom defines a method for transferring a denom.
 	TransferDenom(context.Context, *MsgTransferDenom) (*MsgTransferDenomResponse, error)
-	// MintMT defines a method for creating a new MT or minting amounts of an existing MT
+	// MintMT defines a method for creating a new MT or minting amounts of an
+	// existing MT
 	MintMT(context.Context, *MsgMintMT) (*MsgMintMTResponse, error)
 	// EditMT defines a method for editing an MT.
 	EditMT(context.Context, *MsgEditMT) (*MsgEditMTResponse, error)

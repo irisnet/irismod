@@ -243,7 +243,8 @@ func (m *QueryOwnerResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryCollectionRequest is the request type for the Query/Collection RPC method
+// QueryCollectionRequest is the request type for the Query/Collection RPC
+// method
 type QueryCollectionRequest struct {
 	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	// pagination defines an optional pagination for the request.
@@ -297,7 +298,8 @@ func (m *QueryCollectionRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryCollectionResponse is the response type for the Query/Collection RPC method
+// QueryCollectionResponse is the response type for the Query/Collection RPC
+// method
 type QueryCollectionResponse struct {
 	Collection *Collection         `protobuf:"bytes,1,opt,name=collection,proto3" json:"collection,omitempty"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
