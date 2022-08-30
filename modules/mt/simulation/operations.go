@@ -142,7 +142,8 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -156,7 +157,7 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransfer, err.Error()), nil, err
 		}
 
@@ -198,7 +199,8 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -212,7 +214,7 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeEditMT, err.Error()), nil, err
 		}
 
@@ -254,7 +256,8 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -268,7 +271,7 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeMintMT, err.Error()), nil, err
 		}
 
@@ -306,7 +309,8 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -320,7 +324,7 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeEditMT, err.Error()), nil, err
 		}
 
@@ -366,7 +370,8 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -380,7 +385,7 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransfer, err.Error()), nil, err
 		}
 
@@ -419,7 +424,8 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -433,7 +439,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransfer, err.Error()), nil, err
 		}
 

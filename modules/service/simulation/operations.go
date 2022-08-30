@@ -237,7 +237,8 @@ func SimulateMsgDefineService(ak types.AccountKeeper, bk types.BankKeeper, k kee
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -251,7 +252,7 @@ func SimulateMsgDefineService(ak types.AccountKeeper, bk types.BankKeeper, k kee
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -311,7 +312,7 @@ func SimulateMsgBindService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 		options := "{}"
 		msg := types.NewMsgBindService(def.Name, provider.Address.String(), deposit, pricing, qos, options, def.Author)
 
-		spendable, hasNeg := spendable.SafeSub(deposit)
+		spendable, hasNeg := spendable.SafeSub(deposit...)
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBindService, "Insufficient funds"), nil, nil
 		}
@@ -322,7 +323,8 @@ func SimulateMsgBindService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -336,7 +338,7 @@ func SimulateMsgBindService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -380,7 +382,7 @@ func SimulateMsgUpdateServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBindService, "invalid minimum deposit"), nil, nil
 		}
 
-		spendable, hasNeg := spendable.SafeSub(deposit)
+		spendable, hasNeg := spendable.SafeSub(deposit...)
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateServiceBinding, "Insufficient funds"), nil, nil
 		}
@@ -393,7 +395,8 @@ func SimulateMsgUpdateServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -407,7 +410,7 @@ func SimulateMsgUpdateServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -447,7 +450,8 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeper, bk types.BankKeeper, 
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -461,7 +465,7 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeper, bk types.BankKeeper, 
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -502,7 +506,8 @@ func SimulateMsgDisableServiceBinding(ak types.AccountKeeper, bk types.BankKeepe
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -516,7 +521,7 @@ func SimulateMsgDisableServiceBinding(ak types.AccountKeeper, bk types.BankKeepe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -559,7 +564,7 @@ func SimulateMsgEnableServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBindService, "invalid minimum deposit"), nil, nil
 		}
 
-		spendable, hasNeg := spendable.SafeSub(deposit)
+		spendable, hasNeg := spendable.SafeSub(deposit...)
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateServiceBinding, "Insufficient funds"), nil, nil
 		}
@@ -572,7 +577,8 @@ func SimulateMsgEnableServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -586,7 +592,7 @@ func SimulateMsgEnableServiceBinding(ak types.AccountKeeper, bk types.BankKeeper
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -637,7 +643,8 @@ func SimulateMsgRefundServiceDeposit(ak types.AccountKeeper, bk types.BankKeeper
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -651,7 +658,7 @@ func SimulateMsgRefundServiceDeposit(ak types.AccountKeeper, bk types.BankKeeper
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -693,7 +700,7 @@ func SimulateMsgCallService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 			serviceFeeCap, timeout, repeated, repeatedFrequency, repeatedTotal)
 
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
-		spendable, hasNeg := spendable.SafeSub(serviceFeeCap)
+		spendable, hasNeg := spendable.SafeSub(serviceFeeCap...)
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCallService, "Insufficient funds"), nil, nil
 		}
@@ -719,7 +726,7 @@ func SimulateMsgCallService(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txConfig.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txConfig.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -761,7 +768,8 @@ func SimulateMsgRespondService(ak types.AccountKeeper, bk types.BankKeeper, k ke
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -775,7 +783,7 @@ func SimulateMsgRespondService(ak types.AccountKeeper, bk types.BankKeeper, k ke
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
@@ -822,7 +830,8 @@ func SimulateMsgPauseRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -836,7 +845,7 @@ func SimulateMsgPauseRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -887,7 +896,8 @@ func SimulateMsgStartRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -901,7 +911,7 @@ func SimulateMsgStartRequestContext(ak types.AccountKeeper, bk types.BankKeeper,
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -951,7 +961,8 @@ func SimulateMsgKillRequestContext(ak types.AccountKeeper, bk types.BankKeeper, 
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -965,7 +976,7 @@ func SimulateMsgKillRequestContext(ak types.AccountKeeper, bk types.BankKeeper, 
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -1020,7 +1031,7 @@ func SimulateMsgUpdateRequestContext(ak types.AccountKeeper, bk types.BankKeeper
 
 		account := ak.GetAccount(ctx, acc.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
-		spendable, hasNeg := spendable.SafeSub(serviceFeeCap)
+		spendable, hasNeg := spendable.SafeSub(serviceFeeCap...)
 
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCallService, "Insufficient funds"), nil, nil
@@ -1032,7 +1043,8 @@ func SimulateMsgUpdateRequestContext(ak types.AccountKeeper, bk types.BankKeeper
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1046,7 +1058,7 @@ func SimulateMsgUpdateRequestContext(ak types.AccountKeeper, bk types.BankKeeper
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -1085,7 +1097,8 @@ func SimulateMsgWithdrawEarnedFees(ak types.AccountKeeper, bk types.BankKeeper, 
 		}
 
 		txGen := cosmossimappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1099,7 +1112,7 @@ func SimulateMsgWithdrawEarnedFees(ak types.AccountKeeper, bk types.BankKeeper, 
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
