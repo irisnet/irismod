@@ -5,8 +5,8 @@ import (
 	"math/big"
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
 	gogotypes "github.com/gogo/protobuf/types"
-
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -70,7 +70,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // Swap execute swap order in specified pool
 func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
-	var amount sdk.Int
+	var amount sdkmath.Int
 	var err error
 
 	standardDenom := k.GetStandardDenom(ctx)
@@ -119,7 +119,7 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, imsg interface{}) (sdk.Coin, error
 		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom,
 			"MaxToken: %s should not be StandardDenom", msg.MaxToken.String())
 	}
-	var mintLiquidityAmt sdk.Int
+	var mintLiquidityAmt sdkmath.Int
 	var depositToken sdk.Coin
 	var standardCoin = sdk.NewCoin(standardDenom, msg.ExactStandardAmt)
 
@@ -187,7 +187,7 @@ func (k Keeper) addLiquidity(ctx sdk.Context,
 	reservePoolAddress sdk.AccAddress,
 	standardCoin, token sdk.Coin,
 	lptDenom string,
-	mintLiquidityAmt sdk.Int,
+	mintLiquidityAmt sdkmath.Int,
 ) (sdk.Coin, error) {
 	depositedTokens := sdk.NewCoins(standardCoin, token)
 	// transfer deposited token into coinswaps Account
@@ -241,15 +241,15 @@ func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 	exactTokenAmt := msg.ExactToken.Amount
 
 	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
-	numerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-	denominator := sdk.NewIntWithDecimal(1, sdk.Precision)
+	numerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
+	denominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
 
 	square := denominator.Mul(tokenBalanceAmt).Add(numerator.Mul(exactTokenAmt)).Mul(lptBalanceAmt).Mul(lptBalanceAmt).Quo(denominator.Mul(tokenBalanceAmt))
 
 	// lpt = square^0.5 - lpt_balance
 	var squareBigInt = &big.Int{}
 	squareBigInt.Sqrt(square.BigInt())
-	mintLptAmt := sdk.NewIntFromBigInt(squareBigInt).Sub(lptBalanceAmt)
+	mintLptAmt := sdkmath.NewIntFromBigInt(squareBigInt).Sub(lptBalanceAmt)
 
 	if mintLptAmt.LT(msg.MinLiquidity) {
 		return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("liquidity amount not met, user expected: no less than %s, actual: %s", msg.MinLiquidity.String(), mintLptAmt.String()))
@@ -445,8 +445,8 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 	// target_amt' = target_amt * ( 1 - fee_unilateral)
 	// fee_unilateral = numerator / denominator
 	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
-	feeNumerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-	feeDenominator := sdk.NewIntWithDecimal(1, sdk.Precision)
+	feeNumerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
+	feeDenominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
 
 	targetTokenNumerator := lptBalanceAmt.Add(lptBalanceAmt).Sub(msg.ExactLiquidity).
 		Mul(msg.ExactLiquidity).Mul(targetBalanceAmt).Mul(feeNumerator)

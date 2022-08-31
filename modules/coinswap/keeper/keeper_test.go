@@ -109,10 +109,10 @@ func setupWithGenesisAccounts(t *testing.T) *simapp.SimApp {
 }
 
 func (suite *TestSuite) TestLiquidity() {
-	btcAmt, _ := sdk.NewIntFromString("100")
-	standardAmt, _ := sdk.NewIntFromString("10000000000000000000")
+	btcAmt, _ := sdkmath.NewIntFromString("100")
+	standardAmt, _ := sdkmath.NewIntFromString("10000000000000000000")
 	depositCoin := sdk.NewCoin(denomBTC, btcAmt)
-	minReward := sdk.NewInt(1)
+	minReward := sdkmath.NewInt(1)
 	deadline := time.Now().Add(1 * time.Minute)
 
 	msg := types.NewMsgAddLiquidity(depositCoin, standardAmt, minReward, deadline.Unix(), addrSender1.String())
@@ -148,10 +148,10 @@ func (suite *TestSuite) TestLiquidity() {
 	// test add liquidity (pool exists)
 	expLptDenom, _ := suite.app.CoinswapKeeper.GetLptDenomFromDenoms(suite.ctx, denomBTC, denomStandard)
 	suite.Require().Equal(expLptDenom, lptDenom)
-	btcAmt, _ = sdk.NewIntFromString("201")
-	standardAmt, _ = sdk.NewIntFromString("20000000000000000000")
+	btcAmt, _ = sdkmath.NewIntFromString("201")
+	standardAmt, _ = sdkmath.NewIntFromString("20000000000000000000")
 	depositCoin = sdk.NewCoin(denomBTC, btcAmt)
-	minReward = sdk.NewInt(1)
+	minReward = sdkmath.NewInt(1)
 	deadline = time.Now().Add(1 * time.Minute)
 
 	msg = types.NewMsgAddLiquidity(depositCoin, standardAmt, minReward, deadline.Unix(), addrSender2.String())
@@ -176,11 +176,11 @@ func (suite *TestSuite) TestLiquidity() {
 	suite.Equal(expCoins.Sort().String(), sender2Balances.Sort().String())
 
 	// Test remove liquidity (remove part)
-	withdraw, _ := sdk.NewIntFromString("10000000000000000000")
+	withdraw, _ := sdkmath.NewIntFromString("10000000000000000000")
 	msgRemove := types.NewMsgRemoveLiquidity(
-		sdk.NewInt(1),
+		sdkmath.NewInt(1),
 		sdk.NewCoin(lptDenom, withdraw),
-		sdk.NewInt(1),
+		sdkmath.NewInt(1),
 		suite.ctx.BlockHeader().Time.Unix(),
 		addrSender1.String(),
 	)
@@ -207,9 +207,9 @@ func (suite *TestSuite) TestLiquidity() {
 	// Test remove liquidity (remove all)
 	withdraw, _ = sdk.NewIntFromString("20000000000000000000")
 	msgRemove = types.NewMsgRemoveLiquidity(
-		sdk.NewInt(1),
+		sdkmath.NewInt(1),
 		sdk.NewCoin(lptDenom, withdraw),
-		sdk.NewInt(1),
+		sdkmath.NewInt(1),
 		suite.ctx.BlockHeader().Time.Unix(),
 		addrSender2.String(),
 	)
@@ -223,7 +223,7 @@ func (suite *TestSuite) TestLiquidity() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 3000000000),
-		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000))),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(3, 19).Sub(sdkmath.NewIntFromUint64(5000))),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 	suite.Equal("", reservePoolBalances.String())
@@ -232,12 +232,12 @@ func (suite *TestSuite) TestLiquidity() {
 // TestLiquidity2 tests functionality of add liquidity unilaterally.
 func (suite *TestSuite) TestLiquidity2() {
 	// 1. initial liquidity (create pool)
-	btcAmt, _ := sdk.NewIntFromString("100")                  // 10^2
-	stdAmt, _ := sdk.NewIntFromString("10000000000000000000") // 10^19
+	btcAmt, _ := sdkmath.NewIntFromString("100")                  // 10^2
+	stdAmt, _ := sdkmath.NewIntFromString("10000000000000000000") // 10^19
 	initMsg := types.NewMsgAddLiquidity(
 		sdk.NewCoin(denomBTC, btcAmt),
 		stdAmt,
-		sdk.NewInt(1),
+		sdkmath.NewInt(1),
 		time.Now().Add(1*time.Minute).Unix(),
 		addrSender1.String(),
 	)
@@ -259,15 +259,15 @@ func (suite *TestSuite) TestLiquidity2() {
 	// 1.2 poolBalances
 	expCoins := sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 100),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	// 1.3 accountBalances
 	expCoins = sdk.NewCoins(
-		sdk.NewInt64Coin(denomBTC, 2999999900),                                                   // 3*10^9 - 100
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000))), // 2*10^19 - 5000
-		sdk.NewCoin(pool.LptDenom, sdk.NewIntWithDecimal(1, 19)),                                 // 10^19
+		sdk.NewInt64Coin(denomBTC, 2999999900),                                                       // 3*10^9 - 100
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000))), // 2*10^19 - 5000
+		sdk.NewCoin(pool.LptDenom, sdkmath.NewIntWithDecimal(1, 19)),                                 // 10^19
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
@@ -277,7 +277,7 @@ func (suite *TestSuite) TestLiquidity2() {
 	addMsg := types.NewMsgAddUnilateralLiquidity(
 		denomBTC,
 		sdk.NewCoin(denomBTC, btcAmt),
-		sdk.NewInt(1),
+		sdkmath.NewInt(1),
 		time.Now().Add(1*time.Minute).Unix(),
 		addrSender2.String(),
 	)
@@ -293,15 +293,15 @@ func (suite *TestSuite) TestLiquidity2() {
 	// 2.2 poolBalances
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 200),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	// 2.3 accountBalances
-	lptAmt, _ := sdk.NewIntFromString("4135062787267695755")
+	lptAmt, _ := sdkmath.NewIntFromString("4135062787267695755")
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 2999999900),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(3, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(3, 19)),
 		sdk.NewCoin(pool.LptDenom, lptAmt),
 	)
 	suite.Equal(expCoins.Sort().String(), sender2Balances.Sort().String())
@@ -315,7 +315,7 @@ func (suite *TestSuite) TestLiquidity3() {
 	initMsg := types.NewMsgAddLiquidity(
 		sdk.NewCoin(denomBTC, btcAmt),
 		stdAmt,
-		sdk.NewInt(1),
+		sdkmath.NewInt(1),
 		time.Now().Add(1*time.Minute).Unix(),
 		addrSender1.String(),
 	)
@@ -337,15 +337,15 @@ func (suite *TestSuite) TestLiquidity3() {
 	// 1.2 poolBalances
 	expCoins := sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 100),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	// 1.3 accountBalances
 	expCoins = sdk.NewCoins(
-		sdk.NewInt64Coin(denomBTC, 2999999900),                                                   // 3*10^9 - 100
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000))), // 2*10^19 - 5000
-		sdk.NewCoin(pool.LptDenom, sdk.NewIntWithDecimal(1, 19)),                                 // 10^19
+		sdk.NewInt64Coin(denomBTC, 2999999900),                                                       // 3*10^9 - 100
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000))), // 2*10^19 - 5000
+		sdk.NewCoin(pool.LptDenom, sdkmath.NewIntWithDecimal(1, 19)),                                 // 10^19
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
@@ -354,8 +354,8 @@ func (suite *TestSuite) TestLiquidity3() {
 	btcAmt, _ = sdk.NewIntFromString("1")
 	removeMsg := types.NewMsgRemoveUnilateralLiquidity(
 		denomBTC,
-		sdk.NewCoin(denomBTC, btcAmt),   // at least 1
-		sdk.NewInt(5000000000000000000), // 5 * 10^18
+		sdk.NewCoin(denomBTC, btcAmt),       // at least 1
+		sdkmath.NewInt(5000000000000000000), // 5 * 10^18
 		time.Now().Add(1*time.Minute).Unix(),
 		addrSender1.String(),
 	)
@@ -371,13 +371,13 @@ func (suite *TestSuite) TestLiquidity3() {
 	// 2.2 poolBalances
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 26),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	// 2.3 accountBalances
-	lptAmt, _ := sdk.NewIntFromString("5000000000000000000")
-	irisAmt, _ := sdk.NewIntFromString("19999999999999995000")
+	lptAmt, _ := sdkmath.NewIntFromString("5000000000000000000")
+	irisAmt, _ := sdkmath.NewIntFromString("19999999999999995000")
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 2999999974),
 		sdk.NewCoin(denomStandard, irisAmt),

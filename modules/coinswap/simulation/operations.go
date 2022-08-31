@@ -1,12 +1,8 @@
 package simulation
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
-	"math/big"
-	"math/rand"
-	"strings"
-	"time"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
@@ -15,6 +11,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"math/big"
+	"math/rand"
+	"strings"
+	"time"
 
 	"github.com/irisnet/irismod/modules/coinswap/keeper"
 	"github.com/irisnet/irismod/modules/coinswap/types"
@@ -521,8 +521,8 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 		exactTokenAmt := exactToken.Amount
 
 		deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
-		numerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-		denominator := sdk.NewIntWithDecimal(1, sdk.Precision)
+		numerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
+		denominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
 
 		square := denominator.Mul(tokenBalanceAmt).Add(numerator.Mul(exactTokenAmt)).Mul(lptBalanceAmt).Mul(lptBalanceAmt).Quo(denominator.Mul(tokenBalanceAmt))
 		if !square.IsPositive() {
@@ -531,7 +531,7 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 		// lpt = square^0.5 - lpt_balance
 		var squareBigInt = &big.Int{}
 		squareBigInt.Sqrt(square.BigInt())
-		mintLptAmt := sdk.NewIntFromBigInt(squareBigInt).Sub(lptBalanceAmt)
+		mintLptAmt := sdkmath.NewIntFromBigInt(squareBigInt).Sub(lptBalanceAmt)
 
 		deadline := randDeadline(r)
 
@@ -545,7 +545,7 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 
 		// fee
 		var fees sdk.Coins
-		coinsTemp, isNeg := spendable.SafeSub(sdk.NewCoins(exactToken))
+		coinsTemp, isNeg := spendable.SafeSub(sdk.NewCoins(exactToken)...)
 		if !isNeg {
 			fees, err = simtypes.RandomFees(r, ctx, coinsTemp)
 			if err != nil {
@@ -554,7 +554,8 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -569,7 +570,7 @@ func SimulateMsgAddUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeeper, 
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -639,8 +640,8 @@ func SimulateMsgRemoveUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeepe
 		targetSwapAmt := targetBalanceAmt.Sub(targetWithdrawnAmt).Mul(counterpartWithdrawnAmt).Quo(counterpartBalanceAmt)
 
 		deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
-		numerator := sdk.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-		denominator := sdk.NewIntWithDecimal(1, sdk.Precision)
+		numerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
+		denominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
 		targetTokenAmt := targetWithdrawnAmt.Add(targetSwapAmt).Mul(numerator).Quo(denominator)
 
 		if targetBalanceAmt.LT(targetTokenAmt) {
@@ -659,7 +660,7 @@ func SimulateMsgRemoveUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeepe
 
 		var fees sdk.Coins
 		// ???
-		coinsTemp, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin(lptDenom, exactLptAmt)))
+		coinsTemp, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin(lptDenom, exactLptAmt))...)
 		if !hasNeg {
 			fees, err = simtypes.RandomFees(r, ctx, coinsTemp)
 			if err != nil {
@@ -669,7 +670,8 @@ func SimulateMsgRemoveUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeepe
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -684,7 +686,7 @@ func SimulateMsgRemoveUnilateralLiquidity(k keeper.Keeper, ak types.AccountKeepe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err := app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err := app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
