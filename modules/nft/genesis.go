@@ -14,7 +14,27 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	}
 
 	for _, c := range data.Collections {
-		if err := k.SetCollection(ctx, c); err != nil {
+		creator, err := sdk.AccAddressFromBech32(c.Denom.Creator)
+		if err != nil {
+			panic(err)
+		}
+		if err := k.SaveDenom(ctx,
+			c.Denom.Id,
+			c.Denom.Name,
+			c.Denom.Schema,
+			c.Denom.Symbol,
+			creator,
+			c.Denom.MintRestricted,
+			c.Denom.UpdateRestricted,
+			c.Denom.Description,
+			c.Denom.Uri,
+			c.Denom.UriHash,
+			c.Denom.Data,
+		); err != nil {
+			panic(err)
+		}
+
+		if err := k.SaveCollection(ctx, c); err != nil {
 			panic(err)
 		}
 	}

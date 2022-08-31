@@ -10,8 +10,8 @@ import (
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
-// MintNFT mints an NFT and manages the NFT's existence within Collections and Owners
-func (k Keeper) MintNFT(ctx sdk.Context, denomID,
+// SaveNFT mints an NFT and manages the NFT's existence within Collections and Owners
+func (k Keeper) SaveNFT(ctx sdk.Context, denomID,
 	tokenID,
 	tokenNm,
 	tokenURI,
@@ -36,8 +36,8 @@ func (k Keeper) MintNFT(ctx sdk.Context, denomID,
 	}, receiver)
 }
 
-// EditNFT updates an already existing NFT
-func (k Keeper) EditNFT(ctx sdk.Context, denomID,
+// UpdateNFT updates an already existing NFT
+func (k Keeper) UpdateNFT(ctx sdk.Context, denomID,
 	tokenID,
 	tokenNm,
 	tokenURI,
@@ -116,19 +116,19 @@ func (k Keeper) TransferOwnership(ctx sdk.Context, denomID,
 	}
 
 	tokenChanged := types.Modified(tokenURI) || types.Modified(tokenURIHash)
-	tokenMetadataChnaged := types.Modified(tokenNm) || types.Modified(tokenData)
+	tokenMetadataChanged := types.Modified(tokenNm) || types.Modified(tokenData)
 
-	if denom.UpdateRestricted && (tokenChanged || tokenMetadataChnaged) {
+	if denom.UpdateRestricted && (tokenChanged || tokenMetadataChanged) {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "It is restricted to update NFT under this denom %s", denom.Id)
 	}
 
-	if !(tokenChanged || tokenMetadataChnaged) {
+	if !tokenChanged && !tokenMetadataChanged {
 		return k.nk.Transfer(ctx, denomID, tokenID, dstOwner)
 	}
 
 	token.Uri = types.Modify(token.Uri, tokenURI)
 	token.UriHash = types.Modify(token.UriHash, tokenURIHash)
-	if tokenMetadataChnaged {
+	if tokenMetadataChanged {
 		var nftMetadata types.NFTMetadata
 		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 			return err
@@ -149,8 +149,8 @@ func (k Keeper) TransferOwnership(ctx sdk.Context, denomID,
 	return k.nk.Transfer(ctx, denomID, tokenID, dstOwner)
 }
 
-// BurnNFT deletes a specified NFT
-func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error {
+// RemoveNFT deletes a specified NFT
+func (k Keeper) RemoveNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error {
 	if err := k.Authorize(ctx, denomID, tokenID, owner); err != nil {
 		return err
 	}
@@ -171,11 +171,12 @@ func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.N
 
 	owner := k.nk.GetOwner(ctx, denomID, tokenID)
 	return types.BaseNFT{
-		Id:    token.GetId(),
-		Name:  nftMetadata.Name,
-		URI:   token.GetUri(),
-		Data:  nftMetadata.Data,
-		Owner: owner.String(),
+		Id:      token.Id,
+		Name:    nftMetadata.Name,
+		URI:     token.Uri,
+		Data:    nftMetadata.Data,
+		Owner:   owner.String(),
+		UriHash: token.UriHash,
 	}, nil
 }
 

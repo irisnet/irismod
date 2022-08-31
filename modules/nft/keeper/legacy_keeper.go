@@ -25,7 +25,7 @@ func (n LegacyKeeper) IssueDenom(
 	mintRestricted,
 	updateRestricted bool,
 ) error {
-	return n.nk.IssueDenom(
+	return n.nk.SaveDenom(
 		ctx,
 		id,
 		name,
@@ -50,7 +50,7 @@ func (n LegacyKeeper) MintNFT(
 	tokenData string,
 	owner sdk.AccAddress,
 ) error {
-	return n.nk.MintNFT(
+	return n.nk.SaveNFT(
 		ctx,
 		denomID,
 		tokenID,
@@ -86,7 +86,7 @@ func (n LegacyKeeper) TransferOwner(
 }
 
 func (n LegacyKeeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error {
-	return n.nk.BurnNFT(ctx, denomID, tokenID, owner)
+	return n.nk.RemoveNFT(ctx, denomID, tokenID, owner)
 }
 
 func (n LegacyKeeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.NFT, err error) {

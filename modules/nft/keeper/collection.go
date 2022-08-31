@@ -6,10 +6,10 @@ import (
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
-// SetCollection saves all NFTs and returns an error if there already exists
-func (k Keeper) SetCollection(ctx sdk.Context, collection types.Collection) error {
+// SaveCollection saves all NFTs and returns an error if there already exists
+func (k Keeper) SaveCollection(ctx sdk.Context, collection types.Collection) error {
 	for _, nft := range collection.NFTs {
-		if err := k.MintNFT(
+		if err := k.SaveNFT(
 			ctx,
 			collection.Denom.Id,
 			nft.GetID(),

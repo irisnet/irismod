@@ -29,7 +29,7 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.IssueDenom(ctx, msg.Id,
+	if err := m.Keeper.SaveDenom(ctx, msg.Id,
 		msg.Name,
 		msg.Schema,
 		msg.Symbol,
@@ -84,7 +84,7 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 			sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", sender, msg.DenomId)
 	}
 
-	if err := m.Keeper.MintNFT(ctx, msg.DenomId,
+	if err := m.Keeper.SaveNFT(ctx, msg.DenomId,
 		msg.Id,
 		msg.Name,
 		msg.URI,
@@ -120,7 +120,7 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.EditNFT(ctx, msg.DenomId,
+	if err := m.Keeper.UpdateNFT(ctx, msg.DenomId,
 		msg.Id,
 		msg.Name,
 		msg.URI,
@@ -199,7 +199,7 @@ func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.BurnNFT(ctx, msg.DenomId, msg.Id, sender); err != nil {
+	if err := m.Keeper.RemoveNFT(ctx, msg.DenomId, msg.Id, sender); err != nil {
 		return nil, err
 	}
 

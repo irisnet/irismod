@@ -9,8 +9,8 @@ import (
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
-// IssueDenom issues a denom according to the given params
-func (k Keeper) IssueDenom(ctx sdk.Context, id,
+// SaveDenom issues a denom according to the given params
+func (k Keeper) SaveDenom(ctx sdk.Context, id,
 	name,
 	schema,
 	symbol string,
@@ -97,6 +97,9 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 		Symbol:           class.Symbol,
 		MintRestricted:   denomMetadata.MintRestricted,
 		UpdateRestricted: denomMetadata.UpdateRestricted,
+		Description:      class.Description,
+		Uri:              class.Uri,
+		UriHash:          class.UriHash,
 		Data:             denomMetadata.Data,
 	}, nil
 }
