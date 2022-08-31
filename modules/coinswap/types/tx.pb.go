@@ -339,11 +339,14 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// AddLiquidity defines a method for depositing some tokens to the liquidity pool
+	// AddLiquidity defines a method for depositing some tokens to the liquidity
+	// pool
 	AddLiquidity(ctx context.Context, in *MsgAddLiquidity, opts ...grpc.CallOption) (*MsgAddLiquidityResponse, error)
-	// RemoveLiquidity defines a method for withdraw some tokens from the liquidity pool
+	// RemoveLiquidity defines a method for withdraw some tokens from the
+	// liquidity pool
 	RemoveLiquidity(ctx context.Context, in *MsgRemoveLiquidity, opts ...grpc.CallOption) (*MsgRemoveLiquidityResponse, error)
-	// SwapCoin defines a method for swapping a token with the other token from the liquidity pool
+	// SwapCoin defines a method for swapping a token with the other token from
+	// the liquidity pool
 	SwapCoin(ctx context.Context, in *MsgSwapOrder, opts ...grpc.CallOption) (*MsgSwapCoinResponse, error)
 }
 
@@ -384,11 +387,14 @@ func (c *msgClient) SwapCoin(ctx context.Context, in *MsgSwapOrder, opts ...grpc
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// AddLiquidity defines a method for depositing some tokens to the liquidity pool
+	// AddLiquidity defines a method for depositing some tokens to the liquidity
+	// pool
 	AddLiquidity(context.Context, *MsgAddLiquidity) (*MsgAddLiquidityResponse, error)
-	// RemoveLiquidity defines a method for withdraw some tokens from the liquidity pool
+	// RemoveLiquidity defines a method for withdraw some tokens from the
+	// liquidity pool
 	RemoveLiquidity(context.Context, *MsgRemoveLiquidity) (*MsgRemoveLiquidityResponse, error)
-	// SwapCoin defines a method for swapping a token with the other token from the liquidity pool
+	// SwapCoin defines a method for swapping a token with the other token from
+	// the liquidity pool
 	SwapCoin(context.Context, *MsgSwapOrder) (*MsgSwapCoinResponse, error)
 }
 
