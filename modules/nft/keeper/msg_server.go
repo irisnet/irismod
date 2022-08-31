@@ -29,9 +29,19 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, msg.Symbol, sender,
-		msg.MintRestricted, msg.UpdateRestricted,
-		msg.Description, msg.Uri, msg.UriHash, msg.Data,
+	if err := m.Keeper.IssueDenom(
+		ctx,
+		msg.Id,
+		msg.Name,
+		msg.Schema,
+		msg.Symbol,
+		sender,
+		msg.MintRestricted,
+		msg.UpdateRestricted,
+		msg.Description,
+		msg.Uri,
+		msg.UriHash,
+		msg.Data,
 	); err != nil {
 		return nil, err
 	}
@@ -66,16 +76,20 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	denom, found := m.Keeper.GetDenom(ctx, msg.DenomId)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
+	denom, err := m.Keeper.GetDenomInfo(ctx, msg.DenomId)
+	if err != nil {
+		return nil, err
 	}
 
 	if denom.MintRestricted && denom.Creator != sender.String() {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", msg.Sender, msg.DenomId)
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", sender, msg.DenomId)
 	}
 
-	if err := m.Keeper.MintNFT(ctx, msg.DenomId, msg.Id,
+	if err := m.Keeper.MintNFT(
+		ctx,
+		msg.DenomId,
+		msg.Id,
 		msg.Name,
 		msg.URI,
 		msg.UriHash,
@@ -110,7 +124,10 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.EditNFT(ctx, msg.DenomId, msg.Id,
+	if err := m.Keeper.EditNFT(
+		ctx,
+		msg.DenomId,
+		msg.Id,
 		msg.Name,
 		msg.URI,
 		msg.UriHash,
@@ -138,7 +155,8 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 	return &types.MsgEditNFTResponse{}, nil
 }
 
-func (m msgServer) TransferNFT(goCtx context.Context, msg *types.MsgTransferNFT) (*types.MsgTransferNFTResponse, error) {
+func (m msgServer) TransferNFT(goCtx context.Context,
+	msg *types.MsgTransferNFT) (*types.MsgTransferNFTResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -150,7 +168,7 @@ func (m msgServer) TransferNFT(goCtx context.Context, msg *types.MsgTransferNFT)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id,
+	if err := m.Keeper.TransferOwnership(ctx, msg.DenomId, msg.Id,
 		msg.Name,
 		msg.URI,
 		msg.UriHash,

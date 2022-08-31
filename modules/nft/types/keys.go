@@ -9,8 +9,7 @@ import (
 
 const (
 	// ModuleName is the name of the module
-	// TODO
-	ModuleName = "inft"
+	ModuleName = "nft"
 
 	// StoreKey is the default store key for NFT
 	StoreKey = ModuleName

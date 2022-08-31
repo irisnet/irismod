@@ -44,7 +44,8 @@ func (suite *KeeperSuite) TestGetNFTs() {
 	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID3, tokenNm3, tokenURI, tokenURIHash, tokenData, address)
 	suite.NoError(err)
 
-	nfts := suite.keeper.GetNFTs(suite.ctx, denomID2)
+	nfts, err := suite.keeper.GetNFTs(suite.ctx, denomID2)
+	suite.NoError(err)
 	suite.Len(nfts, 3)
 }
 
@@ -52,10 +53,10 @@ func (suite *KeeperSuite) TestAuthorize() {
 	err := suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
 	suite.NoError(err)
 
-	_, err = suite.keeper.Authorize(suite.ctx, denomID, tokenID, address2)
+	err = suite.keeper.Authorize(suite.ctx, denomID, tokenID, address2)
 	suite.Error(err)
 
-	_, err = suite.keeper.Authorize(suite.ctx, denomID, tokenID, address)
+	err = suite.keeper.Authorize(suite.ctx, denomID, tokenID, address)
 	suite.NoError(err)
 }
 

@@ -62,8 +62,17 @@ func queryOwner(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierC
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	owner := k.GetOwner(ctx, params.Owner, params.Denom)
-	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, owner)
+	goCtx := sdk.WrapSDKContext(ctx)
+	request := &types.QueryNFTsOfOwnerRequest{
+		DenomId: params.Denom,
+		Owner:   params.Owner.String(),
+	}
+	owner, err := k.NFTsOfOwner(goCtx, request)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, owner.Owner)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -79,12 +88,15 @@ func queryCollection(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQue
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	collection, err := k.GetCollection(ctx, params.Denom)
+	goCtx := sdk.WrapSDKContext(ctx)
+	collection, err := k.Collection(goCtx, &types.QueryCollectionRequest{
+		DenomId: params.Denom,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, collection)
+	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, collection.Collection)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -99,7 +111,7 @@ func queryDenom(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierC
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	denom, _ := k.GetDenom(ctx, params.ID)
+	denom, _ := k.GetDenomInfo(ctx, params.ID)
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, denom)
 	if err != nil {
@@ -110,9 +122,13 @@ func queryDenom(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierC
 }
 
 func queryDenoms(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	denoms := k.GetDenoms(ctx)
+	goCtx := sdk.WrapSDKContext(ctx)
+	result, err := k.Denoms(goCtx, &types.QueryDenomsRequest{})
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
 
-	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, denoms)
+	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, result.Denoms)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

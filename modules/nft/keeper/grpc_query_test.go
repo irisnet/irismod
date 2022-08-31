@@ -23,7 +23,7 @@ func (suite *KeeperSuite) TestOwner() {
 	err := suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
 	suite.NoError(err)
 
-	response, err := suite.queryClient.Owner(gocontext.Background(), &types.QueryOwnerRequest{
+	response, err := suite.queryClient.NFTsOfOwner(gocontext.Background(), &types.QueryNFTsOfOwnerRequest{
 		DenomId: denomID,
 		Owner:   address.String(),
 	})
