@@ -65,7 +65,6 @@ message MsgAddUnilateralLiquidity {
 message MsgAddUnilateralLiquidityResponse {
     cosmos.base.v1beta1.Coin mint_token = 1;
 }
-message MsgAddLiquidityResponse { cosmos.base.v1beta1.Coin mint_token = 1; }
 
 // MsgRemoveLiquidity defines a msg for removing liquidity from a reserve pool
 message MsgRemoveLiquidity {

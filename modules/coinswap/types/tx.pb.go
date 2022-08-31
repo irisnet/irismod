@@ -521,14 +521,10 @@ type MsgClient interface {
 	// AddUnilateralLiquidity defines a method for depositing some tokens unilaterally to the liquidity pool
 	AddUnilateralLiquidity(ctx context.Context, in *MsgAddUnilateralLiquidity, opts ...grpc.CallOption) (*MsgAddUnilateralLiquidityResponse, error)
 	// RemoveLiquidity defines a method for withdraw some tokens from the liquidity pool
-	// RemoveLiquidity defines a method for withdraw some tokens from the
-	// liquidity pool
 	RemoveLiquidity(ctx context.Context, in *MsgRemoveLiquidity, opts ...grpc.CallOption) (*MsgRemoveLiquidityResponse, error)
 	// RemoveUnilateralLiquidity defines a method for withdraw some tokens unilaterally from the liquidity pool
 	RemoveUnilateralLiquidity(ctx context.Context, in *MsgRemoveUnilateralLiquidity, opts ...grpc.CallOption) (*MsgRemoveUnilateralLiquidityResponse, error)
 	// SwapCoin defines a method for swapping a token with the other token from the liquidity pool
-	// SwapCoin defines a method for swapping a token with the other token from
-	// the liquidity pool
 	SwapCoin(ctx context.Context, in *MsgSwapOrder, opts ...grpc.CallOption) (*MsgSwapCoinResponse, error)
 }
 
@@ -593,14 +589,10 @@ type MsgServer interface {
 	// AddUnilateralLiquidity defines a method for depositing some tokens unilaterally to the liquidity pool
 	AddUnilateralLiquidity(context.Context, *MsgAddUnilateralLiquidity) (*MsgAddUnilateralLiquidityResponse, error)
 	// RemoveLiquidity defines a method for withdraw some tokens from the liquidity pool
-	// RemoveLiquidity defines a method for withdraw some tokens from the
-	// liquidity pool
 	RemoveLiquidity(context.Context, *MsgRemoveLiquidity) (*MsgRemoveLiquidityResponse, error)
 	// RemoveUnilateralLiquidity defines a method for withdraw some tokens unilaterally from the liquidity pool
 	RemoveUnilateralLiquidity(context.Context, *MsgRemoveUnilateralLiquidity) (*MsgRemoveUnilateralLiquidityResponse, error)
 	// SwapCoin defines a method for swapping a token with the other token from the liquidity pool
-	// SwapCoin defines a method for swapping a token with the other token from
-	// the liquidity pool
 	SwapCoin(context.Context, *MsgSwapOrder) (*MsgSwapCoinResponse, error)
 }
 
