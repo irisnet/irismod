@@ -110,7 +110,8 @@ func (m *MsgAddLiquidityResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddLiquidityResponse proto.InternalMessageInfo
 
-// MsgAddLiquidityUni defines a msg for adding liquidity unilaterally to a reserve pool
+// MsgAddLiquidityUni defines a msg for adding liquidity unilaterally to a
+// reserve pool
 type MsgAddUnilateralLiquidity struct {
 	CounterpartyDenom string                                 `protobuf:"bytes,1,opt,name=counterparty_denom,json=counterpartyDenom,proto3" json:"counterparty_denom,omitempty" yaml:"conuterparty_denom"`
 	ExactToken        types.Coin                             `protobuf:"bytes,2,opt,name=exact_token,json=exactToken,proto3" json:"exact_token" yaml:"exact_token"`
@@ -270,7 +271,8 @@ func (m *MsgRemoveLiquidityResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRemoveLiquidityResponse proto.InternalMessageInfo
 
-// MsgRemoveUnilateralLiquidity defines a msg for removing liquidity unilaterally to a reserve pool
+// MsgRemoveUnilateralLiquidity defines a msg for removing liquidity
+// unilaterally to a reserve pool
 type MsgRemoveUnilateralLiquidity struct {
 	CounterpartyDenom string                                 `protobuf:"bytes,1,opt,name=counterparty_denom,json=counterpartyDenom,proto3" json:"counterparty_denom,omitempty" yaml:"conuterparty_denom"`
 	MinToken          types.Coin                             `protobuf:"bytes,2,opt,name=min_token,json=minToken,proto3" json:"min_token" yaml:"min_token"`
@@ -312,7 +314,8 @@ func (m *MsgRemoveUnilateralLiquidity) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRemoveUnilateralLiquidity proto.InternalMessageInfo
 
-// MsgRemoveUnilateralLiquidityResponse defines the Msg/RemoveLiquidity response type
+// MsgRemoveUnilateralLiquidityResponse defines the Msg/RemoveLiquidity response
+// type
 type MsgRemoveUnilateralLiquidityResponse struct {
 	WithdrawCoins []*types.Coin `protobuf:"bytes,1,rep,name=withdraw_coins,json=withdrawCoins,proto3" json:"withdraw_coins,omitempty"`
 }
@@ -518,13 +521,17 @@ type MsgClient interface {
 	// AddLiquidity defines a method for depositing some tokens to the liquidity
 	// pool
 	AddLiquidity(ctx context.Context, in *MsgAddLiquidity, opts ...grpc.CallOption) (*MsgAddLiquidityResponse, error)
-	// AddUnilateralLiquidity defines a method for depositing some tokens unilaterally to the liquidity pool
+	// AddUnilateralLiquidity defines a method for depositing some tokens
+	// unilaterally to the liquidity pool
 	AddUnilateralLiquidity(ctx context.Context, in *MsgAddUnilateralLiquidity, opts ...grpc.CallOption) (*MsgAddUnilateralLiquidityResponse, error)
-	// RemoveLiquidity defines a method for withdraw some tokens from the liquidity pool
+	// RemoveLiquidity defines a method for withdraw some tokens from the
+	// liquidity pool
 	RemoveLiquidity(ctx context.Context, in *MsgRemoveLiquidity, opts ...grpc.CallOption) (*MsgRemoveLiquidityResponse, error)
-	// RemoveUnilateralLiquidity defines a method for withdraw some tokens unilaterally from the liquidity pool
+	// RemoveUnilateralLiquidity defines a method for withdraw some tokens
+	// unilaterally from the liquidity pool
 	RemoveUnilateralLiquidity(ctx context.Context, in *MsgRemoveUnilateralLiquidity, opts ...grpc.CallOption) (*MsgRemoveUnilateralLiquidityResponse, error)
-	// SwapCoin defines a method for swapping a token with the other token from the liquidity pool
+	// SwapCoin defines a method for swapping a token with the other token from
+	// the liquidity pool
 	SwapCoin(ctx context.Context, in *MsgSwapOrder, opts ...grpc.CallOption) (*MsgSwapCoinResponse, error)
 }
 
@@ -586,13 +593,17 @@ type MsgServer interface {
 	// AddLiquidity defines a method for depositing some tokens to the liquidity
 	// pool
 	AddLiquidity(context.Context, *MsgAddLiquidity) (*MsgAddLiquidityResponse, error)
-	// AddUnilateralLiquidity defines a method for depositing some tokens unilaterally to the liquidity pool
+	// AddUnilateralLiquidity defines a method for depositing some tokens
+	// unilaterally to the liquidity pool
 	AddUnilateralLiquidity(context.Context, *MsgAddUnilateralLiquidity) (*MsgAddUnilateralLiquidityResponse, error)
-	// RemoveLiquidity defines a method for withdraw some tokens from the liquidity pool
+	// RemoveLiquidity defines a method for withdraw some tokens from the
+	// liquidity pool
 	RemoveLiquidity(context.Context, *MsgRemoveLiquidity) (*MsgRemoveLiquidityResponse, error)
-	// RemoveUnilateralLiquidity defines a method for withdraw some tokens unilaterally from the liquidity pool
+	// RemoveUnilateralLiquidity defines a method for withdraw some tokens
+	// unilaterally from the liquidity pool
 	RemoveUnilateralLiquidity(context.Context, *MsgRemoveUnilateralLiquidity) (*MsgRemoveUnilateralLiquidityResponse, error)
-	// SwapCoin defines a method for swapping a token with the other token from the liquidity pool
+	// SwapCoin defines a method for swapping a token with the other token from
+	// the liquidity pool
 	SwapCoin(context.Context, *MsgSwapOrder) (*MsgSwapCoinResponse, error)
 }
 

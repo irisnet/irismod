@@ -14,17 +14,23 @@ service Msg {
   // pool
   rpc AddLiquidity(MsgAddLiquidity) returns (MsgAddLiquidityResponse);
 
-    // AddUnilateralLiquidity defines a method for depositing some tokens unilaterally to the liquidity pool
-    rpc AddUnilateralLiquidity(MsgAddUnilateralLiquidity) returns (MsgAddUnilateralLiquidityResponse);
+  // AddUnilateralLiquidity defines a method for depositing some tokens
+  // unilaterally to the liquidity pool
+  rpc AddUnilateralLiquidity(MsgAddUnilateralLiquidity)
+      returns (MsgAddUnilateralLiquidityResponse);
 
-    // RemoveLiquidity defines a method for withdraw some tokens from the liquidity pool
-    rpc RemoveLiquidity(MsgRemoveLiquidity) returns (MsgRemoveLiquidityResponse);
+  // RemoveLiquidity defines a method for withdraw some tokens from the
+  // liquidity pool
+  rpc RemoveLiquidity(MsgRemoveLiquidity) returns (MsgRemoveLiquidityResponse);
 
-    // RemoveUnilateralLiquidity defines a method for withdraw some tokens unilaterally from the liquidity pool
-    rpc RemoveUnilateralLiquidity(MsgRemoveUnilateralLiquidity) returns (MsgRemoveUnilateralLiquidityResponse);
+  // RemoveUnilateralLiquidity defines a method for withdraw some tokens
+  // unilaterally from the liquidity pool
+  rpc RemoveUnilateralLiquidity(MsgRemoveUnilateralLiquidity)
+      returns (MsgRemoveUnilateralLiquidityResponse);
 
-    // SwapCoin defines a method for swapping a token with the other token from the liquidity pool
-    rpc SwapCoin(MsgSwapOrder) returns (MsgSwapCoinResponse);
+  // SwapCoin defines a method for swapping a token with the other token from
+  // the liquidity pool
+  rpc SwapCoin(MsgSwapOrder) returns (MsgSwapCoinResponse);
 }
 
 // MsgAddLiquidity defines a msg for adding liquidity to a reserve pool
@@ -48,22 +54,29 @@ message MsgAddLiquidity {
 }
 
 // MsgAddLiquidityResponse defines the Msg/AddLiquidity response type
-message MsgAddLiquidityResponse {
-    cosmos.base.v1beta1.Coin mint_token = 1;
-}
+message MsgAddLiquidityResponse { cosmos.base.v1beta1.Coin mint_token = 1; }
 
-// MsgAddLiquidityUni defines a msg for adding liquidity unilaterally to a reserve pool
+// MsgAddLiquidityUni defines a msg for adding liquidity unilaterally to a
+// reserve pool
 message MsgAddUnilateralLiquidity {
-    string counterparty_denom = 1 [ (gogoproto.moretags) = "yaml:\"conuterparty_denom\"" ];
-    cosmos.base.v1beta1.Coin exact_token = 2 [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"exact_token\"" ]; // exact amount of token
-    string min_liquidity = 3 [ (gogoproto.moretags) = "yaml:\"min_liquidity\"", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false ];
-    int64 deadline = 4;
-    string sender = 5;
+  string counterparty_denom = 1
+      [ (gogoproto.moretags) = "yaml:\"conuterparty_denom\"" ];
+  cosmos.base.v1beta1.Coin exact_token = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"exact_token\""
+  ]; // exact amount of token
+  string min_liquidity = 3 [
+    (gogoproto.moretags) = "yaml:\"min_liquidity\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  int64 deadline = 4;
+  string sender = 5;
 }
 
 // MsgAddLiquidityUniResponse defines the Msg/AddLiquidityUni response type
 message MsgAddUnilateralLiquidityResponse {
-    cosmos.base.v1beta1.Coin mint_token = 1;
+  cosmos.base.v1beta1.Coin mint_token = 1;
 }
 
 // MsgRemoveLiquidity defines a msg for removing liquidity from a reserve pool
@@ -91,18 +104,28 @@ message MsgRemoveLiquidityResponse {
   repeated cosmos.base.v1beta1.Coin withdraw_coins = 1;
 }
 
-// MsgRemoveUnilateralLiquidity defines a msg for removing liquidity unilaterally to a reserve pool
+// MsgRemoveUnilateralLiquidity defines a msg for removing liquidity
+// unilaterally to a reserve pool
 message MsgRemoveUnilateralLiquidity {
-    string counterparty_denom = 1 [ (gogoproto.moretags) = "yaml:\"conuterparty_denom\"" ];
-    cosmos.base.v1beta1.Coin min_token = 2 [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"min_token\"" ]; // minimum amount of token
-    string exact_liquidity = 3 [ (gogoproto.moretags) = "yaml:\"exact_liquidity\"", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false ];
-    int64 deadline = 4;
-    string sender = 5;
+  string counterparty_denom = 1
+      [ (gogoproto.moretags) = "yaml:\"conuterparty_denom\"" ];
+  cosmos.base.v1beta1.Coin min_token = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"min_token\""
+  ]; // minimum amount of token
+  string exact_liquidity = 3 [
+    (gogoproto.moretags) = "yaml:\"exact_liquidity\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  int64 deadline = 4;
+  string sender = 5;
 }
 
-// MsgRemoveUnilateralLiquidityResponse defines the Msg/RemoveLiquidity response type
+// MsgRemoveUnilateralLiquidityResponse defines the Msg/RemoveLiquidity response
+// type
 message MsgRemoveUnilateralLiquidityResponse {
-    repeated cosmos.base.v1beta1.Coin withdraw_coins = 1;
+  repeated cosmos.base.v1beta1.Coin withdraw_coins = 1;
 }
 
 // MsgSwapOrder defines a msg for swap order
