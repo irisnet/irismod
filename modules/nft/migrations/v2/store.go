@@ -13,7 +13,6 @@ func Migrate(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Codec, k N
 	if err != nil {
 		return err
 	}
-
 	return migrateTokens(ctx, storeKey, cdc, denoms, k)
 }
 
@@ -29,6 +28,11 @@ func migrateDenoms(ctx sdk.Context,
 	for ; iterator.Valid(); iterator.Next() {
 		var denom types.Denom
 		cdc.MustUnmarshal(iterator.Value(), &denom)
+
+		//delete unused key
+		store.Delete(KeyDenom(denom.Id))
+		store.Delete(KeyDenomName(denom.Name))
+		store.Delete(KeyCollection(denom.Id))
 
 		creator, err := sdk.AccAddressFromBech32(denom.Creator)
 		if err != nil {
@@ -50,6 +54,7 @@ func migrateDenoms(ctx sdk.Context,
 			return denoms, err
 		}
 		denoms = append(denoms, denom.Id)
+
 	}
 	return denoms, nil
 }
@@ -79,6 +84,10 @@ func migrateTokens(ctx sdk.Context,
 			if err != nil {
 				return err
 			}
+
+			//delete unused key
+			store.Delete(KeyNFT(denomID, baseNFT.Id))
+			store.Delete(KeyOwner(owner, denomID, baseNFT.Id))
 
 			if err := k.SaveNFT(ctx, denomID,
 				baseNFT.Id,
