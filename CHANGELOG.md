@@ -47,6 +47,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * [\#308](https://github.com/irisnet/irismod/pull/308) Coinswap module adds unilateral injection liquidity function.
 * [\#309](https://github.com/irisnet/irismod/pull/309) Refactor nft with cosmos-sdk nft module.
 
+### API Breaking Changes
+* [\#309](https://github.com/irisnet/irismod/pull/309) GRPC method `Owner` rename to `NFTsOfOwner`, Remove deprecated `Queries` api
+
 ## [v1.6.0] - 2022-08-08
 
 ### Improvements
