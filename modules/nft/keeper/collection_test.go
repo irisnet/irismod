@@ -79,10 +79,10 @@ func (suite *KeeperSuite) TestGetSupply() {
 	supply = suite.keeper.GetTotalSupply(suite.ctx, denomID2)
 	suite.Equal(uint64(1), supply)
 
-	supply = suite.keeper.GetTotalSupplyOfOwner(suite.ctx, denomID, address)
+	supply = suite.keeper.GetBalance(suite.ctx, denomID, address)
 	suite.Equal(uint64(1), supply)
 
-	supply = suite.keeper.GetTotalSupplyOfOwner(suite.ctx, denomID, address2)
+	supply = suite.keeper.GetBalance(suite.ctx, denomID, address2)
 	suite.Equal(uint64(1), supply)
 
 	supply = suite.keeper.GetTotalSupply(suite.ctx, denomID)

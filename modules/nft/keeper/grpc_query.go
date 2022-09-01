@@ -27,7 +27,7 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid owner address %s", request.Owner)
 		}
-		supply = k.GetTotalSupplyOfOwner(ctx, request.DenomId, owner)
+		supply = k.GetBalance(ctx, request.DenomId, owner)
 	}
 	return &types.QuerySupplyResponse{Amount: supply}, nil
 }

@@ -62,7 +62,7 @@ func (k Keeper) GetTotalSupply(ctx sdk.Context, denomID string) uint64 {
 	return k.nk.GetTotalSupply(ctx, denomID)
 }
 
-// GetTotalSupplyOfOwner returns the amount of NFTs by the specified conditions
-func (k Keeper) GetTotalSupplyOfOwner(ctx sdk.Context, id string, owner sdk.AccAddress) (supply uint64) {
+// GetBalance returns the amount of NFTs by the specified conditions
+func (k Keeper) GetBalance(ctx sdk.Context, id string, owner sdk.AccAddress) (supply uint64) {
 	return k.nk.GetBalance(ctx, id, owner)
 }
