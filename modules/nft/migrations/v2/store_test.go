@@ -3,6 +3,8 @@ package v2_test
 import (
 	"fmt"
 
+	gogotypes "github.com/gogo/protobuf/types"
+
 	"math/rand"
 	"testing"
 
@@ -111,7 +113,7 @@ func setNFT(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Codec, deno
 
 func setOwner(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Codec, denomID, tokenID, owner string) {
 	store := ctx.KVStore(storeKey)
-	bz := types.MustMarshalTokenID(cdc, tokenID)
+	bz := mustMarshalTokenID(cdc, tokenID)
 	ownerAddr := sdk.MustAccAddressFromBech32(owner)
 	store.Set(v2.KeyOwner(ownerAddr, denomID, tokenID), bz)
 }
@@ -121,7 +123,7 @@ func increaseSupply(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Cod
 	supply++
 
 	store := ctx.KVStore(storeKey)
-	bz := types.MustMarshalSupply(cdc, supply)
+	bz := mustMarshalSupply(cdc, supply)
 	store.Set(v2.KeyCollection(denomID), bz)
 }
 
@@ -131,5 +133,21 @@ func getTotalSupply(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Cod
 	if len(bz) == 0 {
 		return 0
 	}
-	return types.MustUnMarshalSupply(cdc, bz)
+	return mustUnMarshalSupply(cdc, bz)
+}
+
+func mustMarshalSupply(cdc codec.Codec, supply uint64) []byte {
+	supplyWrap := gogotypes.UInt64Value{Value: supply}
+	return cdc.MustMarshal(&supplyWrap)
+}
+
+func mustUnMarshalSupply(cdc codec.Codec, value []byte) uint64 {
+	var supplyWrap gogotypes.UInt64Value
+	cdc.MustUnmarshal(value, &supplyWrap)
+	return supplyWrap.Value
+}
+
+func mustMarshalTokenID(cdc codec.Codec, tokenID string) []byte {
+	tokenIDWrap := gogotypes.StringValue{Value: tokenID}
+	return cdc.MustMarshal(&tokenIDWrap)
 }

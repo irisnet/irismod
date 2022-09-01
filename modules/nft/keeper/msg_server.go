@@ -9,27 +9,17 @@ import (
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
-type msgServer struct {
-	Keeper
-}
-
-var _ types.MsgServer = msgServer{}
-
-// NewMsgServerImpl returns an implementation of the NFT MsgServer interface
-// for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
-	return &msgServer{Keeper: keeper}
-}
+var _ types.MsgServer = Keeper{}
 
 // IssueDenom issue a new denom.
-func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (*types.MsgIssueDenomResponse, error) {
+func (k Keeper) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (*types.MsgIssueDenomResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.SaveDenom(ctx, msg.Id,
+	if err := k.SaveDenom(ctx, msg.Id,
 		msg.Name,
 		msg.Schema,
 		msg.Symbol,
@@ -61,7 +51,7 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 	return &types.MsgIssueDenomResponse{}, nil
 }
 
-func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types.MsgMintNFTResponse, error) {
+func (k Keeper) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types.MsgMintNFTResponse, error) {
 	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
 	if err != nil {
 		return nil, err
@@ -74,7 +64,7 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	denom, err := m.Keeper.GetDenomInfo(ctx, msg.DenomId)
+	denom, err := k.GetDenomInfo(ctx, msg.DenomId)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +74,7 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 			sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", sender, msg.DenomId)
 	}
 
-	if err := m.Keeper.SaveNFT(ctx, msg.DenomId,
+	if err := k.SaveNFT(ctx, msg.DenomId,
 		msg.Id,
 		msg.Name,
 		msg.URI,
@@ -113,14 +103,14 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	return &types.MsgMintNFTResponse{}, nil
 }
 
-func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types.MsgEditNFTResponse, error) {
+func (k Keeper) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types.MsgEditNFTResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.UpdateNFT(ctx, msg.DenomId,
+	if err := k.UpdateNFT(ctx, msg.DenomId,
 		msg.Id,
 		msg.Name,
 		msg.URI,
@@ -149,7 +139,7 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 	return &types.MsgEditNFTResponse{}, nil
 }
 
-func (m msgServer) TransferNFT(goCtx context.Context,
+func (k Keeper) TransferNFT(goCtx context.Context,
 	msg *types.MsgTransferNFT) (*types.MsgTransferNFTResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
@@ -162,7 +152,7 @@ func (m msgServer) TransferNFT(goCtx context.Context,
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferOwnership(ctx, msg.DenomId,
+	if err := k.TransferOwnership(ctx, msg.DenomId,
 		msg.Id,
 		msg.Name,
 		msg.URI,
@@ -192,14 +182,14 @@ func (m msgServer) TransferNFT(goCtx context.Context,
 	return &types.MsgTransferNFTResponse{}, nil
 }
 
-func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types.MsgBurnNFTResponse, error) {
+func (k Keeper) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types.MsgBurnNFTResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.RemoveNFT(ctx, msg.DenomId, msg.Id, sender); err != nil {
+	if err := k.RemoveNFT(ctx, msg.DenomId, msg.Id, sender); err != nil {
 		return nil, err
 	}
 
@@ -220,7 +210,7 @@ func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	return &types.MsgBurnNFTResponse{}, nil
 }
 
-func (m msgServer) TransferDenom(goCtx context.Context, msg *types.MsgTransferDenom) (*types.MsgTransferDenomResponse, error) {
+func (k Keeper) TransferDenom(goCtx context.Context, msg *types.MsgTransferDenom) (*types.MsgTransferDenomResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -232,7 +222,7 @@ func (m msgServer) TransferDenom(goCtx context.Context, msg *types.MsgTransferDe
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferDenomOwner(ctx, msg.Id, sender, recipient); err != nil {
+	if err := k.TransferDenomOwner(ctx, msg.Id, sender, recipient); err != nil {
 		return nil, err
 	}
 
