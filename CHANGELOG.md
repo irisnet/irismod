@@ -37,7 +37,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-### Improvements
+### Features
+* [\#308](https://github.com/irisnet/irismod/pull/308) Add the functionality of adding/removing liquidity unilaterally for coinswap.
 
 ## [v1.6.0] - 2022-08-08
 
