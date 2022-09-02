@@ -75,8 +75,8 @@ func (suite *TestSuite) TestParams() {
 }
 
 func setupWithGenesisAccounts(t *testing.T) *simapp.SimApp {
-	amountInitStandard, _ := sdk.NewIntFromString("30000000000000000000")
-	amountInitBTC, _ := sdk.NewIntFromString("3000000000")
+	amountInitStandard, _ := sdkmath.NewIntFromString("30000000000000000000")
+	amountInitBTC, _ := sdkmath.NewIntFromString("3000000000")
 
 	addrSender1 = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender1")))
 	addrSender2 = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender2")))
@@ -205,7 +205,7 @@ func (suite *TestSuite) TestLiquidity() {
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.String())
 
 	// Test remove liquidity (remove all)
-	withdraw, _ = sdk.NewIntFromString("20000000000000000000")
+	withdraw, _ = sdkmath.NewIntFromString("20000000000000000000")
 	msgRemove = types.NewMsgRemoveLiquidity(
 		sdkmath.NewInt(1),
 		sdk.NewCoin(lptDenom, withdraw),
@@ -273,7 +273,7 @@ func (suite *TestSuite) TestLiquidity2() {
 
 	// 2. add liquidity unilaterally
 
-	btcAmt, _ = sdk.NewIntFromString("100")
+	btcAmt, _ = sdkmath.NewIntFromString("100")
 	addMsg := types.NewMsgAddUnilateralLiquidity(
 		denomBTC,
 		sdk.NewCoin(denomBTC, btcAmt),
@@ -310,8 +310,8 @@ func (suite *TestSuite) TestLiquidity2() {
 // TestLiquidity3 tests functionality of remove liquidity unilaterally.
 func (suite *TestSuite) TestLiquidity3() {
 	// 1. initial liquidity (create pool)
-	btcAmt, _ := sdk.NewIntFromString("100")                  // 10^2
-	stdAmt, _ := sdk.NewIntFromString("10000000000000000000") // 10^19
+	btcAmt, _ := sdkmath.NewIntFromString("100")                  // 10^2
+	stdAmt, _ := sdkmath.NewIntFromString("10000000000000000000") // 10^19
 	initMsg := types.NewMsgAddLiquidity(
 		sdk.NewCoin(denomBTC, btcAmt),
 		stdAmt,
@@ -351,7 +351,7 @@ func (suite *TestSuite) TestLiquidity3() {
 
 	// 2. remove liquidity unilaterally
 
-	btcAmt, _ = sdk.NewIntFromString("1")
+	btcAmt, _ = sdkmath.NewIntFromString("1")
 	removeMsg := types.NewMsgRemoveUnilateralLiquidity(
 		denomBTC,
 		sdk.NewCoin(denomBTC, btcAmt),       // at least 1

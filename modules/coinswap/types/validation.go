@@ -4,6 +4,7 @@ import (
 	fmt "fmt"
 	"strings"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -81,7 +82,7 @@ func ValidateCounterpartyDenom(counterpartydenom string) error {
 }
 
 // ValidateExactStandardAmt verifies whether the standard token amount is legal
-func ValidateExactStandardAmt(standardAmt sdk.Int) error {
+func ValidateExactStandardAmt(standardAmt sdkmath.Int) error {
 	if !standardAmt.IsPositive() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "standard token amount must be positive")
 	}
@@ -89,7 +90,7 @@ func ValidateExactStandardAmt(standardAmt sdk.Int) error {
 }
 
 // ValidateLiquidity verifies whether the minimum liquidity is legal
-func ValidateLiquidity(minLiquidity sdk.Int) error {
+func ValidateLiquidity(minLiquidity sdkmath.Int) error {
 	if minLiquidity.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "liquidity can not be negative")
 	}
@@ -97,7 +98,7 @@ func ValidateLiquidity(minLiquidity sdk.Int) error {
 }
 
 // ValidateMinToken verifies whether the minimum token amount is legal
-func ValidateMinToken(minToken sdk.Int) error {
+func ValidateMinToken(minToken sdkmath.Int) error {
 	if minToken.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "minimum token amount can not be negative")
 	}
@@ -117,7 +118,7 @@ func ValidateWithdrawLiquidity(liquidity sdk.Coin) error {
 }
 
 // ValidateMinStandardAmt verifies whether the minimum standard amount is legal
-func ValidateMinStandardAmt(minStandardAmt sdk.Int) error {
+func ValidateMinStandardAmt(minStandardAmt sdkmath.Int) error {
 	if minStandardAmt.IsNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("minimum standard token amount %s can not be negative", minStandardAmt.String()))
 	}

@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 )
@@ -49,8 +50,8 @@ func TestMsgSwapOrder_ValidateBasic(t *testing.T) {
 func TestMsgAddLiquidity_ValidateBasic(t *testing.T) {
 	type fields struct {
 		MaxToken         sdk.Coin
-		ExactStandardAmt sdk.Int
-		MinLiquidity     sdk.Int
+		ExactStandardAmt sdkmath.Int
+		MinLiquidity     sdkmath.Int
 		Deadline         int64
 		Sender           string
 	}
@@ -145,8 +146,8 @@ func TestMsgAddLiquidity_ValidateBasic(t *testing.T) {
 func TestMsgRemoveLiquidity_ValidateBasic(t *testing.T) {
 	type fields struct {
 		WithdrawLiquidity sdk.Coin
-		MinToken          sdk.Int
-		MinStandardAmt    sdk.Int
+		MinToken          sdkmath.Int
+		MinStandardAmt    sdkmath.Int
 		Deadline          int64
 		Sender            string
 	}
@@ -242,7 +243,7 @@ func TestMsgAddUnilateralLiquidity_ValidateBasic(t *testing.T) {
 	type fields struct {
 		CounterpartyDenom string
 		ExactToken        sdk.Coin
-		MinLiquidity      sdk.Int
+		MinLiquidity      sdkmath.Int
 		Deadline          int64
 		Sender            string
 	}
@@ -338,7 +339,7 @@ func TestMsgRemoveUnilateralLiquidity_ValidateBasic(t *testing.T) {
 	type fields struct {
 		CounterpartyDenom string
 		MinToken          sdk.Coin
-		ExactLiquidity    sdk.Int
+		ExactLiquidity    sdkmath.Int
 		Deadline          int64
 		Sender            string
 	}

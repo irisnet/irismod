@@ -1,8 +1,13 @@
 package simulation
 
 import (
-	sdkmath "cosmossdk.io/math"
 	"fmt"
+	"math/big"
+	"math/rand"
+	"strings"
+	"time"
+
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
@@ -11,10 +16,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"math/big"
-	"math/rand"
-	"strings"
-	"time"
 
 	"github.com/irisnet/irismod/modules/coinswap/keeper"
 	"github.com/irisnet/irismod/modules/coinswap/types"
@@ -116,7 +117,7 @@ func SimulateMsgAddLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk types.B
 
 		var (
 			maxToken     sdk.Coin
-			minLiquidity sdk.Int
+			minLiquidity sdkmath.Int
 		)
 
 		standardDenom := k.GetStandardDenom(ctx)
@@ -378,8 +379,8 @@ func SimulateMsgRemoveLiquidity(k keeper.Keeper, ak types.AccountKeeper, bk type
 		standardDenom := k.GetStandardDenom(ctx)
 
 		var (
-			minToken          sdk.Int
-			minStandardAmt    sdk.Int
+			minToken          sdkmath.Int
+			minStandardAmt    sdkmath.Int
 			withdrawLiquidity sdk.Coin
 		)
 

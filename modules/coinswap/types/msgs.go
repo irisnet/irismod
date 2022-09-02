@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -100,8 +101,8 @@ func (msg MsgSwapOrder) GetSigners() []sdk.AccAddress {
 // NewMsgAddLiquidity creates a new MsgAddLiquidity object.
 func NewMsgAddLiquidity(
 	maxToken sdk.Coin,
-	exactStandardAmt sdk.Int,
-	minLiquidity sdk.Int,
+	exactStandardAmt sdkmath.Int,
+	minLiquidity sdkmath.Int,
 	deadline int64,
 	sender string,
 ) *MsgAddLiquidity {
@@ -165,7 +166,7 @@ func (msg MsgAddLiquidity) GetSigners() []sdk.AccAddress {
 func NewMsgAddUnilateralLiquidity(
 	counterpartyDenom string,
 	exactToken sdk.Coin,
-	minLiquidity sdk.Int,
+	minLiquidity sdkmath.Int,
 	deadline int64,
 	sender string,
 ) *MsgAddUnilateralLiquidity {
@@ -223,9 +224,9 @@ func (m MsgAddUnilateralLiquidity) GetSigners() []sdk.AccAddress {
 
 // NewMsgRemoveLiquidity creates a new MsgRemoveLiquidity object
 func NewMsgRemoveLiquidity(
-	minToken sdk.Int,
+	minToken sdkmath.Int,
 	withdrawLiquidity sdk.Coin,
-	minStandardAmt sdk.Int,
+	minStandardAmt sdkmath.Int,
 	deadline int64,
 	sender string,
 ) *MsgRemoveLiquidity {
@@ -288,7 +289,7 @@ func (msg MsgRemoveLiquidity) GetSigners() []sdk.AccAddress {
 func NewMsgRemoveUnilateralLiquidity(
 	couterpartyDenom string,
 	minToken sdk.Coin,
-	exactLiquidity sdk.Int,
+	exactLiquidity sdkmath.Int,
 	deadline int64,
 	sender string,
 ) *MsgRemoveUnilateralLiquidity {
@@ -309,7 +310,7 @@ func (m MsgRemoveUnilateralLiquidity) ValidateBasic() error {
 	if err := ValidateCounterpartyDenom(m.CounterpartyDenom); err != nil {
 		return err
 	}
-	
+
 	if err := ValidateToken(m.MinToken); err != nil {
 		return err
 	}
