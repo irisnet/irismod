@@ -24,8 +24,9 @@ func Migrate(ctx sdk.Context,
 	if err != nil {
 		return err
 	}
+	logger.Info("migrate denoms success", "denomNum", len(denoms))
 
-	if err := migrateTokens(ctx, storeKey, cdc, denoms, k); err != nil {
+	if err := migrateTokens(ctx, storeKey, cdc, logger, denoms, k); err != nil {
 		return err
 	}
 	logger.Info("migrate store data success", "consume", time.Since(startTime).String())
@@ -78,6 +79,7 @@ func migrateDenoms(ctx sdk.Context,
 func migrateTokens(ctx sdk.Context,
 	storeKey storetypes.StoreKey,
 	cdc codec.Codec,
+	logger log.Logger,
 	denoms []string,
 	k NFTKeeper,
 ) error {
@@ -90,6 +92,7 @@ func migrateTokens(ctx sdk.Context,
 		}
 	}()
 
+	total := int64(0)
 	for _, denomID := range denoms {
 		iterator = sdk.KVStorePrefixIterator(store, KeyNFT(denomID, ""))
 		for ; iterator.Valid(); iterator.Next() {
@@ -115,7 +118,9 @@ func migrateTokens(ctx sdk.Context,
 			); err != nil {
 				return err
 			}
+			total++
 		}
 	}
+	logger.Info("migrate nft success", "nftNum", total)
 	return nil
 }
