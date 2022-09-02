@@ -101,7 +101,8 @@ message MsgRemoveLiquidity {
 
 // MsgRemoveLiquidityResponse defines the Msg/RemoveLiquidity response type
 message MsgRemoveLiquidityResponse {
-  repeated cosmos.base.v1beta1.Coin withdraw_coins = 1;
+  repeated cosmos.base.v1beta1.Coin withdraw_coins = 1
+      [ (gogoproto.nullable) = false ];
 }
 
 // MsgRemoveUnilateralLiquidity defines a msg for removing liquidity
@@ -125,7 +126,8 @@ message MsgRemoveUnilateralLiquidity {
 // MsgRemoveUnilateralLiquidityResponse defines the Msg/RemoveLiquidity response
 // type
 message MsgRemoveUnilateralLiquidityResponse {
-  repeated cosmos.base.v1beta1.Coin withdraw_coins = 1;
+  repeated cosmos.base.v1beta1.Coin withdraw_coins = 1
+      [ (gogoproto.nullable) = false ];
 }
 
 // MsgSwapOrder defines a msg for swap order

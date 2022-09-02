@@ -91,9 +91,9 @@ func (m msgServer) RemoveLiquidity(goCtx context.Context, msg *types.MsgRemoveLi
 		),
 	)
 
-	var coins = make([]*sdk.Coin, 0, withdrawCoins.Len())
+	var coins = make([]sdk.Coin, 0, withdrawCoins.Len())
 	for _, coin := range withdrawCoins {
-		coins = append(coins, &coin)
+		coins = append(coins, coin)
 	}
 
 	return &types.MsgRemoveLiquidityResponse{
@@ -120,9 +120,9 @@ func (m msgServer) RemoveUnilateralLiquidity(goCtx context.Context, msg *types.M
 		),
 	)
 
-	var coins = make([]*sdk.Coin, 0, withdrawCoins.Len())
+	var coins = make([]sdk.Coin, 0, withdrawCoins.Len())
 	for _, coin := range withdrawCoins {
-		coins = append(coins, &coin)
+		coins = append(coins, coin)
 	}
 
 	return &types.MsgRemoveUnilateralLiquidityResponse{
