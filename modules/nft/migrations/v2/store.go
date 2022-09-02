@@ -1,6 +1,10 @@
 package v2
 
 import (
+	"time"
+
+	"github.com/tendermint/tendermint/libs/log"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -8,12 +12,24 @@ import (
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
-func Migrate(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Codec, k NFTKeeper) error {
+func Migrate(ctx sdk.Context,
+	storeKey storetypes.StoreKey,
+	cdc codec.Codec,
+	logger log.Logger,
+	k NFTKeeper,
+) error {
+	logger.Info("migrate store data from version 1 to 2")
+	startTime := time.Now()
 	denoms, err := migrateDenoms(ctx, storeKey, cdc, k)
 	if err != nil {
 		return err
 	}
-	return migrateTokens(ctx, storeKey, cdc, denoms, k)
+
+	if err := migrateTokens(ctx, storeKey, cdc, denoms, k); err != nil {
+		return err
+	}
+	logger.Info("migrate store data success", "consume", time.Since(startTime).String())
+	return nil
 }
 
 func migrateDenoms(ctx sdk.Context,
