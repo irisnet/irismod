@@ -54,7 +54,7 @@ func (m msgServer) AddUnilateralLiquidity(goCtx context.Context, msg *types.MsgA
 		return nil, sdkerrors.Wrap(types.ErrInvalidDeadline, "deadline has passed for MsgAddUnilateralLiquidity")
 	}
 
-	mintToken, err := m.Keeper.AddLiquidity(ctx, msg)
+	mintToken, err := m.Keeper.AddUnilateralLiquidity(ctx, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (m msgServer) RemoveUnilateralLiquidity(goCtx context.Context, msg *types.M
 	if ctx.BlockHeader().Time.After(time.Unix(msg.Deadline, 0)) {
 		return nil, sdkerrors.Wrap(types.ErrInvalidDeadline, "deadline has passed for MsgRemoveLiquidity")
 	}
-	withdrawCoins, err := m.Keeper.RemoveLiquidity(ctx, msg)
+	withdrawCoins, err := m.Keeper.RemoveUnilateralLiquidity(ctx, msg)
 	if err != nil {
 		return nil, err
 	}

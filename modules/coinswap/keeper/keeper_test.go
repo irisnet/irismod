@@ -282,7 +282,7 @@ func (suite *TestSuite) TestLiquidity2() {
 		addrSender2.String(),
 	)
 
-	_, err = suite.app.CoinswapKeeper.AddLiquidity(suite.ctx, addMsg)
+	_, err = suite.app.CoinswapKeeper.AddUnilateralLiquidity(suite.ctx, addMsg)
 	suite.NoError(err)
 
 	// 2.1 lptAmt
@@ -360,7 +360,7 @@ func (suite *TestSuite) TestLiquidity3() {
 		addrSender1.String(),
 	)
 
-	_, err = suite.app.CoinswapKeeper.RemoveLiquidity(suite.ctx, removeMsg)
+	_, err = suite.app.CoinswapKeeper.RemoveUnilateralLiquidity(suite.ctx, removeMsg)
 	suite.NoError(err)
 
 	// 2.1 lptAmt

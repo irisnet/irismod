@@ -104,16 +104,7 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 }
 
 // AddLiquidity adds liquidity to the specified pool
-func (k Keeper) AddLiquidity(ctx sdk.Context, imsg interface{}) (sdk.Coin, error) {
-	var msg *types.MsgAddLiquidity
-
-	switch i := imsg.(type) {
-	case *types.MsgAddUnilateralLiquidity:
-		return k.addUnilateralLiquidity(ctx, i)
-	case *types.MsgAddLiquidity:
-		msg = i
-	}
-
+func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.Coin, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 	if standardDenom == msg.MaxToken.Denom {
 		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom,
@@ -207,7 +198,8 @@ func (k Keeper) addLiquidity(ctx sdk.Context,
 	return mintToken, nil
 }
 
-func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilateralLiquidity) (sdk.Coin, error) {
+// AddUnilateralLiquidity adds liquidity unilaterally to the specified pool
+func (k Keeper) AddUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilateralLiquidity) (sdk.Coin, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return sdk.Coin{}, err
@@ -264,14 +256,24 @@ func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 		),
 	)
 
+	return k.addUnilateralLiquidity(ctx, sender, poolAddr, msg.ExactToken, pool.LptDenom, mintLptAmt)
+}
+
+func (k Keeper) addUnilateralLiquidity(ctx sdk.Context,
+	sender sdk.AccAddress,
+	poolAddr sdk.AccAddress,
+	exactToken sdk.Coin,
+	lptDenom string,
+	mintLptAmt sdkmath.Int,
+) (sdk.Coin, error) {
 	// add liquidity
-	exactCoins := sdk.NewCoins(msg.ExactToken)
+	exactCoins := sdk.NewCoins(exactToken)
 	if err := k.bk.SendCoins(ctx, sender, poolAddr, exactCoins); err != nil {
 		return sdk.Coin{}, err
 	}
 
 	// mint and send lpt
-	mintLpt := sdk.NewCoin(pool.LptDenom, mintLptAmt)
+	mintLpt := sdk.NewCoin(lptDenom, mintLptAmt)
 	mintLpts := sdk.NewCoins(mintLpt)
 	if err := k.bk.MintCoins(ctx, types.ModuleName, mintLpts); err != nil {
 		return sdk.Coin{}, err
@@ -284,16 +286,7 @@ func (k Keeper) addUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 }
 
 // RemoveLiquidity removes liquidity from the specified pool
-func (k Keeper) RemoveLiquidity(ctx sdk.Context, imsg interface{}) (sdk.Coins, error) {
-	var msg *types.MsgRemoveLiquidity
-
-	switch i := imsg.(type) {
-	case *types.MsgRemoveUnilateralLiquidity:
-		return k.removeUnilateralLiquidity(ctx, i)
-	case *types.MsgRemoveLiquidity:
-		msg = i
-	}
-
+func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) (sdk.Coins, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
@@ -377,7 +370,8 @@ func (k Keeper) removeLiquidity(ctx sdk.Context, poolAddr, sender sdk.AccAddress
 	return coins, k.bk.SendCoins(ctx, poolAddr, sender, coins)
 }
 
-func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveUnilateralLiquidity) (sdk.Coins, error) {
+// RemoveUnilateralLiquidity removes liquidity unilaterally from the specified pool
+func (k Keeper) RemoveUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveUnilateralLiquidity) (sdk.Coins, error) {
 	var targetTokenDenom string
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
@@ -469,8 +463,19 @@ func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 		),
 	)
 
+	return k.removeUnilateralLiquidity(ctx, sender, poolAddr, lptDenom, targetTokenDenom, msg.ExactLiquidity, targetTokenAmtAfterFee)
+}
+
+func (k Keeper) removeUnilateralLiquidity(ctx sdk.Context,
+	sender sdk.AccAddress,
+	poolAddr sdk.AccAddress,
+	lptDenom string,
+	targetTokenDenom string,
+	exactLiquidity sdkmath.Int,
+	targetTokenAmtAfterFee sdkmath.Int,
+) (sdk.Coins, error) {
 	// send lpt and burn lpt
-	lptCoins := sdk.NewCoins(sdk.NewCoin(lptDenom, msg.ExactLiquidity))
+	lptCoins := sdk.NewCoins(sdk.NewCoin(lptDenom, exactLiquidity))
 	if err := k.bk.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, lptCoins); err != nil {
 		return nil, err
 	}
