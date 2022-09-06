@@ -13,7 +13,7 @@ import (
 	randomcli "github.com/irisnet/irismod/modules/random/client/cli"
 )
 
-// MsgRedelegateExec creates a redelegate message.
+// RequestRandomExec creates a redelegate message.
 func RequestRandomExec(clientCtx client.Context, from string, extraArgs ...string) (testutil.BufferWriter, error) {
 	args := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
