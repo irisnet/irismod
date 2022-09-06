@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	module2 "github.com/irisnet/irismod/modules/nft/module"
+
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -94,7 +96,6 @@ import (
 	"github.com/irisnet/irismod/modules/htlc"
 	htlckeeper "github.com/irisnet/irismod/modules/htlc/keeper"
 	htlctypes "github.com/irisnet/irismod/modules/htlc/types"
-	"github.com/irisnet/irismod/modules/nft"
 	nftkeeper "github.com/irisnet/irismod/modules/nft/keeper"
 	nfttypes "github.com/irisnet/irismod/modules/nft/types"
 	"github.com/irisnet/irismod/modules/oracle"
@@ -152,7 +153,7 @@ var (
 
 		token.AppModuleBasic{},
 		record.AppModuleBasic{},
-		nft.AppModuleBasic{},
+		module2.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
 		service.AppModuleBasic{},
@@ -178,6 +179,7 @@ var (
 		farmtypes.ModuleName:           {authtypes.Burner},
 		farmtypes.RewardCollector:      nil,
 		farmtypes.EscrowCollector:      nil,
+		nfttypes.ModuleName:            nil,
 	}
 )
 
@@ -347,7 +349,12 @@ func NewSimApp(
 	)
 	app.RecordKeeper = recordkeeper.NewKeeper(appCodec, keys[recordtypes.StoreKey])
 
-	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
+	app.NFTKeeper = nftkeeper.NewKeeper(
+		appCodec,
+		keys[nfttypes.StoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+	)
 
 	app.HTLCKeeper = htlckeeper.NewKeeper(
 		appCodec,
@@ -442,7 +449,7 @@ func NewSimApp(
 		params.NewAppModule(app.ParamsKeeper),
 		token.NewAppModule(appCodec, app.TokenKeeper, app.AccountKeeper, app.BankKeeper),
 		record.NewAppModule(appCodec, app.RecordKeeper, app.AccountKeeper, app.BankKeeper),
-		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		module2.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
 		htlc.NewAppModule(appCodec, app.HTLCKeeper, app.AccountKeeper, app.BankKeeper),
 		coinswap.NewAppModule(appCodec, app.CoinswapKeeper, app.AccountKeeper, app.BankKeeper),
 		service.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper),
@@ -517,7 +524,7 @@ func NewSimApp(
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		token.NewAppModule(appCodec, app.TokenKeeper, app.AccountKeeper, app.BankKeeper),
 		record.NewAppModule(appCodec, app.RecordKeeper, app.AccountKeeper, app.BankKeeper),
-		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		module2.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
 		htlc.NewAppModule(appCodec, app.HTLCKeeper, app.AccountKeeper, app.BankKeeper),
 		//coinswap.NewAppModule(appCodec, app.CoinswapKeeper, app.AccountKeeper, app.BankKeeper),
 		service.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper),
