@@ -1,18 +1,17 @@
-package v152
+package v3
 
 import (
-	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/irisnet/irismod/modules/coinswap/types"
 )
 
-// Parameter store keys
 var (
-	KeyFee                 = []byte("Fee") // fee key
-	DefaultPoolCreationFee = sdk.NewCoin("uiris", sdkmath.NewIntWithDecimal(5000, 6))
-	DefaultTaxRate         = sdk.NewDecWithPrec(4, 1)
+	KeyFee                 = []byte("Fee")
+	KeyPoolCreationFee     = []byte("PoolCreationFee")
+	KeyTaxRate             = []byte("TaxRate")
+	UnilateralLiquidityFee = sdk.NewDecWithPrec(2, 3)
 )
 
 type (
@@ -22,16 +21,19 @@ type (
 	}
 
 	Params struct {
-		Fee sdk.Dec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"fee"`
+		Fee             sdk.Dec  `protobuf:"bytes,1,opt,name=fee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"fee"`
+		PoolCreationFee sdk.Coin `protobuf:"bytes,2,opt,name=pool_creation_fee,json=poolCreationFee,proto3" json:"pool_creation_fee"`
+		TaxRate         sdk.Dec  `protobuf:"bytes,3,opt,name=tax_rate,json=taxRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"tax_rate"`
 	}
 )
 
 func Migrate(ctx sdk.Context, k CoinswapKeeper, paramSpace paramstypes.Subspace) error {
 	params := GetLegacyParams(ctx, paramSpace)
 	newParams := types.Params{
-		Fee:             params.Fee,
-		PoolCreationFee: DefaultPoolCreationFee,
-		TaxRate:         DefaultTaxRate,
+		Fee:                    params.Fee,
+		PoolCreationFee:        params.PoolCreationFee,
+		TaxRate:                params.TaxRate,
+		UnilateralLiquidityFee: UnilateralLiquidityFee,
 	}
 	k.SetParams(ctx, newParams)
 	return nil
@@ -48,5 +50,7 @@ func GetLegacyParams(ctx sdk.Context, paramSpace paramstypes.Subspace) Params {
 func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
 		paramstypes.NewParamSetPair(KeyFee, &p.Fee, nil),
+		paramstypes.NewParamSetPair(KeyPoolCreationFee, &p.PoolCreationFee, nil),
+		paramstypes.NewParamSetPair(KeyTaxRate, &p.TaxRate, nil),
 	}
 }
