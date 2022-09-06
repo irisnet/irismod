@@ -25,20 +25,6 @@ func (k Keeper) SaveCollection(ctx sdk.Context, collection types.Collection) err
 	return nil
 }
 
-// GetCollection returns the collection by the specified denom ID
-func (k Keeper) GetCollection(ctx sdk.Context, denomID string) (types.Collection, error) {
-	denom, err := k.GetDenomInfo(ctx, denomID)
-	if err != nil {
-		return types.Collection{}, err
-	}
-
-	nfts, err := k.GetNFTs(ctx, denomID)
-	if err != nil {
-		return types.Collection{}, err
-	}
-	return types.NewCollection(*denom, nfts), nil
-}
-
 // GetCollections returns all the collections
 func (k Keeper) GetCollections(ctx sdk.Context) (cs []types.Collection, err error) {
 	for _, class := range k.nk.GetClasses(ctx) {

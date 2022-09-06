@@ -28,24 +28,6 @@ func (suite *KeeperSuite) TestSetCollection() {
 	err := suite.keeper.SaveCollection(suite.ctx, collection2)
 	suite.Nil(err)
 
-	collection2, err = suite.keeper.GetCollection(suite.ctx, denomID)
-	suite.NoError(err)
-	suite.Len(collection2.NFTs, 2)
-
-	msg, fail := keeper.SupplyInvariant(suite.keeper)(suite.ctx)
-	suite.False(fail, msg)
-}
-
-func (suite *KeeperSuite) TestGetCollection() {
-	// SaveNFT shouldn't fail when collection does not exist
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
-	suite.NoError(err)
-
-	// collection should exist
-	collection, err := suite.keeper.GetCollection(suite.ctx, denomID)
-	suite.NoError(err)
-	suite.NotEmpty(collection)
-
 	msg, fail := keeper.SupplyInvariant(suite.keeper)(suite.ctx)
 	suite.False(fail, msg)
 }
