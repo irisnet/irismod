@@ -1,4 +1,4 @@
-package rest_test
+package testutil_test
 
 // import (
 // 	"context"
