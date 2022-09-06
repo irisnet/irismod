@@ -18,6 +18,13 @@ message BaseNFT {
   string uri_hash = 6;
 }
 
+message NFTMetadata {
+  option (gogoproto.equal) = true;
+
+  string name = 1;
+  string data = 2;
+}
+
 // Denom defines a type of NFT
 message Denom {
   option (gogoproto.equal) = true;
@@ -33,6 +40,16 @@ message Denom {
   string uri = 9;
   string uri_hash = 10;
   string data = 11;
+}
+
+message DenomMetadata {
+  option (gogoproto.equal) = true;
+
+  string creator = 1;
+  string schema = 2;
+  bool mint_restricted = 3;
+  bool update_restricted = 4;
+  string data = 5;
 }
 
 // IDCollection defines a type of collection with specified ID
