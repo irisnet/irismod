@@ -14,9 +14,8 @@ import (
 )
 
 // IssueDenomExec creates a redelegate message.
-func IssueDenomExec(clientCtx client.Context, from string, denom string, extraArgs ...string) (testutil.BufferWriter, error) {
+func IssueDenomExec(clientCtx client.Context, from string, extraArgs ...string) (testutil.BufferWriter, error) {
 	args := []string{
-		denom,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
 	}
 	args = append(args, extraArgs...)

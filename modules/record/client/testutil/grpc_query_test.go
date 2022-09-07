@@ -1,101 +1,104 @@
 package testutil_test
 
-// import (
-// 	"fmt"
-// 	"testing"
+import (
+	"fmt"
+	"testing"
 
-// 	"github.com/gogo/protobuf/proto"
-// 	"github.com/stretchr/testify/suite"
-// 	"github.com/tidwall/gjson"
+	"github.com/gogo/protobuf/proto"
+	"github.com/stretchr/testify/suite"
+	"github.com/tidwall/gjson"
 
-// 	"github.com/cosmos/cosmos-sdk/client/flags"
-// 	"github.com/cosmos/cosmos-sdk/testutil/network"
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-// 	recordcli "github.com/irisnet/irismod/modules/record/client/cli"
-// 	recordtestutil "github.com/irisnet/irismod/modules/record/client/testutil"
-// 	recordtypes "github.com/irisnet/irismod/modules/record/types"
-// 	"github.com/irisnet/irismod/simapp"
-// )
+	recordcli "github.com/irisnet/irismod/modules/record/client/cli"
+	recordtestutil "github.com/irisnet/irismod/modules/record/client/testutil"
+	recordtypes "github.com/irisnet/irismod/modules/record/types"
+	"github.com/irisnet/irismod/simapp"
+)
 
-// type IntegrationTestSuite struct {
-// 	suite.Suite
+type IntegrationTestSuite struct {
+	suite.Suite
 
-// 	cfg     network.Config
-// 	network *network.Network
-// }
+	cfg     network.Config
+	network *network.Network
+}
 
-// func (s *IntegrationTestSuite) SetupSuite() {
-// 	s.T().Log("setting up integration test suite")
+func (s *IntegrationTestSuite) SetupSuite() {
+	s.T().Log("setting up integration test suite")
 
-// 	cfg := simapp.NewConfig()
-// 	cfg.NumValidators = 1
+	cfg := simapp.NewConfig()
+	cfg.NumValidators = 1
 
-// 	s.cfg = cfg
-// 	s.network = network.New(s.T(), cfg)
+	s.cfg = cfg
 
-// 	_, err := s.network.WaitForHeight(1)
-// 	s.Require().NoError(err)
-// }
+	var err error
+	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
+	s.Require().NoError(err)
 
-// func (s *IntegrationTestSuite) TearDownSuite() {
-// 	s.T().Log("tearing down integration test suite")
-// 	s.network.Cleanup()
-// }
+	_, err = s.network.WaitForHeight(1)
+	s.Require().NoError(err)
+}
 
-// func TestIntegrationTestSuite(t *testing.T) {
-// 	suite.Run(t, new(IntegrationTestSuite))
-// }
+func (s *IntegrationTestSuite) TearDownSuite() {
+	s.T().Log("tearing down integration test suite")
+	s.network.Cleanup()
+}
 
-// func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
-// 	val := s.network.Validators[0]
-// 	clientCtx := val.ClientCtx
+func TestIntegrationTestSuite(t *testing.T) {
+	suite.Run(t, new(IntegrationTestSuite))
+}
 
-// 	// ---------------------------------------------------------------------------
+func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
 
-// 	from := val.Address
-// 	digest := "digest"
-// 	digestAlgo := "digest-algo"
-// 	uri := "https://example.abc"
-// 	meta := "meta data"
+	// ---------------------------------------------------------------------------
 
-// 	args := []string{
-// 		fmt.Sprintf("--%s=%s", recordcli.FlagURI, uri),
-// 		fmt.Sprintf("--%s=%s", recordcli.FlagMeta, meta),
+	from := val.Address
+	digest := "digest"
+	digestAlgo := "digest-algo"
+	uri := "https://example.abc"
+	meta := "meta data"
 
-// 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-// 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-// 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-// 	}
+	args := []string{
+		fmt.Sprintf("--%s=%s", recordcli.FlagURI, uri),
+		fmt.Sprintf("--%s=%s", recordcli.FlagMeta, meta),
 
-// 	respType := proto.Message(&sdk.TxResponse{})
-// 	expectedCode := uint32(0)
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
 
-// 	bz, err := recordtestutil.MsgCreateRecordExec(clientCtx, from.String(), digest, digestAlgo, args...)
-// 	s.Require().NoError(err)
-// 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-// 	txResp := respType.(*sdk.TxResponse)
-// 	s.Require().Equal(expectedCode, txResp.Code)
+	respType := proto.Message(&sdk.TxResponse{})
+	expectedCode := uint32(0)
 
-// 	recordID := gjson.Get(txResp.RawLog, "0.events.0.attributes.1.value").String()
+	bz, err := recordtestutil.MsgCreateRecordExec(clientCtx, from.String(), digest, digestAlgo, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp := respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
 
-// 	// ---------------------------------------------------------------------------
+	recordID := gjson.Get(txResp.RawLog, "0.events.0.attributes.1.value").String()
 
-// 	baseURL := val.APIAddress
-// 	url := fmt.Sprintf("%s/irismod/record/records/%s", baseURL, recordID)
+	// ---------------------------------------------------------------------------
 
-// 	respType = proto.Message(&recordtypes.QueryRecordResponse{})
-// 	expectedContents := []recordtypes.Content{{
-// 		Digest:     digest,
-// 		DigestAlgo: digestAlgo,
-// 		URI:        uri,
-// 		Meta:       meta,
-// 	}}
+	baseURL := val.APIAddress
+	url := fmt.Sprintf("%s/irismod/record/records/%s", baseURL, recordID)
 
-// 	resp, err := rest.GetRequest(url)
-// 	s.Require().NoError(err)
-// 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
-// 	record := respType.(*recordtypes.QueryRecordResponse).Record
-// 	s.Require().Equal(expectedContents, record.Contents)
-// }
+	respType = proto.Message(&recordtypes.QueryRecordResponse{})
+	expectedContents := []recordtypes.Content{{
+		Digest:     digest,
+		DigestAlgo: digestAlgo,
+		URI:        uri,
+		Meta:       meta,
+	}}
+
+	resp, err := rest.GetRequest(url)
+	s.Require().NoError(err)
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
+	record := respType.(*recordtypes.QueryRecordResponse).Record
+	s.Require().Equal(expectedContents, record.Contents)
+}
