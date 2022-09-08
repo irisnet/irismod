@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	module2 "github.com/irisnet/irismod/modules/nft/module"
-
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -96,7 +94,11 @@ import (
 	"github.com/irisnet/irismod/modules/htlc"
 	htlckeeper "github.com/irisnet/irismod/modules/htlc/keeper"
 	htlctypes "github.com/irisnet/irismod/modules/htlc/types"
+	"github.com/irisnet/irismod/modules/mt"
+	mtkeeper "github.com/irisnet/irismod/modules/mt/keeper"
+	mttypes "github.com/irisnet/irismod/modules/mt/types"
 	nftkeeper "github.com/irisnet/irismod/modules/nft/keeper"
+	nft "github.com/irisnet/irismod/modules/nft/module"
 	nfttypes "github.com/irisnet/irismod/modules/nft/types"
 	"github.com/irisnet/irismod/modules/oracle"
 	oracleKeeper "github.com/irisnet/irismod/modules/oracle/keeper"
@@ -153,7 +155,8 @@ var (
 
 		token.AppModuleBasic{},
 		record.AppModuleBasic{},
-		module2.AppModuleBasic{},
+		nft.AppModuleBasic{},
+		mt.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
 		service.AppModuleBasic{},
@@ -180,6 +183,7 @@ var (
 		farmtypes.RewardCollector:      nil,
 		farmtypes.EscrowCollector:      nil,
 		nfttypes.ModuleName:            nil,
+		mttypes.ModuleName:             nil,
 	}
 )
 
@@ -223,6 +227,7 @@ type SimApp struct {
 	TokenKeeper    tokenkeeper.Keeper
 	RecordKeeper   recordkeeper.Keeper
 	NFTKeeper      nftkeeper.Keeper
+	MTKeeper       mtkeeper.Keeper
 	HTLCKeeper     htlckeeper.Keeper
 	CoinswapKeeper coinswapkeeper.Keeper
 	ServiceKeeper  servicekeeper.Keeper
@@ -272,7 +277,7 @@ func NewSimApp(
 		govtypes.StoreKey, paramstypes.StoreKey,
 		upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		capabilitytypes.StoreKey, tokentypes.StoreKey,
-		nfttypes.StoreKey, htlctypes.StoreKey, recordtypes.StoreKey,
+		nfttypes.StoreKey, mttypes.StoreKey, htlctypes.StoreKey, recordtypes.StoreKey,
 		coinswaptypes.StoreKey, servicetypes.StoreKey, oracletypes.StoreKey,
 		randomtypes.StoreKey, farmtypes.StoreKey,
 	)
@@ -354,6 +359,11 @@ func NewSimApp(
 		keys[nfttypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
+	)
+
+	app.MTKeeper = mtkeeper.NewKeeper(
+		appCodec,
+		keys[mttypes.StoreKey],
 	)
 
 	app.HTLCKeeper = htlckeeper.NewKeeper(
@@ -449,7 +459,8 @@ func NewSimApp(
 		params.NewAppModule(app.ParamsKeeper),
 		token.NewAppModule(appCodec, app.TokenKeeper, app.AccountKeeper, app.BankKeeper),
 		record.NewAppModule(appCodec, app.RecordKeeper, app.AccountKeeper, app.BankKeeper),
-		module2.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		mt.NewAppModule(appCodec, app.MTKeeper, app.AccountKeeper, app.BankKeeper),
 		htlc.NewAppModule(appCodec, app.HTLCKeeper, app.AccountKeeper, app.BankKeeper),
 		coinswap.NewAppModule(appCodec, app.CoinswapKeeper, app.AccountKeeper, app.BankKeeper),
 		service.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper),
@@ -469,7 +480,8 @@ func NewSimApp(
 		genutiltypes.ModuleName, evidencetypes.ModuleName, feegrant.ModuleName,
 		paramstypes.ModuleName, upgradetypes.ModuleName, vestingtypes.ModuleName,
 		tokentypes.ModuleName,
-		nfttypes.ModuleName, htlctypes.ModuleName, recordtypes.ModuleName,
+		nfttypes.ModuleName, mttypes.ModuleName,
+		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
 		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
 	)
@@ -480,7 +492,8 @@ func NewSimApp(
 		genutiltypes.ModuleName, evidencetypes.ModuleName, feegrant.ModuleName,
 		paramstypes.ModuleName, upgradetypes.ModuleName, vestingtypes.ModuleName,
 		tokentypes.ModuleName,
-		nfttypes.ModuleName, htlctypes.ModuleName, recordtypes.ModuleName,
+		nfttypes.ModuleName, mttypes.ModuleName,
+		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
 		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
 	)
@@ -497,7 +510,8 @@ func NewSimApp(
 		genutiltypes.ModuleName, evidencetypes.ModuleName, feegrant.ModuleName,
 		paramstypes.ModuleName, upgradetypes.ModuleName, vestingtypes.ModuleName,
 		tokentypes.ModuleName,
-		nfttypes.ModuleName, htlctypes.ModuleName, recordtypes.ModuleName,
+		nfttypes.ModuleName, mttypes.ModuleName,
+		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
 		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
 	)
@@ -524,7 +538,8 @@ func NewSimApp(
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		token.NewAppModule(appCodec, app.TokenKeeper, app.AccountKeeper, app.BankKeeper),
 		record.NewAppModule(appCodec, app.RecordKeeper, app.AccountKeeper, app.BankKeeper),
-		module2.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		mt.NewAppModule(appCodec, app.MTKeeper, app.AccountKeeper, app.BankKeeper),
 		htlc.NewAppModule(appCodec, app.HTLCKeeper, app.AccountKeeper, app.BankKeeper),
 		//coinswap.NewAppModule(appCodec, app.CoinswapKeeper, app.AccountKeeper, app.BankKeeper),
 		service.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper),
