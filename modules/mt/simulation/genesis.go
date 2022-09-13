@@ -1,6 +1,8 @@
 package simulation
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	mt "github.com/irisnet/irismod/modules/mt/types"
@@ -12,8 +14,8 @@ const (
 	prefixDenomName = "denom:name:"
 	prefixMtID      = "mt:id"
 
-	lenMTs = 10          // MTs number under a denom
-	supply = uint64(100) // supply for each MT
+	lenMTs = 10         // MTs number under a denom
+	supply = uint64(10) // supply for each MT
 )
 
 // genMTs returns MTs for a denom
@@ -86,17 +88,26 @@ func genOwners(r *rand.Rand, collections []mt.Collection, accounts []simtypes.Ac
 
 // RandomizedGenState generates a random GenesisState for mt.
 func RandomizedGenState(simState *module.SimulationState) {
-	var collections []mt.Collection
+	var (
+		collections []mt.Collection
+		owners      []mt.Owner
+		accLen      int = 10
+	)
+
+	if len(simState.Accounts) < accLen {
+		accLen = len(simState.Accounts)
+	}
+
+	accs := simState.Accounts[:accLen]
 	simState.AppParams.GetOrGenerate(simState.Cdc, "mt", &collections, simState.Rand,
 		func(r *rand.Rand) {
-			collections = genCollections(r, simState.Accounts)
+			collections = genCollections(r, accs)
 		},
 	)
 
-	var owners []mt.Owner
 	simState.AppParams.GetOrGenerate(simState.Cdc, "mt", &owners, simState.Rand,
 		func(r *rand.Rand) {
-			owners = genOwners(r, collections, simState.Accounts)
+			owners = genOwners(r, collections, accs)
 		},
 	)
 
@@ -104,5 +115,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		Collections: collections,
 		Owners:      owners,
 	}
+
+	bz, err := json.MarshalIndent(mtGenesis, "", " ")
+	if err != nil {
+		fmt.Printf("Selected randomly generated %s parameters:\n%s\n", mt.ModuleName, bz)
+	}
+
 	simState.GenState[mt.ModuleName] = simState.Cdc.MustMarshalJSON(mtGenesis)
+
 }
