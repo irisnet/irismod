@@ -1,53 +1,108 @@
 package simulation
 
 import (
-	"encoding/json"
-	"fmt"
-	"math/rand"
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-
-	"github.com/irisnet/irismod/modules/mt/types"
+	mt "github.com/irisnet/irismod/modules/mt/types"
+	"math/rand"
 )
 
 const (
-	kitties = "kitties"
-	doggos  = "doggos"
+	prefixDenomID   = "denom:id:"
+	prefixDenomName = "denom:name:"
+	prefixMtID      = "mt:id"
+
+	lenMTs = 10          // MTs number under a denom
+	supply = uint64(100) // supply for each MT
 )
 
-// RandomizedGenState generates a random GenesisState for mt
-func RandomizedGenState(simState *module.SimulationState) {
-	collections := types.NewCollections(
-		types.NewCollection(
-			types.Denom{
-				Id:   doggos,
-				Name: doggos,
-			},
-			types.MTs{},
-		),
-		types.NewCollection(
-			types.Denom{
-				Id:   kitties,
-				Name: kitties,
-			},
-			types.MTs{}),
-	)
-
-	mtGenesis := types.NewGenesisState(collections, []types.Owner{})
-
-	bz, err := json.MarshalIndent(mtGenesis, "", " ")
-	if err != nil {
-		panic(err)
+// genMTs returns MTs for a denom
+func genMTs(r *rand.Rand) []mt.MT {
+	mts := make([]mt.MT, lenMTs)
+	for i := 0; i < lenMTs; i++ {
+		mts[i] = mt.MT{
+			Id:     prefixMtID + simtypes.RandStringOfLength(r, 10),
+			Supply: supply,
+			Data:   []byte(simtypes.RandStringOfLength(r, 10)),
+		}
 	}
-	fmt.Printf("Selected randomly generated %s parameters:\n%s\n", types.ModuleName, bz)
-
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(mtGenesis)
+	return mts
 }
 
-func RandnMTID(r *rand.Rand, min, max int) string {
-	n := simtypes.RandIntBetween(r, min, max)
-	id := simtypes.RandStringOfLength(r, n)
-	return strings.ToLower(id)
+// genCollections returns a slice of mt collection
+func genCollections(r *rand.Rand, accounts []simtypes.Account) []mt.Collection {
+	collections := make([]mt.Collection, len(accounts))
+	for i := 0; i < len(accounts); i++ {
+		collections[i] = mt.Collection{
+			Denom: &mt.Denom{
+				Id:    prefixDenomID + simtypes.RandStringOfLength(r, 10),
+				Name:  prefixDenomName + simtypes.RandStringOfLength(r, 10),
+				Data:  []byte(simtypes.RandStringOfLength(r, 10)),
+				Owner: accounts[i].Address.String(),
+			},
+			Mts: genMTs(r),
+		}
+	}
+	return collections
+}
+
+// genDenomBalances generates DenomBalances for each account.
+// mts must belong to denomId.
+func genDenomBalances(r *rand.Rand, denomId string, mts []mt.MT, accounts []simtypes.Account) []mt.DenomBalance {
+	denomBalances := make([]mt.DenomBalance, len(accounts))
+	for i := 0; i < len(accounts); i++ {
+		balances := make([]mt.Balance, len(mts))
+
+		// amount evenly distributed and sum-up not exceeding the total supply
+		for j := 0; j < len(mts); j++ {
+			balances[j] = mt.Balance{
+				MtId:   mts[j].Id,
+				Amount: mts[j].Supply / uint64(len(accounts)),
+			}
+		}
+
+		denomBalances[i] = mt.DenomBalance{
+			DenomId:  denomId,
+			Balances: balances,
+		}
+	}
+
+	return denomBalances
+}
+
+// genOwners returns a slice of mt owner
+func genOwners(r *rand.Rand, collections []mt.Collection, accounts []simtypes.Account) []mt.Owner {
+	owners := make([]mt.Owner, len(accounts))
+	for i := 0; i < len(accounts); i++ {
+		collection := collections[i]
+		owners[i] = mt.Owner{
+			Address: accounts[i].Address.String(),
+			Denoms:  genDenomBalances(r, collection.Denom.Id, collection.Mts, accounts),
+		}
+	}
+
+	return owners
+}
+
+// RandomizedGenState generates a random GenesisState for mt.
+func RandomizedGenState(simState *module.SimulationState) {
+	var collections []mt.Collection
+	simState.AppParams.GetOrGenerate(simState.Cdc, "mt", &collections, simState.Rand,
+		func(r *rand.Rand) {
+			collections = genCollections(r, simState.Accounts)
+		},
+	)
+
+	var owners []mt.Owner
+	simState.AppParams.GetOrGenerate(simState.Cdc, "mt", &owners, simState.Rand,
+		func(r *rand.Rand) {
+			owners = genOwners(r, collections, simState.Accounts)
+		},
+	)
+
+	mtGenesis := &mt.GenesisState{
+		Collections: collections,
+		Owners:      owners,
+	}
+	simState.GenState[mt.ModuleName] = simState.Cdc.MustMarshalJSON(mtGenesis)
 }
