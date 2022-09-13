@@ -146,7 +146,7 @@ func SetupWithGenesisStateFn(t *testing.T, merge func(cdc codec.Codec, state Gen
 
 func NewConfig() network.Config {
 	cfg := network.DefaultConfig()
-	encCfg := MakeTestEncodingConfig()
+	encCfg := MakeTestEncodingConfig() // redundant
 	cfg.Codec = encCfg.Codec
 	cfg.TxConfig = encCfg.TxConfig
 	cfg.LegacyAmino = encCfg.Amino
