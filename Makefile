@@ -2,6 +2,7 @@
 
 SIMAPP = ./simapp
 BINDIR ?= $(GOPATH)/bin
+CURRENT_DIR = $(shell pwd)
 
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 PACKAGES_UNITTEST=$(shell go list ./... | grep -v '/simulation' | grep -v '/cli_test')
@@ -79,23 +80,23 @@ test-unit:
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."
-	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -Enabled=true \
+	@cd ${CURRENT_DIR}/simapp && go test -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
 test-sim-nondeterminism-fast:
 	@echo "Running non-determinism test..."
-	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -Enabled=true \
+	@cd ${CURRENT_DIR}/simapp && go test -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=10 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
 test-sim-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
 	@echo "By default, $(shell pwd)/testdata/genesis.json will be used."
-	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=$(shell pwd)/testdata/genesis.json \
+	@cd ${CURRENT_DIR}/simapp && go test -mod=readonly -run TestFullAppSimulation -Genesis=$(shell pwd)/testdata/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 test-sim-import-export: runsim
 	@echo "Running application import/export simulation. This may take several minutes..."
-	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppImportExport
+	@cd ${CURRENT_DIR}/simapp && $(BINDIR)/runsim -Jobs=4 -SimAppPkg=. -ExitOnFail 50 5 TestAppImportExport
 
 test-sim-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
