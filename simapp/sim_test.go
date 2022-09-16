@@ -113,7 +113,7 @@ func TestAppImportExport(t *testing.T) {
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
-		db.Close()
+		require.NoError(t, db.Close())
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
@@ -271,6 +271,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	newApp := NewSimApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, sdksimapp.FlagPeriodValue, MakeTestEncodingConfig(), EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, "SimApp", newApp.Name())
 
+	fmt.Println("exported AppState:\n", string(exported.AppState))
 	newApp.InitChain(abci.RequestInitChain{
 		AppStateBytes: exported.AppState,
 	})
