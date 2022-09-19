@@ -79,6 +79,7 @@ func (k Keeper) TransferDenomOwner(
 	})
 }
 
+// GetDenomInfo return the denom information
 func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, error) {
 	class, has := k.nk.GetClass(ctx, denomID)
 	if !has {
@@ -102,4 +103,9 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 		UriHash:          class.UriHash,
 		Data:             denomMetadata.Data,
 	}, nil
+}
+
+// HasDenom determine whether denom exists
+func (k Keeper) HasDenom(ctx sdk.Context, denomID string) bool {
+	return k.nk.HasClass(ctx, denomID)
 }

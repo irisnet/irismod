@@ -158,10 +158,10 @@ func WeightedOperations(
 			weightMsgDefineService,
 			SimulateMsgDefineService(ak, bk, k),
 		),
-		simulation.NewWeightedOperation(
-			weightMsgBindService,
-			SimulateMsgBindService(ak, bk, k),
-		),
+		// simulation.NewWeightedOperation(
+		// 	weightMsgBindService,
+		// 	SimulateMsgBindService(ak, bk, k),
+		// ),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateServiceBinding,
 			SimulateMsgUpdateServiceBinding(ak, bk, k),

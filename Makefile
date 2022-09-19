@@ -88,12 +88,6 @@ test-sim-nondeterminism-fast:
 	@cd ${CURRENT_DIR}/simapp && go test -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=10 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
-test-sim-custom-genesis-fast:
-	@echo "Running custom genesis simulation..."
-	@echo "By default, $(shell pwd)/testdata/genesis.json will be used."
-	@cd ${CURRENT_DIR}/simapp && go test -mod=readonly -run TestFullAppSimulation -Genesis=$(shell pwd)/testdata/genesis.json \
-		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
-
 test-sim-import-export: runsim
 	@echo "Running application import/export simulation. This may take several minutes..."
 	@cd ${CURRENT_DIR}/simapp && $(BINDIR)/runsim -Jobs=4 -SimAppPkg=. -ExitOnFail 50 5 TestAppImportExport

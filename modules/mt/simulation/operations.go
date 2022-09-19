@@ -1,6 +1,8 @@
 package simulation
 
 import (
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
@@ -11,7 +13,6 @@ import (
 	"github.com/irisnet/irismod/modules/mt/keeper"
 	mt "github.com/irisnet/irismod/modules/mt/types"
 	"github.com/irisnet/irismod/modules/nft/types"
-	"math/rand"
 )
 
 // Simulation operation weights constants
@@ -248,16 +249,15 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		sender, _ := simtypes.RandomAcc(r, accs)
 		data := simtypes.RandStringOfLength(r, 10)
 
-		mtr, denomId, ok := randMT(ctx, r, k)
+		mtr, denomID, owner, ok := randMT(ctx, r, k)
 		if !ok {
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "not fetch an mt"), nil, nil
 		}
-
-		senderAcc := ak.GetAccount(ctx, sender.Address)
-		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
+		ownerAddr := sdk.MustAccAddressFromBech32(owner)
+		senderAcc := ak.GetAccount(ctx, ownerAddr)
+		spendableCoins := bk.SpendableCoins(ctx, ownerAddr)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, err.Error()), nil, err
@@ -268,16 +268,21 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "spend limit is nil"), nil, nil
 		}
 
-		amt := k.GetBalance(ctx, denomId, mtr.Id, sender.Address)
+		amt := k.GetBalance(ctx, denomID, mtr.Id, ownerAddr)
 		if amt == 0 {
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "sender doesn't have this mt"), nil, nil
 		}
 
 		msg := &mt.MsgEditMT{
 			Id:      mtr.Id,
-			DenomId: denomId,
+			DenomId: denomID,
 			Data:    []byte(data),
-			Sender:  sender.Address.String(),
+			Sender:  ownerAddr.String(),
+		}
+
+		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
+		if !ok {
+			return simtypes.NoOpMsg(types.ModuleName, TypeMsgEditMT, "owner(sender) not found"), nil, nil
 		}
 
 		txCfg := simappparams.MakeTestEncodingConfig().TxConfig
@@ -311,13 +316,24 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (OperationMsg simtypes.OperationMsg, futureOps []simtypes.FutureOperation, err error,
 	) {
-		sender, _ := simtypes.RandomAcc(r, accs)
+
+		mtr, denomID, owner, ok := randMT(ctx, r, k)
+		if !ok {
+			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "not fetch an mt"), nil, nil
+		}
+
+		ownerAddr := sdk.MustAccAddressFromBech32(owner)
+		senderAcc := ak.GetAccount(ctx, ownerAddr)
+		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
+		if !ok {
+			return simtypes.NoOpMsg(types.ModuleName, TypeMsgTransferMT, "owner(sender) not found"), nil, nil
+		}
+
 		recipient, _ := simtypes.RandomAcc(r, accs)
 		if sender.Address.Equals(recipient.Address) {
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "sender and recipient are same"), nil, nil
 		}
 
-		senderAcc := ak.GetAccount(ctx, sender.Address)
 		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
@@ -329,18 +345,12 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "spend limit is nil"), nil, nil
 		}
 
-		mtr, denomID, ok := randMT(ctx, r, k)
-		if !ok {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "not fetch an mt"), nil, nil
-		}
-
 		amt := k.GetBalance(ctx, denomID, mtr.Id, sender.Address)
 		if amt <= 1 {
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "sender doesn't have enough mt balances "), nil, nil
 		}
 
-		amt = uint64(r.Intn(int(amt))) // unsafe conversion
-
+		amt = uint64(simtypes.RandIntBetween(r, 1, int(amt)))
 		msg := &mt.MsgTransferMT{
 			Id:        mtr.Id,
 			DenomId:   denomID,
@@ -381,8 +391,15 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		sender, _ := simtypes.RandomAcc(r, accs)
-		senderAcc := ak.GetAccount(ctx, sender.Address)
+		mtr, denomID, owner, ok := randMT(ctx, r, k)
+
+		ownerAddr := sdk.MustAccAddressFromBech32(owner)
+		senderAcc := ak.GetAccount(ctx, ownerAddr)
+		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
+		if !ok {
+			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "not fetch an mt"), nil, nil
+		}
+
 		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
@@ -392,11 +409,6 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		spendLimit := spendableCoins.Sub(fees...)
 		if spendLimit == nil {
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "spend limit is nil"), nil, nil
-		}
-
-		mtr, denomID, ok := randMT(ctx, r, k)
-		if !ok {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "not fetch an mt"), nil, nil
 		}
 
 		amt := k.GetBalance(ctx, denomID, mtr.Id, sender.Address)
@@ -530,21 +542,20 @@ func randCollection(ctx sdk.Context, r *rand.Rand, k keeper.Keeper) (mt.Collecti
 }
 
 // randMT randomly returns an MT
-func randMT(ctx sdk.Context, r *rand.Rand, k keeper.Keeper) (mt.MT, string, bool) {
+func randMT(ctx sdk.Context, r *rand.Rand, k keeper.Keeper) (mt.MT, string, string, bool) {
 	collection, ok := randCollection(ctx, r, k)
 	if !ok {
-		return mt.MT{}, "", false
+		return mt.MT{}, "", "", false
 	}
 
 	mts := collection.Mts
 	if len(mts) == 0 {
-		return mt.MT{}, "", false
+		return mt.MT{}, "", "", false
 	}
 
 	idx := r.Intn(len(mts))
-	denomId := collection.Denom.Id
 
-	return mts[idx], denomId, true
+	return mts[idx], collection.Denom.Id, collection.Denom.Owner, true
 }
 
 // randMTWithCollection randomly returns an MT but with collection specified.
@@ -554,7 +565,5 @@ func randMTWithCollection(ctx sdk.Context, collection mt.Collection, r *rand.Ran
 	}
 
 	idx := r.Intn(len(collection.Mts))
-	denomId := collection.Denom.Id
-
-	return collection.Mts[idx], denomId, true
+	return collection.Mts[idx], collection.Denom.Id, true
 }

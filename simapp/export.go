@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/irisnet/irismod/modules/htlc"
+	"github.com/irisnet/irismod/modules/oracle"
+	"github.com/irisnet/irismod/modules/random"
+	"github.com/irisnet/irismod/modules/service"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -190,4 +194,8 @@ func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []
 			return false
 		},
 	)
+	htlc.PrepForZeroHeightGenesis(ctx, app.HTLCKeeper)
+	random.PrepForZeroHeightGenesis(ctx, app.RandomKeeper)
+	oracle.PrepForZeroHeightGenesis(ctx, app.OracleKeeper)
+	service.PrepForZeroHeightGenesis(ctx, app.ServiceKeeper)
 }
