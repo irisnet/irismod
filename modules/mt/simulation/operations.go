@@ -179,7 +179,7 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "not fetch a collection"), nil, nil
 		}
 
-		mtr, denomId, ok := randMTWithCollection(ctx, collection, r, k)
+		mtr, denomID, ok := randMTWithCollection(ctx, collection, r, k)
 		if !ok {
 			return simtypes.NoOpMsg(types.ModuleName, TypeMsgEditMT, "not fetch an mt"), nil, nil
 		}
@@ -210,8 +210,8 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		msg := &mt.MsgMintMT{
 			Id:        mtr.Id,
-			DenomId:   denomId,
-			Amount:    1,
+			DenomId:   denomID,
+			Amount:    uint64(simtypes.RandIntBetween(r, 1, 100)),
 			Data:      nil,
 			Sender:    sender.Address.String(),
 			Recipient: recipient.Address.String(),
@@ -392,6 +392,9 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
 		mtr, denomID, owner, ok := randMT(ctx, r, k)
+		if !ok {
+			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "not fetch an mt"), nil, nil
+		}
 
 		ownerAddr := sdk.MustAccAddressFromBech32(owner)
 		senderAcc := ak.GetAccount(ctx, ownerAddr)
@@ -416,8 +419,7 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "sender doesn't have enough mt balances "), nil, nil
 		}
 
-		amt = uint64(r.Intn(int(amt))) // unsafe conversion
-
+		amt = uint64(simtypes.RandIntBetween(r, 1, int(amt))) // unsafe conversion
 		msg := &mt.MsgBurnMT{
 			Id:      mtr.Id,
 			DenomId: denomID,
