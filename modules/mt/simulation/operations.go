@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/irisnet/irismod/modules/mt/keeper"
 	mt "github.com/irisnet/irismod/modules/mt/types"
-	"github.com/irisnet/irismod/modules/nft/types"
 )
 
 // Simulation operation weights constants
@@ -23,15 +22,6 @@ const (
 	OpWeightMsgTransferMT    = "op_weight_msg_transfer_mt"
 	OpWeightMsgBurnMT        = "op_weight_msg_transfer_burn_mt"
 	OpWeightMsgTransferDenom = "op_weight_msg_transfer_denom"
-)
-
-var (
-	TypeMsgIssueDenom    = sdk.MsgTypeURL(&mt.MsgIssueDenom{})
-	TypeMsgMintMT        = sdk.MsgTypeURL(&mt.MsgMintMT{})
-	TypeMsgEditMT        = sdk.MsgTypeURL(&mt.MsgEditMT{})
-	TypeMsgTransferMT    = sdk.MsgTypeURL(&mt.MsgTransferMT{})
-	TypeMsgMsgBurnMT     = sdk.MsgTypeURL(&mt.MsgBurnMT{})
-	TypeMsgTransferDenom = sdk.MsgTypeURL(&mt.MsgTransferDenom{})
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -128,12 +118,12 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgIssueDenom, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeIssueDenom, err.Error()), nil, err
 		}
 
 		spendLimit := spendableCoins.Sub(fees...)
 		if spendLimit == nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgIssueDenom, "spend limit is nil"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeIssueDenom, "spend limit is nil"), nil, nil
 		}
 
 		msg := &mt.MsgIssueDenom{
@@ -155,7 +145,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 			sender.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgIssueDenom, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeIssueDenom, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.SimDeliver(txCfg.TxEncoder(), tx)
@@ -168,7 +158,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 }
 
 // SimulateMsgMintMT simulates mint an MT
-func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgMintMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -176,36 +166,36 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 	) {
 		collection, ok := randCollection(ctx, r, k)
 		if !ok {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "not fetch a collection"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeMintMT, "not fetch a collection"), nil, nil
 		}
 
 		mtr, denomID, ok := randMTWithCollection(ctx, collection, r, k)
 		if !ok {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgEditMT, "not fetch an mt"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeMintMT, "not fetch an mt"), nil, nil
 		}
 
 		owner := collection.Denom.Owner
 		senderAddr, err := sdk.AccAddressFromBech32(owner)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgEditMT, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeMintMT, err.Error()), nil, err
 		}
 
 		senderAcc := ak.GetAccount(ctx, senderAddr)
 		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
 		if !ok {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgEditMT, "owner(sender) not found"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeMintMT, "owner(sender) not found"), nil, err
 		}
 		recipient, _ := simtypes.RandomAcc(r, accs)
 
 		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeMintMT, err.Error()), nil, err
 		}
 
 		spendLimit := spendableCoins.Sub(fees...)
 		if spendLimit == nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "spend limit is nil"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeMintMT, "spend limit is nil"), nil, nil
 		}
 
 		msg := &mt.MsgMintMT{
@@ -230,7 +220,7 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			sender.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMintMT, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeEditMT, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.SimDeliver(txCfg.TxEncoder(), tx)
@@ -243,7 +233,7 @@ func SimulateMsgMintMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 }
 
 // SimulateMsgEditMT simulates an edit tokenData transaction
-func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgEditMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -253,24 +243,24 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		mtr, denomID, owner, ok := randMT(ctx, r, k)
 		if !ok {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "not fetch an mt"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeEditMT, "not fetch an mt"), nil, nil
 		}
 		ownerAddr := sdk.MustAccAddressFromBech32(owner)
 		senderAcc := ak.GetAccount(ctx, ownerAddr)
 		spendableCoins := bk.SpendableCoins(ctx, ownerAddr)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeEditMT, err.Error()), nil, err
 		}
 
 		spendLimit := spendableCoins.Sub(fees...)
 		if spendLimit == nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "spend limit is nil"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeEditMT, "spend limit is nil"), nil, nil
 		}
 
 		amt := k.GetBalance(ctx, denomID, mtr.Id, ownerAddr)
 		if amt == 0 {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "sender doesn't have this mt"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeEditMT, "sender doesn't have this mt"), nil, nil
 		}
 
 		msg := &mt.MsgEditMT{
@@ -282,7 +272,7 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 
 		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
 		if !ok {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgEditMT, "owner(sender) not found"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeEditMT, "owner(sender) not found"), nil, nil
 		}
 
 		txCfg := simappparams.MakeTestEncodingConfig().TxConfig
@@ -298,7 +288,7 @@ func SimulateMsgEditMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			sender.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgEditMT, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeEditMT, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.SimDeliver(txCfg.TxEncoder(), tx)
@@ -319,35 +309,35 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 
 		mtr, denomID, owner, ok := randMT(ctx, r, k)
 		if !ok {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "not fetch an mt"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransfer, "not fetch an mt"), nil, nil
 		}
 
 		ownerAddr := sdk.MustAccAddressFromBech32(owner)
 		senderAcc := ak.GetAccount(ctx, ownerAddr)
 		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
 		if !ok {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgTransferMT, "owner(sender) not found"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransfer, "owner(sender) not found"), nil, nil
 		}
 
 		recipient, _ := simtypes.RandomAcc(r, accs)
 		if sender.Address.Equals(recipient.Address) {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "sender and recipient are same"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransfer, "sender and recipient are same"), nil, nil
 		}
 
 		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransfer, err.Error()), nil, err
 		}
 
 		spendLimit := spendableCoins.Sub(fees...)
 		if spendLimit == nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "spend limit is nil"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransfer, "spend limit is nil"), nil, nil
 		}
 
 		amt := k.GetBalance(ctx, denomID, mtr.Id, sender.Address)
 		if amt <= 1 {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "sender doesn't have enough mt balances "), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransfer, "sender doesn't have enough mt balances "), nil, nil
 		}
 
 		amt = uint64(simtypes.RandIntBetween(r, 1, int(amt)))
@@ -372,7 +362,7 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 			sender.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferMT, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransfer, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.SimDeliver(txCfg.TxEncoder(), tx)
@@ -385,7 +375,7 @@ func SimulateMsgTransferMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeepe
 }
 
 // SimulateMsgBurnMT simulates a burn of an existing MT
-func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgBurnMT(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -393,30 +383,30 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 	) {
 		mtr, denomID, owner, ok := randMT(ctx, r, k)
 		if !ok {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "not fetch an mt"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeBurnMT, "not fetch an mt"), nil, nil
 		}
 
 		ownerAddr := sdk.MustAccAddressFromBech32(owner)
 		senderAcc := ak.GetAccount(ctx, ownerAddr)
 		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
 		if !ok {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "not fetch an mt"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeBurnMT, "not fetch an mt"), nil, nil
 		}
 
 		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeBurnMT, err.Error()), nil, err
 		}
 
 		spendLimit := spendableCoins.Sub(fees...)
 		if spendLimit == nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "spend limit is nil"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeBurnMT, "spend limit is nil"), nil, nil
 		}
 
 		amt := k.GetBalance(ctx, denomID, mtr.Id, sender.Address)
 		if amt <= 1 {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "sender doesn't have enough mt balances "), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeBurnMT, "sender doesn't have enough mt balances "), nil, nil
 		}
 
 		amt = uint64(simtypes.RandIntBetween(r, 1, int(amt))) // unsafe conversion
@@ -440,7 +430,7 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			sender.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgMsgBurnMT, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeBurnMT, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.SimDeliver(txCfg.TxEncoder(), tx)
@@ -453,7 +443,7 @@ func SimulateMsgBurnMT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 }
 
 // SimulateMsgTransferDenom simulates the transfer of a Denom
-func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgTransferDenom(k keeper.Keeper, ak mt.AccountKeeper, bk mt.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -461,30 +451,30 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 	) {
 		collection, ok := randCollection(ctx, r, k)
 		if !ok {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgTransferDenom, "collection not found"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransferDenom, "collection not found"), nil, err
 		}
 		owner := collection.Denom.Owner
 		senderAddr, err := sdk.AccAddressFromBech32(owner)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgTransferDenom, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransferDenom, err.Error()), nil, err
 		}
 
 		senderAcc := ak.GetAccount(ctx, senderAddr)
 		sender, ok := simtypes.FindAccount(accs, senderAcc.GetAddress())
 		if !ok {
-			return simtypes.NoOpMsg(types.ModuleName, TypeMsgTransferDenom, "owner(sender) not found"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransferDenom, "owner(sender) not found"), nil, err
 		}
 		recipient, _ := simtypes.RandomAcc(r, accs)
 
 		spendableCoins := bk.SpendableCoins(ctx, sender.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferDenom, err.Error()), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransferDenom, err.Error()), nil, err
 		}
 
 		spendLimit := spendableCoins.Sub(fees...)
 		if spendLimit == nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferDenom, "spend limit is nil"), nil, nil
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransferDenom, "spend limit is nil"), nil, nil
 		}
 
 		msg := &mt.MsgTransferDenom{
@@ -506,7 +496,7 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 			sender.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(mt.ModuleName, TypeMsgTransferDenom, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(mt.ModuleName, mt.EventTypeTransferDenom, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.SimDeliver(txCfg.TxEncoder(), tx)
