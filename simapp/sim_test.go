@@ -196,7 +196,6 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[servicetypes.StoreKey], newApp.keys[servicetypes.StoreKey], [][]byte{servicetypes.InternalCounterKey}},
 		{app.keys[randomtypes.StoreKey], newApp.keys[randomtypes.StoreKey], [][]byte{randomtypes.RandomKey}},
 		{app.keys[recordtypes.StoreKey], newApp.keys[recordtypes.StoreKey], [][]byte{recordtypes.IntraTxCounterKey}},
-
 		{app.keys[htlctypes.StoreKey], newApp.keys[htlctypes.StoreKey], [][]byte{}},
 		{app.keys[coinswaptypes.StoreKey], newApp.keys[coinswaptypes.StoreKey], [][]byte{}},
 	}
