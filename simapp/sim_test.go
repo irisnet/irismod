@@ -32,9 +32,14 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
+	htlctypes "github.com/irisnet/irismod/modules/htlc/types"
 	mttypes "github.com/irisnet/irismod/modules/mt/types"
+	nfttypes "github.com/irisnet/irismod/modules/nft/types"
 	oracletypes "github.com/irisnet/irismod/modules/oracle/types"
 	randomtypes "github.com/irisnet/irismod/modules/random/types"
+	recordtypes "github.com/irisnet/irismod/modules/record/types"
+	servicetypes "github.com/irisnet/irismod/modules/service/types"
 	tokentypes "github.com/irisnet/irismod/modules/token/types"
 	"github.com/irisnet/irismod/simapp/helpers"
 )
@@ -187,14 +192,13 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[oracletypes.StoreKey], newApp.keys[oracletypes.StoreKey], [][]byte{}},
 		//mt.Supply is InitSupply, can be not equal to TotalSupply
 		{app.keys[mttypes.StoreKey], newApp.keys[mttypes.StoreKey], [][]byte{mttypes.PrefixMT}},
-		//TODO
-		//{app.keys[nfttypes.StoreKey], newApp.keys[nfttypes.StoreKey], [][]byte{{0x05}}},
-		//{app.keys[htlctypes.StoreKey], newApp.keys[htlctypes.StoreKey], [][]byte{}},
-		//{app.keys[coinswaptypes.StoreKey], newApp.keys[coinswaptypes.StoreKey], [][]byte{}},
-		//{app.keys[servicetypes.StoreKey], newApp.keys[servicetypes.StoreKey], [][]byte{}},
-		//{app.keys[recordtypes.StoreKey], newApp.keys[recordtypes.StoreKey], [][]byte{recordtypes.IntraTxCounterKey}},
+		{app.keys[nfttypes.StoreKey], newApp.keys[nfttypes.StoreKey], [][]byte{{0x05}}},
+		{app.keys[servicetypes.StoreKey], newApp.keys[servicetypes.StoreKey], [][]byte{servicetypes.InternalCounterKey}},
 		{app.keys[randomtypes.StoreKey], newApp.keys[randomtypes.StoreKey], [][]byte{randomtypes.RandomKey}},
-		//
+		{app.keys[recordtypes.StoreKey], newApp.keys[recordtypes.StoreKey], [][]byte{recordtypes.IntraTxCounterKey}},
+
+		{app.keys[htlctypes.StoreKey], newApp.keys[htlctypes.StoreKey], [][]byte{}},
+		{app.keys[coinswaptypes.StoreKey], newApp.keys[coinswaptypes.StoreKey], [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {
@@ -203,6 +207,9 @@ func TestAppImportExport(t *testing.T) {
 
 		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, skp.Prefixes)
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
+		if len(failedKVAs) > 0 {
+			fmt.Printf("failedKVAs: %v,\n failedKVBs: %v,\n ", failedKVAs, failedKVBs)
+		}
 
 		fmt.Printf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
 		require.Equal(t, 0, len(failedKVAs), sdksimapp.GetSimulationLog(skp.A.Name(), app.SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
