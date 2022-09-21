@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"errors"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -123,17 +124,27 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "Insufficient funds"), nil, nil
 		}
 
-		totalReward := GenTotalReward(r, spendable)
-		lpTokenDenom := GenLpToken(r, spendable)
+		totalReward, err := GenTotalReward(r, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "Insufficient funds"), nil, nil
+		}
+
+		lpTokenDenom, err := GenLpToken(r, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "Insufficient funds"), nil, nil
+		}
 		editable := GenDestructible(r)
 		startHeight := GenStartHeight(r, ctx)
-		rewardPerBlock := GenRewardPerBlock(r, totalReward)
+		rewardPerBlock, err := GenRewardPerBlock(r, totalReward)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "Insufficient funds"), nil, nil
+		}
 
-		if rewardPerBlock.Amount.LT(sdk.ZeroInt()) {
+		if rewardPerBlock.Amount.LTE(sdk.ZeroInt()) {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "rewardPerBlock less than zeroInt"), nil, nil
 		}
 
-		if totalReward.Amount.LT(rewardPerBlock.Amount) {
+		if totalReward.Amount.LTE(rewardPerBlock.Amount) {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "totalReward less than rewardPerBlock"), nil, nil
 		}
 
@@ -219,7 +230,10 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		}
 
 		rules := k.GetRewardRules(ctx, farmPool.Id)
-		rewardPerBlock := GenRewardPerBlock(r, spendable[r.Intn(len(spendable))])
+		rewardPerBlock, err := GenRewardPerBlock(r, spendable[r.Intn(len(spendable))])
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
+		}
 		if rewardPerBlock.Amount.IsZero() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
 		}
@@ -228,8 +242,8 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "invalid reward"), nil, nil
 		}
 
-		amount := GenAppendReward(r, rules, spendable)
-		if amount.IsZero() {
+		amount, err := GenAppendReward(r, rules, spendable)
+		if err != nil || amount.IsZero() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
 		}
 
@@ -303,8 +317,8 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "spendable is zero"), nil, nil
 		}
 
-		amount := GenStake(r, farmPool, spendable)
-		if amount.IsZero() {
+		amount, err := GenStake(r, farmPool, spendable)
+		if err != nil || amount.IsZero() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "The sender does not have the specified lpToken"), nil, nil
 		}
 
@@ -375,7 +389,10 @@ func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "spendable is zero"), nil, nil
 		}
 
-		unStake := GenUnStake(r, farmPool, farmInfo)
+		unStake, err := GenUnStake(r, farmPool, farmInfo)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "Insufficient funds"), nil, nil
+		}
 		if unStake.IsZero() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "the sender does not have the specified lpToken"), nil, nil
 		}
@@ -550,15 +567,23 @@ func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 }
 
 // GenTotalReward randomized totalReward
-func GenTotalReward(r *rand.Rand, spendableCoin sdk.Coins) sdk.Coin {
+func GenTotalReward(r *rand.Rand, spendableCoin sdk.Coins) (sdk.Coin, error) {
 	token := spendableCoin[r.Intn(len(spendableCoin))]
-	return sdk.NewCoin(token.Denom, simtypes.RandomAmount(r, token.Amount))
+	amount, err := simtypes.RandPositiveInt(r, token.Amount)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+	return sdk.NewCoin(token.Denom, amount), nil
 }
 
 // GenLpToken randomized lpToken
-func GenLpToken(r *rand.Rand, spendableCoin sdk.Coins) sdk.Coin {
+func GenLpToken(r *rand.Rand, spendableCoin sdk.Coins) (sdk.Coin, error) {
 	token := spendableCoin[r.Intn(len(spendableCoin))]
-	return sdk.NewCoin(token.Denom, simtypes.RandomAmount(r, token.Amount))
+	amount, err := simtypes.RandPositiveInt(r, token.Amount)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+	return sdk.NewCoin(token.Denom, amount), nil
 }
 
 // GenStartHeight randomized startHeight
@@ -568,8 +593,12 @@ func GenStartHeight(r *rand.Rand, ctx sdk.Context) int64 {
 }
 
 // GenRewardPerBlock randomized rewardPerBlock
-func GenRewardPerBlock(r *rand.Rand, coin sdk.Coin) sdk.Coin {
-	return sdk.NewCoin(coin.Denom, simtypes.RandomAmount(r, coin.Amount))
+func GenRewardPerBlock(r *rand.Rand, coin sdk.Coin) (sdk.Coin, error) {
+	amount, err := simtypes.RandPositiveInt(r, coin.Amount)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+	return sdk.NewCoin(coin.Denom, amount), nil
 }
 
 // GenRewardRule randomized rewardRule
@@ -578,29 +607,41 @@ func GenRewardRule(r *rand.Rand, rules types.RewardRules) types.RewardRule {
 }
 
 // GenAppendReward randomized appendReward
-func GenAppendReward(r *rand.Rand, rules types.RewardRules, spendable sdk.Coins) sdk.Coins {
+func GenAppendReward(r *rand.Rand, rules types.RewardRules, spendable sdk.Coins) (sdk.Coins, error) {
 	rule := GenRewardRule(r, rules)
 	for _, coin := range spendable {
 		if coin.Denom == rule.Reward {
-			return sdk.Coins{sdk.NewCoin(coin.Denom, simtypes.RandomAmount(r, coin.Amount))}
+			amount, err := simtypes.RandPositiveInt(r, coin.Amount)
+			if err != nil {
+				return nil, err
+			}
+			return sdk.NewCoins(sdk.NewCoin(coin.Denom, amount)), nil
 		}
 	}
-	return sdk.Coins{}
+	return nil, errors.New("no spendable token")
 }
 
 // GenStake randomized stake
-func GenStake(r *rand.Rand, pool types.FarmPool, spendable sdk.Coins) sdk.Coin {
+func GenStake(r *rand.Rand, pool types.FarmPool, spendable sdk.Coins) (sdk.Coin, error) {
 	for _, coin := range spendable {
 		if coin.Denom == pool.TotalLptLocked.Denom {
-			return sdk.NewCoin(pool.TotalLptLocked.Denom, simtypes.RandomAmount(r, coin.Amount))
+			amount, err := simtypes.RandPositiveInt(r, coin.Amount)
+			if err != nil {
+				return sdk.Coin{}, err
+			}
+			return sdk.NewCoin(pool.TotalLptLocked.Denom, amount), nil
 		}
 	}
-	return sdk.NewCoin(pool.TotalLptLocked.Denom, sdk.ZeroInt())
+	return sdk.NewCoin(pool.TotalLptLocked.Denom, sdk.ZeroInt()), nil
 }
 
 // GenUnStake randomized unStake
-func GenUnStake(r *rand.Rand, pool types.FarmPool, info types.FarmInfo) sdk.Coin {
-	return sdk.NewCoin(pool.TotalLptLocked.Denom, simtypes.RandomAmount(r, info.Locked))
+func GenUnStake(r *rand.Rand, pool types.FarmPool, info types.FarmInfo) (sdk.Coin, error) {
+	amount, err := simtypes.RandPositiveInt(r, info.Locked)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+	return sdk.NewCoin(pool.TotalLptLocked.Denom, amount), nil
 }
 
 // GenDestructible randomized editable

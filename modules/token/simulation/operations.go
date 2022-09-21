@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"regexp"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -459,15 +458,11 @@ loop:
 }
 
 func randToken(r *rand.Rand, accs []simtypes.Account) types.Token {
-	keywords := strings.Join([]string{"peg", "ibc", "swap", "htlt"}, "|")
-	regexpKeywordsFmt := fmt.Sprintf("^(%s).*", keywords)
-	regexpKeyword := regexp.MustCompile(regexpKeywordsFmt).MatchString
-
 	var symbol, minUint string
 	for {
 		symbol = randStringBetween(r, types.MinimumSymbolLen, types.MaximumSymbolLen)
 		minUint = symbol
-		if !regexpKeyword(symbol) {
+		if err := types.ValidateSymbol(symbol); err == nil {
 			break
 		}
 	}

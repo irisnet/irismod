@@ -189,11 +189,12 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT, err
 			return nil, err
 		}
 		nfts = append(nfts, types.BaseNFT{
-			Id:    token.GetId(),
-			Name:  nftMetadata.Name,
-			URI:   token.GetUri(),
-			Data:  nftMetadata.Data,
-			Owner: k.nk.GetOwner(ctx, denom, token.GetId()).String(),
+			Id:      token.GetId(),
+			Name:    nftMetadata.Name,
+			URI:     token.GetUri(),
+			UriHash: token.GetUriHash(),
+			Data:    nftMetadata.Data,
+			Owner:   k.nk.GetOwner(ctx, denom, token.GetId()).String(),
 		})
 	}
 	return nfts, nil
