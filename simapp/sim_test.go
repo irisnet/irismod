@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"runtime/debug"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -38,7 +40,6 @@ import (
 	nfttypes "github.com/irisnet/irismod/modules/nft/types"
 	oracletypes "github.com/irisnet/irismod/modules/oracle/types"
 	randomtypes "github.com/irisnet/irismod/modules/random/types"
-	recordtypes "github.com/irisnet/irismod/modules/record/types"
 	servicetypes "github.com/irisnet/irismod/modules/service/types"
 	tokentypes "github.com/irisnet/irismod/modules/token/types"
 	"github.com/irisnet/irismod/simapp/helpers"
@@ -164,6 +165,17 @@ func TestAppImportExport(t *testing.T) {
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(t, err)
 
+	defer func() {
+		if r := recover(); r != nil {
+			err := fmt.Sprintf("%v", r)
+			if !strings.Contains(err, "validator set is empty after InitGenesis") {
+				panic(r)
+			}
+			logger.Info("Skipping simulation as all validators have been unbonded")
+			logger.Info("err", err, "stacktrace", string(debug.Stack()))
+		}
+	}()
+
 	ctxA := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
 	ctxB := newApp.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
 	newApp.mm.InitGenesis(ctxB, app.AppCodec(), genesisState)
@@ -195,7 +207,7 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[nfttypes.StoreKey], newApp.keys[nfttypes.StoreKey], [][]byte{{0x05}}},
 		{app.keys[servicetypes.StoreKey], newApp.keys[servicetypes.StoreKey], [][]byte{servicetypes.InternalCounterKey}},
 		{app.keys[randomtypes.StoreKey], newApp.keys[randomtypes.StoreKey], [][]byte{randomtypes.RandomKey}},
-		{app.keys[recordtypes.StoreKey], newApp.keys[recordtypes.StoreKey], [][]byte{recordtypes.IntraTxCounterKey}},
+		//{app.keys[recordtypes.StoreKey], newApp.keys[recordtypes.StoreKey], [][]byte{recordtypes.IntraTxCounterKey}},
 		{app.keys[htlctypes.StoreKey], newApp.keys[htlctypes.StoreKey], [][]byte{}},
 		{app.keys[coinswaptypes.StoreKey], newApp.keys[coinswaptypes.StoreKey], [][]byte{}},
 	}
@@ -206,11 +218,11 @@ func TestAppImportExport(t *testing.T) {
 
 		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, skp.Prefixes)
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
-		if len(failedKVAs) > 0 {
-			fmt.Printf("failedKVAs: %v,\n failedKVBs: %v,\n ", failedKVAs, failedKVBs)
-		}
 
 		fmt.Printf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
+		for _, kv := range failedKVAs {
+			fmt.Printf("storeKey: %s,\n failedKVBs: %v,\n ", skp.A.Name(), kv.Key)
+		}
 		require.Equal(t, 0, len(failedKVAs), sdksimapp.GetSimulationLog(skp.A.Name(), app.SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
 	}
 }
