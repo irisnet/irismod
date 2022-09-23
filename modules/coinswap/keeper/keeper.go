@@ -110,17 +110,20 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom,
 			"MaxToken: %s should not be StandardDenom", msg.MaxToken.String())
 	}
-	var mintLiquidityAmt sdkmath.Int
-	var depositToken sdk.Coin
-	var standardCoin = sdk.NewCoin(standardDenom, msg.ExactStandardAmt)
+
+	var (
+		mintLiquidityAmt sdkmath.Int
+		depositToken     sdk.Coin
+		standardCoin     = sdk.NewCoin(standardDenom, msg.ExactStandardAmt)
+	)
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return sdk.Coin{}, err
 	}
 
-	poolId := types.GetPoolId(msg.MaxToken.Denom)
-	pool, exists := k.GetPool(ctx, poolId)
+	poolID := types.GetPoolId(msg.MaxToken.Denom)
+	pool, exists := k.GetPool(ctx, poolID)
 
 	// calculate amount of UNI to be minted for sender
 	// and coin amount to be deposited
@@ -136,50 +139,59 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 		}
 		depositToken = sdk.NewCoin(msg.MaxToken.Denom, msg.MaxToken.Amount)
 		pool = k.CreatePool(ctx, msg.MaxToken.Denom)
-	} else {
-		balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
-		if err != nil {
-			return sdk.Coin{}, err
-		}
-
-		standardReserveAmt := balances.AmountOf(standardDenom)
-		tokenReserveAmt := balances.AmountOf(msg.MaxToken.Denom)
-		liquidity := k.bk.GetSupply(ctx, pool.LptDenom).Amount
-
-		mintLiquidityAmt = (liquidity.Mul(msg.ExactStandardAmt)).Quo(standardReserveAmt)
-		if mintLiquidityAmt.LT(msg.MinLiquidity) {
-			return sdk.Coin{}, sdkerrors.Wrapf(types.ErrConstraintNotMet, "liquidity amount not met, user expected: no less than %s, actual: %s", msg.MinLiquidity.String(), mintLiquidityAmt.String())
-		}
-		depositAmt := (tokenReserveAmt.Mul(msg.ExactStandardAmt)).Quo(standardReserveAmt).AddRaw(1)
-		depositToken = sdk.NewCoin(msg.MaxToken.Denom, depositAmt)
-
-		if depositAmt.GT(msg.MaxToken.Amount) {
-			return sdk.Coin{}, sdkerrors.Wrapf(types.ErrConstraintNotMet, "token amount not met, user expected: no more than %s, actual: %s", msg.MaxToken.String(), depositToken.String())
-		}
+		return k.addLiquidity(ctx, sender, pool.EscrowAddress, standardCoin, depositToken, pool.LptDenom, mintLiquidityAmt)
 	}
 
-	reservePoolAddress, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
+	balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
 	if err != nil {
 		return sdk.Coin{}, err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeAddLiquidity,
-			sdk.NewAttribute(types.AttributeValueSender, msg.Sender),
-			sdk.NewAttribute(types.AttributeValueTokenPair, types.GetTokenPairByDenom(msg.MaxToken.Denom, standardDenom)),
-		),
-	)
-	return k.addLiquidity(ctx, sender, reservePoolAddress, standardCoin, depositToken, pool.LptDenom, mintLiquidityAmt)
+	//pool exist but has no balances,so do same operations as firist addLiquidity(but without creating pool)
+	if balances == nil || balances.IsZero() {
+		mintLiquidityAmt = msg.ExactStandardAmt
+		if mintLiquidityAmt.LT(msg.MinLiquidity) {
+			return sdk.Coin{}, sdkerrors.Wrapf(types.ErrConstraintNotMet, "liquidity amount not met, user expected: no less than %s, actual: %s", msg.MinLiquidity.String(), mintLiquidityAmt.String())
+		}
+		depositToken = sdk.NewCoin(msg.MaxToken.Denom, msg.MaxToken.Amount)
+		return k.addLiquidity(ctx, sender, pool.EscrowAddress, standardCoin, depositToken, pool.LptDenom, mintLiquidityAmt)
+	}
+
+	// add liquidity
+	standardReserveAmt := balances.AmountOf(standardDenom)
+	tokenReserveAmt := balances.AmountOf(msg.MaxToken.Denom)
+	liquidity := k.bk.GetSupply(ctx, pool.LptDenom).Amount
+	if standardReserveAmt.IsZero() || tokenReserveAmt.IsZero() || liquidity.IsZero() {
+		return sdk.Coin{},
+			sdkerrors.Wrapf(types.ErrConstraintNotMet, "liquidity pool invalid")
+	}
+
+	mintLiquidityAmt = (liquidity.Mul(msg.ExactStandardAmt)).Quo(standardReserveAmt)
+	if mintLiquidityAmt.LT(msg.MinLiquidity) {
+		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrConstraintNotMet, "liquidity amount not met, user expected: no less than %s, actual: %s", msg.MinLiquidity.String(), mintLiquidityAmt.String())
+	}
+	depositAmt := (tokenReserveAmt.Mul(msg.ExactStandardAmt)).Quo(standardReserveAmt).AddRaw(1)
+	depositToken = sdk.NewCoin(msg.MaxToken.Denom, depositAmt)
+
+	if depositAmt.GT(msg.MaxToken.Amount) {
+		return sdk.Coin{},
+			sdkerrors.Wrapf(types.ErrConstraintNotMet, "token amount not met, user expected: no more than %s, actual: %s", msg.MaxToken.String(), depositToken.String())
+	}
+	return k.addLiquidity(ctx, sender, pool.EscrowAddress, standardCoin, depositToken, pool.LptDenom, mintLiquidityAmt)
 }
 
 func (k Keeper) addLiquidity(ctx sdk.Context,
 	sender sdk.AccAddress,
-	reservePoolAddress sdk.AccAddress,
+	poolAddress string,
 	standardCoin, token sdk.Coin,
 	lptDenom string,
 	mintLiquidityAmt sdkmath.Int,
 ) (sdk.Coin, error) {
+	reservePoolAddress, err := sdk.AccAddressFromBech32(poolAddress)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
 	depositedTokens := sdk.NewCoins(standardCoin, token)
 	// transfer deposited token into coinswaps Account
 	if err := k.bk.SendCoins(ctx, sender, reservePoolAddress, depositedTokens); err != nil {
@@ -195,6 +207,13 @@ func (k Keeper) addLiquidity(ctx sdk.Context,
 		return sdk.Coin{}, err
 	}
 
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeAddLiquidity,
+			sdk.NewAttribute(types.AttributeValueSender, sender.String()),
+			sdk.NewAttribute(types.AttributeValueTokenPair, types.GetTokenPairByDenom(token.Denom, standardCoin.Denom)),
+		),
+	)
 	return mintToken, nil
 }
 
@@ -205,10 +224,10 @@ func (k Keeper) AddUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 		return sdk.Coin{}, err
 	}
 
-	poolId := types.GetPoolId(msg.CounterpartyDenom)
-	pool, exist := k.GetPool(ctx, poolId)
+	poolID := types.GetPoolId(msg.CounterpartyDenom)
+	pool, exist := k.GetPool(ctx, poolID)
 	if !exist {
-		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool: %s ", poolId)
+		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool: %s ", poolID)
 	}
 
 	poolAddr, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
@@ -222,7 +241,11 @@ func (k Keeper) AddUnilateralLiquidity(ctx sdk.Context, msg *types.MsgAddUnilate
 	}
 
 	if msg.ExactToken.Denom != msg.CounterpartyDenom && msg.ExactToken.Denom != k.GetStandardDenom(ctx) {
-		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom, "liquidity pool %s has no %s", poolId, msg.ExactToken.Denom)
+		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrInvalidDenom, "liquidity pool %s has no %s", poolID, msg.ExactToken.Denom)
+	}
+
+	if balances == nil || balances.IsZero() {
+		return sdk.Coin{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "When the liquidity is empty, can not add unilateral liquidity")
 	}
 
 	// square = ( token_balance + ( 1- fee_unilateral ) * exact_token ) / token_balance * lpt_balance^2
@@ -379,10 +402,10 @@ func (k Keeper) RemoveUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 		return sdk.Coins{}, err
 	}
 
-	poolId := types.GetPoolId(msg.CounterpartyDenom)
-	pool, exist := k.GetPool(ctx, poolId)
+	poolID := types.GetPoolId(msg.CounterpartyDenom)
+	pool, exist := k.GetPool(ctx, poolID)
 	if !exist {
-		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool: %s ", poolId)
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool: %s ", poolID)
 	}
 
 	poolAddr, err := sdk.AccAddressFromBech32(pool.EscrowAddress)
@@ -397,7 +420,7 @@ func (k Keeper) RemoveUnilateralLiquidity(ctx sdk.Context, msg *types.MsgRemoveU
 
 	if msg.MinToken.Denom != msg.CounterpartyDenom && msg.MinToken.Denom != k.GetStandardDenom(ctx) {
 		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidDenom,
-			"liquidity pool %s has no %s", poolId, msg.MinToken.Denom)
+			"liquidity pool %s has no %s", poolID, msg.MinToken.Denom)
 	}
 
 	lptDenom := pool.LptDenom
