@@ -15,6 +15,7 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
+// Supply queries the total supply of a given denom or owner
 func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*types.QuerySupplyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -32,6 +33,7 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 	return &types.QuerySupplyResponse{Amount: supply}, nil
 }
 
+// NFTsOfOwner queries the NFTs of the specified owner
 func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRequest) (*types.QueryNFTsOfOwnerResponse, error) {
 	r := &nft.QueryNFTsRequest{
 		ClassId:    request.DenomId,
@@ -45,15 +47,21 @@ func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRe
 	}
 
 	var denomMap = make(map[string][]string)
-	var denoms = make([]string, 0, len(result.Nfts))
+	var denoms []string
 	for _, token := range result.Nfts {
+		if denomMap[token.ClassId] == nil {
+			denomMap[token.ClassId] = []string{}
+			denoms = append(denoms, token.ClassId)
+		}
 		denomMap[token.ClassId] = append(denomMap[token.ClassId], token.Id)
-		denoms = append(denoms, token.ClassId)
 	}
 
 	var idc []types.IDCollection
-	for _, denomId := range denoms {
-		idc = append(idc, types.IDCollection{DenomId: denomId, TokenIds: denomMap[denomId]})
+	for _, denomID := range denoms {
+		idc = append(idc, types.IDCollection{
+			DenomId:  denomID,
+			TokenIds: denomMap[denomID],
+		})
 	}
 
 	response := &types.QueryNFTsOfOwnerResponse{
@@ -67,6 +75,7 @@ func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRe
 	return response, nil
 }
 
+// Collection queries the NFTs of the specified denom
 func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequest) (*types.QueryCollectionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	denom, err := k.GetDenomInfo(ctx, request.DenomId)
@@ -94,11 +103,12 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 		}
 
 		nfts = append(nfts, types.BaseNFT{
-			Id:    token.Id,
-			URI:   token.Uri,
-			Name:  nftMetadata.Name,
-			Owner: owner.String(),
-			Data:  nftMetadata.Data,
+			Id:      token.Id,
+			URI:     token.Uri,
+			UriHash: token.UriHash,
+			Name:    nftMetadata.Name,
+			Owner:   owner.String(),
+			Data:    nftMetadata.Data,
 		})
 	}
 
@@ -115,6 +125,7 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 	return response, nil
 }
 
+// Denom queries the definition of a given denom
 func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*types.QueryDenomResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	denom, err := k.GetDenomInfo(ctx, request.DenomId)
@@ -124,6 +135,7 @@ func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*typ
 	return &types.QueryDenomResponse{Denom: denom}, nil
 }
 
+// Denoms queries all the denoms
 func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types.QueryDenomsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -149,6 +161,7 @@ func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types
 	}, nil
 }
 
+// NFT queries the NFT for the given denom and token ID
 func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.QueryNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
