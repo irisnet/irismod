@@ -71,12 +71,18 @@ func (k Keeper) TransferDenomOwner(
 	if err != nil {
 		return err
 	}
-	return k.nk.UpdateClass(ctx, nft.Class{
+	class := nft.Class{
 		Id:     denom.Id,
 		Name:   denom.Name,
 		Symbol: denom.Symbol,
 		Data:   data,
-	})
+
+		Description: denom.Description,
+		Uri:         denom.Uri,
+		UriHash:     denom.UriHash,
+	}
+
+	return k.nk.UpdateClass(ctx, class)
 }
 
 // GetDenomInfo return the denom information
