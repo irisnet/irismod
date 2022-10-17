@@ -66,6 +66,7 @@ func (k Keeper) TransferDenomOwner(
 		Schema:           denom.Schema,
 		MintRestricted:   denom.MintRestricted,
 		UpdateRestricted: denom.UpdateRestricted,
+		Data:             denom.Data,
 	}
 	data, err := codectypes.NewAnyWithValue(denomMetadata)
 	if err != nil {
