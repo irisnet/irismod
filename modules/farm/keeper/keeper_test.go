@@ -3,10 +3,13 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/stretchr/testify/suite"
 
@@ -32,6 +35,9 @@ var (
 	testFarmer5 sdk.AccAddress
 
 	isCheckTx = false
+
+	addrSender1 = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender1")))
+	addrSender2 = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender2")))
 )
 
 type KeeperTestSuite struct {
@@ -48,7 +54,24 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	app := simapp.Setup(suite.T(), isCheckTx)
+	balances := banktypes.Balance{
+		Address: addrSender1.String(),
+		Coins: sdk.NewCoins(
+			sdk.NewInt64Coin("stake", 10000000),
+			sdk.NewInt64Coin("m002", 10000000),
+		),
+	}
+
+	acc1 := &authtypes.BaseAccount{
+		Address: addrSender1.String(),
+	}
+	acc2 := &authtypes.BaseAccount{
+		Address: addrSender2.String(),
+	}
+
+	genAccs := []authtypes.GenesisAccount{acc1, acc2}
+	app := simapp.SetupWithGenesisAccounts(suite.T(), genAccs, balances)
+	///app := simapp.Setup(suite.T(), isCheckTx)
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
 	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: 1})
 	suite.app = app
@@ -222,6 +245,87 @@ func (suite *KeeperTestSuite) TestAppendReward() {
 			testTotalReward.AmountOf(r.Reward).Add(rewardAdded.AmountOf(r.Reward)),
 			r.TotalReward,
 		)
+	}
+}
+
+func (suite *KeeperTestSuite) TestAppendReward1() {
+	ctx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: 1})
+	pool, err := suite.keeper.CreatePool(
+		ctx,
+		testPoolDescription,
+		testLPTokenDenom,
+		19000,
+		sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(10)), sdk.NewCoin("m002", sdk.NewInt(10))),
+		sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(1_000)), sdk.NewCoin("m002", sdk.NewInt(1_000))),
+		testDestructible,
+		addrSender1,
+	)
+	suite.Require().NoError(err)
+
+	//check farm pool
+	p, exist := suite.keeper.GetPool(ctx, pool.Id)
+	suite.Require().True(exist)
+	p.Rules = suite.keeper.GetRewardRules(ctx, pool.Id)
+	suite.T().Logf("\n19000:%v\n", p)
+
+	{
+		ctx = suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: 19008})
+		err = suite.keeper.AdjustPool(ctx,
+			p.Id,
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(10))),
+			addrSender1,
+		)
+		suite.Require().NoError(err)
+		p, exist = suite.keeper.GetPool(ctx, pool.Id)
+		suite.Require().True(exist)
+		p.Rules = suite.keeper.GetRewardRules(ctx, pool.Id)
+		suite.T().Logf("\n19008:%v\n", p)
+	}
+
+	{
+		ctx = suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: 19014})
+		err = suite.keeper.AdjustPool(ctx,
+			p.Id,
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(10)), sdk.NewCoin("m002", sdk.NewInt(0))),
+			addrSender1,
+		)
+		suite.Require().NoError(err)
+		p, exist = suite.keeper.GetPool(ctx, pool.Id)
+		suite.Require().True(exist)
+		p.Rules = suite.keeper.GetRewardRules(ctx, pool.Id)
+		suite.T().Logf("\n19014:%v\n", p)
+	}
+
+	{
+		ctx = suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: 19031})
+		err = suite.keeper.AdjustPool(ctx,
+			p.Id,
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(1)), sdk.NewCoin("m002", sdk.NewInt(0))),
+			addrSender1,
+		)
+		suite.Require().NoError(err)
+		p, exist = suite.keeper.GetPool(ctx, pool.Id)
+		suite.Require().True(exist)
+		p.Rules = suite.keeper.GetRewardRules(ctx, pool.Id)
+		suite.T().Logf("\n19031:%v\n", p)
+	}
+
+	{
+		ctx = suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: 19043})
+		err = suite.keeper.AdjustPool(ctx,
+			p.Id,
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+			sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(1)), sdk.NewCoin("m002", sdk.NewInt(1))),
+			addrSender1,
+		)
+		suite.Require().NoError(err)
+		p, exist = suite.keeper.GetPool(ctx, pool.Id)
+		suite.Require().True(exist)
+		p.Rules = suite.keeper.GetRewardRules(ctx, pool.Id)
+		suite.T().Logf("\n19043:%v\n", p)
 	}
 }
 
