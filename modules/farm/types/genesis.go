@@ -95,7 +95,7 @@ func ValidateGenesis(data GenesisState) error {
 			return fmt.Errorf("locked must be positive, but got %s", info.Locked.String())
 		}
 
-		if err := ValidateCoins("RewardDebt", info.RewardDebt...); err != nil {
+		if err := ValidateCoins("RewardDebt", info.RewardDebt...); len(info.RewardDebt) > 0 && err != nil {
 			return err
 		}
 	}
