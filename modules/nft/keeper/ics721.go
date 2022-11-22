@@ -1,11 +1,10 @@
 package keeper
 
 import (
-	"encoding/hex"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/nft"
 	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
 
@@ -27,14 +26,23 @@ type NFTKeeper interface {
 	GetNFT(ctx sdk.Context, classID, nftID string) (nft.NFT, bool)
 }
 
+// AccountKeeper defines the contract required for account APIs.
+type AccountKeeper interface {
+	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	// Set an account in the store.
+	SetAccount(sdk.Context, authtypes.AccountI)
+	GetModuleAddress(name string) sdk.AccAddress
+}
+
 // ICS721Keeper defines the ICS721 Keeper
 type ICS721Keeper struct {
 	cdc codec.Codec
 	nk  nftkeeper.Keeper
+	ak  AccountKeeper
 }
 
 // NewISC721Keeper creates a new ics721 Keeper instance
-func (k Keeper) NewISC721Keeper() ICS721Keeper {
+func (k Keeper) NewISC721Keeper(ak AccountKeeper) ICS721Keeper {
 	return ICS721Keeper{
 		cdc: k.cdc,
 		nk:  k.nk,
@@ -43,22 +51,22 @@ func (k Keeper) NewISC721Keeper() ICS721Keeper {
 
 // SaveClass implement the method of ICS721Keeper.SaveClass
 func (ik ICS721Keeper) SaveClass(ctx sdk.Context, class nft.Class) error {
-	data := class.Data.GetValue()
-	if data == nil {
-		return ik.nk.SaveClass(ctx, class)
+	moduleAddress := ik.ak.GetModuleAddress(types.ModuleName)
+	if moduleAddress == nil {
+		moduleAddress = authtypes.NewModuleAddress(types.ModuleName)
+		acc := ik.ak.NewAccountWithAddress(ctx, moduleAddress)
+		ik.ak.SetAccount(ctx, acc)
 	}
 
-	var denomMetadata *types.DenomMetadata
-	if err := ik.cdc.Unmarshal(data, denomMetadata); err != nil {
-		denomMetadata = &types.DenomMetadata{
-			Creator:          "",
-			Schema:           "",
-			MintRestricted:   false,
-			UpdateRestricted: false,
-			Data:             hex.EncodeToString(data),
-		}
+	//TODO Because ics721 protocol is not currently supported the transfer of classData ,
+	// the original classData will be ignored now
+	var denomMetadata = &types.DenomMetadata{
+		Creator:        moduleAddress.String(),
+		MintRestricted: false,
+		// NOTICE: UpdateRestricted is set to false to prevent nft from being edited on the destination chain,
+		// but when transferring to the original chain, the edited information is lost
+		UpdateRestricted: false,
 	}
-
 	metadata, err := codectypes.NewAnyWithValue(denomMetadata)
 	if err != nil {
 		return err
@@ -69,19 +77,7 @@ func (ik ICS721Keeper) SaveClass(ctx sdk.Context, class nft.Class) error {
 
 // Mint implement the method of ICS721Keeper.Mint
 func (ik ICS721Keeper) Mint(ctx sdk.Context, token nft.NFT, receiver sdk.AccAddress) error {
-	data := token.Data.GetValue()
-	if data == nil {
-		return ik.nk.Mint(ctx, token, receiver)
-	}
-
-	var tokenMetadata *types.NFTMetadata
-	if err := ik.cdc.Unmarshal(data, tokenMetadata); err != nil {
-		tokenMetadata = &types.NFTMetadata{
-			Data: hex.EncodeToString(data),
-		}
-	}
-
-	metadata, err := codectypes.NewAnyWithValue(tokenMetadata)
+	metadata, err := codectypes.NewAnyWithValue(&types.NFTMetadata{})
 	if err != nil {
 		return err
 	}
