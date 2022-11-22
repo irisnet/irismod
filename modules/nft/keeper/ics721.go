@@ -46,6 +46,7 @@ func (k Keeper) NewISC721Keeper(ak AccountKeeper) ICS721Keeper {
 	return ICS721Keeper{
 		cdc: k.cdc,
 		nk:  k.nk,
+		ak:  ak,
 	}
 }
 
