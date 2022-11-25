@@ -12,6 +12,7 @@ import (
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
+// Migrate is used to migrate nft data from irismod/nft to x/nft
 func Migrate(ctx sdk.Context,
 	storeKey storetypes.StoreKey,
 	cdc codec.Codec,
@@ -26,7 +27,7 @@ func Migrate(ctx sdk.Context,
 	}
 	logger.Info("migrate denoms success", "denomNum", len(denoms))
 
-	if err := migrateTokens(ctx, storeKey, cdc, logger, denoms, k); err != nil {
+	if err := migrateTokens(ctx, storeKey, cdc, logger, denoms); err != nil {
 		return err
 	}
 	logger.Info("migrate store data success", "consume", time.Since(startTime).String())
@@ -81,7 +82,6 @@ func migrateTokens(ctx sdk.Context,
 	cdc codec.Codec,
 	logger log.Logger,
 	denoms []string,
-	k NFTKeeper,
 ) error {
 	store := ctx.KVStore(storeKey)
 
@@ -91,6 +91,11 @@ func migrateTokens(ctx sdk.Context,
 			_ = iterator.Close()
 		}
 	}()
+
+	k := keeper{
+		storeKey: storeKey,
+		cdc:      cdc,
+	}
 
 	total := int64(0)
 	for _, denomID := range denoms {
@@ -108,7 +113,7 @@ func migrateTokens(ctx sdk.Context,
 			store.Delete(KeyNFT(denomID, baseNFT.Id))
 			store.Delete(KeyOwner(owner, denomID, baseNFT.Id))
 
-			if err := k.SaveNFT(ctx, denomID,
+			if err := k.saveNFT(ctx, denomID,
 				baseNFT.Id,
 				baseNFT.Name,
 				baseNFT.URI,
