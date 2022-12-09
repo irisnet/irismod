@@ -32,6 +32,7 @@ type ICS721Keeper struct {
 func NewISC721Keeper(k Keeper, ak AccountKeeper) ICS721Keeper {
 	return ICS721Keeper{
 		Keeper: k.nk,
+		k:      k,
 		cdc:    k.cdc,
 		ak:     ak,
 	}
@@ -72,5 +73,5 @@ func (ik ICS721Keeper) Update(ctx sdk.Context, token nft.NFT) error {
 		// if true , nobody can update the NFT under this denom
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "nobody can update the NFT under this denom %s", token.ClassId)
 	}
-	return ik.Update(ctx, token)
+	return ik.Keeper.Update(ctx, token)
 }
