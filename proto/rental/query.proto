@@ -1,0 +1,28 @@
+syntax = "proto3";
+package irismod.rental;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/rental/types";
+option (gogoproto.goproto_getters_all) = false;
+
+service Query {
+  rpc UserOf(MsgUserOfRequest) returns (MsgUserOfResponse);
+  rpc UserExpires(MsgUserExpiresRequest) returns (MsgUserExpiresResponse);
+  rpc HaveUser(MsgHaveUserRequest) returns (MsgHaveUserResponse);
+}
+message MsgUserOfRequest {
+  string class_id = 1;
+  string nft_id = 2;
+}
+message MsgUserOfResponse { string renter = 1; }
+message MsgUserExpiresRequest {
+  string class_id = 1;
+  string nft_id = 2;
+}
+message MsgUserExpiresResponse { uint64 expires = 1; }
+message MsgHaveUserRequest {
+  string class_id = 1;
+  string nft_id = 2;
+}
+message MsgHaveUserResponse { bool had_renter = 1; }

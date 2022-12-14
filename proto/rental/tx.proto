@@ -1,0 +1,21 @@
+syntax = "proto3";
+package irismod.rental;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/rental/types";
+option (gogoproto.goproto_getters_all) = false;
+
+service Msg {
+  rpc SetUser(MsgSetUser) returns (MsgSetUserResponse) {}
+}
+
+message MsgSetUser {
+  string class_id = 1;
+  string nft_id = 2;
+  string renter = 3;
+  uint64 expire = 4;
+  string sender = 5;
+}
+
+message MsgSetUserResponse {}
