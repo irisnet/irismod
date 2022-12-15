@@ -7,7 +7,7 @@ import (
 )
 
 // InitGenesis stores the NFT genesis.
-func (k Keeper) InitGenesis(ctx sdk.Context, data types.GenesisState) {
+func (k Keeper) InitGenesis(ctx sdk.Context, data *types.GenesisState) {
 	// todo: genesis validation
 
 	// todo: set rental infos

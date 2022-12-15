@@ -35,3 +35,8 @@ func GetGenesisStateFromAppState(cdc codec.JSONCodec, appState map[string]json.R
 
 	return &genesisState
 }
+
+// ValidateGenesis check the given genesis state has no integrity issues
+func ValidateGenesis(data GenesisState) error {
+	panic("Fixme!")
+}
