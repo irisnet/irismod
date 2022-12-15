@@ -2,27 +2,50 @@ syntax = "proto3";
 package irismod.rental;
 
 import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/rental/types";
 option (gogoproto.goproto_getters_all) = false;
 
+// Query defines the gPRC querier service for rental module.
 service Query {
-  rpc UserOf(MsgUserOfRequest) returns (MsgUserOfResponse);
-  rpc UserExpires(MsgUserExpiresRequest) returns (MsgUserExpiresResponse);
-  rpc HaveUser(MsgHaveUserRequest) returns (MsgHaveUserResponse);
+  //
+  rpc User(QueryUserRequest) returns (QueryUserResponse) {
+    option (google.api.http).get = "/irismod/rental/user/{class_id}/{nft_id}";
+  };
+  rpc Expires(QueryExpiresRequest) returns (QueryExpiresResponse) {
+    option (google.api.http).get =
+        "/irismod/rental/expires/{class_id}/{nft_id}";
+  };
+  rpc HasUser(QueryHasUserRequest) returns (QueryHasUserResponse) {
+    option (google.api.http).get =
+        "/irismod/rental/has_user/{class_id}/{nft_id}";
+  }
 }
-message MsgUserOfRequest {
+
+// QueryUserRequest is the request type for the Query/Renter RPC method
+message QueryUserRequest {
   string class_id = 1;
   string nft_id = 2;
 }
-message MsgUserOfResponse { string renter = 1; }
-message MsgUserExpiresRequest {
+
+// QueryUserResponse is the response type for the Query/Renter RPC method
+message QueryUserResponse { string user = 1; }
+
+// QueryExpiresRequest is the request type for the Query/Expires RPC method
+message QueryExpiresRequest {
   string class_id = 1;
   string nft_id = 2;
 }
-message MsgUserExpiresResponse { uint64 expires = 1; }
-message MsgHaveUserRequest {
+
+// QueryExpiresResponse is the response type for the Query/Expires RPC method
+message QueryExpiresResponse { uint64 expires = 1; }
+
+// QueryHasUserRequest is the request type for the Query/HasUser RPC method
+message QueryHasUserRequest {
   string class_id = 1;
   string nft_id = 2;
 }
-message MsgHaveUserResponse { bool had_renter = 1; }
+
+// QueryHasUserResponse is the response type for the Query/HasUser RPC method
+message QueryHasUserResponse { bool has_user = 1; }

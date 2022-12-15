@@ -28,6 +28,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgSetUser defines the Msg/SetUser response type.
 type MsgSetUser struct {
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	NftId   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
@@ -69,6 +70,7 @@ func (m *MsgSetUser) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSetUser proto.InternalMessageInfo
 
+// MsgSetUserResponse defines the Msg/SetUser response type.
 type MsgSetUserResponse struct {
 }
 
@@ -146,6 +148,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	// SetUser defines a method for issue an nft
 	SetUser(ctx context.Context, in *MsgSetUser, opts ...grpc.CallOption) (*MsgSetUserResponse, error)
 }
 
@@ -168,6 +171,7 @@ func (c *msgClient) SetUser(ctx context.Context, in *MsgSetUser, opts ...grpc.Ca
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	// SetUser defines a method for issue an nft
 	SetUser(context.Context, *MsgSetUser) (*MsgSetUserResponse, error)
 }
 

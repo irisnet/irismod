@@ -8,13 +8,13 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-func (k Keeper) UserOf(context.Context, *types.MsgUserOfRequest) (*types.MsgUserOfResponse, error) {
+func (k Keeper) User(context.Context, *types.QueryUserRequest) (*types.QueryUserResponse, error) {
 	panic("Fixme")
 }
-func (k Keeper) UserExpires(context.Context, *types.MsgUserExpiresRequest) (*types.MsgUserExpiresResponse, error) {
+func (k Keeper) Expires(context.Context, *types.QueryExpiresRequest) (*types.QueryExpiresResponse, error) {
 	panic("Fixme")
 }
 
-func (k Keeper) HaveUser(context.Context, *types.MsgHaveUserRequest) (*types.MsgHaveUserResponse, error) {
+func (k Keeper) HasUser(context.Context, *types.QueryHasUserRequest) (*types.QueryHasUserResponse, error) {
 	panic("Fixme")
 }

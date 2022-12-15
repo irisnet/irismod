@@ -5,8 +5,8 @@ import "gogoproto/gogo.proto";
 import "rental/rental.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/rental/types";
-option (gogoproto.goproto_getters_all) = false;
 
+// GenesisState defines the rental module's genesis state
 message GenesisState {
   repeated RentalInfo renterInfos = 1 [ (gogoproto.nullable) = false ];
 }

@@ -9,6 +9,7 @@ import (
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,23 +29,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgUserOfRequest struct {
+// QueryUserRequest is the request type for the Query/Renter RPC method
+type QueryUserRequest struct {
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	NftId   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
 }
 
-func (m *MsgUserOfRequest) Reset()         { *m = MsgUserOfRequest{} }
-func (m *MsgUserOfRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUserOfRequest) ProtoMessage()    {}
-func (*MsgUserOfRequest) Descriptor() ([]byte, []int) {
+func (m *QueryUserRequest) Reset()         { *m = QueryUserRequest{} }
+func (m *QueryUserRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUserRequest) ProtoMessage()    {}
+func (*QueryUserRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_716e6efac23cde5d, []int{0}
 }
-func (m *MsgUserOfRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryUserRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUserOfRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryUserRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUserOfRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryUserRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -54,34 +56,35 @@ func (m *MsgUserOfRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgUserOfRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUserOfRequest.Merge(m, src)
+func (m *QueryUserRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserRequest.Merge(m, src)
 }
-func (m *MsgUserOfRequest) XXX_Size() int {
+func (m *QueryUserRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUserOfRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUserOfRequest.DiscardUnknown(m)
+func (m *QueryUserRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUserOfRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryUserRequest proto.InternalMessageInfo
 
-type MsgUserOfResponse struct {
-	Renter string `protobuf:"bytes,1,opt,name=renter,proto3" json:"renter,omitempty"`
+// QueryUserResponse is the response type for the Query/Renter RPC method
+type QueryUserResponse struct {
+	User string `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 }
 
-func (m *MsgUserOfResponse) Reset()         { *m = MsgUserOfResponse{} }
-func (m *MsgUserOfResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUserOfResponse) ProtoMessage()    {}
-func (*MsgUserOfResponse) Descriptor() ([]byte, []int) {
+func (m *QueryUserResponse) Reset()         { *m = QueryUserResponse{} }
+func (m *QueryUserResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUserResponse) ProtoMessage()    {}
+func (*QueryUserResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_716e6efac23cde5d, []int{1}
 }
-func (m *MsgUserOfResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryUserResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUserOfResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryUserResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUserOfResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryUserResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -91,35 +94,36 @@ func (m *MsgUserOfResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *MsgUserOfResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUserOfResponse.Merge(m, src)
+func (m *QueryUserResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserResponse.Merge(m, src)
 }
-func (m *MsgUserOfResponse) XXX_Size() int {
+func (m *QueryUserResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUserOfResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUserOfResponse.DiscardUnknown(m)
+func (m *QueryUserResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUserOfResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryUserResponse proto.InternalMessageInfo
 
-type MsgUserExpiresRequest struct {
+// QueryExpiresRequest is the request type for the Query/Expires RPC method
+type QueryExpiresRequest struct {
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	NftId   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
 }
 
-func (m *MsgUserExpiresRequest) Reset()         { *m = MsgUserExpiresRequest{} }
-func (m *MsgUserExpiresRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUserExpiresRequest) ProtoMessage()    {}
-func (*MsgUserExpiresRequest) Descriptor() ([]byte, []int) {
+func (m *QueryExpiresRequest) Reset()         { *m = QueryExpiresRequest{} }
+func (m *QueryExpiresRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryExpiresRequest) ProtoMessage()    {}
+func (*QueryExpiresRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_716e6efac23cde5d, []int{2}
 }
-func (m *MsgUserExpiresRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryExpiresRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUserExpiresRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryExpiresRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUserExpiresRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryExpiresRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -129,34 +133,35 @@ func (m *MsgUserExpiresRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgUserExpiresRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUserExpiresRequest.Merge(m, src)
+func (m *QueryExpiresRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryExpiresRequest.Merge(m, src)
 }
-func (m *MsgUserExpiresRequest) XXX_Size() int {
+func (m *QueryExpiresRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUserExpiresRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUserExpiresRequest.DiscardUnknown(m)
+func (m *QueryExpiresRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryExpiresRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUserExpiresRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryExpiresRequest proto.InternalMessageInfo
 
-type MsgUserExpiresResponse struct {
+// QueryExpiresResponse is the response type for the Query/Expires RPC method
+type QueryExpiresResponse struct {
 	Expires uint64 `protobuf:"varint,1,opt,name=expires,proto3" json:"expires,omitempty"`
 }
 
-func (m *MsgUserExpiresResponse) Reset()         { *m = MsgUserExpiresResponse{} }
-func (m *MsgUserExpiresResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUserExpiresResponse) ProtoMessage()    {}
-func (*MsgUserExpiresResponse) Descriptor() ([]byte, []int) {
+func (m *QueryExpiresResponse) Reset()         { *m = QueryExpiresResponse{} }
+func (m *QueryExpiresResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryExpiresResponse) ProtoMessage()    {}
+func (*QueryExpiresResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_716e6efac23cde5d, []int{3}
 }
-func (m *MsgUserExpiresResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryExpiresResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUserExpiresResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryExpiresResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUserExpiresResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryExpiresResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -166,35 +171,36 @@ func (m *MsgUserExpiresResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgUserExpiresResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUserExpiresResponse.Merge(m, src)
+func (m *QueryExpiresResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryExpiresResponse.Merge(m, src)
 }
-func (m *MsgUserExpiresResponse) XXX_Size() int {
+func (m *QueryExpiresResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUserExpiresResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUserExpiresResponse.DiscardUnknown(m)
+func (m *QueryExpiresResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryExpiresResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUserExpiresResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryExpiresResponse proto.InternalMessageInfo
 
-type MsgHaveUserRequest struct {
+// QueryHasUserRequest is the request type for the Query/HasUser RPC method
+type QueryHasUserRequest struct {
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	NftId   string `protobuf:"bytes,2,opt,name=nft_id,json=nftId,proto3" json:"nft_id,omitempty"`
 }
 
-func (m *MsgHaveUserRequest) Reset()         { *m = MsgHaveUserRequest{} }
-func (m *MsgHaveUserRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgHaveUserRequest) ProtoMessage()    {}
-func (*MsgHaveUserRequest) Descriptor() ([]byte, []int) {
+func (m *QueryHasUserRequest) Reset()         { *m = QueryHasUserRequest{} }
+func (m *QueryHasUserRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryHasUserRequest) ProtoMessage()    {}
+func (*QueryHasUserRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_716e6efac23cde5d, []int{4}
 }
-func (m *MsgHaveUserRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryHasUserRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgHaveUserRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryHasUserRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgHaveUserRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryHasUserRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -204,34 +210,35 @@ func (m *MsgHaveUserRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgHaveUserRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgHaveUserRequest.Merge(m, src)
+func (m *QueryHasUserRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryHasUserRequest.Merge(m, src)
 }
-func (m *MsgHaveUserRequest) XXX_Size() int {
+func (m *QueryHasUserRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgHaveUserRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgHaveUserRequest.DiscardUnknown(m)
+func (m *QueryHasUserRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryHasUserRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgHaveUserRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryHasUserRequest proto.InternalMessageInfo
 
-type MsgHaveUserResponse struct {
-	HadRenter bool `protobuf:"varint,1,opt,name=had_renter,json=hadRenter,proto3" json:"had_renter,omitempty"`
+// QueryHasUserResponse is the response type for the Query/HasUser RPC method
+type QueryHasUserResponse struct {
+	HasUser bool `protobuf:"varint,1,opt,name=has_user,json=hasUser,proto3" json:"has_user,omitempty"`
 }
 
-func (m *MsgHaveUserResponse) Reset()         { *m = MsgHaveUserResponse{} }
-func (m *MsgHaveUserResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgHaveUserResponse) ProtoMessage()    {}
-func (*MsgHaveUserResponse) Descriptor() ([]byte, []int) {
+func (m *QueryHasUserResponse) Reset()         { *m = QueryHasUserResponse{} }
+func (m *QueryHasUserResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryHasUserResponse) ProtoMessage()    {}
+func (*QueryHasUserResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_716e6efac23cde5d, []int{5}
 }
-func (m *MsgHaveUserResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryHasUserResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgHaveUserResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryHasUserResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgHaveUserResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryHasUserResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -241,55 +248,59 @@ func (m *MsgHaveUserResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgHaveUserResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgHaveUserResponse.Merge(m, src)
+func (m *QueryHasUserResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryHasUserResponse.Merge(m, src)
 }
-func (m *MsgHaveUserResponse) XXX_Size() int {
+func (m *QueryHasUserResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgHaveUserResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgHaveUserResponse.DiscardUnknown(m)
+func (m *QueryHasUserResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryHasUserResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgHaveUserResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryHasUserResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgUserOfRequest)(nil), "irismod.rental.MsgUserOfRequest")
-	proto.RegisterType((*MsgUserOfResponse)(nil), "irismod.rental.MsgUserOfResponse")
-	proto.RegisterType((*MsgUserExpiresRequest)(nil), "irismod.rental.MsgUserExpiresRequest")
-	proto.RegisterType((*MsgUserExpiresResponse)(nil), "irismod.rental.MsgUserExpiresResponse")
-	proto.RegisterType((*MsgHaveUserRequest)(nil), "irismod.rental.MsgHaveUserRequest")
-	proto.RegisterType((*MsgHaveUserResponse)(nil), "irismod.rental.MsgHaveUserResponse")
+	proto.RegisterType((*QueryUserRequest)(nil), "irismod.rental.QueryUserRequest")
+	proto.RegisterType((*QueryUserResponse)(nil), "irismod.rental.QueryUserResponse")
+	proto.RegisterType((*QueryExpiresRequest)(nil), "irismod.rental.QueryExpiresRequest")
+	proto.RegisterType((*QueryExpiresResponse)(nil), "irismod.rental.QueryExpiresResponse")
+	proto.RegisterType((*QueryHasUserRequest)(nil), "irismod.rental.QueryHasUserRequest")
+	proto.RegisterType((*QueryHasUserResponse)(nil), "irismod.rental.QueryHasUserResponse")
 }
 
 func init() { proto.RegisterFile("rental/query.proto", fileDescriptor_716e6efac23cde5d) }
 
 var fileDescriptor_716e6efac23cde5d = []byte{
-	// 370 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xc1, 0x4a, 0xeb, 0x40,
-	0x14, 0x86, 0x93, 0x72, 0x9b, 0xb6, 0xe7, 0xc2, 0xe5, 0xde, 0xb9, 0xb6, 0xd4, 0x80, 0xa1, 0x46,
-	0x14, 0x41, 0xc8, 0x40, 0xf5, 0x09, 0x44, 0xc5, 0x2e, 0x82, 0x18, 0x71, 0x23, 0x42, 0x49, 0x3b,
-	0xd3, 0x34, 0xd0, 0x66, 0xd2, 0x99, 0x89, 0xd8, 0x47, 0x70, 0xe7, 0x63, 0x75, 0xd9, 0xa5, 0x4b,
-	0x6d, 0x5f, 0x44, 0x92, 0x4c, 0xa1, 0x2d, 0x5a, 0xa1, 0xbb, 0x39, 0x73, 0xfe, 0xf3, 0xfd, 0xcc,
-	0x7f, 0x06, 0x10, 0xa7, 0x91, 0xf4, 0x07, 0x78, 0x94, 0x50, 0x3e, 0x76, 0x62, 0xce, 0x24, 0x43,
-	0x7f, 0x42, 0x1e, 0x8a, 0x21, 0x23, 0x4e, 0xde, 0x33, 0x77, 0x02, 0x16, 0xb0, 0xac, 0x85, 0xd3,
-	0x53, 0xae, 0xb2, 0x2f, 0xe0, 0xaf, 0x2b, 0x82, 0x7b, 0x41, 0xf9, 0x4d, 0xcf, 0xa3, 0xa3, 0x84,
-	0x0a, 0x89, 0x76, 0xa1, 0xdc, 0x1d, 0xf8, 0x42, 0xb4, 0x43, 0x52, 0xd7, 0x1b, 0xfa, 0x71, 0xc5,
-	0x2b, 0x65, 0x75, 0x8b, 0xa0, 0x2a, 0x18, 0x51, 0x4f, 0xa6, 0x8d, 0x42, 0xd6, 0x28, 0x46, 0x3d,
-	0xd9, 0x22, 0xf6, 0x09, 0xfc, 0x5b, 0xa2, 0x88, 0x98, 0x45, 0x82, 0xa2, 0x1a, 0x18, 0xa9, 0x35,
-	0xe5, 0x0a, 0xa2, 0x2a, 0xbb, 0x05, 0x55, 0x25, 0xbe, 0x7c, 0x8e, 0x43, 0x4e, 0xc5, 0xf6, 0xbe,
-	0x4d, 0xa8, 0xad, 0xa3, 0x94, 0x79, 0x1d, 0x4a, 0x34, 0xbf, 0xca, 0x50, 0xbf, 0xbc, 0x45, 0x69,
-	0x5f, 0x01, 0x72, 0x45, 0x70, 0xed, 0x3f, 0xd1, 0x74, 0x6e, 0x7b, 0xef, 0x33, 0xf8, 0xbf, 0xc2,
-	0x51, 0xc6, 0x7b, 0x00, 0x7d, 0x9f, 0xb4, 0x97, 0x5e, 0x5e, 0xf6, 0x2a, 0x7d, 0x9f, 0x78, 0xd9,
-	0x45, 0xf3, 0xa5, 0x00, 0xc5, 0xdb, 0x74, 0x4b, 0xc8, 0x05, 0x23, 0x0f, 0x0c, 0x35, 0x9c, 0xd5,
-	0x55, 0x39, 0xeb, 0x1b, 0x31, 0xf7, 0x37, 0x28, 0x94, 0xef, 0x23, 0xfc, 0x5e, 0xca, 0x01, 0x1d,
-	0x7e, 0x33, 0xb1, 0x1a, 0xb9, 0x79, 0xf4, 0x93, 0x4c, 0xd1, 0xef, 0xa0, 0xbc, 0x78, 0x29, 0xb2,
-	0xbf, 0x98, 0x59, 0x8b, 0xd3, 0x3c, 0xd8, 0xa8, 0xc9, 0xa1, 0xe7, 0xee, 0xe4, 0xc3, 0xd2, 0x26,
-	0x33, 0x4b, 0x9f, 0xce, 0x2c, 0xfd, 0x7d, 0x66, 0xe9, 0xaf, 0x73, 0x4b, 0x9b, 0xce, 0x2d, 0xed,
-	0x6d, 0x6e, 0x69, 0x0f, 0x38, 0x08, 0x65, 0x3f, 0xe9, 0x38, 0x5d, 0x36, 0xc4, 0x29, 0x2c, 0xa2,
-	0x12, 0x2b, 0x28, 0x1e, 0x32, 0x92, 0x0c, 0xa8, 0xc0, 0xea, 0xdb, 0xcb, 0x71, 0x4c, 0x45, 0xc7,
-	0xc8, 0x7e, 0xf4, 0xe9, 0x67, 0x00, 0x00, 0x00, 0xff, 0xff, 0xde, 0x55, 0xc8, 0x39, 0x0d, 0x03,
-	0x00, 0x00,
+	// 433 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x53, 0x4f, 0x8f, 0xd2, 0x40,
+	0x1c, 0x6d, 0x11, 0x28, 0xce, 0xc1, 0xe8, 0x88, 0x09, 0x34, 0xa6, 0xc1, 0x6a, 0x22, 0xf1, 0x4f,
+	0x07, 0xc5, 0x4f, 0x60, 0x34, 0xca, 0xc1, 0x83, 0x4d, 0xbc, 0x78, 0x21, 0x85, 0x0e, 0xa5, 0x49,
+	0x99, 0x29, 0x9d, 0x69, 0x22, 0x21, 0x5c, 0xbc, 0xe9, 0x69, 0x93, 0xfd, 0x00, 0xfb, 0x75, 0x38,
+	0x92, 0xec, 0x65, 0x8f, 0xbb, 0xb0, 0x1f, 0x64, 0xd3, 0xe9, 0xb4, 0xd9, 0x36, 0xc0, 0x61, 0xf7,
+	0x36, 0x33, 0xef, 0xf1, 0xde, 0xfb, 0xfd, 0x1e, 0x05, 0x30, 0xc2, 0x84, 0x3b, 0x01, 0x9a, 0xc7,
+	0x38, 0x5a, 0x58, 0x61, 0x44, 0x39, 0x85, 0x8f, 0xfc, 0xc8, 0x67, 0x33, 0xea, 0x5a, 0x29, 0xa6,
+	0x37, 0x3d, 0xea, 0x51, 0x01, 0xa1, 0xe4, 0x94, 0xb2, 0xf4, 0xe7, 0x1e, 0xa5, 0x5e, 0x80, 0x91,
+	0x13, 0xfa, 0xc8, 0x21, 0x84, 0x72, 0x87, 0xfb, 0x94, 0xb0, 0x14, 0x35, 0xbf, 0x80, 0xc7, 0x3f,
+	0x13, 0xc9, 0x5f, 0x0c, 0x47, 0x36, 0x9e, 0xc7, 0x98, 0x71, 0xd8, 0x06, 0x8d, 0x71, 0xe0, 0x30,
+	0x36, 0xf4, 0xdd, 0x96, 0xda, 0x51, 0xbb, 0x0f, 0x6d, 0x4d, 0xdc, 0x07, 0x2e, 0x7c, 0x06, 0xea,
+	0x64, 0xc2, 0x13, 0xa0, 0x22, 0x80, 0x1a, 0x99, 0xf0, 0x81, 0x6b, 0xbe, 0x06, 0x4f, 0x6e, 0xa9,
+	0xb0, 0x90, 0x12, 0x86, 0x21, 0x04, 0xd5, 0x98, 0xe1, 0x48, 0x4a, 0x88, 0xb3, 0xf9, 0x0d, 0x3c,
+	0x15, 0xc4, 0xaf, 0x7f, 0x42, 0x3f, 0xc2, 0xec, 0xee, 0x8e, 0x3d, 0xd0, 0x2c, 0x0a, 0x49, 0xd3,
+	0x16, 0xd0, 0x70, 0xfa, 0x24, 0x84, 0xaa, 0x76, 0x76, 0xcd, 0xad, 0xbf, 0x3b, 0xec, 0x7e, 0xc3,
+	0x7e, 0x90, 0xd6, 0xb9, 0x90, 0xb4, 0x6e, 0x83, 0xc6, 0xd4, 0x61, 0xc3, 0x7c, 0xe6, 0x86, 0xad,
+	0x4d, 0x53, 0xca, 0xc7, 0xb3, 0x07, 0xa0, 0x26, 0x7e, 0x03, 0x57, 0xa0, 0x9a, 0xbc, 0xc0, 0x8e,
+	0x55, 0x2c, 0xcf, 0x2a, 0xb7, 0xa0, 0xbf, 0x38, 0xc2, 0x48, 0x1d, 0xcd, 0xde, 0xdf, 0xf3, 0xeb,
+	0xd3, 0xca, 0x1b, 0xd8, 0x45, 0x92, 0x8a, 0xe4, 0xbf, 0x24, 0xc9, 0x80, 0x96, 0xd9, 0x5c, 0x2b,
+	0xb4, 0x4c, 0xe7, 0x58, 0xc1, 0x7f, 0x2a, 0xd0, 0xe4, 0xca, 0xe0, 0xcb, 0xbd, 0x06, 0xc5, 0x66,
+	0xf4, 0x57, 0xc7, 0x49, 0x32, 0x48, 0x5f, 0x04, 0x79, 0x0f, 0xdf, 0x96, 0x83, 0xc8, 0xe5, 0xef,
+	0xcd, 0xf2, 0x5f, 0x05, 0x9a, 0xdc, 0xe1, 0x81, 0x2c, 0xc5, 0xaa, 0x0e, 0x64, 0x29, 0xd5, 0x60,
+	0x7e, 0x12, 0x59, 0x2c, 0xf8, 0xae, 0x9c, 0x25, 0x2b, 0x67, 0x5f, 0x98, 0xcf, 0x3f, 0xd6, 0x57,
+	0x86, 0xb2, 0xde, 0x1a, 0xea, 0x66, 0x6b, 0xa8, 0x97, 0x5b, 0x43, 0x3d, 0xd9, 0x19, 0xca, 0x66,
+	0x67, 0x28, 0x17, 0x3b, 0x43, 0xf9, 0x8d, 0x3c, 0x9f, 0x4f, 0xe3, 0x91, 0x35, 0xa6, 0x33, 0xa1,
+	0x4a, 0x30, 0xcf, 0xd5, 0x67, 0xd4, 0x8d, 0x03, 0xcc, 0x32, 0x17, 0xbe, 0x08, 0x31, 0x1b, 0xd5,
+	0xc5, 0xd7, 0xd5, 0xbf, 0x09, 0x00, 0x00, 0xff, 0xff, 0xc6, 0xb7, 0x19, 0x48, 0xb7, 0x03, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -304,9 +315,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	UserOf(ctx context.Context, in *MsgUserOfRequest, opts ...grpc.CallOption) (*MsgUserOfResponse, error)
-	UserExpires(ctx context.Context, in *MsgUserExpiresRequest, opts ...grpc.CallOption) (*MsgUserExpiresResponse, error)
-	HaveUser(ctx context.Context, in *MsgHaveUserRequest, opts ...grpc.CallOption) (*MsgHaveUserResponse, error)
+	//
+	User(ctx context.Context, in *QueryUserRequest, opts ...grpc.CallOption) (*QueryUserResponse, error)
+	Expires(ctx context.Context, in *QueryExpiresRequest, opts ...grpc.CallOption) (*QueryExpiresResponse, error)
+	HasUser(ctx context.Context, in *QueryHasUserRequest, opts ...grpc.CallOption) (*QueryHasUserResponse, error)
 }
 
 type queryClient struct {
@@ -317,27 +329,27 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) UserOf(ctx context.Context, in *MsgUserOfRequest, opts ...grpc.CallOption) (*MsgUserOfResponse, error) {
-	out := new(MsgUserOfResponse)
-	err := c.cc.Invoke(ctx, "/irismod.rental.Query/UserOf", in, out, opts...)
+func (c *queryClient) User(ctx context.Context, in *QueryUserRequest, opts ...grpc.CallOption) (*QueryUserResponse, error) {
+	out := new(QueryUserResponse)
+	err := c.cc.Invoke(ctx, "/irismod.rental.Query/User", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) UserExpires(ctx context.Context, in *MsgUserExpiresRequest, opts ...grpc.CallOption) (*MsgUserExpiresResponse, error) {
-	out := new(MsgUserExpiresResponse)
-	err := c.cc.Invoke(ctx, "/irismod.rental.Query/UserExpires", in, out, opts...)
+func (c *queryClient) Expires(ctx context.Context, in *QueryExpiresRequest, opts ...grpc.CallOption) (*QueryExpiresResponse, error) {
+	out := new(QueryExpiresResponse)
+	err := c.cc.Invoke(ctx, "/irismod.rental.Query/Expires", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) HaveUser(ctx context.Context, in *MsgHaveUserRequest, opts ...grpc.CallOption) (*MsgHaveUserResponse, error) {
-	out := new(MsgHaveUserResponse)
-	err := c.cc.Invoke(ctx, "/irismod.rental.Query/HaveUser", in, out, opts...)
+func (c *queryClient) HasUser(ctx context.Context, in *QueryHasUserRequest, opts ...grpc.CallOption) (*QueryHasUserResponse, error) {
+	out := new(QueryHasUserResponse)
+	err := c.cc.Invoke(ctx, "/irismod.rental.Query/HasUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -346,79 +358,80 @@ func (c *queryClient) HaveUser(ctx context.Context, in *MsgHaveUserRequest, opts
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	UserOf(context.Context, *MsgUserOfRequest) (*MsgUserOfResponse, error)
-	UserExpires(context.Context, *MsgUserExpiresRequest) (*MsgUserExpiresResponse, error)
-	HaveUser(context.Context, *MsgHaveUserRequest) (*MsgHaveUserResponse, error)
+	//
+	User(context.Context, *QueryUserRequest) (*QueryUserResponse, error)
+	Expires(context.Context, *QueryExpiresRequest) (*QueryExpiresResponse, error)
+	HasUser(context.Context, *QueryHasUserRequest) (*QueryHasUserResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) UserOf(ctx context.Context, req *MsgUserOfRequest) (*MsgUserOfResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserOf not implemented")
+func (*UnimplementedQueryServer) User(ctx context.Context, req *QueryUserRequest) (*QueryUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User not implemented")
 }
-func (*UnimplementedQueryServer) UserExpires(ctx context.Context, req *MsgUserExpiresRequest) (*MsgUserExpiresResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserExpires not implemented")
+func (*UnimplementedQueryServer) Expires(ctx context.Context, req *QueryExpiresRequest) (*QueryExpiresResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Expires not implemented")
 }
-func (*UnimplementedQueryServer) HaveUser(ctx context.Context, req *MsgHaveUserRequest) (*MsgHaveUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HaveUser not implemented")
+func (*UnimplementedQueryServer) HasUser(ctx context.Context, req *QueryHasUserRequest) (*QueryHasUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HasUser not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_UserOf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUserOfRequest)
+func _Query_User_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).UserOf(ctx, in)
+		return srv.(QueryServer).User(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/irismod.rental.Query/UserOf",
+		FullMethod: "/irismod.rental.Query/User",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).UserOf(ctx, req.(*MsgUserOfRequest))
+		return srv.(QueryServer).User(ctx, req.(*QueryUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_UserExpires_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUserExpiresRequest)
+func _Query_Expires_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryExpiresRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).UserExpires(ctx, in)
+		return srv.(QueryServer).Expires(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/irismod.rental.Query/UserExpires",
+		FullMethod: "/irismod.rental.Query/Expires",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).UserExpires(ctx, req.(*MsgUserExpiresRequest))
+		return srv.(QueryServer).Expires(ctx, req.(*QueryExpiresRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_HaveUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgHaveUserRequest)
+func _Query_HasUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryHasUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).HaveUser(ctx, in)
+		return srv.(QueryServer).HasUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/irismod.rental.Query/HaveUser",
+		FullMethod: "/irismod.rental.Query/HasUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).HaveUser(ctx, req.(*MsgHaveUserRequest))
+		return srv.(QueryServer).HasUser(ctx, req.(*QueryHasUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -428,23 +441,23 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UserOf",
-			Handler:    _Query_UserOf_Handler,
+			MethodName: "User",
+			Handler:    _Query_User_Handler,
 		},
 		{
-			MethodName: "UserExpires",
-			Handler:    _Query_UserExpires_Handler,
+			MethodName: "Expires",
+			Handler:    _Query_Expires_Handler,
 		},
 		{
-			MethodName: "HaveUser",
-			Handler:    _Query_HaveUser_Handler,
+			MethodName: "HasUser",
+			Handler:    _Query_HasUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "rental/query.proto",
 }
 
-func (m *MsgUserOfRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryUserRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -454,12 +467,12 @@ func (m *MsgUserOfRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUserOfRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryUserRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUserOfRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryUserRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -481,7 +494,7 @@ func (m *MsgUserOfRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUserOfResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryUserResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -491,27 +504,27 @@ func (m *MsgUserOfResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUserOfResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryUserResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUserOfResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryUserResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Renter) > 0 {
-		i -= len(m.Renter)
-		copy(dAtA[i:], m.Renter)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Renter)))
+	if len(m.User) > 0 {
+		i -= len(m.User)
+		copy(dAtA[i:], m.User)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.User)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUserExpiresRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryExpiresRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -521,12 +534,12 @@ func (m *MsgUserExpiresRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUserExpiresRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryExpiresRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUserExpiresRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryExpiresRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -548,7 +561,7 @@ func (m *MsgUserExpiresRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUserExpiresResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryExpiresResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -558,12 +571,12 @@ func (m *MsgUserExpiresResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUserExpiresResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryExpiresResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUserExpiresResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryExpiresResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -576,7 +589,7 @@ func (m *MsgUserExpiresResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgHaveUserRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryHasUserRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -586,12 +599,12 @@ func (m *MsgHaveUserRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgHaveUserRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryHasUserRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgHaveUserRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryHasUserRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -613,7 +626,7 @@ func (m *MsgHaveUserRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgHaveUserResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryHasUserResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -623,19 +636,19 @@ func (m *MsgHaveUserResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgHaveUserResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryHasUserResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgHaveUserResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryHasUserResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.HadRenter {
+	if m.HasUser {
 		i--
-		if m.HadRenter {
+		if m.HasUser {
 			dAtA[i] = 1
 		} else {
 			dAtA[i] = 0
@@ -657,7 +670,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgUserOfRequest) Size() (n int) {
+func (m *QueryUserRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -674,20 +687,20 @@ func (m *MsgUserOfRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgUserOfResponse) Size() (n int) {
+func (m *QueryUserResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Renter)
+	l = len(m.User)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgUserExpiresRequest) Size() (n int) {
+func (m *QueryExpiresRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -704,7 +717,7 @@ func (m *MsgUserExpiresRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgUserExpiresResponse) Size() (n int) {
+func (m *QueryExpiresResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -716,7 +729,7 @@ func (m *MsgUserExpiresResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgHaveUserRequest) Size() (n int) {
+func (m *QueryHasUserRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -733,13 +746,13 @@ func (m *MsgHaveUserRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgHaveUserResponse) Size() (n int) {
+func (m *QueryHasUserResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.HadRenter {
+	if m.HasUser {
 		n += 2
 	}
 	return n
@@ -751,7 +764,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgUserOfRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryUserRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -774,10 +787,10 @@ func (m *MsgUserOfRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUserOfRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryUserRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUserOfRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryUserRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -865,7 +878,7 @@ func (m *MsgUserOfRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUserOfResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryUserResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -888,15 +901,15 @@ func (m *MsgUserOfResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUserOfResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryUserResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUserOfResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryUserResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Renter", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field User", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -924,7 +937,7 @@ func (m *MsgUserOfResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Renter = string(dAtA[iNdEx:postIndex])
+			m.User = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -947,7 +960,7 @@ func (m *MsgUserOfResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUserExpiresRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryExpiresRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -970,10 +983,10 @@ func (m *MsgUserExpiresRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUserExpiresRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryExpiresRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUserExpiresRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryExpiresRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1061,7 +1074,7 @@ func (m *MsgUserExpiresRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUserExpiresResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryExpiresResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1084,10 +1097,10 @@ func (m *MsgUserExpiresResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUserExpiresResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryExpiresResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUserExpiresResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryExpiresResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1130,7 +1143,7 @@ func (m *MsgUserExpiresResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgHaveUserRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryHasUserRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1153,10 +1166,10 @@ func (m *MsgHaveUserRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgHaveUserRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryHasUserRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgHaveUserRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryHasUserRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1244,7 +1257,7 @@ func (m *MsgHaveUserRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgHaveUserResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryHasUserResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1267,15 +1280,15 @@ func (m *MsgHaveUserResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgHaveUserResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryHasUserResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgHaveUserResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryHasUserResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field HadRenter", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field HasUser", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1292,7 +1305,7 @@ func (m *MsgHaveUserResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-			m.HadRenter = bool(v != 0)
+			m.HasUser = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

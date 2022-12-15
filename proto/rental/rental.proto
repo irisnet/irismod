@@ -4,9 +4,9 @@ package irismod.rental;
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/rental/types";
-option (gogoproto.goproto_getters_all) = false;
 
+// RentalInfo defines a rental info
 message RentalInfo {
-  string renter = 1;
+  string user = 1;
   uint64 expires = 2;
 }

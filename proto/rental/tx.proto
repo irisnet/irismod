@@ -6,10 +6,13 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/irisnet/irismod/modules/rental/types";
 option (gogoproto.goproto_getters_all) = false;
 
+// Msg defines the rental Msg service.
 service Msg {
+  // SetUser defines a method for issue an nft
   rpc SetUser(MsgSetUser) returns (MsgSetUserResponse) {}
 }
 
+// MsgSetUser defines the Msg/SetUser response type.
 message MsgSetUser {
   string class_id = 1;
   string nft_id = 2;
@@ -18,4 +21,5 @@ message MsgSetUser {
   string sender = 5;
 }
 
+// MsgSetUserResponse defines the Msg/SetUser response type.
 message MsgSetUserResponse {}
