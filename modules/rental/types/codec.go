@@ -4,6 +4,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
 var (
@@ -12,13 +14,16 @@ var (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	// fixme
-	panic("Fixme!")
+	cdc.RegisterConcrete(&MsgSetUser{}, "irismod/rental/MsgSetUser", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
-	// fixme
-	panic("Fixme!")
+	registry.RegisterImplementations(
+		(*sdk.Msg)(nil),
+		&MsgSetUser{},
+	)
+
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
 func init() {

@@ -16,8 +16,8 @@ service Msg {
 message MsgSetUser {
   string class_id = 1;
   string nft_id = 2;
-  string renter = 3;
-  uint64 expire = 4;
+  string user = 3;
+  uint64 expires = 4;
   string sender = 5;
 }
 
