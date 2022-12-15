@@ -2,10 +2,13 @@ package types
 
 // rental module event types
 var (
-	// fixme
 	EventTypeSetUser = "set_user"
 
 	AttributeValueCategory = ModuleName
 
-	AttributeKeySender = "sender"
+	AttributeKeySender  = "sender"
+	AttributeKeyUser    = "user"
+	AttributeKeyClassId = "class_id"
+	AttributeKeyNftId   = "nft_id"
+	AttributeKeyExpires = "expires"
 )
