@@ -5,8 +5,8 @@ import (
 	"github.com/irisnet/irismod/modules/rental/types"
 )
 
-// setRentalInfo sets the rental info for an nft.
-func (k Keeper) setRentalInfo(ctx sdk.Context,
+// SetRentalInfo sets the rental info for an nft.
+func (k Keeper) SetRentalInfo(ctx sdk.Context,
 	classId, nftId string,
 	user sdk.AccAddress,
 	expires uint64) {
@@ -21,8 +21,8 @@ func (k Keeper) setRentalInfo(ctx sdk.Context,
 	store.Set(rentalInfoKey(r.ClassId, r.NftId), bz)
 }
 
-// getRentalInfo returns the rental info for an nft.
-func (k Keeper) getRentalInfo(ctx sdk.Context,
+// GetRentalInfo returns the rental info for an nft.
+func (k Keeper) GetRentalInfo(ctx sdk.Context,
 	classId, nftId string) (types.RentalInfo, bool) {
 	var v types.RentalInfo
 	store := ctx.KVStore(k.storeKey)
@@ -32,4 +32,17 @@ func (k Keeper) getRentalInfo(ctx sdk.Context,
 	}
 	k.cdc.MustUnmarshal(bz, &v)
 	return v, true
+}
+
+// GetRentalInfos returns all rental infos.
+func (k Keeper) GetRentalInfos(ctx sdk.Context) (ris []types.RentalInfo) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := store.Iterator(nil, nil)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var rental types.RentalInfo
+		k.cdc.MustUnmarshal(iterator.Value(), &rental)
+		ris = append(ris, rental)
+	}
+	return ris
 }

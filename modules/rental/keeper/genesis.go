@@ -7,15 +7,22 @@ import (
 )
 
 // InitGenesis stores the NFT genesis.
-func (k Keeper) InitGenesis(ctx sdk.Context, data *types.GenesisState) {
-	// todo: genesis validation
+func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
+	if err := types.ValidateGenesis(gs); err != nil {
+		panic(err.Error())
+	}
 
-	// todo: set rental infos
-	panic("Fixme")
+	for _, v := range gs.RenterInfos {
+		user, err := sdk.AccAddressFromBech32(v.User)
+		if err != nil {
+			panic(err)
+		}
+		k.SetRentalInfo(ctx, v.ClassId, v.NftId, user, v.Expires)
+	}
 }
 
 // ExportGenesis returns a GenesisState for a given context and keeper.
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
-	// fixme
-	panic("Fixme")
+	ris := k.GetRentalInfos(ctx)
+	return types.NewGenesisState(ris)
 }
