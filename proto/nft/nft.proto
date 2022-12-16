@@ -50,6 +50,9 @@ message DenomMetadata {
   bool mint_restricted = 3;
   bool update_restricted = 4;
   string data = 5;
+
+  // royalty options
+  bool royalty_enabled = 6;
 }
 
 // IDCollection defines a type of collection with specified ID

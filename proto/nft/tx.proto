@@ -25,6 +25,19 @@ service Msg {
 
   // TransferDenom defines a method for transferring a denom.
   rpc TransferDenom(MsgTransferDenom) returns (MsgTransferDenomResponse);
+
+  // royalty service
+  // SetDefaultRoyalty defines a method for set a default royalty for class.
+  rpc SetDefaultRoyalty(MsgSetDefaultRoyalty) returns (MsgSetDefaultRoyaltyResponse);
+
+  // SetTokenRoyalty defines a method for set royalty for token.
+  rpc SetTokenRoyalty(MsgSetTokenRoyalty) returns (MsgSetTokenRoyaltyResponse);
+
+  // ResetTokenRoyalty defines a method for reset royalty for token.
+  rpc ResetTokenRoyalty(MsgResetTokenRoyalty) returns (MsgResetTokenRoyaltyResponse);
+
+  // DeleteDefaultRoyalty defines a method for delete default royalty for class.
+  rpc DeleteDefaultRoyalty(MsgDeleteDefaultRoyalty) returns (MsgDeleteDefaultRoyaltyResponse);
 }
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
@@ -42,6 +55,8 @@ message MsgIssueDenom {
   string uri = 9;
   string uri_hash = 10;
   string data = 11;
+
+  bool royalty_enabled = 12;
 }
 
 // MsgIssueDenomResponse defines the Msg/IssueDenom response type.
@@ -120,3 +135,52 @@ message MsgTransferDenom {
 
 // MsgTransferDenomResponse defines the Msg/TransferDenom response type.
 message MsgTransferDenomResponse {}
+
+// Royalty Request and Response
+// MsgSetDefaultRoyalty defines an SDK message for set default royalty for class.
+message MsgSetDefaultRoyalty {
+  option (gogoproto.equal) = true;
+
+  string class_id = 1;
+  string receiver = 2;
+  string fee_numerator = 3;
+
+  string sender = 4;
+}
+
+message MsgSetDefaultRoyaltyResponse {}
+
+// MsgSetTokenRoyalty defines an SDK message for set royalty for class of token.
+message MsgSetTokenRoyalty {
+  option (gogoproto.equal) = true;
+
+  string class_id = 1;
+  string token_id= 2;
+  string receiver = 3;
+  string fee_numerator = 4;
+
+  string sender = 5;
+}
+
+message MsgSetTokenRoyaltyResponse {}
+
+// MsgResetTokenRoyalty defines an SDK message for reset royalty for class of token.
+message MsgResetTokenRoyalty {
+  option (gogoproto.equal) = true;
+
+  string class_id = 1;
+  string token_id= 2;
+
+  string sender = 3;
+}
+message MsgResetTokenRoyaltyResponse {}
+
+// MsgDeleteDefaultRoyalty defines an SDK message for delete royalty for class.
+message MsgDeleteDefaultRoyalty {
+  option (gogoproto.equal) = true;
+
+  string class_id = 1;
+
+  string sender = 2;
+}
+message MsgDeleteDefaultRoyaltyResponse {}

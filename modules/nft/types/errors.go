@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -15,4 +16,7 @@ var (
 	ErrInvalidDenom      = sdkerrors.Register(ModuleName, 16, "invalid denom")
 	ErrInvalidTokenID    = sdkerrors.Register(ModuleName, 17, "invalid nft id")
 	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 18, "invalid nft uri")
+
+	ErrEmptyClassId = errorsmod.Register(ModuleName, 21, "class id can't be empty")
+	ErrEmptyTokenId = errorsmod.Register(ModuleName, 22, "token id can't be empty")
 )

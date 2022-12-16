@@ -5,6 +5,7 @@ package types
 
 import (
 	context "context"
+	cosmossdk_io_math "cosmossdk.io/math"
 	fmt "fmt"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
@@ -641,6 +642,363 @@ func (m *QueryNFTResponse) GetNFT() *BaseNFT {
 	return nil
 }
 
+type MsgFeeDenominatorRequest struct {
+}
+
+func (m *MsgFeeDenominatorRequest) Reset()         { *m = MsgFeeDenominatorRequest{} }
+func (m *MsgFeeDenominatorRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgFeeDenominatorRequest) ProtoMessage()    {}
+func (*MsgFeeDenominatorRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{12}
+}
+func (m *MsgFeeDenominatorRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgFeeDenominatorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgFeeDenominatorRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgFeeDenominatorRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgFeeDenominatorRequest.Merge(m, src)
+}
+func (m *MsgFeeDenominatorRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgFeeDenominatorRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgFeeDenominatorRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgFeeDenominatorRequest proto.InternalMessageInfo
+
+type MsgFeeDenominatorResponse struct {
+	RoyaltyFraction cosmossdk_io_math.Uint `protobuf:"bytes,1,opt,name=royalty_fraction,json=royaltyFraction,proto3,customtype=cosmossdk.io/math.Uint" json:"royalty_fraction"`
+}
+
+func (m *MsgFeeDenominatorResponse) Reset()         { *m = MsgFeeDenominatorResponse{} }
+func (m *MsgFeeDenominatorResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgFeeDenominatorResponse) ProtoMessage()    {}
+func (*MsgFeeDenominatorResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{13}
+}
+func (m *MsgFeeDenominatorResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgFeeDenominatorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgFeeDenominatorResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgFeeDenominatorResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgFeeDenominatorResponse.Merge(m, src)
+}
+func (m *MsgFeeDenominatorResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgFeeDenominatorResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgFeeDenominatorResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgFeeDenominatorResponse proto.InternalMessageInfo
+
+type MsgRoyaltyInfoRequest struct {
+	ClassId   string                 `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	TokenId   string                 `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	SalePrice cosmossdk_io_math.Uint `protobuf:"bytes,3,opt,name=sale_price,json=salePrice,proto3,customtype=cosmossdk.io/math.Uint" json:"sale_price"`
+}
+
+func (m *MsgRoyaltyInfoRequest) Reset()         { *m = MsgRoyaltyInfoRequest{} }
+func (m *MsgRoyaltyInfoRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgRoyaltyInfoRequest) ProtoMessage()    {}
+func (*MsgRoyaltyInfoRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{14}
+}
+func (m *MsgRoyaltyInfoRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRoyaltyInfoRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRoyaltyInfoRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRoyaltyInfoRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRoyaltyInfoRequest.Merge(m, src)
+}
+func (m *MsgRoyaltyInfoRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRoyaltyInfoRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRoyaltyInfoRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRoyaltyInfoRequest proto.InternalMessageInfo
+
+func (m *MsgRoyaltyInfoRequest) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *MsgRoyaltyInfoRequest) GetTokenId() string {
+	if m != nil {
+		return m.TokenId
+	}
+	return ""
+}
+
+type MsgRoyaltyInfoResponse struct {
+	Receiver      string                 `protobuf:"bytes,1,opt,name=receiver,proto3" json:"receiver,omitempty"`
+	RoyaltyAmount cosmossdk_io_math.Uint `protobuf:"bytes,2,opt,name=royalty_amount,json=royaltyAmount,proto3,customtype=cosmossdk.io/math.Uint" json:"royalty_amount"`
+}
+
+func (m *MsgRoyaltyInfoResponse) Reset()         { *m = MsgRoyaltyInfoResponse{} }
+func (m *MsgRoyaltyInfoResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRoyaltyInfoResponse) ProtoMessage()    {}
+func (*MsgRoyaltyInfoResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{15}
+}
+func (m *MsgRoyaltyInfoResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRoyaltyInfoResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRoyaltyInfoResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRoyaltyInfoResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRoyaltyInfoResponse.Merge(m, src)
+}
+func (m *MsgRoyaltyInfoResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRoyaltyInfoResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRoyaltyInfoResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRoyaltyInfoResponse proto.InternalMessageInfo
+
+func (m *MsgRoyaltyInfoResponse) GetReceiver() string {
+	if m != nil {
+		return m.Receiver
+	}
+	return ""
+}
+
+type MsgDefaultRoyaltyInfoRequest struct {
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+}
+
+func (m *MsgDefaultRoyaltyInfoRequest) Reset()         { *m = MsgDefaultRoyaltyInfoRequest{} }
+func (m *MsgDefaultRoyaltyInfoRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgDefaultRoyaltyInfoRequest) ProtoMessage()    {}
+func (*MsgDefaultRoyaltyInfoRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{16}
+}
+func (m *MsgDefaultRoyaltyInfoRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDefaultRoyaltyInfoRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDefaultRoyaltyInfoRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDefaultRoyaltyInfoRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDefaultRoyaltyInfoRequest.Merge(m, src)
+}
+func (m *MsgDefaultRoyaltyInfoRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDefaultRoyaltyInfoRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDefaultRoyaltyInfoRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDefaultRoyaltyInfoRequest proto.InternalMessageInfo
+
+func (m *MsgDefaultRoyaltyInfoRequest) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+type MsgDefaultRoyaltyInfoResponse struct {
+	Receiver        string                 `protobuf:"bytes,1,opt,name=receiver,proto3" json:"receiver,omitempty"`
+	RoyaltyFraction cosmossdk_io_math.Uint `protobuf:"bytes,2,opt,name=royalty_fraction,json=royaltyFraction,proto3,customtype=cosmossdk.io/math.Uint" json:"royalty_fraction"`
+}
+
+func (m *MsgDefaultRoyaltyInfoResponse) Reset()         { *m = MsgDefaultRoyaltyInfoResponse{} }
+func (m *MsgDefaultRoyaltyInfoResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDefaultRoyaltyInfoResponse) ProtoMessage()    {}
+func (*MsgDefaultRoyaltyInfoResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{17}
+}
+func (m *MsgDefaultRoyaltyInfoResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDefaultRoyaltyInfoResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDefaultRoyaltyInfoResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDefaultRoyaltyInfoResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDefaultRoyaltyInfoResponse.Merge(m, src)
+}
+func (m *MsgDefaultRoyaltyInfoResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDefaultRoyaltyInfoResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDefaultRoyaltyInfoResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDefaultRoyaltyInfoResponse proto.InternalMessageInfo
+
+func (m *MsgDefaultRoyaltyInfoResponse) GetReceiver() string {
+	if m != nil {
+		return m.Receiver
+	}
+	return ""
+}
+
+type MsgTokenRoyaltyInfoRequest struct {
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+}
+
+func (m *MsgTokenRoyaltyInfoRequest) Reset()         { *m = MsgTokenRoyaltyInfoRequest{} }
+func (m *MsgTokenRoyaltyInfoRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgTokenRoyaltyInfoRequest) ProtoMessage()    {}
+func (*MsgTokenRoyaltyInfoRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{18}
+}
+func (m *MsgTokenRoyaltyInfoRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgTokenRoyaltyInfoRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgTokenRoyaltyInfoRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgTokenRoyaltyInfoRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgTokenRoyaltyInfoRequest.Merge(m, src)
+}
+func (m *MsgTokenRoyaltyInfoRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgTokenRoyaltyInfoRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgTokenRoyaltyInfoRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgTokenRoyaltyInfoRequest proto.InternalMessageInfo
+
+func (m *MsgTokenRoyaltyInfoRequest) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *MsgTokenRoyaltyInfoRequest) GetTokenId() string {
+	if m != nil {
+		return m.TokenId
+	}
+	return ""
+}
+
+type MsgTokenRoyaltyInfoResponse struct {
+	Receiver        string                 `protobuf:"bytes,1,opt,name=receiver,proto3" json:"receiver,omitempty"`
+	RoyaltyFraction cosmossdk_io_math.Uint `protobuf:"bytes,2,opt,name=royalty_fraction,json=royaltyFraction,proto3,customtype=cosmossdk.io/math.Uint" json:"royalty_fraction"`
+}
+
+func (m *MsgTokenRoyaltyInfoResponse) Reset()         { *m = MsgTokenRoyaltyInfoResponse{} }
+func (m *MsgTokenRoyaltyInfoResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgTokenRoyaltyInfoResponse) ProtoMessage()    {}
+func (*MsgTokenRoyaltyInfoResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{19}
+}
+func (m *MsgTokenRoyaltyInfoResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgTokenRoyaltyInfoResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgTokenRoyaltyInfoResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgTokenRoyaltyInfoResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgTokenRoyaltyInfoResponse.Merge(m, src)
+}
+func (m *MsgTokenRoyaltyInfoResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgTokenRoyaltyInfoResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgTokenRoyaltyInfoResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgTokenRoyaltyInfoResponse proto.InternalMessageInfo
+
+func (m *MsgTokenRoyaltyInfoResponse) GetReceiver() string {
+	if m != nil {
+		return m.Receiver
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*QuerySupplyRequest)(nil), "irismod.nft.QuerySupplyRequest")
 	proto.RegisterType((*QuerySupplyResponse)(nil), "irismod.nft.QuerySupplyResponse")
@@ -654,61 +1012,87 @@ func init() {
 	proto.RegisterType((*QueryDenomsResponse)(nil), "irismod.nft.QueryDenomsResponse")
 	proto.RegisterType((*QueryNFTRequest)(nil), "irismod.nft.QueryNFTRequest")
 	proto.RegisterType((*QueryNFTResponse)(nil), "irismod.nft.QueryNFTResponse")
+	proto.RegisterType((*MsgFeeDenominatorRequest)(nil), "irismod.nft.MsgFeeDenominatorRequest")
+	proto.RegisterType((*MsgFeeDenominatorResponse)(nil), "irismod.nft.MsgFeeDenominatorResponse")
+	proto.RegisterType((*MsgRoyaltyInfoRequest)(nil), "irismod.nft.MsgRoyaltyInfoRequest")
+	proto.RegisterType((*MsgRoyaltyInfoResponse)(nil), "irismod.nft.MsgRoyaltyInfoResponse")
+	proto.RegisterType((*MsgDefaultRoyaltyInfoRequest)(nil), "irismod.nft.MsgDefaultRoyaltyInfoRequest")
+	proto.RegisterType((*MsgDefaultRoyaltyInfoResponse)(nil), "irismod.nft.MsgDefaultRoyaltyInfoResponse")
+	proto.RegisterType((*MsgTokenRoyaltyInfoRequest)(nil), "irismod.nft.MsgTokenRoyaltyInfoRequest")
+	proto.RegisterType((*MsgTokenRoyaltyInfoResponse)(nil), "irismod.nft.MsgTokenRoyaltyInfoResponse")
 }
 
 func init() { proto.RegisterFile("nft/query.proto", fileDescriptor_ce02d034d3adf2e9) }
 
 var fileDescriptor_ce02d034d3adf2e9 = []byte{
-	// 772 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x4f, 0x4f, 0x13, 0x41,
-	0x1c, 0xed, 0xb4, 0xb4, 0xe0, 0xa0, 0x01, 0xa6, 0x08, 0xb5, 0xe2, 0xb6, 0x59, 0xfe, 0x8a, 0xb8,
-	0x2b, 0x78, 0x30, 0xf1, 0xe0, 0xa1, 0x98, 0x1a, 0x2e, 0xa0, 0x95, 0x13, 0x31, 0x31, 0xdb, 0x76,
-	0x5a, 0x1a, 0xbb, 0x33, 0x4b, 0x67, 0x56, 0xd3, 0x10, 0x62, 0x62, 0xbc, 0x9a, 0x90, 0x78, 0xf4,
-	0x93, 0xf8, 0x0d, 0x38, 0x92, 0x78, 0xd0, 0x53, 0x63, 0x8a, 0x9f, 0x80, 0x4f, 0x60, 0x76, 0x66,
-	0x96, 0xee, 0xba, 0x2d, 0x98, 0x86, 0xdb, 0xee, 0xce, 0x9b, 0xf7, 0xde, 0xbc, 0xdf, 0xfc, 0x7e,
-	0x59, 0x38, 0x41, 0x6a, 0xdc, 0x3c, 0x70, 0x71, 0xab, 0x6d, 0x38, 0x2d, 0xca, 0x29, 0x1a, 0x6f,
-	0xb4, 0x1a, 0xcc, 0xa6, 0x55, 0x83, 0xd4, 0x78, 0x76, 0xba, 0x4e, 0xeb, 0x54, 0x7c, 0x37, 0xbd,
-	0x27, 0x09, 0xc9, 0xce, 0xd5, 0x29, 0xad, 0x37, 0xb1, 0x69, 0x39, 0x0d, 0xd3, 0x22, 0x84, 0x72,
-	0x8b, 0x37, 0x28, 0x61, 0x6a, 0xf5, 0x96, 0xc7, 0x48, 0x6a, 0x5c, 0xbd, 0xae, 0x56, 0x28, 0xb3,
-	0x29, 0x33, 0xcb, 0x16, 0xc3, 0x52, 0xc8, 0x7c, 0xbf, 0x5e, 0xc6, 0xdc, 0x5a, 0x37, 0x1d, 0xab,
-	0xde, 0x20, 0x62, 0xaf, 0xc4, 0xea, 0x7b, 0x10, 0xbd, 0xf2, 0x10, 0xaf, 0x5d, 0xc7, 0x69, 0xb6,
-	0x4b, 0xf8, 0xc0, 0xc5, 0x8c, 0x23, 0x03, 0x8e, 0x55, 0x31, 0xa1, 0xf6, 0xdb, 0x46, 0x35, 0x03,
-	0xf2, 0x60, 0xe5, 0x46, 0x21, 0x7d, 0xde, 0xc9, 0x4d, 0xb4, 0x2d, 0xbb, 0xf9, 0x54, 0xf7, 0x57,
-	0xf4, 0xd2, 0xa8, 0x78, 0xdc, 0xaa, 0xa2, 0x69, 0x98, 0xa4, 0x1f, 0x08, 0x6e, 0x65, 0xe2, 0x1e,
-	0xb8, 0x24, 0x5f, 0xf4, 0x87, 0x30, 0x1d, 0xe2, 0x66, 0x0e, 0x25, 0x0c, 0xa3, 0x19, 0x98, 0xb2,
-	0x6c, 0xea, 0x12, 0x2e, 0xa8, 0x47, 0x4a, 0xea, 0x4d, 0xff, 0x0e, 0xe0, 0xac, 0xc0, 0x6f, 0x17,
-	0x77, 0xd9, 0x4e, 0x6d, 0xc7, 0xe3, 0x18, 0xd6, 0xd0, 0x52, 0xc8, 0x50, 0x61, 0xf2, 0xbc, 0x93,
-	0xbb, 0x29, 0xc1, 0xd2, 0x9a, 0xb2, 0x88, 0x8a, 0x10, 0xf6, 0x22, 0xc9, 0x24, 0xf2, 0x60, 0x65,
-	0x7c, 0x63, 0xc9, 0x90, 0xf9, 0x19, 0x5e, 0x7e, 0x86, 0x2c, 0x94, 0xca, 0xcf, 0x78, 0x69, 0xd5,
-	0xb1, 0xf2, 0x54, 0x0a, 0xec, 0xd4, 0xbf, 0x00, 0x98, 0x89, 0x7a, 0x57, 0x07, 0x5e, 0xf1, 0xcd,
-	0x00, 0xc1, 0x8f, 0x8c, 0x40, 0xbd, 0x0d, 0x09, 0x55, 0x76, 0x5e, 0x84, 0xec, 0xc4, 0x05, 0x7c,
-	0xf9, 0x4a, 0x3b, 0x52, 0x26, 0xe4, 0xe7, 0x18, 0xc0, 0x19, 0xe1, 0x67, 0x93, 0x36, 0x9b, 0xb8,
-	0xe2, 0x7d, 0x1b, 0x36, 0xca, 0x62, 0x1f, 0x4f, 0xc3, 0x44, 0xf4, 0xcd, 0x2f, 0x6f, 0xd0, 0x92,
-	0x4a, 0xe8, 0x09, 0x84, 0x95, 0x8b, 0xaf, 0x2a, 0xa6, 0xd9, 0x50, 0x4c, 0x81, 0x4d, 0x01, 0xe8,
-	0xf5, 0x05, 0xb6, 0x09, 0xa7, 0x84, 0xb9, 0xe7, 0xde, 0xa9, 0x87, 0x8c, 0x4a, 0x7f, 0xa6, 0x9a,
-	0x49, 0x91, 0xf4, 0xca, 0x2f, 0x00, 0x7d, 0xcb, 0x2f, 0xa1, 0x12, 0xa0, 0xbf, 0x09, 0xee, 0x67,
-	0xbe, 0x8b, 0x70, 0x01, 0xc0, 0xd0, 0x05, 0x38, 0x06, 0xaa, 0x1f, 0x7d, 0x7a, 0xe5, 0xef, 0x11,
-	0x4c, 0x09, 0x79, 0x96, 0x01, 0xf9, 0x44, 0x7f, 0x83, 0x85, 0x91, 0x93, 0x4e, 0x2e, 0x56, 0x52,
-	0xb8, 0xeb, 0x4b, 0xfd, 0x00, 0x4e, 0xf8, 0x5d, 0x33, 0xec, 0xf5, 0x34, 0xe0, 0x18, 0xa7, 0xef,
-	0x30, 0xf1, 0xf0, 0xf1, 0x7f, 0xf1, 0xfe, 0x8a, 0x5e, 0x1a, 0x15, 0x8f, 0x5b, 0x55, 0x7d, 0x13,
-	0x4e, 0xf6, 0x24, 0x55, 0x02, 0x26, 0x4c, 0x90, 0x1a, 0x57, 0xd1, 0x4e, 0x87, 0x8e, 0x5f, 0xb0,
-	0x18, 0xde, 0x2e, 0xee, 0x16, 0x46, 0xbb, 0x9d, 0x5c, 0xc2, 0xdb, 0xe3, 0x21, 0x37, 0x7e, 0x26,
-	0x61, 0x52, 0xb0, 0xa0, 0x8f, 0x30, 0x25, 0xc7, 0x1b, 0xca, 0x85, 0xf6, 0x45, 0x87, 0x6a, 0x36,
-	0x3f, 0x18, 0x20, 0x7d, 0xe8, 0x1b, 0x9f, 0x7e, 0xfc, 0xf9, 0x1a, 0x5f, 0x43, 0xab, 0xa6, 0x42,
-	0x7a, 0x43, 0xdd, 0xec, 0x5d, 0x77, 0x66, 0x1e, 0xfa, 0x09, 0x1c, 0x99, 0x4c, 0xca, 0xba, 0x70,
-	0x3c, 0x30, 0x73, 0xd0, 0x42, 0x54, 0x24, 0x3a, 0x4e, 0xb3, 0x8b, 0x57, 0xa0, 0x94, 0x9f, 0x3b,
-	0xc2, 0x4f, 0x1a, 0x4d, 0x85, 0xfc, 0x90, 0x1a, 0x67, 0xe8, 0x33, 0x80, 0xb0, 0xd7, 0x93, 0x68,
-	0x3e, 0x4a, 0x18, 0x99, 0x3c, 0xd9, 0x85, 0xcb, 0x41, 0x4a, 0xf4, 0x81, 0x10, 0x5d, 0x44, 0xf3,
-	0xff, 0x11, 0x02, 0x72, 0x60, 0x52, 0x5c, 0x50, 0xa4, 0x45, 0xb9, 0x83, 0xad, 0x9c, 0xcd, 0x0d,
-	0x5c, 0x57, 0xb2, 0x4b, 0x42, 0x36, 0x8f, 0xb4, 0x90, 0xac, 0xbc, 0xf0, 0x41, 0xc5, 0x7d, 0x98,
-	0x92, 0xfd, 0x83, 0x06, 0x51, 0xb2, 0x4b, 0x0a, 0x1e, 0x6e, 0x3d, 0xfd, 0xae, 0x10, 0xbd, 0x8d,
-	0xd2, 0x7d, 0x44, 0x11, 0x83, 0xde, 0x85, 0x43, 0x73, 0x7d, 0x6b, 0xe5, 0x6b, 0xdc, 0x1b, 0xb0,
-	0xaa, 0x04, 0x4c, 0x21, 0x70, 0x1f, 0x2d, 0x47, 0x2a, 0x18, 0xbc, 0x4a, 0x87, 0x7e, 0x9f, 0x1c,
-	0x15, 0x8a, 0x27, 0x5d, 0x0d, 0x9c, 0x76, 0x35, 0xf0, 0xbb, 0xab, 0x81, 0xe3, 0x33, 0x2d, 0x76,
-	0x7a, 0xa6, 0xc5, 0x7e, 0x9d, 0x69, 0xb1, 0xbd, 0xb5, 0x7a, 0x83, 0xef, 0xbb, 0x65, 0xa3, 0x42,
-	0x6d, 0x41, 0x46, 0x30, 0xbf, 0x20, 0xb5, 0x69, 0xd5, 0x6d, 0x62, 0x26, 0xc8, 0x79, 0xdb, 0xc1,
-	0xac, 0x9c, 0x12, 0xbf, 0x17, 0x8f, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0x30, 0x83, 0x65, 0x31,
-	0xed, 0x08, 0x00, 0x00,
+	// 1065 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x57, 0x5f, 0x4f, 0xdb, 0x56,
+	0x14, 0xc7, 0xa1, 0x40, 0x38, 0xac, 0x85, 0x5e, 0x28, 0x0d, 0x2e, 0x4d, 0x22, 0xd3, 0x02, 0x65,
+	0x9d, 0xbd, 0xb2, 0x87, 0x69, 0x93, 0x36, 0x69, 0xa1, 0xcb, 0x94, 0x07, 0xda, 0xce, 0x63, 0x7b,
+	0xa8, 0x26, 0x21, 0x93, 0x5c, 0x1b, 0x0b, 0xc7, 0x37, 0xe4, 0xde, 0x74, 0x8a, 0x50, 0x35, 0x69,
+	0xaa, 0xf6, 0xb4, 0x49, 0x48, 0x7b, 0xdc, 0x27, 0xd9, 0x37, 0xe8, 0x63, 0xa5, 0xbd, 0x4c, 0x7b,
+	0x88, 0x26, 0xe8, 0x27, 0xe8, 0x27, 0x98, 0xee, 0x1f, 0x27, 0x76, 0x9c, 0x10, 0x16, 0xa1, 0xbd,
+	0xe5, 0xfa, 0xfe, 0xce, 0xf9, 0xfd, 0xee, 0xef, 0xf8, 0x9e, 0xe3, 0xc0, 0x7c, 0xe8, 0x32, 0xeb,
+	0xb8, 0x85, 0x9b, 0x6d, 0xb3, 0xd1, 0x24, 0x8c, 0xa0, 0x39, 0xbf, 0xe9, 0xd3, 0x3a, 0xa9, 0x99,
+	0xa1, 0xcb, 0xf4, 0x25, 0x8f, 0x78, 0x44, 0x3c, 0xb7, 0xf8, 0x2f, 0x09, 0xd1, 0x57, 0x3d, 0x42,
+	0xbc, 0x00, 0x5b, 0x4e, 0xc3, 0xb7, 0x9c, 0x30, 0x24, 0xcc, 0x61, 0x3e, 0x09, 0xa9, 0xda, 0xbd,
+	0xce, 0x33, 0x86, 0x2e, 0x53, 0xcb, 0xad, 0x2a, 0xa1, 0x75, 0x42, 0xad, 0x03, 0x87, 0x62, 0x49,
+	0x64, 0xbd, 0x78, 0x74, 0x80, 0x99, 0xf3, 0xc8, 0x6a, 0x38, 0x9e, 0x1f, 0x8a, 0x58, 0x89, 0x35,
+	0x9e, 0x03, 0xfa, 0x9a, 0x23, 0xbe, 0x69, 0x35, 0x1a, 0x41, 0xdb, 0xc6, 0xc7, 0x2d, 0x4c, 0x19,
+	0x32, 0x21, 0x5b, 0xc3, 0x21, 0xa9, 0xef, 0xfb, 0xb5, 0x9c, 0x56, 0xd4, 0x36, 0x67, 0x4b, 0x8b,
+	0xef, 0x3a, 0x85, 0xf9, 0xb6, 0x53, 0x0f, 0x3e, 0x35, 0xa2, 0x1d, 0xc3, 0x9e, 0x11, 0x3f, 0x2b,
+	0x35, 0xb4, 0x04, 0x53, 0xe4, 0x87, 0x10, 0x37, 0x73, 0x19, 0x0e, 0xb6, 0xe5, 0xc2, 0xf8, 0x00,
+	0x16, 0x13, 0xb9, 0x69, 0x83, 0x84, 0x14, 0xa3, 0x65, 0x98, 0x76, 0xea, 0xa4, 0x15, 0x32, 0x91,
+	0xfa, 0x9a, 0xad, 0x56, 0xc6, 0x1f, 0x1a, 0xdc, 0x16, 0xf8, 0x27, 0xe5, 0x3d, 0xfa, 0xd4, 0x7d,
+	0xca, 0x73, 0x8c, 0x2b, 0x68, 0x3d, 0x21, 0xa8, 0xb4, 0xf0, 0xae, 0x53, 0x78, 0x4f, 0x82, 0xa5,
+	0x34, 0x25, 0x11, 0x95, 0x01, 0x7a, 0x96, 0xe4, 0x26, 0x8b, 0xda, 0xe6, 0xdc, 0xf6, 0xba, 0x29,
+	0xfd, 0x33, 0xb9, 0x7f, 0xa6, 0x2c, 0x94, 0xf2, 0xcf, 0x7c, 0xe6, 0x78, 0x58, 0x69, 0xb2, 0x63,
+	0x91, 0xc6, 0xaf, 0x1a, 0xe4, 0xd2, 0xda, 0xd5, 0x81, 0x37, 0x23, 0x31, 0x9a, 0xc8, 0x8f, 0xcc,
+	0x58, 0xbd, 0x4d, 0x09, 0x55, 0x72, 0xbe, 0x4a, 0xc8, 0xc9, 0x08, 0xf8, 0xc6, 0x48, 0x39, 0x92,
+	0x26, 0xa1, 0xe7, 0x54, 0x83, 0x65, 0xa1, 0x67, 0x87, 0x04, 0x01, 0xae, 0xf2, 0x67, 0xe3, 0x5a,
+	0x59, 0x1e, 0xa0, 0x69, 0x1c, 0x8b, 0x7e, 0x8f, 0xca, 0x1b, 0x97, 0xa4, 0x1c, 0xfa, 0x18, 0xa0,
+	0xda, 0x7d, 0xaa, 0x6c, 0xba, 0x9d, 0xb0, 0x29, 0x16, 0x14, 0x83, 0x5e, 0x9d, 0x61, 0x3b, 0x70,
+	0x53, 0x88, 0x7b, 0xcc, 0x4f, 0x3d, 0xa6, 0x55, 0xc6, 0xe7, 0xea, 0x32, 0xa9, 0x24, 0xbd, 0xf2,
+	0x0b, 0xc0, 0xc0, 0xf2, 0x4b, 0xa8, 0x04, 0x18, 0xdf, 0xc7, 0xe3, 0x69, 0xa4, 0x22, 0x59, 0x00,
+	0x6d, 0xec, 0x02, 0x9c, 0x6a, 0xea, 0x3e, 0x46, 0xe9, 0x95, 0xbe, 0x0f, 0x61, 0x5a, 0xd0, 0xd3,
+	0x9c, 0x56, 0x9c, 0x1c, 0x2c, 0xb0, 0x74, 0xed, 0x75, 0xa7, 0x30, 0x61, 0x2b, 0xdc, 0xd5, 0xb9,
+	0x7e, 0x0c, 0xf3, 0xd1, 0xad, 0x19, 0xf7, 0xf5, 0x34, 0x21, 0xcb, 0xc8, 0x11, 0x0e, 0x39, 0x3e,
+	0xd3, 0x8f, 0x8f, 0x76, 0x0c, 0x7b, 0x46, 0xfc, 0xac, 0xd4, 0x8c, 0x1d, 0x58, 0xe8, 0x51, 0x2a,
+	0x07, 0x2c, 0x98, 0x0c, 0x5d, 0xa6, 0xac, 0x5d, 0x4a, 0x1c, 0xbf, 0xe4, 0x50, 0xfc, 0xa4, 0xbc,
+	0x57, 0x9a, 0x39, 0xeb, 0x14, 0x26, 0x79, 0x0c, 0x47, 0x1a, 0x3a, 0xe4, 0x76, 0xa9, 0x57, 0xc6,
+	0x58, 0xb8, 0xc3, 0x4f, 0x43, 0xa2, 0x56, 0x65, 0xb8, 0xb0, 0x32, 0x60, 0x4f, 0x31, 0x55, 0x60,
+	0xa1, 0x49, 0xda, 0x4e, 0xc0, 0xda, 0xfb, 0x6e, 0xd3, 0xe9, 0xbd, 0xee, 0xb3, 0xa5, 0x3c, 0x77,
+	0xf8, 0xef, 0x4e, 0x61, 0x59, 0xda, 0x48, 0x6b, 0x47, 0xa6, 0x4f, 0xac, 0xba, 0xc3, 0x0e, 0xcd,
+	0x6f, 0xfd, 0x90, 0xd9, 0xf3, 0x2a, 0xae, 0xac, 0xc2, 0x8c, 0x5f, 0x34, 0xb8, 0xb5, 0x4b, 0x3d,
+	0x5b, 0x3e, 0xae, 0x84, 0x2e, 0x89, 0x2c, 0x5c, 0x81, 0x6c, 0x35, 0x70, 0x28, 0xed, 0x5a, 0x68,
+	0xcf, 0x88, 0x75, 0xa5, 0xc6, 0xb7, 0x92, 0x6e, 0x75, 0x8d, 0x41, 0x9f, 0x01, 0x50, 0x27, 0xc0,
+	0xfb, 0x8d, 0xa6, 0x5f, 0xc5, 0xa2, 0x15, 0x8e, 0x16, 0x35, 0xcb, 0x23, 0x9e, 0xf1, 0x00, 0xe3,
+	0x04, 0x96, 0xfb, 0xd5, 0xa8, 0x33, 0xeb, 0x90, 0x6d, 0xe2, 0x2a, 0xf6, 0x5f, 0xa8, 0x0e, 0x38,
+	0x6b, 0x77, 0xd7, 0xe8, 0x4b, 0xb8, 0x11, 0xf9, 0xa1, 0x66, 0x42, 0xe6, 0x52, 0xc4, 0xd7, 0x55,
+	0xd4, 0x17, 0x72, 0x74, 0x7c, 0x02, 0xab, 0xbb, 0xd4, 0x7b, 0x8c, 0x5d, 0xa7, 0x15, 0xb0, 0xff,
+	0xe4, 0x88, 0xf1, 0xb3, 0x06, 0x77, 0x87, 0xc4, 0x5e, 0x42, 0xff, 0xa0, 0x7a, 0x66, 0xc6, 0xab,
+	0xa7, 0x0d, 0xfa, 0x2e, 0xf5, 0xf6, 0x78, 0x35, 0xae, 0xaa, 0xa6, 0xc6, 0x2b, 0x0d, 0xee, 0x0c,
+	0x4c, 0xfa, 0xbf, 0x1e, 0x6d, 0xfb, 0x6d, 0x16, 0xa6, 0xc4, 0xa5, 0x43, 0x3f, 0xc2, 0xb4, 0xfc,
+	0x1a, 0x40, 0x85, 0xc4, 0x35, 0x4b, 0x7f, 0x83, 0xe8, 0xc5, 0xe1, 0x00, 0xa9, 0xde, 0xd8, 0xfe,
+	0xe9, 0xcf, 0xb7, 0xbf, 0x65, 0x1e, 0xa2, 0x2d, 0x4b, 0x21, 0xf9, 0x37, 0x90, 0xd5, 0x9b, 0x0e,
+	0xd4, 0x3a, 0x89, 0x1a, 0xc6, 0x4b, 0x8b, 0x4a, 0xda, 0x16, 0xcc, 0xc5, 0x46, 0x34, 0xba, 0x97,
+	0x26, 0x49, 0x7f, 0x7d, 0xe8, 0xf7, 0x47, 0xa0, 0x94, 0x9e, 0x15, 0xa1, 0x67, 0x11, 0xdd, 0x4c,
+	0xe8, 0x09, 0x5d, 0x46, 0xd1, 0x2b, 0x0d, 0xa0, 0x37, 0xc2, 0xd0, 0x5a, 0x3a, 0x61, 0x6a, 0x50,
+	0xeb, 0xf7, 0x2e, 0x06, 0x29, 0xd2, 0xf7, 0x05, 0xe9, 0x7d, 0xb4, 0x76, 0x09, 0x13, 0x50, 0x03,
+	0xa6, 0x44, 0x57, 0x42, 0xf9, 0x74, 0xee, 0xf8, 0xe4, 0xd3, 0x0b, 0x43, 0xf7, 0x15, 0xed, 0xba,
+	0xa0, 0x2d, 0xa2, 0x7c, 0x82, 0x56, 0xce, 0x87, 0x38, 0xe3, 0x21, 0x4c, 0xcb, 0x71, 0x83, 0x86,
+	0xa5, 0xa4, 0x17, 0x14, 0x3c, 0x39, 0xa9, 0x8c, 0x3b, 0x82, 0xf4, 0x16, 0x5a, 0x1c, 0x40, 0x8a,
+	0x28, 0xf0, 0xfe, 0x8c, 0x56, 0x07, 0xd6, 0x2a, 0xe2, 0xb8, 0x3b, 0x64, 0x57, 0x11, 0x58, 0x82,
+	0xe0, 0x01, 0xda, 0x48, 0x55, 0x30, 0xfe, 0x2a, 0x9d, 0x44, 0xd7, 0xed, 0x25, 0xda, 0x87, 0x1b,
+	0xc9, 0x4e, 0x8f, 0x92, 0xef, 0xca, 0xb0, 0x29, 0xa1, 0xaf, 0x8f, 0x82, 0xa9, 0x1b, 0xfa, 0x1d,
+	0xcc, 0xc5, 0x2e, 0x2e, 0x32, 0xfa, 0xc3, 0xd2, 0xad, 0x42, 0x5f, 0xbb, 0x10, 0xa3, 0xf2, 0x1e,
+	0x01, 0x4a, 0xb7, 0x3c, 0xf4, 0xa0, 0x3f, 0x74, 0x68, 0x4b, 0xd5, 0xb7, 0x2e, 0x03, 0x55, 0x64,
+	0x18, 0x16, 0xfa, 0x5b, 0x10, 0xda, 0xe8, 0x8f, 0x1f, 0xd2, 0xf9, 0xf4, 0xcd, 0xd1, 0x40, 0x49,
+	0x53, 0x2a, 0xbf, 0x3e, 0xcb, 0x6b, 0x6f, 0xce, 0xf2, 0xda, 0x3f, 0x67, 0x79, 0xed, 0xf4, 0x3c,
+	0x3f, 0xf1, 0xe6, 0x3c, 0x3f, 0xf1, 0xd7, 0x79, 0x7e, 0xe2, 0xf9, 0x43, 0xcf, 0x67, 0x87, 0xad,
+	0x03, 0xb3, 0x4a, 0xea, 0xa2, 0xb2, 0x21, 0x66, 0xdd, 0x0a, 0xd7, 0x49, 0xad, 0x15, 0x60, 0x2a,
+	0x2a, 0xcd, 0xda, 0x0d, 0x4c, 0x0f, 0xa6, 0xc5, 0x5f, 0xa3, 0x8f, 0xfe, 0x0d, 0x00, 0x00, 0xff,
+	0xff, 0xfa, 0x61, 0x5c, 0x23, 0xa9, 0x0d, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -735,6 +1119,15 @@ type QueryClient interface {
 	Denoms(ctx context.Context, in *QueryDenomsRequest, opts ...grpc.CallOption) (*QueryDenomsResponse, error)
 	// NFT queries the NFT for the given denom and token ID
 	NFT(ctx context.Context, in *QueryNFTRequest, opts ...grpc.CallOption) (*QueryNFTResponse, error)
+	// Royalty
+	// FeeDenominator queries the FeeDenominator
+	FeeDenominator(ctx context.Context, in *MsgFeeDenominatorRequest, opts ...grpc.CallOption) (*MsgFeeDenominatorResponse, error)
+	// RoyaltyInfo queries the RoyaltyInfo for the class of token
+	RoyaltyInfo(ctx context.Context, in *MsgRoyaltyInfoRequest, opts ...grpc.CallOption) (*MsgRoyaltyInfoResponse, error)
+	// DefaultRoyaltyInfo queries the default royalty info for the class
+	DefaultRoyaltyInfo(ctx context.Context, in *MsgDefaultRoyaltyInfoRequest, opts ...grpc.CallOption) (*MsgDefaultRoyaltyInfoResponse, error)
+	// TokenRoyaltyInfo queries the royalty info for the class of a token
+	TokenRoyaltyInfo(ctx context.Context, in *MsgTokenRoyaltyInfoRequest, opts ...grpc.CallOption) (*MsgTokenRoyaltyInfoResponse, error)
 }
 
 type queryClient struct {
@@ -799,6 +1192,42 @@ func (c *queryClient) NFT(ctx context.Context, in *QueryNFTRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *queryClient) FeeDenominator(ctx context.Context, in *MsgFeeDenominatorRequest, opts ...grpc.CallOption) (*MsgFeeDenominatorResponse, error) {
+	out := new(MsgFeeDenominatorResponse)
+	err := c.cc.Invoke(ctx, "/irismod.nft.Query/FeeDenominator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) RoyaltyInfo(ctx context.Context, in *MsgRoyaltyInfoRequest, opts ...grpc.CallOption) (*MsgRoyaltyInfoResponse, error) {
+	out := new(MsgRoyaltyInfoResponse)
+	err := c.cc.Invoke(ctx, "/irismod.nft.Query/RoyaltyInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) DefaultRoyaltyInfo(ctx context.Context, in *MsgDefaultRoyaltyInfoRequest, opts ...grpc.CallOption) (*MsgDefaultRoyaltyInfoResponse, error) {
+	out := new(MsgDefaultRoyaltyInfoResponse)
+	err := c.cc.Invoke(ctx, "/irismod.nft.Query/DefaultRoyaltyInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) TokenRoyaltyInfo(ctx context.Context, in *MsgTokenRoyaltyInfoRequest, opts ...grpc.CallOption) (*MsgTokenRoyaltyInfoResponse, error) {
+	out := new(MsgTokenRoyaltyInfoResponse)
+	err := c.cc.Invoke(ctx, "/irismod.nft.Query/TokenRoyaltyInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Supply queries the total supply of a given denom or owner
@@ -813,6 +1242,15 @@ type QueryServer interface {
 	Denoms(context.Context, *QueryDenomsRequest) (*QueryDenomsResponse, error)
 	// NFT queries the NFT for the given denom and token ID
 	NFT(context.Context, *QueryNFTRequest) (*QueryNFTResponse, error)
+	// Royalty
+	// FeeDenominator queries the FeeDenominator
+	FeeDenominator(context.Context, *MsgFeeDenominatorRequest) (*MsgFeeDenominatorResponse, error)
+	// RoyaltyInfo queries the RoyaltyInfo for the class of token
+	RoyaltyInfo(context.Context, *MsgRoyaltyInfoRequest) (*MsgRoyaltyInfoResponse, error)
+	// DefaultRoyaltyInfo queries the default royalty info for the class
+	DefaultRoyaltyInfo(context.Context, *MsgDefaultRoyaltyInfoRequest) (*MsgDefaultRoyaltyInfoResponse, error)
+	// TokenRoyaltyInfo queries the royalty info for the class of a token
+	TokenRoyaltyInfo(context.Context, *MsgTokenRoyaltyInfoRequest) (*MsgTokenRoyaltyInfoResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -836,6 +1274,18 @@ func (*UnimplementedQueryServer) Denoms(ctx context.Context, req *QueryDenomsReq
 }
 func (*UnimplementedQueryServer) NFT(ctx context.Context, req *QueryNFTRequest) (*QueryNFTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NFT not implemented")
+}
+func (*UnimplementedQueryServer) FeeDenominator(ctx context.Context, req *MsgFeeDenominatorRequest) (*MsgFeeDenominatorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FeeDenominator not implemented")
+}
+func (*UnimplementedQueryServer) RoyaltyInfo(ctx context.Context, req *MsgRoyaltyInfoRequest) (*MsgRoyaltyInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RoyaltyInfo not implemented")
+}
+func (*UnimplementedQueryServer) DefaultRoyaltyInfo(ctx context.Context, req *MsgDefaultRoyaltyInfoRequest) (*MsgDefaultRoyaltyInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DefaultRoyaltyInfo not implemented")
+}
+func (*UnimplementedQueryServer) TokenRoyaltyInfo(ctx context.Context, req *MsgTokenRoyaltyInfoRequest) (*MsgTokenRoyaltyInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TokenRoyaltyInfo not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -950,6 +1400,78 @@ func _Query_NFT_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_FeeDenominator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgFeeDenominatorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).FeeDenominator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/irismod.nft.Query/FeeDenominator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).FeeDenominator(ctx, req.(*MsgFeeDenominatorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_RoyaltyInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRoyaltyInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).RoyaltyInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/irismod.nft.Query/RoyaltyInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).RoyaltyInfo(ctx, req.(*MsgRoyaltyInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_DefaultRoyaltyInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDefaultRoyaltyInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).DefaultRoyaltyInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/irismod.nft.Query/DefaultRoyaltyInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).DefaultRoyaltyInfo(ctx, req.(*MsgDefaultRoyaltyInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_TokenRoyaltyInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgTokenRoyaltyInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TokenRoyaltyInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/irismod.nft.Query/TokenRoyaltyInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TokenRoyaltyInfo(ctx, req.(*MsgTokenRoyaltyInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "irismod.nft.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -977,6 +1499,22 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NFT",
 			Handler:    _Query_NFT_Handler,
+		},
+		{
+			MethodName: "FeeDenominator",
+			Handler:    _Query_FeeDenominator_Handler,
+		},
+		{
+			MethodName: "RoyaltyInfo",
+			Handler:    _Query_RoyaltyInfo_Handler,
+		},
+		{
+			MethodName: "DefaultRoyaltyInfo",
+			Handler:    _Query_DefaultRoyaltyInfo_Handler,
+		},
+		{
+			MethodName: "TokenRoyaltyInfo",
+			Handler:    _Query_TokenRoyaltyInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1454,6 +1992,296 @@ func (m *QueryNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgFeeDenominatorRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgFeeDenominatorRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgFeeDenominatorRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgFeeDenominatorResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgFeeDenominatorResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgFeeDenominatorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.RoyaltyFraction.Size()
+		i -= size
+		if _, err := m.RoyaltyFraction.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRoyaltyInfoRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRoyaltyInfoRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRoyaltyInfoRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.SalePrice.Size()
+		i -= size
+		if _, err := m.SalePrice.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.TokenId) > 0 {
+		i -= len(m.TokenId)
+		copy(dAtA[i:], m.TokenId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.TokenId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRoyaltyInfoResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRoyaltyInfoResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRoyaltyInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.RoyaltyAmount.Size()
+		i -= size
+		if _, err := m.RoyaltyAmount.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if len(m.Receiver) > 0 {
+		i -= len(m.Receiver)
+		copy(dAtA[i:], m.Receiver)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Receiver)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDefaultRoyaltyInfoRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDefaultRoyaltyInfoRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDefaultRoyaltyInfoRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDefaultRoyaltyInfoResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDefaultRoyaltyInfoResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDefaultRoyaltyInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.RoyaltyFraction.Size()
+		i -= size
+		if _, err := m.RoyaltyFraction.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if len(m.Receiver) > 0 {
+		i -= len(m.Receiver)
+		copy(dAtA[i:], m.Receiver)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Receiver)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgTokenRoyaltyInfoRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgTokenRoyaltyInfoRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgTokenRoyaltyInfoRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.TokenId) > 0 {
+		i -= len(m.TokenId)
+		copy(dAtA[i:], m.TokenId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.TokenId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgTokenRoyaltyInfoResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgTokenRoyaltyInfoResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgTokenRoyaltyInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.RoyaltyFraction.Size()
+		i -= size
+		if _, err := m.RoyaltyFraction.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if len(m.Receiver) > 0 {
+		i -= len(m.Receiver)
+		copy(dAtA[i:], m.Receiver)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Receiver)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1651,6 +2479,120 @@ func (m *QueryNFTResponse) Size() (n int) {
 		l = m.NFT.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
+	return n
+}
+
+func (m *MsgFeeDenominatorRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgFeeDenominatorResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.RoyaltyFraction.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *MsgRoyaltyInfoRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.TokenId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = m.SalePrice.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *MsgRoyaltyInfoResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Receiver)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = m.RoyaltyAmount.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *MsgDefaultRoyaltyInfoRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgDefaultRoyaltyInfoResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Receiver)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = m.RoyaltyFraction.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *MsgTokenRoyaltyInfoRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.TokenId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgTokenRoyaltyInfoResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Receiver)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = m.RoyaltyFraction.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -2905,6 +3847,832 @@ func (m *QueryNFTResponse) Unmarshal(dAtA []byte) error {
 				m.NFT = &BaseNFT{}
 			}
 			if err := m.NFT.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgFeeDenominatorRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgFeeDenominatorRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgFeeDenominatorRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgFeeDenominatorResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgFeeDenominatorResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgFeeDenominatorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyFraction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyFraction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRoyaltyInfoRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRoyaltyInfoRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRoyaltyInfoRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TokenId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SalePrice", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.SalePrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRoyaltyInfoResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRoyaltyInfoResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRoyaltyInfoResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Receiver", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Receiver = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDefaultRoyaltyInfoRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDefaultRoyaltyInfoRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDefaultRoyaltyInfoRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDefaultRoyaltyInfoResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDefaultRoyaltyInfoResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDefaultRoyaltyInfoResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Receiver", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Receiver = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyFraction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyFraction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgTokenRoyaltyInfoRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgTokenRoyaltyInfoRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgTokenRoyaltyInfoRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TokenId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgTokenRoyaltyInfoResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgTokenRoyaltyInfoResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgTokenRoyaltyInfoResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Receiver", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Receiver = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyFraction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.RoyaltyFraction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
