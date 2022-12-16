@@ -1,10 +1,8 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/irisnet/irismod/modules/rental/types"
 	"reflect"
-	"strconv"
 	"unsafe"
 )
 
@@ -31,25 +29,6 @@ func rentalInfoKey(classId, nftId string) []byte {
 	copy(key[len(RentalInfoKey)+len(classIdBz)+len(Delimiter):], nftIdBz)
 
 	return key
-}
-
-// rentalInfoValue returns the byte representation of the rental info value.
-// This value comprises of <user><delimiter><expires>
-func rentalInfoValue(user sdk.AccAddress, expires uint64) []byte {
-	userBz := user.Bytes()
-	expiresBz := []byte(strconv.FormatUint(expires, 10))
-
-	value := make([]byte, len(userBz)+len(Delimiter)+len(expiresBz))
-	copy(value, userBz)
-	copy(value[len(userBz):], Delimiter)
-	copy(value[len(userBz)+len(Delimiter):], expiresBz)
-
-	return value
-}
-
-// splitRentalInfoValue returns the user and expires of a rental info bytes.
-func splitRentalInfoValue(rfv []byte) (user []byte, expires uint64) {
-	panic("Fixme")
 }
 
 // The following functions refers to cosmos-sdk/internal/conv/string.go

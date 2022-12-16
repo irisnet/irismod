@@ -1,6 +1,9 @@
 package keeper
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/irisnet/irismod/modules/rental/types"
+)
 
 // setRentalInfo sets the rental info for an nft.
 func (k Keeper) setRentalInfo(ctx sdk.Context,
@@ -8,17 +11,25 @@ func (k Keeper) setRentalInfo(ctx sdk.Context,
 	user sdk.AccAddress,
 	expires uint64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(rentalInfoKey(classId, nftId), rentalInfoValue(user, expires))
+	r := types.RentalInfo{
+		User:    user.String(),
+		ClassId: classId,
+		NftId:   nftId,
+		Expires: expires,
+	}
+	bz := k.cdc.MustMarshal(&r)
+	store.Set(rentalInfoKey(r.ClassId, r.NftId), bz)
 }
 
 // getRentalInfo returns the rental info for an nft.
 func (k Keeper) getRentalInfo(ctx sdk.Context,
-	classId, nftId string) (user sdk.AccAddress, expires uint64) {
+	classId, nftId string) (types.RentalInfo, bool) {
+	var v types.RentalInfo
 	store := ctx.KVStore(k.storeKey)
-	vbz := store.Get(rentalInfoKey(classId, nftId))
-
-	if vbz != nil {
-		user, expires = splitRentalInfoValue(vbz)
+	bz := store.Get(rentalInfoKey(classId, nftId))
+	if bz == nil {
+		return types.RentalInfo{}, false
 	}
-	return
+	k.cdc.MustUnmarshal(bz, &v)
+	return v, true
 }
