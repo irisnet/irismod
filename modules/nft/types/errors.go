@@ -17,6 +17,7 @@ var (
 	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 18, "invalid nft uri")
 
 	// Rental Plugin Errors
-	ErrInvalidExpiry         = sdkerrors.Register(ModuleName, 31, "invalid expiry")
-	ErrNotExistentRentalInfo = sdkerrors.Register(ModuleName, 32, "rental info is not existent")
+	ErrRentalOption          = sdkerrors.Register(ModuleName, 31, "rental is disabled")
+	ErrInvalidExpiry         = sdkerrors.Register(ModuleName, 32, "invalid expiry")
+	ErrNotExistentRentalInfo = sdkerrors.Register(ModuleName, 33, "rental info is not existent")
 )

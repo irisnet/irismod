@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/irisnet/irismod/modules/nft/types"
@@ -8,9 +9,10 @@ import (
 
 // Rent set or update rental info for an nft.
 func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
-
-	// rent option is enabled
-	// todo
+	// if disabled, return err
+	if enabled := k.GetRentalOption(ctx, rental.ClassId); !enabled {
+		return sdkerrors.Wrapf(types.ErrRentalOption, "Rental is disabled")
+	}
 
 	// this nft must expire to be set again.
 	_, exist := k.GetRentalInfo(ctx, rental.ClassId, rental.NftId)
@@ -38,6 +40,18 @@ func (k Keeper) setRentalInfo(ctx sdk.Context,
 	store.Set(rentalInfoKey(r.ClassId, r.NftId), bz)
 }
 
+// setRentalOption enables the rental feature for a class.
+func (k Keeper) setRentalOption(ctx sdk.Context, classId string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(rentalOptionKey(classId), []byte{0x01})
+}
+
+// setRentalOption enables the rental feature for a class.
+func (k Keeper) unsetRentalOption(ctx sdk.Context, classId string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(rentalOptionKey(classId), []byte{0x00})
+}
+
 // GetRentalInfo returns the rental info for an nft.
 func (k Keeper) GetRentalInfo(ctx sdk.Context,
 	classId, nftId string) (types.RentalInfo, bool) {
@@ -62,4 +76,15 @@ func (k Keeper) GetRentalInfos(ctx sdk.Context) (ris []types.RentalInfo) {
 		ris = append(ris, rental)
 	}
 	return ris
+}
+
+// GetRentalEnabled checks if a class has its rental option enabled.
+func (k Keeper) GetRentalOption(ctx sdk.Context, classId string) bool {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(rentalOptionKey(classId))
+
+	if bytes.Equal(bz, []byte{0x01}) {
+		return true
+	}
+	return false
 }

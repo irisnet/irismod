@@ -10,13 +10,14 @@ import (
 var (
 	PluginRental = []byte{0x06}
 
-	RentalInfoKey = []byte{0x01}
+	RentalInfoKey   = []byte{0x01}
+	RentalOptionKey = []byte{0x02}
 
 	Delimiter = []byte{0x00}
 )
 
 // rentalInfoKey returns the byte representation of the rental info key.
-// This key comprises of <0x06><0x01><class-id><delimiter><nft-id>
+// <0x06><0x01><class-id><delimiter><nft-id> => bz(rentalInfo)
 func rentalInfoKey(classId, nftId string) []byte {
 	classIdBz := unsafeStrToBytes(classId)
 	nftIdBz := unsafeStrToBytes(nftId)
@@ -28,6 +29,19 @@ func rentalInfoKey(classId, nftId string) []byte {
 	copy(key[len(PluginRental)+len(RentalInfoKey):], classIdBz)
 	copy(key[len(PluginRental)+len(RentalInfoKey)+len(classIdBz):], Delimiter)
 	copy(key[len(PluginRental)+len(RentalInfoKey)+len(classIdBz)+len(Delimiter):], nftIdBz)
+	return key
+}
+
+// rentalOptionKey returns the byte representation of the rental enabled key.
+// <0x06><0x02><class-id> => true:0x01,false:0x00
+func rentalOptionKey(classId string) []byte {
+	classIdBz := unsafeStrToBytes(classId)
+
+	key := make([]byte, len(PluginRental)+len(RentalOptionKey)+len(classIdBz))
+
+	copy(key, PluginRental)
+	copy(key[len(PluginRental):], RentalOptionKey)
+	copy(key[len(PluginRental)+len(RentalOptionKey):], classIdBz)
 	return key
 }
 
