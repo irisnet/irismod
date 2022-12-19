@@ -50,9 +50,14 @@ message DenomMetadata {
   bool mint_restricted = 3;
   bool update_restricted = 4;
   string data = 5;
+}
 
-  // rental options
-  bool rental_enabled = 7;
+// DenomUserData defines user defined data and nft extensible options
+message DenomUserData {
+  // bool royalty_enabled = 1;
+  bool rental_enabled = 2;
+
+  string user_data = 10;
 }
 
 // IDCollection defines a type of collection with specified ID

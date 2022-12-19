@@ -8,9 +8,12 @@ import (
 
 // Rent set or update rental info for an nft.
 func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
-	// this nft must expire if to be set again.
-	// FIXME: proto should use int64 or Time than uint64
-	rental, exist := k.GetRentalInfo(ctx, rental.ClassId, rental.NftId)
+
+	// rent option is enabled
+	// todo
+
+	// this nft must expire to be set again.
+	_, exist := k.GetRentalInfo(ctx, rental.ClassId, rental.NftId)
 	if exist && ctx.BlockTime().Unix() < int64(rental.Expires) {
 		return sdkerrors.Wrapf(types.ErrInvalidExpiry, "Expiry is (%d)", rental.Expires)
 	}
@@ -23,7 +26,7 @@ func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
 // setRentalInfo sets the rental info for an nft.
 func (k Keeper) setRentalInfo(ctx sdk.Context,
 	classId, nftId, user string,
-	expires uint64) {
+	expires int64) {
 	store := ctx.KVStore(k.storeKey)
 	r := types.RentalInfo{
 		User:    user,

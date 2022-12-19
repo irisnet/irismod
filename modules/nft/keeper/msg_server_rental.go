@@ -23,6 +23,11 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	// nft must exist
+	if exist := k.HasNFT(ctx, msg.ClassId, msg.NftId); !exist {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.ClassId, msg.NftId)
+	}
+
 	// sender must own or be approved for this nft
 	if owner := k.nk.GetOwner(ctx, msg.ClassId, msg.NftId); !owner.Equals(sender) {
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not owner of the nft", msg.Sender)
@@ -42,7 +47,7 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 			types.EventTypeSetUser,
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.ClassId),
 			sdk.NewAttribute(types.AttributeKeyTokenID, msg.NftId),
-			sdk.NewAttribute(types.AttributeKeyExpires, strconv.FormatUint(msg.Expires, 10)),
+			sdk.NewAttribute(types.AttributeKeyExpires, strconv.FormatInt(msg.Expires, 10)),
 			sdk.NewAttribute(types.AttributeKeyUser, msg.User),
 		),
 		sdk.NewEvent(

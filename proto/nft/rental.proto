@@ -10,5 +10,5 @@ message RentalInfo {
   string user = 1;
   string class_id = 2;
   string nft_id = 3;
-  uint64 expires = 4;
+  int64 expires = 4;
 }

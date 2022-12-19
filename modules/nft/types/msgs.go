@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 )
 
 // constant used to indicate that some field should not be updated
@@ -13,6 +14,8 @@ const (
 	TypeMsgMintNFT       = "mint_nft"
 	TypeMsgBurnNFT       = "burn_nft"
 	TypeMsgTransferDenom = "transfer_denom"
+
+	TypeMsgSetUser = "set_user"
 )
 
 var (
@@ -22,6 +25,8 @@ var (
 	_ sdk.Msg = &MsgMintNFT{}
 	_ sdk.Msg = &MsgBurnNFT{}
 	_ sdk.Msg = &MsgTransferDenom{}
+
+	_ sdk.Msg = &MsgSetUser{}
 )
 
 // NewMsgIssueDenom is a constructor function for MsgSetName
@@ -322,4 +327,57 @@ func (msg MsgTransferDenom) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{from}
+}
+
+func NewMsgSetUser(classId, nftId, user string,
+	expires int64, sender string) *MsgSetUser {
+	return &MsgSetUser{
+		ClassId: classId,
+		NftId:   nftId,
+		User:    user,
+		Expires: expires,
+		Sender:  sender,
+	}
+}
+
+// Route Implements LegacyMsg
+func (m MsgSetUser) Route() string { return RouterKey }
+
+// Type Implements LegacyMsg
+func (m MsgSetUser) Type() string { return TypeMsgSetUser }
+
+// GetSignBytes Implements LegacyMsg
+func (m MsgSetUser) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&m)
+	return sdk.MustSortJSON(bz)
+}
+
+// ValidateBasic implements the Msg.ValidateBasic method.
+func (m MsgSetUser) ValidateBasic() error {
+	if err := nft.ValidateClassID(m.ClassId); err != nil {
+		return sdkerrors.Wrapf(ErrInvalidDenom, "Invalid class id (%s)", m.ClassId)
+	}
+
+	if err := nft.ValidateNFTID(m.NftId); err != nil {
+		return sdkerrors.Wrapf(ErrInvalidTokenID, "Invalid nft id (%s)", m.NftId)
+	}
+
+	_, err := sdk.AccAddressFromBech32(m.Sender)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid sender address (%s)", m.Sender)
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.User)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid user address (%s)", m.User)
+
+	}
+
+	return nil
+}
+
+// GetSigners implements the Msg.GetSigners method.
+func (m MsgSetUser) GetSigners() []sdk.AccAddress {
+	signer, _ := sdk.AccAddressFromBech32(m.Sender)
+	return []sdk.AccAddress{signer}
 }
