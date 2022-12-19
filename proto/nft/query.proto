@@ -40,7 +40,6 @@ service Query {
     option (google.api.http).get = "/irismod/nft/nfts/{denom_id}/{token_id}";
   }
 
-  // Royalty
   // FeeDenominator queries the FeeDenominator
   rpc FeeDenominator(MsgFeeDenominatorRequest) returns (MsgFeeDenominatorResponse);
 
@@ -131,8 +130,8 @@ message MsgFeeDenominatorResponse {
 }
 
 message MsgRoyaltyInfoRequest {
-  string class_id = 1;
-  string token_id = 2;
+  string denom_id = 1;
+  string nft_id = 2;
   string sale_price = 3 [(gogoproto.customtype) = "cosmossdk.io/math.Uint", (gogoproto.nullable) = false];
 }
 message MsgRoyaltyInfoResponse {
@@ -141,7 +140,7 @@ message MsgRoyaltyInfoResponse {
 }
 
 message MsgDefaultRoyaltyInfoRequest {
-  string class_id = 1;
+  string denom_id = 1;
 }
 message MsgDefaultRoyaltyInfoResponse {
   string receiver = 1;
@@ -149,8 +148,8 @@ message MsgDefaultRoyaltyInfoResponse {
 }
 
 message MsgTokenRoyaltyInfoRequest {
-  string class_id = 1;
-  string token_id = 2;
+  string denom_id = 1;
+  string nft_id = 2;
 }
 message MsgTokenRoyaltyInfoResponse {
   string receiver = 1;

@@ -26,7 +26,6 @@ service Msg {
   // TransferDenom defines a method for transferring a denom.
   rpc TransferDenom(MsgTransferDenom) returns (MsgTransferDenomResponse);
 
-  // royalty service
   // SetDefaultRoyalty defines a method for set a default royalty for class.
   rpc SetDefaultRoyalty(MsgSetDefaultRoyalty) returns (MsgSetDefaultRoyaltyResponse);
 
@@ -56,7 +55,6 @@ message MsgIssueDenom {
   string uri_hash = 10;
   string data = 11;
 
-  bool royalty_enabled = 12;
 }
 
 // MsgIssueDenomResponse defines the Msg/IssueDenom response type.
@@ -141,9 +139,9 @@ message MsgTransferDenomResponse {}
 message MsgSetDefaultRoyalty {
   option (gogoproto.equal) = true;
 
-  string class_id = 1;
+  string denom_id = 1;
   string receiver = 2;
-  string fee_numerator = 3;
+  string fee_numerator = 3 [(gogoproto.customtype) = "cosmossdk.io/math.Uint", (gogoproto.nullable) = false];
 
   string sender = 4;
 }
@@ -154,10 +152,10 @@ message MsgSetDefaultRoyaltyResponse {}
 message MsgSetTokenRoyalty {
   option (gogoproto.equal) = true;
 
-  string class_id = 1;
-  string token_id= 2;
+  string denom_id = 1;
+  string nft_id= 2;
   string receiver = 3;
-  string fee_numerator = 4;
+  string fee_numerator = 4 [(gogoproto.customtype) = "cosmossdk.io/math.Uint", (gogoproto.nullable) = false];
 
   string sender = 5;
 }
@@ -168,8 +166,8 @@ message MsgSetTokenRoyaltyResponse {}
 message MsgResetTokenRoyalty {
   option (gogoproto.equal) = true;
 
-  string class_id = 1;
-  string token_id= 2;
+  string denom_id = 1;
+  string nft_id= 2;
 
   string sender = 3;
 }
@@ -179,7 +177,7 @@ message MsgResetTokenRoyaltyResponse {}
 message MsgDeleteDefaultRoyalty {
   option (gogoproto.equal) = true;
 
-  string class_id = 1;
+  string denom_id = 1;
 
   string sender = 2;
 }

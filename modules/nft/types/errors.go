@@ -17,6 +17,6 @@ var (
 	ErrInvalidTokenID    = sdkerrors.Register(ModuleName, 17, "invalid nft id")
 	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 18, "invalid nft uri")
 
-	ErrEmptyClassId = errorsmod.Register(ModuleName, 21, "class id can't be empty")
-	ErrEmptyTokenId = errorsmod.Register(ModuleName, 22, "token id can't be empty")
+	ErrNotEnabledRoyalty      = errorsmod.Register(ModuleName, 21, "royalty feature is not enabled")
+	ErrNullDefaultRoyaltyInfo = errorsmod.Register(ModuleName, 22, "default royalty in is null")
 )
