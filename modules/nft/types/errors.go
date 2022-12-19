@@ -15,4 +15,8 @@ var (
 	ErrInvalidDenom      = sdkerrors.Register(ModuleName, 16, "invalid denom")
 	ErrInvalidTokenID    = sdkerrors.Register(ModuleName, 17, "invalid nft id")
 	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 18, "invalid nft uri")
+
+	// Renal Plugin Errors
+	ErrInvalidExpiry         = sdkerrors.Register(ModuleName, 31, "invalid expiry")
+	ErrNotExistentRentalInfo = sdkerrors.Register(ModuleName, 32, "rental info is not existent")
 )

@@ -3,7 +3,7 @@ package irismod.rental;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/irisnet/irismod/modules/rental/types";
+option go_package = "github.com/irisnet/irismod/modules/nft/types";
 
 // RentalInfo defines a rental info
 message RentalInfo {

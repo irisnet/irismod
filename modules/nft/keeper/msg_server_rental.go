@@ -6,10 +6,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 
-	"github.com/irisnet/irismod/modules/rental/types"
+	"github.com/irisnet/irismod/modules/nft/types"
 )
-
-var _ types.MsgServer = Keeper{}
 
 // SetUser set a user and expires time for an existent nft
 func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.MsgSetUserResponse, error) {
@@ -27,7 +25,7 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 
 	// sender must own or be approved for this nft
 	if owner := k.nk.GetOwner(ctx, msg.ClassId, msg.NftId); !owner.Equals(sender) {
-		return nil, sdkerrors.Wrapf(types.ErrNotApprovedNorOwner, "Not owner (%s)", msg.Sender)
+		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not owner of the nft", msg.Sender)
 	}
 
 	if err := k.Rent(ctx, types.RentalInfo{
@@ -42,8 +40,8 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeSetUser,
-			sdk.NewAttribute(types.AttributeKeyClassId, msg.ClassId),
-			sdk.NewAttribute(types.AttributeKeyNftId, msg.NftId),
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.ClassId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.NftId),
 			sdk.NewAttribute(types.AttributeKeyExpires, strconv.FormatUint(msg.Expires, 10)),
 			sdk.NewAttribute(types.AttributeKeyUser, msg.User),
 		),

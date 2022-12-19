@@ -1,33 +1,33 @@
 package keeper
 
 import (
-	"github.com/irisnet/irismod/modules/rental/types"
 	"reflect"
 	"unsafe"
 )
 
+// As iris/nft uses x/nft as its base module, new added key must start from 0x06.
+// Key of each plugin must add an PrefixPluginXxx to distinguish.
 var (
+	PluginRental = []byte{0x06}
+
 	RentalInfoKey = []byte{0x01}
 
 	Delimiter = []byte{0x00}
 )
 
-// StoreKey is the store key for rental module
-const StoreKey = types.ModuleName
-
 // rentalInfoKey returns the byte representation of the rental info key.
-// This key comprises of <0x01><class-id><delimiter><nft-id>
+// This key comprises of <0x06><0x01><class-id><delimiter><nft-id>
 func rentalInfoKey(classId, nftId string) []byte {
 	classIdBz := unsafeStrToBytes(classId)
 	nftIdBz := unsafeStrToBytes(nftId)
 
-	key := make([]byte, len(RentalInfoKey)+len(classIdBz)+len(Delimiter)+len(nftIdBz))
+	key := make([]byte, len(PluginRental)+len(RentalInfoKey)+len(classIdBz)+len(Delimiter)+len(nftIdBz))
 
-	copy(key, RentalInfoKey)
-	copy(key[len(RentalInfoKey):], classIdBz)
-	copy(key[len(RentalInfoKey)+len(classIdBz):], Delimiter)
-	copy(key[len(RentalInfoKey)+len(classIdBz)+len(Delimiter):], nftIdBz)
-
+	copy(key, PluginRental)
+	copy(key[len(PluginRental):], RentalInfoKey)
+	copy(key[len(PluginRental)+len(RentalInfoKey):], classIdBz)
+	copy(key[len(PluginRental)+len(RentalInfoKey)+len(classIdBz):], Delimiter)
+	copy(key[len(PluginRental)+len(RentalInfoKey)+len(classIdBz)+len(Delimiter):], nftIdBz)
 	return key
 }
 
@@ -43,12 +43,4 @@ func unsafeStrToBytes(s string) []byte {
 	bufHdr.Cap = sHdr.Len
 	bufHdr.Len = sHdr.Len
 	return buf
-}
-
-// unsafeBytesToStr is meant to make a zero allocation conversion
-// from []byte -> string to speed up operations, it is not meant
-// to be used generally, but for a specific pattern to delete keys
-// from a map.
-func unsafeBytesToStr(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
 }

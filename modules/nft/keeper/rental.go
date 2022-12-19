@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/irisnet/irismod/modules/rental/types"
+	"github.com/irisnet/irismod/modules/nft/types"
 )
 
 // Rent set or update rental info for an nft.
@@ -12,7 +12,7 @@ func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
 	// FIXME: proto should use int64 or Time than uint64
 	rental, exist := k.GetRentalInfo(ctx, rental.ClassId, rental.NftId)
 	if exist && ctx.BlockTime().Unix() < int64(rental.Expires) {
-		return sdkerrors.Wrapf(types.ErrNotArriveExpires, "Expires is (%d)", rental.Expires)
+		return sdkerrors.Wrapf(types.ErrInvalidExpiry, "Expiry is (%d)", rental.Expires)
 	}
 
 	// set rental info
