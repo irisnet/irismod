@@ -30,15 +30,14 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 		return nil, sdkerrors.Wrapf(types.ErrNotApprovedNorOwner, "Not owner (%s)", msg.Sender)
 	}
 
-	// this nft must expire if to be set again.
-	// FIXME: proto should use int64 or Time than uint64
-	rental, exist := k.GetRentalInfo(ctx, msg.ClassId, msg.NftId)
-	if exist && ctx.BlockTime().Unix() < int64(rental.Expires) {
-		return nil, sdkerrors.Wrapf(types.ErrNotArriveExpires, "Expires is (%d)", rental.Expires)
+	if err := k.Rent(ctx, types.RentalInfo{
+		User:    user.String(),
+		ClassId: msg.ClassId,
+		NftId:   msg.NftId,
+		Expires: msg.Expires,
+	}); err != nil {
+		return nil, err
 	}
-
-	// set rental info
-	k.SetRentalInfo(ctx, msg.ClassId, msg.NftId, user, msg.Expires)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

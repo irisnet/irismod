@@ -2,17 +2,31 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/irisnet/irismod/modules/rental/types"
 )
 
-// SetRentalInfo sets the rental info for an nft.
-func (k Keeper) SetRentalInfo(ctx sdk.Context,
-	classId, nftId string,
-	user sdk.AccAddress,
+// Rent set or update rental info for an nft.
+func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
+	// this nft must expire if to be set again.
+	// FIXME: proto should use int64 or Time than uint64
+	rental, exist := k.GetRentalInfo(ctx, rental.ClassId, rental.NftId)
+	if exist && ctx.BlockTime().Unix() < int64(rental.Expires) {
+		return sdkerrors.Wrapf(types.ErrNotArriveExpires, "Expires is (%d)", rental.Expires)
+	}
+
+	// set rental info
+	k.setRentalInfo(ctx, rental.ClassId, rental.NftId, rental.User, rental.Expires)
+	return nil
+}
+
+// setRentalInfo sets the rental info for an nft.
+func (k Keeper) setRentalInfo(ctx sdk.Context,
+	classId, nftId, user string,
 	expires uint64) {
 	store := ctx.KVStore(k.storeKey)
 	r := types.RentalInfo{
-		User:    user.String(),
+		User:    user,
 		ClassId: classId,
 		NftId:   nftId,
 		Expires: expires,

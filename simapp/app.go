@@ -109,13 +109,15 @@ import (
 	"github.com/irisnet/irismod/modules/record"
 	recordkeeper "github.com/irisnet/irismod/modules/record/keeper"
 	recordtypes "github.com/irisnet/irismod/modules/record/types"
+	rentalkeeper "github.com/irisnet/irismod/modules/rental/keeper"
+	rental "github.com/irisnet/irismod/modules/rental/module"
+	rentaltypes "github.com/irisnet/irismod/modules/rental/types"
 	"github.com/irisnet/irismod/modules/service"
 	servicekeeper "github.com/irisnet/irismod/modules/service/keeper"
 	servicetypes "github.com/irisnet/irismod/modules/service/types"
 	"github.com/irisnet/irismod/modules/token"
 	tokenkeeper "github.com/irisnet/irismod/modules/token/keeper"
 	tokentypes "github.com/irisnet/irismod/modules/token/types"
-
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -163,6 +165,7 @@ var (
 		oracle.AppModuleBasic{},
 		random.AppModuleBasic{},
 		farm.AppModuleBasic{},
+		rental.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -234,6 +237,7 @@ type SimApp struct {
 	OracleKeeper   oracleKeeper.Keeper
 	RandomKeeper   randomkeeper.Keeper
 	FarmKeeper     farmkeeper.Keeper
+	RentalKeeper   rentalkeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -279,7 +283,7 @@ func NewSimApp(
 		capabilitytypes.StoreKey, tokentypes.StoreKey,
 		nfttypes.StoreKey, mttypes.StoreKey, htlctypes.StoreKey, recordtypes.StoreKey,
 		coinswaptypes.StoreKey, servicetypes.StoreKey, oracletypes.StoreKey,
-		randomtypes.StoreKey, farmtypes.StoreKey,
+		randomtypes.StoreKey, farmtypes.StoreKey, rentaltypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -412,6 +416,12 @@ func NewSimApp(
 		distrtypes.ModuleName,
 	)
 
+	// rental needs only x/nft keeper from app/nft
+	app.RentalKeeper = rentalkeeper.NewKeeper(appCodec,
+		keys[rentaltypes.StoreKey],
+		app.NFTKeeper.NFTkeeper(),
+	)
+
 	// register the proposal types
 	govRouter := govv1beta1.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
@@ -467,6 +477,7 @@ func NewSimApp(
 		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		random.NewAppModule(appCodec, app.RandomKeeper, app.AccountKeeper, app.BankKeeper),
 		farm.NewAppModule(appCodec, app.FarmKeeper, app.AccountKeeper, app.BankKeeper),
+		rental.NewAppModule(appCodec, app.RentalKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -483,7 +494,7 @@ func NewSimApp(
 		nfttypes.ModuleName, mttypes.ModuleName,
 		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
+		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName, rentaltypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
@@ -495,7 +506,7 @@ func NewSimApp(
 		nfttypes.ModuleName, mttypes.ModuleName,
 		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
+		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName, rentaltypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -514,6 +525,7 @@ func NewSimApp(
 		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
 		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName, crisistypes.ModuleName,
+		rentaltypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -546,6 +558,7 @@ func NewSimApp(
 		//oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		//random.NewAppModule(appCodec, app.RandomKeeper, app.AccountKeeper, app.BankKeeper),
 		//farm.NewAppModule(appCodec, app.FarmKeeper, app.AccountKeeper, app.BankKeeper),
+		rental.NewAppModule(appCodec, app.RentalKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
