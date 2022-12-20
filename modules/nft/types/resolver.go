@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	Namespace = "irismod:"
+	Namespace          = "irismod:"
+	KeyMediaFieldValue = "value"
 )
 
 var (
@@ -45,6 +46,7 @@ func NewClassMetadataResolver(cdc codec.Codec, getModuleAddress func(string) sdk
 	}
 }
 
+// Encode encode any into the metadata data format defined by ics721
 func (cmr ClassMetadataResolver) Encode(any *codectypes.Any) (string, error) {
 	var message proto.Message
 	if err := cmr.cdc.UnpackAny(any, &message); err != nil {
@@ -98,40 +100,48 @@ func (cmr ClassMetadataResolver) Decode(classInfo string) (*codectypes.Any, erro
 		})
 	}
 
-	jsonMap := make(map[string]MediaField)
-	if err := json.Unmarshal(classInfoBz, &jsonMap); err != nil {
+	dataMap := make(map[string]interface{})
+	if err := json.Unmarshal(classInfoBz, &dataMap); err != nil {
 		return nil, err
 	}
 
-	if v, ok := jsonMap[MintRestrictedFieldKey]; ok {
-		if vBool, ok := v.Value.(bool); ok {
-			mintRestricted = vBool
-			delete(jsonMap, MintRestrictedFieldKey)
+	if v, ok := dataMap[MintRestrictedFieldKey]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vBool, ok := vMap[KeyMediaFieldValue].(bool); ok {
+				mintRestricted = vBool
+				delete(dataMap, MintRestrictedFieldKey)
+			}
 		}
 	}
 
-	if v, ok := jsonMap[UpdateRestrictedFieldKey]; ok {
-		if vBool, ok := v.Value.(bool); ok {
-			updateRestricted = vBool
-			delete(jsonMap, UpdateRestrictedFieldKey)
+	if v, ok := dataMap[UpdateRestrictedFieldKey]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vBool, ok := vMap[KeyMediaFieldValue].(bool); ok {
+				updateRestricted = vBool
+				delete(dataMap, UpdateRestrictedFieldKey)
+			}
 		}
 	}
 
-	if v, ok := jsonMap[CreatorFieldKey]; ok {
-		if vStr, ok := v.Value.(string); ok {
-			creator = vStr
-			delete(jsonMap, CreatorFieldKey)
+	if v, ok := dataMap[CreatorFieldKey]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				creator = vStr
+				delete(dataMap, CreatorFieldKey)
+			}
 		}
 	}
 
-	if v, ok := jsonMap[SchemaFieldKey]; ok {
-		if vStr, ok := v.Value.(string); ok {
-			schema = vStr
-			delete(jsonMap, SchemaFieldKey)
+	if v, ok := dataMap[SchemaFieldKey]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				schema = vStr
+				delete(dataMap, SchemaFieldKey)
+			}
 		}
 	}
 
-	data, err := json.Marshal(jsonMap)
+	data, err := json.Marshal(dataMap)
 	if err != nil {
 		return nil, err
 	}

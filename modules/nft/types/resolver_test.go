@@ -14,21 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClassMetadataResolverMarshal(t *testing.T) {
+func TestClassMetadataResolverEncodeAndDecode(t *testing.T) {
 	creator, err := sdk.AccAddressFromHexUnsafe(crypto.AddressHash([]byte("test_consumer")).String())
 	require.NoError(t, err, "AccAddressFromHexUnsafe failed")
 
-	customData := map[string]MediaField{
-		"key1": {Value: "value1"},
-		"key2": {Value: "value2"},
-	}
-	customDataBz, _ := json.Marshal(customData)
 	denomMetadata := DenomMetadata{
 		Creator:          creator.String(),
 		Schema:           "{}",
 		MintRestricted:   true,
 		UpdateRestricted: true,
-		Data:             string(customDataBz),
+		Data:             "{\"key1\":\"value1\",\"key2\":\"value2\"}",
 	}
 
 	bz, err := json.Marshal(denomMetadata)
