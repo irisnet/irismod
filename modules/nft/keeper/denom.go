@@ -33,7 +33,7 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 	if err != nil {
 		return err
 	}
-	return k.nk.SaveClass(ctx, nft.Class{
+	err = k.nk.SaveClass(ctx, nft.Class{
 		Id:          id,
 		Name:        name,
 		Symbol:      symbol,
@@ -42,6 +42,13 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 		UriHash:     uriHash,
 		Data:        metadata,
 	})
+	if err != nil {
+		return err
+	}
+
+	// AfterSaveDenom
+	k.SaveRentalOption(ctx, id, data)
+	return nil
 }
 
 // TransferDenomOwner transfers the ownership of the given denom to the new owner

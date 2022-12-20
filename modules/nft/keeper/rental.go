@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/irisnet/irismod/modules/nft/types"
@@ -14,9 +15,8 @@ func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
 		return sdkerrors.Wrapf(types.ErrRentalOption, "Rental is disabled")
 	}
 
-	// this nft must expire to be set again.
-	_, exist := k.GetRentalInfo(ctx, rental.ClassId, rental.NftId)
-	if exist && ctx.BlockTime().Unix() < int64(rental.Expires) {
+	// expiry should be greater than the current time
+	if ctx.BlockTime().Unix() >= int64(rental.Expires) {
 		return sdkerrors.Wrapf(types.ErrInvalidExpiry, "Expiry is (%d)", rental.Expires)
 	}
 
@@ -38,18 +38,6 @@ func (k Keeper) setRentalInfo(ctx sdk.Context,
 	}
 	bz := k.cdc.MustMarshal(&r)
 	store.Set(rentalInfoKey(r.ClassId, r.NftId), bz)
-}
-
-// setRentalOption enables the rental feature for a class.
-func (k Keeper) setRentalOption(ctx sdk.Context, classId string) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(rentalOptionKey(classId), []byte{0x01})
-}
-
-// setRentalOption enables the rental feature for a class.
-func (k Keeper) unsetRentalOption(ctx sdk.Context, classId string) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(rentalOptionKey(classId), []byte{0x00})
 }
 
 // GetRentalInfo returns the rental info for an nft.
@@ -76,6 +64,29 @@ func (k Keeper) GetRentalInfos(ctx sdk.Context) (ris []types.RentalInfo) {
 		ris = append(ris, rental)
 	}
 	return ris
+}
+
+// SaveRentalOption sets the class
+func (k Keeper) SaveRentalOption(ctx sdk.Context, classId, data string) {
+	var userData types.DenomUserData
+	if err := json.Unmarshal([]byte(data), &userData); err != nil {
+		return
+	}
+	if userData.RentalEnabled {
+		k.setRentalOption(ctx, classId)
+	}
+}
+
+// setRentalOption enables the rental feature for a class.
+func (k Keeper) setRentalOption(ctx sdk.Context, classId string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(rentalOptionKey(classId), []byte{0x01})
+}
+
+// unsetRentalOption disables the rental feature for a class.
+func (k Keeper) unsetRentalOption(ctx sdk.Context, classId string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(rentalOptionKey(classId), []byte{0x00})
 }
 
 // GetRentalEnabled checks if a class has its rental option enabled.
