@@ -2,9 +2,10 @@ package keeper
 
 import (
 	"bytes"
-	"encoding/json"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
@@ -66,33 +67,22 @@ func (k Keeper) GetRentalInfos(ctx sdk.Context) (ris []types.RentalInfo) {
 	return ris
 }
 
-// SaveRentalOption sets the class
-func (k Keeper) SaveRentalOption(ctx sdk.Context, classId, data string) {
-	var userData types.DenomUserdata
-	if err := json.Unmarshal([]byte(data), &userData); err != nil {
-		return
-	}
-	if userData.RentalMetadata.Enabled {
-		k.setRentalOption(ctx, classId)
-	}
-}
-
 // setRentalOption enables the rental feature for a class.
-func (k Keeper) setRentalOption(ctx sdk.Context, classId string) {
+func (k Keeper) setRentalOption(ctx sdk.Context, denomId string) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(rentalOptionKey(classId), []byte{0x01})
+	store.Set(rentalOptionKey(denomId), []byte{0x01})
 }
 
 // unsetRentalOption disables the rental feature for a class.
-func (k Keeper) unsetRentalOption(ctx sdk.Context, classId string) {
+func (k Keeper) unsetRentalOption(ctx sdk.Context, denomId string) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(rentalOptionKey(classId), []byte{0x00})
+	store.Set(rentalOptionKey(denomId), []byte{0x00})
 }
 
 // GetRentalEnabled checks if a class has its rental option enabled.
-func (k Keeper) GetRentalOption(ctx sdk.Context, classId string) bool {
+func (k Keeper) GetRentalOption(ctx sdk.Context, denomId string) bool {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(rentalOptionKey(classId))
+	bz := store.Get(rentalOptionKey(denomId))
 
 	if bytes.Equal(bz, []byte{0x01}) {
 		return true

@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"encoding/json"
+
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
@@ -20,10 +21,10 @@ var (
 	rentalRenter  = CreateTestAddrs(5)[4]
 
 	rentalUserData = types.DenomUserdata{
-		&types.RentalMetadata{Enabled: true},
+		RentalMetadata: &types.RentalMetadata{Enabled: true},
 	}
 	rentalUserData2 = types.DenomUserdata{
-		&types.RentalMetadata{Enabled: false},
+		RentalMetadata: &types.RentalMetadata{Enabled: false},
 	}
 )
 

@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"encoding/json"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -46,8 +48,7 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 		return err
 	}
 
-	// AfterSaveDenom
-	k.SaveRentalOption(ctx, id, data)
+	k.HandleDenomUserdata(ctx, id, data)
 	return nil
 }
 
@@ -122,4 +123,16 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 // HasDenom determine whether denom exists
 func (k Keeper) HasDenom(ctx sdk.Context, denomID string) bool {
 	return k.nk.HasClass(ctx, denomID)
+}
+
+// HandleDenomUserdata sets extensible options for a denom according to denom userdata
+func (k Keeper) HandleDenomUserdata(ctx sdk.Context, denomId, data string) {
+	var userData types.DenomUserdata
+	if err := json.Unmarshal([]byte(data), &userData); err != nil {
+		return
+	}
+
+	if userData.RentalMetadata != nil && userData.RentalMetadata.Enabled {
+		k.setRentalOption(ctx, denomId)
+	}
 }
