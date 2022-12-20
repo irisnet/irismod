@@ -2,6 +2,7 @@ syntax = "proto3";
 package irismod.nft;
 
 import "gogoproto/gogo.proto";
+import "nft/rental.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/nft/types";
 option (gogoproto.goproto_getters_all) = false;
@@ -52,12 +53,9 @@ message DenomMetadata {
   string data = 5;
 }
 
-// DenomUserData defines user defined data and nft extensible options
-message DenomUserData {
-  // bool royalty_enabled = 1;
-  bool rental_enabled = 2;
-
-  string user_data = 10;
+// DenomUserData defines the unmarshalled DenomMetadata.data
+message DenomUserdata {
+  RentalMetadata rentalMetadata = 1 [ (gogoproto.jsontag) = "irismod:4907" ];
 }
 
 // IDCollection defines a type of collection with specified ID

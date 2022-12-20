@@ -184,13 +184,13 @@ func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.Q
 func (k Keeper) UserOf(goCtx context.Context, msg *types.QueryUserOfRequest) (*types.QueryUserOfResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if exist := k.nk.HasNFT(ctx, msg.ClassId, msg.NftId); !exist {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.ClassId, msg.NftId)
+	if exist := k.nk.HasNFT(ctx, msg.DenomId, msg.NftId); !exist {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.DenomId, msg.NftId)
 	}
 
-	rental, exist := k.GetRentalInfo(ctx, msg.ClassId, msg.NftId)
+	rental, exist := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistentRentalInfo, "rental info is not existent", msg.ClassId, msg.NftId)
+		return nil, sdkerrors.Wrapf(types.ErrNotExistentRentalInfo, "rental info is not existent", msg.DenomId, msg.NftId)
 	}
 
 	return &types.QueryUserOfResponse{User: rental.User}, nil
@@ -200,13 +200,13 @@ func (k Keeper) UserOf(goCtx context.Context, msg *types.QueryUserOfRequest) (*t
 func (k Keeper) UserExpires(goCtx context.Context, msg *types.QueryUserExpiresRequest) (*types.QueryUserExpiresResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if exist := k.nk.HasNFT(ctx, msg.ClassId, msg.NftId); !exist {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.ClassId, msg.NftId)
+	if exist := k.nk.HasNFT(ctx, msg.DenomId, msg.NftId); !exist {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.DenomId, msg.NftId)
 	}
 
-	rental, exist := k.GetRentalInfo(ctx, msg.ClassId, msg.NftId)
+	rental, exist := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
 	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistentRentalInfo, "rental info is not existent", msg.ClassId, msg.NftId)
+		return nil, sdkerrors.Wrapf(types.ErrNotExistentRentalInfo, "rental info is not existent", msg.DenomId, msg.NftId)
 	}
 
 	return &types.QueryUserExpiresResponse{Expires: rental.Expires}, nil
@@ -217,10 +217,10 @@ func (k Keeper) UserExpires(goCtx context.Context, msg *types.QueryUserExpiresRe
 func (k Keeper) HasUser(goCtx context.Context, msg *types.QueryHasUserRequest) (*types.QueryHasUserResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if exist := k.nk.HasNFT(ctx, msg.ClassId, msg.NftId); !exist {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.ClassId, msg.NftId)
+	if exist := k.nk.HasNFT(ctx, msg.DenomId, msg.NftId); !exist {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.DenomId, msg.NftId)
 	}
 
-	_, exist := k.GetRentalInfo(ctx, msg.ClassId, msg.NftId)
+	_, exist := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
 	return &types.QueryHasUserResponse{HasUser: exist}, nil
 }

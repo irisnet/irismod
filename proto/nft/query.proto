@@ -44,19 +44,19 @@ service Query {
 
   // UserOf queries the user/renter of an NFT
   rpc UserOf(QueryUserOfRequest) returns (QueryUserOfResponse) {
-    option (google.api.http).get = "/irismod/rental/user/{class_id}/{nft_id}";
+    option (google.api.http).get = "/irismod/rental/user/{denom_id}/{nft_id}";
   }
 
   // UserOf queries the rental expiry of an NFT
   rpc UserExpires(QueryUserExpiresRequest) returns (QueryUserExpiresResponse) {
     option (google.api.http).get =
-        "/irismod/rental/expires/{class_id}/{nft_id}";
+        "/irismod/rental/expires/{denom_id}/{nft_id}";
   }
 
   // HasUser queries if an NFT has a user/renter
   rpc HasUser(QueryHasUserRequest) returns (QueryHasUserResponse) {
     option (google.api.http).get =
-        "/irismod/rental/has_user/{class_id}/{nft_id}";
+        "/irismod/rental/has_user/{denom_id}/{nft_id}";
   }
 }
 
@@ -134,7 +134,7 @@ message QueryNFTResponse { BaseNFT nft = 1 [ (gogoproto.customname) = "NFT" ]; }
 
 // QueryUserOfRequest is the request type for the Query/Renter RPC method
 message QueryUserOfRequest {
-  string class_id = 1;
+  string denom_id = 1;
   string nft_id = 2;
 }
 
@@ -143,7 +143,7 @@ message QueryUserOfResponse { string user = 1; }
 
 // QueryExpiresRequest is the request type for the Query/Expires RPC method
 message QueryUserExpiresRequest {
-  string class_id = 1;
+  string denom_id = 1;
   string nft_id = 2;
 }
 
@@ -152,7 +152,7 @@ message QueryUserExpiresResponse { int64 expires = 1; }
 
 // QueryHasUserRequest is the request type for the Query/HasUser RPC method
 message QueryHasUserRequest {
-  string class_id = 1;
+  string denom_id = 1;
   string nft_id = 2;
 }
 

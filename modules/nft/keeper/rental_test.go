@@ -19,13 +19,11 @@ var (
 	rentalCreator = CreateTestAddrs(4)[3]
 	rentalRenter  = CreateTestAddrs(5)[4]
 
-	rentalUserData = types.DenomUserData{
-		RentalEnabled: true,
-		UserData:      "",
+	rentalUserData = types.DenomUserdata{
+		&types.RentalMetadata{Enabled: true},
 	}
-	rentalUserData2 = types.DenomUserData{
-		RentalEnabled: false,
-		UserData:      "",
+	rentalUserData2 = types.DenomUserdata{
+		&types.RentalMetadata{Enabled: false},
 	}
 )
 
@@ -111,7 +109,7 @@ func (suite *KeeperSuite) TestSetUser() {
 	err := suite.keeper.Rent(suite.ctx,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			ClassId: rentalDenomId,
+			DenomId: rentalDenomId,
 			NftId:   rentalNftId,
 			Expires: expiry,
 		})
@@ -121,7 +119,7 @@ func (suite *KeeperSuite) TestSetUser() {
 	err = suite.keeper.Rent(suite.ctx,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			ClassId: rentalDenomId,
+			DenomId: rentalDenomId,
 			NftId:   rentalNftId,
 			Expires: expiry2,
 		})
@@ -131,7 +129,7 @@ func (suite *KeeperSuite) TestSetUser() {
 	err = suite.keeper.Rent(suite.ctx,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			ClassId: rentalDenomId2,
+			DenomId: rentalDenomId2,
 			NftId:   rentalNftId3,
 			Expires: expiry2,
 		})
@@ -144,14 +142,14 @@ func (suite *KeeperSuite) TestUserOf() {
 	err := suite.keeper.Rent(suite.ctx,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			ClassId: rentalDenomId,
+			DenomId: rentalDenomId,
 			NftId:   rentalNftId,
 			Expires: expiry,
 		})
 	suite.NoError(err)
 
 	resp, err := suite.keeper.UserOf(suite.ctx, &types.QueryUserOfRequest{
-		ClassId: rentalDenomId,
+		DenomId: rentalDenomId,
 		NftId:   rentalNftId,
 	})
 	suite.NoError(err)
@@ -163,14 +161,14 @@ func (suite *KeeperSuite) TestUserExpires() {
 	err := suite.keeper.Rent(suite.ctx,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			ClassId: rentalDenomId,
+			DenomId: rentalDenomId,
 			NftId:   rentalNftId,
 			Expires: expiry,
 		})
 	suite.NoError(err)
 
 	resp, err := suite.keeper.UserExpires(suite.ctx, &types.QueryUserExpiresRequest{
-		ClassId: rentalDenomId,
+		DenomId: rentalDenomId,
 		NftId:   rentalNftId,
 	})
 	suite.NoError(err)
@@ -183,14 +181,14 @@ func (suite *KeeperSuite) TestHasUser() {
 	err := suite.keeper.Rent(suite.ctx,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			ClassId: rentalDenomId,
+			DenomId: rentalDenomId,
 			NftId:   rentalNftId,
 			Expires: expiry,
 		})
 	suite.NoError(err)
 
 	resp, err := suite.keeper.HasUser(suite.ctx, &types.QueryHasUserRequest{
-		ClassId: rentalDenomId,
+		DenomId: rentalDenomId,
 		NftId:   rentalNftId,
 	})
 	suite.NoError(err)

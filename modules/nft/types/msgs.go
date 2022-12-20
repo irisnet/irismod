@@ -329,10 +329,10 @@ func (msg MsgTransferDenom) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgSetUser(classId, nftId, user string,
+func NewMsgSetUser(denomId, nftId, user string,
 	expires int64, sender string) *MsgSetUser {
 	return &MsgSetUser{
-		ClassId: classId,
+		DenomId: denomId,
 		NftId:   nftId,
 		User:    user,
 		Expires: expires,
@@ -354,8 +354,8 @@ func (m MsgSetUser) GetSignBytes() []byte {
 
 // ValidateBasic implements the Msg.ValidateBasic method.
 func (m MsgSetUser) ValidateBasic() error {
-	if err := nft.ValidateClassID(m.ClassId); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidDenom, "Invalid class id (%s)", m.ClassId)
+	if err := nft.ValidateClassID(m.DenomId); err != nil {
+		return sdkerrors.Wrapf(ErrInvalidDenom, "Invalid class id (%s)", m.DenomId)
 	}
 
 	if err := nft.ValidateNFTID(m.NftId); err != nil {

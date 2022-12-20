@@ -11,7 +11,7 @@ import (
 // Rent set or update rental info for an nft.
 func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
 	// if disabled, return err
-	if enabled := k.GetRentalOption(ctx, rental.ClassId); !enabled {
+	if enabled := k.GetRentalOption(ctx, rental.DenomId); !enabled {
 		return sdkerrors.Wrapf(types.ErrRentalOption, "Rental is disabled")
 	}
 
@@ -21,7 +21,7 @@ func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
 	}
 
 	// set rental info
-	k.setRentalInfo(ctx, rental.ClassId, rental.NftId, rental.User, rental.Expires)
+	k.setRentalInfo(ctx, rental.DenomId, rental.NftId, rental.User, rental.Expires)
 	return nil
 }
 
@@ -32,12 +32,12 @@ func (k Keeper) setRentalInfo(ctx sdk.Context,
 	store := ctx.KVStore(k.storeKey)
 	r := types.RentalInfo{
 		User:    user,
-		ClassId: classId,
+		DenomId: classId,
 		NftId:   nftId,
 		Expires: expires,
 	}
 	bz := k.cdc.MustMarshal(&r)
-	store.Set(rentalInfoKey(r.ClassId, r.NftId), bz)
+	store.Set(rentalInfoKey(r.DenomId, r.NftId), bz)
 }
 
 // GetRentalInfo returns the rental info for an nft.
@@ -68,11 +68,11 @@ func (k Keeper) GetRentalInfos(ctx sdk.Context) (ris []types.RentalInfo) {
 
 // SaveRentalOption sets the class
 func (k Keeper) SaveRentalOption(ctx sdk.Context, classId, data string) {
-	var userData types.DenomUserData
+	var userData types.DenomUserdata
 	if err := json.Unmarshal([]byte(data), &userData); err != nil {
 		return
 	}
-	if userData.RentalEnabled {
+	if userData.RentalMetadata.Enabled {
 		k.setRentalOption(ctx, classId)
 	}
 }

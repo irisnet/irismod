@@ -1,5 +1,5 @@
 syntax = "proto3";
-package irismod.rental;
+package irismod.nft;
 
 import "gogoproto/gogo.proto";
 
@@ -8,7 +8,10 @@ option go_package = "github.com/irisnet/irismod/modules/nft/types";
 // RentalInfo defines a rental info
 message RentalInfo {
   string user = 1;
-  string class_id = 2;
+  string denom_id = 2;
   string nft_id = 3;
   int64 expires = 4;
 }
+
+// RentalMetadata defines rental plugin
+message RentalMetadata { bool enabled = 1; }

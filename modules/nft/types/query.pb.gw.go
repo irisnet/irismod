@@ -390,15 +390,15 @@ func request_Query_UserOf_0(ctx context.Context, marshaler runtime.Marshaler, cl
 		_   = err
 	)
 
-	val, ok = pathParams["class_id"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "class_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
-	protoReq.ClassId, err = runtime.String(val)
+	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	val, ok = pathParams["nft_id"]
@@ -428,15 +428,15 @@ func local_request_Query_UserOf_0(ctx context.Context, marshaler runtime.Marshal
 		_   = err
 	)
 
-	val, ok = pathParams["class_id"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "class_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
-	protoReq.ClassId, err = runtime.String(val)
+	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	val, ok = pathParams["nft_id"]
@@ -466,15 +466,15 @@ func request_Query_UserExpires_0(ctx context.Context, marshaler runtime.Marshale
 		_   = err
 	)
 
-	val, ok = pathParams["class_id"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "class_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
-	protoReq.ClassId, err = runtime.String(val)
+	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	val, ok = pathParams["nft_id"]
@@ -504,15 +504,15 @@ func local_request_Query_UserExpires_0(ctx context.Context, marshaler runtime.Ma
 		_   = err
 	)
 
-	val, ok = pathParams["class_id"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "class_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
-	protoReq.ClassId, err = runtime.String(val)
+	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	val, ok = pathParams["nft_id"]
@@ -542,15 +542,15 @@ func request_Query_HasUser_0(ctx context.Context, marshaler runtime.Marshaler, c
 		_   = err
 	)
 
-	val, ok = pathParams["class_id"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "class_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
-	protoReq.ClassId, err = runtime.String(val)
+	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	val, ok = pathParams["nft_id"]
@@ -580,15 +580,15 @@ func local_request_Query_HasUser_0(ctx context.Context, marshaler runtime.Marsha
 		_   = err
 	)
 
-	val, ok = pathParams["class_id"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "class_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
-	protoReq.ClassId, err = runtime.String(val)
+	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	val, ok = pathParams["nft_id"]
@@ -1057,11 +1057,11 @@ var (
 
 	pattern_Query_NFT_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "nft", "nfts", "denom_id", "token_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_UserOf_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "rental", "user", "class_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_UserOf_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "rental", "user", "denom_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_UserExpires_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "rental", "expires", "class_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_UserExpires_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "rental", "expires", "denom_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_HasUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "rental", "has_user", "class_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_HasUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"irismod", "rental", "has_user", "denom_id", "nft_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

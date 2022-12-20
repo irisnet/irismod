@@ -128,7 +128,7 @@ message MsgTransferDenomResponse {}
 
 // MsgSetUser defines the Msg/SetUser response type.
 message MsgSetUser {
-  string class_id = 1;
+  string denom_id = 1;
   string nft_id = 2;
   string user = 3;
   int64 expires = 4;
