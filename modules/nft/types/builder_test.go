@@ -60,12 +60,12 @@ func TestClassMetadataResolverEncodeAndDecode(t *testing.T) {
 	require.NoError(t, err, " class MarshalJSON failed")
 	t.Logf("class:%s", bz)
 
-	resolver := NewClassResolver(cdc, getModuleAddress)
-	result, err := resolver.BuildMetadata(class)
+	builder := NewClassBuilder(cdc, getModuleAddress)
+	result, err := builder.BuildMetadata(class)
 	require.NoError(t, err, " class resolver.GetMetadata failed")
 	t.Log(result)
 
-	expClass, err := resolver.Build(class.Id, class.Uri, result)
+	expClass, err := builder.Build(class.Id, class.Uri, result)
 	require.NoError(t, err, " class resolver.Decode failed")
 
 	exp, err := cdc.MarshalInterfaceJSON(&class)

@@ -32,30 +32,30 @@ var (
 )
 
 type (
-	ClassResolver struct {
+	ClassBuilder struct {
 		cdc              codec.Codec
 		getModuleAddress func(string) sdk.AccAddress
 	}
-	TokenResolver struct{ cdc codec.Codec }
-	MediaField    struct {
+	TokenBuilder struct{ cdc codec.Codec }
+	MediaField   struct {
 		Value interface{} `json:"value"`
 		Mime  string      `json:"mime,omitempty"`
 	}
 )
 
-func NewClassResolver(cdc codec.Codec,
+func NewClassBuilder(cdc codec.Codec,
 	getModuleAddress func(string) sdk.AccAddress,
-) ClassResolver {
-	return ClassResolver{
+) ClassBuilder {
+	return ClassBuilder{
 		cdc:              cdc,
 		getModuleAddress: getModuleAddress,
 	}
 }
 
 // BuildMetadata encode class into the metadata format defined by ics721
-func (cmr ClassResolver) BuildMetadata(class nft.Class) (string, error) {
+func (cb ClassBuilder) BuildMetadata(class nft.Class) (string, error) {
 	var message proto.Message
-	if err := cmr.cdc.UnpackAny(class.Data, &message); err != nil {
+	if err := cb.cdc.UnpackAny(class.Data, &message); err != nil {
 		return "", err
 	}
 
@@ -87,7 +87,7 @@ func (cmr ClassResolver) BuildMetadata(class nft.Class) (string, error) {
 }
 
 // Build create a class from ics721 packetData
-func (cmr ClassResolver) Build(classID, classURI, classInfo string) (nft.Class, error) {
+func (cb ClassBuilder) Build(classID, classURI, classInfo string) (nft.Class, error) {
 	classInfoBz, err := base64.RawStdEncoding.DecodeString(classInfo)
 	if err != nil {
 		return nft.Class{}, err
@@ -101,7 +101,7 @@ func (cmr ClassResolver) Build(classID, classURI, classInfo string) (nft.Class, 
 		mintRestricted   = true
 		updateRestricted = true
 		schema           = ""
-		creator          = cmr.getModuleAddress(ModuleName).String()
+		creator          = cb.getModuleAddress(ModuleName).String()
 	)
 
 	dataMap := make(map[string]interface{})
@@ -225,16 +225,16 @@ func (cmr ClassResolver) Build(classID, classURI, classInfo string) (nft.Class, 
 	}, nil
 }
 
-func NewTokenResolver(cdc codec.Codec) TokenResolver {
-	return TokenResolver{
+func NewTokenBuilder(cdc codec.Codec) TokenBuilder {
+	return TokenBuilder{
 		cdc: cdc,
 	}
 }
 
 // BuildMetadata encode nft into the metadata format defined by ics721
-func (cmr TokenResolver) BuildMetadata(token nft.NFT) (string, error) {
+func (tb TokenBuilder) BuildMetadata(token nft.NFT) (string, error) {
 	var message proto.Message
-	if err := cmr.cdc.UnpackAny(token.Data, &message); err != nil {
+	if err := tb.cdc.UnpackAny(token.Data, &message); err != nil {
 		return "", err
 	}
 
@@ -259,7 +259,7 @@ func (cmr TokenResolver) BuildMetadata(token nft.NFT) (string, error) {
 }
 
 // Build create a nft from ics721 packet data
-func (cmr TokenResolver) Build(classId, tokenId, tokenURI, tokenInfo string) (nft.NFT, error) {
+func (tb TokenBuilder) Build(classId, tokenId, tokenURI, tokenInfo string) (nft.NFT, error) {
 	tokenInfoBz, err := base64.RawStdEncoding.DecodeString(tokenInfo)
 	if err != nil {
 		return nft.NFT{}, err
@@ -324,43 +324,4 @@ func (cmr TokenResolver) Build(classId, tokenId, tokenURI, tokenInfo string) (nf
 		UriHash: uriHash,
 		Data:    metadata,
 	}, nil
-}
-
-// ParseMetadata parse the ics721 packet.data
-func (cmr TokenResolver) ParseMetadata(tokenInfo string) (*codectypes.Any, error) {
-	tokenInfoBz, err := base64.RawStdEncoding.DecodeString(tokenInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	dataMap := make(map[string]interface{})
-	if err := json.Unmarshal(tokenInfoBz, &dataMap); err != nil {
-		return codectypes.NewAnyWithValue(&NFTMetadata{
-			Data: string(tokenInfoBz),
-		})
-	}
-
-	var name string
-	if v, ok := dataMap[TokenKeyName]; ok {
-		if vMap, ok := v.(map[string]interface{}); ok {
-			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
-				name = vStr
-				delete(dataMap, TokenKeyName)
-			}
-		}
-	}
-
-	if _, ok := dataMap[TokenKeyURIhash]; ok {
-		delete(dataMap, TokenKeyURIhash)
-	}
-
-	data, err := json.Marshal(dataMap)
-	if err != nil {
-		return nil, err
-	}
-
-	return codectypes.NewAnyWithValue(&NFTMetadata{
-		Name: name,
-		Data: string(data),
-	})
 }
