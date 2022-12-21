@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 	proto "github.com/gogo/protobuf/proto"
 )
 
@@ -18,54 +19,65 @@ const (
 )
 
 var (
-	MintRestrictedFieldKey   = fmt.Sprintf("%s%s", Namespace, "mint_restricted")
-	UpdateRestrictedFieldKey = fmt.Sprintf("%s%s", Namespace, "update_restricted")
-	CreatorFieldKey          = fmt.Sprintf("%s%s", Namespace, "creator")
-	SchemaFieldKey           = fmt.Sprintf("%s%s", Namespace, "schema")
-	NameFieldKey             = fmt.Sprintf("%s%s", Namespace, "name")
+	ClassKeyName             = fmt.Sprintf("%s%s", Namespace, "name")
+	ClassKeySymbol           = fmt.Sprintf("%s%s", Namespace, "symbol")
+	ClassKeyDescription      = fmt.Sprintf("%s%s", Namespace, "description")
+	ClassKeyURIhash          = fmt.Sprintf("%s%s", Namespace, "uri_hash")
+	ClassKeyMintRestricted   = fmt.Sprintf("%s%s", Namespace, "mint_restricted")
+	ClassKeyUpdateRestricted = fmt.Sprintf("%s%s", Namespace, "update_restricted")
+	ClassKeyCreator          = fmt.Sprintf("%s%s", Namespace, "creator")
+	ClassKeySchema           = fmt.Sprintf("%s%s", Namespace, "schema")
+	TokenKeyName             = fmt.Sprintf("%s%s", Namespace, "name")
 )
 
 type (
-	ClassMetadataResolver struct {
+	ClassResolver struct {
 		cdc              codec.Codec
 		getModuleAddress func(string) sdk.AccAddress
 	}
-	TokenMetadataResolver struct{ cdc codec.Codec }
-	MediaField            struct {
+	TokenResolver struct{ cdc codec.Codec }
+	MediaField    struct {
 		Value interface{} `json:"value"`
 		Mime  string      `json:"mime,omitempty"`
 	}
 )
 
-func NewClassMetadataResolver(cdc codec.Codec, getModuleAddress func(string) sdk.AccAddress) ClassMetadataResolver {
-	return ClassMetadataResolver{
+func NewClassResolver(cdc codec.Codec,
+	getModuleAddress func(string) sdk.AccAddress,
+) ClassResolver {
+	return ClassResolver{
 		cdc:              cdc,
 		getModuleAddress: getModuleAddress,
 	}
 }
 
 // Encode encode any into the metadata data format defined by ics721
-func (cmr ClassMetadataResolver) Encode(any *codectypes.Any) (string, error) {
+func (cmr ClassResolver) Encode(class nft.Class) (string, error) {
 	var message proto.Message
-	if err := cmr.cdc.UnpackAny(any, &message); err != nil {
+	if err := cmr.cdc.UnpackAny(class.Data, &message); err != nil {
 		return "", err
 	}
 
-	denomMetadata, ok := message.(*DenomMetadata)
+	metadata, ok := message.(*DenomMetadata)
 	if !ok {
 		return "", errors.New("unsupport classMetadata")
 	}
 
 	kvals := make(map[string]interface{})
-	if err := json.Unmarshal([]byte(denomMetadata.Data), &kvals); err != nil {
-		//when classData is not a legal json, there is no need to parse the data
-		return base64.RawStdEncoding.EncodeToString([]byte(denomMetadata.Data)), nil
+	if len(metadata.Data) > 0 {
+		if err := json.Unmarshal([]byte(metadata.Data), &kvals); err != nil {
+			//when classData is not a legal json, there is no need to parse the data
+			return base64.RawStdEncoding.EncodeToString([]byte(metadata.Data)), nil
+		}
 	}
-
-	kvals[MintRestrictedFieldKey] = MediaField{Value: denomMetadata.MintRestricted}
-	kvals[UpdateRestrictedFieldKey] = MediaField{Value: denomMetadata.UpdateRestricted}
-	kvals[CreatorFieldKey] = MediaField{Value: denomMetadata.Creator}
-	kvals[SchemaFieldKey] = MediaField{Value: denomMetadata.Schema}
+	kvals[ClassKeyName] = MediaField{Value: class.Name}
+	kvals[ClassKeySymbol] = MediaField{Value: class.Symbol}
+	kvals[ClassKeyDescription] = MediaField{Value: class.Description}
+	kvals[ClassKeyURIhash] = MediaField{Value: class.UriHash}
+	kvals[ClassKeyMintRestricted] = MediaField{Value: metadata.MintRestricted}
+	kvals[ClassKeyUpdateRestricted] = MediaField{Value: metadata.UpdateRestricted}
+	kvals[ClassKeyCreator] = MediaField{Value: metadata.Creator}
+	kvals[ClassKeySchema] = MediaField{Value: metadata.Schema}
 	data, err := json.Marshal(kvals)
 	if err != nil {
 		return "", err
@@ -73,13 +85,17 @@ func (cmr ClassMetadataResolver) Encode(any *codectypes.Any) (string, error) {
 	return base64.RawStdEncoding.EncodeToString(data), nil
 }
 
-func (cmr ClassMetadataResolver) Decode(classInfo string) (*codectypes.Any, error) {
+func (cmr ClassResolver) Decode(classID, classURI, classInfo string) (nft.Class, error) {
 	classInfoBz, err := base64.RawStdEncoding.DecodeString(classInfo)
 	if err != nil {
-		return nil, err
+		return nft.Class{}, err
 	}
 
 	var (
+		name             = ""
+		symbol           = ""
+		description      = ""
+		uriHash          = ""
 		mintRestricted   = true
 		updateRestricted = true
 		schema           = ""
@@ -88,71 +104,132 @@ func (cmr ClassMetadataResolver) Decode(classInfo string) (*codectypes.Any, erro
 
 	dataMap := make(map[string]interface{})
 	if err := json.Unmarshal(classInfoBz, &dataMap); err != nil {
-		return codectypes.NewAnyWithValue(&DenomMetadata{
+		any, err := codectypes.NewAnyWithValue(&DenomMetadata{
 			Creator:          creator,
+			Schema:           schema,
 			MintRestricted:   mintRestricted,
 			UpdateRestricted: updateRestricted,
 			Data:             string(classInfoBz),
 		})
+		if err != nil {
+			return nft.Class{}, err
+		}
+		return nft.Class{
+			Id:          classID,
+			Uri:         classURI,
+			Name:        name,
+			Symbol:      symbol,
+			Description: description,
+			UriHash:     uriHash,
+			Data:        any,
+		}, nil
+	}
+	if v, ok := dataMap[ClassKeyName]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				name = vStr
+				delete(dataMap, ClassKeyName)
+			}
+		}
 	}
 
-	if v, ok := dataMap[MintRestrictedFieldKey]; ok {
+	if v, ok := dataMap[ClassKeySymbol]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				symbol = vStr
+				delete(dataMap, ClassKeySymbol)
+			}
+		}
+	}
+
+	if v, ok := dataMap[ClassKeyDescription]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				description = vStr
+				delete(dataMap, ClassKeyDescription)
+			}
+		}
+	}
+
+	if v, ok := dataMap[ClassKeyURIhash]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				uriHash = vStr
+				delete(dataMap, ClassKeyURIhash)
+			}
+		}
+	}
+
+	if v, ok := dataMap[ClassKeyMintRestricted]; ok {
 		if vMap, ok := v.(map[string]interface{}); ok {
 			if vBool, ok := vMap[KeyMediaFieldValue].(bool); ok {
 				mintRestricted = vBool
-				delete(dataMap, MintRestrictedFieldKey)
+				delete(dataMap, ClassKeyMintRestricted)
 			}
 		}
 	}
 
-	if v, ok := dataMap[UpdateRestrictedFieldKey]; ok {
+	if v, ok := dataMap[ClassKeyUpdateRestricted]; ok {
 		if vMap, ok := v.(map[string]interface{}); ok {
 			if vBool, ok := vMap[KeyMediaFieldValue].(bool); ok {
 				updateRestricted = vBool
-				delete(dataMap, UpdateRestrictedFieldKey)
+				delete(dataMap, ClassKeyUpdateRestricted)
 			}
 		}
 	}
 
-	if v, ok := dataMap[CreatorFieldKey]; ok {
+	if v, ok := dataMap[ClassKeyCreator]; ok {
 		if vMap, ok := v.(map[string]interface{}); ok {
 			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
 				creator = vStr
-				delete(dataMap, CreatorFieldKey)
+				delete(dataMap, ClassKeyCreator)
 			}
 		}
 	}
 
-	if v, ok := dataMap[SchemaFieldKey]; ok {
+	if v, ok := dataMap[ClassKeySchema]; ok {
 		if vMap, ok := v.(map[string]interface{}); ok {
 			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
 				schema = vStr
-				delete(dataMap, SchemaFieldKey)
+				delete(dataMap, ClassKeySchema)
 			}
 		}
 	}
 
 	data, err := json.Marshal(dataMap)
 	if err != nil {
-		return nil, err
+		return nft.Class{}, err
 	}
 
-	return codectypes.NewAnyWithValue(&DenomMetadata{
+	any, err := codectypes.NewAnyWithValue(&DenomMetadata{
 		Creator:          creator,
 		Schema:           schema,
 		MintRestricted:   mintRestricted,
 		UpdateRestricted: updateRestricted,
 		Data:             string(data),
 	})
+	if err != nil {
+		return nft.Class{}, err
+	}
+
+	return nft.Class{
+		Id:          classID,
+		Uri:         classURI,
+		Name:        name,
+		Symbol:      symbol,
+		Description: description,
+		UriHash:     uriHash,
+		Data:        any,
+	}, nil
 }
 
-func NewTokenMetadataResolver(cdc codec.Codec) TokenMetadataResolver {
-	return TokenMetadataResolver{
+func NewTokenResolver(cdc codec.Codec) TokenResolver {
+	return TokenResolver{
 		cdc: cdc,
 	}
 }
 
-func (cmr TokenMetadataResolver) Encode(any *codectypes.Any) (string, error) {
+func (cmr TokenResolver) Encode(any *codectypes.Any) (string, error) {
 	var message proto.Message
 	if err := cmr.cdc.UnpackAny(any, &message); err != nil {
 		return "", err
@@ -168,7 +245,7 @@ func (cmr TokenMetadataResolver) Encode(any *codectypes.Any) (string, error) {
 		return base64.RawStdEncoding.EncodeToString([]byte(nftMetadata.Data)), nil
 	}
 
-	kvals[NameFieldKey] = MediaField{Value: nftMetadata.Name}
+	kvals[TokenKeyName] = MediaField{Value: nftMetadata.Name}
 	data, err := json.Marshal(kvals)
 	if err != nil {
 		return "", err
@@ -176,7 +253,7 @@ func (cmr TokenMetadataResolver) Encode(any *codectypes.Any) (string, error) {
 	return base64.RawStdEncoding.EncodeToString(data), nil
 }
 
-func (cmr TokenMetadataResolver) Decode(tokenInfo string) (*codectypes.Any, error) {
+func (cmr TokenResolver) Decode(tokenInfo string) (*codectypes.Any, error) {
 	tokenInfoBz, err := base64.RawStdEncoding.DecodeString(tokenInfo)
 	if err != nil {
 		return nil, err
@@ -190,11 +267,11 @@ func (cmr TokenMetadataResolver) Decode(tokenInfo string) (*codectypes.Any, erro
 	}
 
 	var name string
-	if v, ok := dataMap[NameFieldKey]; ok {
+	if v, ok := dataMap[TokenKeyName]; ok {
 		if vMap, ok := v.(map[string]interface{}); ok {
 			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
 				name = vStr
-				delete(dataMap, NameFieldKey)
+				delete(dataMap, TokenKeyName)
 			}
 		}
 	}
