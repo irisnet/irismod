@@ -28,6 +28,7 @@ var (
 	ClassKeyCreator          = fmt.Sprintf("%s%s", Namespace, "creator")
 	ClassKeySchema           = fmt.Sprintf("%s%s", Namespace, "schema")
 	TokenKeyName             = fmt.Sprintf("%s%s", Namespace, "name")
+	TokenKeyURIhash          = fmt.Sprintf("%s%s", Namespace, "uri_hash")
 )
 
 type (
@@ -51,8 +52,8 @@ func NewClassResolver(cdc codec.Codec,
 	}
 }
 
-// Encode encode any into the metadata data format defined by ics721
-func (cmr ClassResolver) Encode(class nft.Class) (string, error) {
+// BuildMetadata encode class into the metadata format defined by ics721
+func (cmr ClassResolver) BuildMetadata(class nft.Class) (string, error) {
 	var message proto.Message
 	if err := cmr.cdc.UnpackAny(class.Data, &message); err != nil {
 		return "", err
@@ -85,7 +86,8 @@ func (cmr ClassResolver) Encode(class nft.Class) (string, error) {
 	return base64.RawStdEncoding.EncodeToString(data), nil
 }
 
-func (cmr ClassResolver) Decode(classID, classURI, classInfo string) (nft.Class, error) {
+// Build create a class from ics721 packetData
+func (cmr ClassResolver) Build(classID, classURI, classInfo string) (nft.Class, error) {
 	classInfoBz, err := base64.RawStdEncoding.DecodeString(classInfo)
 	if err != nil {
 		return nft.Class{}, err
@@ -229,9 +231,10 @@ func NewTokenResolver(cdc codec.Codec) TokenResolver {
 	}
 }
 
-func (cmr TokenResolver) Encode(any *codectypes.Any) (string, error) {
+// BuildMetadata encode nft into the metadata format defined by ics721
+func (cmr TokenResolver) BuildMetadata(token nft.NFT) (string, error) {
 	var message proto.Message
-	if err := cmr.cdc.UnpackAny(any, &message); err != nil {
+	if err := cmr.cdc.UnpackAny(token.Data, &message); err != nil {
 		return "", err
 	}
 
@@ -240,12 +243,14 @@ func (cmr TokenResolver) Encode(any *codectypes.Any) (string, error) {
 		return "", errors.New("unsupport classMetadata")
 	}
 	kvals := make(map[string]interface{})
-	if err := json.Unmarshal([]byte(nftMetadata.Data), &kvals); err != nil {
-		//when nftMetadata is not a legal json, there is no need to parse the data
-		return base64.RawStdEncoding.EncodeToString([]byte(nftMetadata.Data)), nil
+	if len(nftMetadata.Data) > 0 {
+		if err := json.Unmarshal([]byte(nftMetadata.Data), &kvals); err != nil {
+			//when nftMetadata is not a legal json, there is no need to parse the data
+			return base64.RawStdEncoding.EncodeToString([]byte(nftMetadata.Data)), nil
+		}
 	}
-
 	kvals[TokenKeyName] = MediaField{Value: nftMetadata.Name}
+	kvals[TokenKeyURIhash] = MediaField{Value: token.UriHash}
 	data, err := json.Marshal(kvals)
 	if err != nil {
 		return "", err
@@ -253,7 +258,76 @@ func (cmr TokenResolver) Encode(any *codectypes.Any) (string, error) {
 	return base64.RawStdEncoding.EncodeToString(data), nil
 }
 
-func (cmr TokenResolver) Decode(tokenInfo string) (*codectypes.Any, error) {
+// Build create a nft from ics721 packet data
+func (cmr TokenResolver) Build(classId, tokenId, tokenURI, tokenInfo string) (nft.NFT, error) {
+	tokenInfoBz, err := base64.RawStdEncoding.DecodeString(tokenInfo)
+	if err != nil {
+		return nft.NFT{}, err
+	}
+
+	dataMap := make(map[string]interface{})
+	if err := json.Unmarshal(tokenInfoBz, &dataMap); err != nil {
+		metadata, err := codectypes.NewAnyWithValue(&NFTMetadata{
+			Data: string(tokenInfoBz),
+		})
+		if err != nil {
+			return nft.NFT{}, err
+		}
+
+		return nft.NFT{
+			ClassId: classId,
+			Id:      tokenId,
+			Uri:     tokenURI,
+			Data:    metadata,
+		}, nil
+	}
+
+	var (
+		name    string
+		uriHash string
+	)
+	if v, ok := dataMap[TokenKeyName]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				name = vStr
+				delete(dataMap, TokenKeyName)
+			}
+		}
+	}
+
+	if v, ok := dataMap[TokenKeyURIhash]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				uriHash = vStr
+				delete(dataMap, TokenKeyURIhash)
+			}
+		}
+	}
+
+	data, err := json.Marshal(dataMap)
+	if err != nil {
+		return nft.NFT{}, err
+	}
+
+	metadata, err := codectypes.NewAnyWithValue(&NFTMetadata{
+		Name: name,
+		Data: string(data),
+	})
+	if err != nil {
+		return nft.NFT{}, err
+	}
+
+	return nft.NFT{
+		ClassId: classId,
+		Id:      tokenId,
+		Uri:     tokenURI,
+		UriHash: uriHash,
+		Data:    metadata,
+	}, nil
+}
+
+// ParseMetadata parse the ics721 packet.data
+func (cmr TokenResolver) ParseMetadata(tokenInfo string) (*codectypes.Any, error) {
 	tokenInfoBz, err := base64.RawStdEncoding.DecodeString(tokenInfo)
 	if err != nil {
 		return nil, err
@@ -274,6 +348,10 @@ func (cmr TokenResolver) Decode(tokenInfo string) (*codectypes.Any, error) {
 				delete(dataMap, TokenKeyName)
 			}
 		}
+	}
+
+	if _, ok := dataMap[TokenKeyURIhash]; ok {
+		delete(dataMap, TokenKeyURIhash)
 	}
 
 	data, err := json.Marshal(dataMap)
