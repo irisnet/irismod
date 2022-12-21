@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tidwall/gjson"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,6 +22,7 @@ var (
 	UpdateRestrictedFieldKey = fmt.Sprintf("%s%s", Namespace, "update_restricted")
 	CreatorFieldKey          = fmt.Sprintf("%s%s", Namespace, "creator")
 	SchemaFieldKey           = fmt.Sprintf("%s%s", Namespace, "schema")
+	NameFieldKey             = fmt.Sprintf("%s%s", Namespace, "name")
 )
 
 type (
@@ -57,14 +56,11 @@ func (cmr ClassMetadataResolver) Encode(any *codectypes.Any) (string, error) {
 	if !ok {
 		return "", errors.New("unsupport classMetadata")
 	}
-	if !gjson.Valid(denomMetadata.Data) {
-		//when classData is not a legal json, there is no need to parse the data
-		return base64.RawStdEncoding.EncodeToString([]byte(denomMetadata.Data)), nil
-	}
 
 	kvals := make(map[string]interface{})
 	if err := json.Unmarshal([]byte(denomMetadata.Data), &kvals); err != nil {
-		return "", err
+		//when classData is not a legal json, there is no need to parse the data
+		return base64.RawStdEncoding.EncodeToString([]byte(denomMetadata.Data)), nil
 	}
 
 	kvals[MintRestrictedFieldKey] = MediaField{Value: denomMetadata.MintRestricted}
@@ -91,18 +87,14 @@ func (cmr ClassMetadataResolver) Decode(classInfo string) (*codectypes.Any, erro
 		creator          = cmr.getModuleAddress(ModuleName).String()
 	)
 
-	if !gjson.ValidBytes(classInfoBz) {
+	dataMap := make(map[string]interface{})
+	if err := json.Unmarshal(classInfoBz, &dataMap); err != nil {
 		return codectypes.NewAnyWithValue(&DenomMetadata{
 			Creator:          creator,
 			MintRestricted:   mintRestricted,
 			UpdateRestricted: updateRestricted,
 			Data:             string(classInfoBz),
 		})
-	}
-
-	dataMap := make(map[string]interface{})
-	if err := json.Unmarshal(classInfoBz, &dataMap); err != nil {
-		return nil, err
 	}
 
 	if v, ok := dataMap[MintRestrictedFieldKey]; ok {
@@ -162,10 +154,59 @@ func NewTokenMetadataResolver(cdc codec.Codec) TokenMetadataResolver {
 }
 
 func (cmr TokenMetadataResolver) Encode(any *codectypes.Any) (string, error) {
+	var message proto.Message
+	if err := cmr.cdc.UnpackAny(any, &message); err != nil {
+		return "", err
+	}
 
-	return "", nil
+	nftMetadata, ok := message.(*NFTMetadata)
+	if !ok {
+		return "", errors.New("unsupport classMetadata")
+	}
+	kvals := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(nftMetadata.Data), &kvals); err != nil {
+		//when nftMetadata is not a legal json, there is no need to parse the data
+		return base64.RawStdEncoding.EncodeToString([]byte(nftMetadata.Data)), nil
+	}
+
+	kvals[NameFieldKey] = MediaField{Value: nftMetadata.Name}
+	data, err := json.Marshal(kvals)
+	if err != nil {
+		return "", err
+	}
+	return base64.RawStdEncoding.EncodeToString(data), nil
 }
 
-func (cmr TokenMetadataResolver) Decode(classInfo string) (*codectypes.Any, error) {
-	return nil, nil
+func (cmr TokenMetadataResolver) Decode(tokenInfo string) (*codectypes.Any, error) {
+	tokenInfoBz, err := base64.RawStdEncoding.DecodeString(tokenInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	dataMap := make(map[string]interface{})
+	if err := json.Unmarshal(tokenInfoBz, &dataMap); err != nil {
+		return codectypes.NewAnyWithValue(&NFTMetadata{
+			Data: string(tokenInfoBz),
+		})
+	}
+
+	var name string
+	if v, ok := dataMap[NameFieldKey]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				name = vStr
+				delete(dataMap, MintRestrictedFieldKey)
+			}
+		}
+	}
+
+	data, err := json.Marshal(dataMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return codectypes.NewAnyWithValue(&NFTMetadata{
+		Name: name,
+		Data: string(data),
+	})
 }
