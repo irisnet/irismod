@@ -29,6 +29,14 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 		UpdateRestricted: updateRestricted,
 		Data:             data,
 	}
+
+	denomPlugin := k.UserDataToDenomPlugin(data)
+
+	// royalty option
+	if denomPlugin != nil && denomPlugin.RoyaltyPlugin != nil {
+		denomMetadata.RoyaltyPlugin = denomPlugin.RoyaltyPlugin
+	}
+
 	metadata, err := codectypes.NewAnyWithValue(denomMetadata)
 	if err != nil {
 		return err

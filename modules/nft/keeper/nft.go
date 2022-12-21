@@ -19,9 +19,16 @@ func (k Keeper) SaveNFT(ctx sdk.Context, denomID,
 	tokenData string,
 	receiver sdk.AccAddress,
 ) error {
+
+	// royalty option
+	tokenRoyaltyPlugin, tokenData := k.getTokenRoyaltyInfoFromTokenData(ctx, tokenData, denomID)
+
 	nftMetadata := &types.NFTMetadata{
 		Name: tokenNm,
 		Data: tokenData,
+	}
+	if tokenRoyaltyPlugin != nil {
+		nftMetadata.TokenRoyaltyPlugin = tokenRoyaltyPlugin
 	}
 	data, err := codectypes.NewAnyWithValue(nftMetadata)
 	if err != nil {
@@ -81,7 +88,14 @@ func (k Keeper) UpdateNFT(ctx sdk.Context, denomID,
 		}
 
 		nftMetadata.Name = types.Modify(nftMetadata.Name, tokenNm)
+		tokenRoyaltyPlugin, tokenData := k.getTokenRoyaltyInfoFromTokenData(ctx, tokenData, denomID)
+
 		nftMetadata.Data = types.Modify(nftMetadata.Data, tokenData)
+
+		if tokenRoyaltyPlugin != nil {
+			nftMetadata.TokenRoyaltyPlugin = tokenRoyaltyPlugin
+		}
+
 		data, err := codectypes.NewAnyWithValue(&nftMetadata)
 		if err != nil {
 			return err

@@ -4,6 +4,7 @@
 package types
 
 import (
+	cosmossdk_io_math "cosmossdk.io/math"
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
@@ -67,8 +68,9 @@ func (m *BaseNFT) XXX_DiscardUnknown() {
 var xxx_messageInfo_BaseNFT proto.InternalMessageInfo
 
 type NFTMetadata struct {
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Data string `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Name               string              `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Data               string              `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	TokenRoyaltyPlugin *TokenRoyaltyPlugin `protobuf:"bytes,3,opt,name=tokenRoyaltyPlugin,proto3" json:"irismod:2981"`
 }
 
 func (m *NFTMetadata) Reset()         { *m = NFTMetadata{} }
@@ -158,6 +160,8 @@ type DenomMetadata struct {
 	MintRestricted   bool   `protobuf:"varint,3,opt,name=mint_restricted,json=mintRestricted,proto3" json:"mint_restricted,omitempty"`
 	UpdateRestricted bool   `protobuf:"varint,4,opt,name=update_restricted,json=updateRestricted,proto3" json:"update_restricted,omitempty"`
 	Data             string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
+	// Royalty field
+	RoyaltyPlugin *RoyaltyPlugin `protobuf:"bytes,6,opt,name=royaltyPlugin,proto3" json:"irismod:2981"`
 }
 
 func (m *DenomMetadata) Reset()         { *m = DenomMetadata{} }
@@ -310,6 +314,159 @@ func (m *Collection) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Collection proto.InternalMessageInfo
 
+type DenomPlugin struct {
+	// Royalty field
+	RoyaltyPlugin *RoyaltyPlugin `protobuf:"bytes,1,opt,name=royaltyPlugin,proto3" json:"irismod:2981"`
+}
+
+func (m *DenomPlugin) Reset()         { *m = DenomPlugin{} }
+func (m *DenomPlugin) String() string { return proto.CompactTextString(m) }
+func (*DenomPlugin) ProtoMessage()    {}
+func (*DenomPlugin) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{7}
+}
+func (m *DenomPlugin) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DenomPlugin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DenomPlugin.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DenomPlugin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DenomPlugin.Merge(m, src)
+}
+func (m *DenomPlugin) XXX_Size() int {
+	return m.Size()
+}
+func (m *DenomPlugin) XXX_DiscardUnknown() {
+	xxx_messageInfo_DenomPlugin.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DenomPlugin proto.InternalMessageInfo
+
+type RoyaltyPlugin struct {
+	Enabled  bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"irismod:2981:enabled"`
+	Receiver string                 `protobuf:"bytes,2,opt,name=receiver,proto3" json:"irismod:2981:receiver"`
+	Fraction cosmossdk_io_math.Uint `protobuf:"bytes,3,opt,name=fraction,proto3,customtype=cosmossdk.io/math.Uint" json:"irismod:2981:fraction"`
+}
+
+func (m *RoyaltyPlugin) Reset()         { *m = RoyaltyPlugin{} }
+func (m *RoyaltyPlugin) String() string { return proto.CompactTextString(m) }
+func (*RoyaltyPlugin) ProtoMessage()    {}
+func (*RoyaltyPlugin) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{8}
+}
+func (m *RoyaltyPlugin) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RoyaltyPlugin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RoyaltyPlugin.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RoyaltyPlugin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoyaltyPlugin.Merge(m, src)
+}
+func (m *RoyaltyPlugin) XXX_Size() int {
+	return m.Size()
+}
+func (m *RoyaltyPlugin) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoyaltyPlugin.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoyaltyPlugin proto.InternalMessageInfo
+
+type TokenPlugin struct {
+	// Royalty field
+	RoyaltyPlugin *TokenRoyaltyPlugin `protobuf:"bytes,1,opt,name=royaltyPlugin,proto3" json:"irismod:2981"`
+}
+
+func (m *TokenPlugin) Reset()         { *m = TokenPlugin{} }
+func (m *TokenPlugin) String() string { return proto.CompactTextString(m) }
+func (*TokenPlugin) ProtoMessage()    {}
+func (*TokenPlugin) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{9}
+}
+func (m *TokenPlugin) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TokenPlugin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TokenPlugin.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TokenPlugin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TokenPlugin.Merge(m, src)
+}
+func (m *TokenPlugin) XXX_Size() int {
+	return m.Size()
+}
+func (m *TokenPlugin) XXX_DiscardUnknown() {
+	xxx_messageInfo_TokenPlugin.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TokenPlugin proto.InternalMessageInfo
+
+type TokenRoyaltyPlugin struct {
+	Receiver string                 `protobuf:"bytes,1,opt,name=receiver,proto3" json:"irismod:2981:receiver"`
+	Fraction cosmossdk_io_math.Uint `protobuf:"bytes,2,opt,name=fraction,proto3,customtype=cosmossdk.io/math.Uint" json:"irismod:2981:fraction"`
+}
+
+func (m *TokenRoyaltyPlugin) Reset()         { *m = TokenRoyaltyPlugin{} }
+func (m *TokenRoyaltyPlugin) String() string { return proto.CompactTextString(m) }
+func (*TokenRoyaltyPlugin) ProtoMessage()    {}
+func (*TokenRoyaltyPlugin) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{10}
+}
+func (m *TokenRoyaltyPlugin) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TokenRoyaltyPlugin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TokenRoyaltyPlugin.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TokenRoyaltyPlugin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TokenRoyaltyPlugin.Merge(m, src)
+}
+func (m *TokenRoyaltyPlugin) XXX_Size() int {
+	return m.Size()
+}
+func (m *TokenRoyaltyPlugin) XXX_DiscardUnknown() {
+	xxx_messageInfo_TokenRoyaltyPlugin.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TokenRoyaltyPlugin proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*BaseNFT)(nil), "irismod.nft.BaseNFT")
 	proto.RegisterType((*NFTMetadata)(nil), "irismod.nft.NFTMetadata")
@@ -318,52 +475,69 @@ func init() {
 	proto.RegisterType((*IDCollection)(nil), "irismod.nft.IDCollection")
 	proto.RegisterType((*Owner)(nil), "irismod.nft.Owner")
 	proto.RegisterType((*Collection)(nil), "irismod.nft.Collection")
+	proto.RegisterType((*DenomPlugin)(nil), "irismod.nft.DenomPlugin")
+	proto.RegisterType((*RoyaltyPlugin)(nil), "irismod.nft.RoyaltyPlugin")
+	proto.RegisterType((*TokenPlugin)(nil), "irismod.nft.TokenPlugin")
+	proto.RegisterType((*TokenRoyaltyPlugin)(nil), "irismod.nft.TokenRoyaltyPlugin")
 }
 
 func init() { proto.RegisterFile("nft/nft.proto", fileDescriptor_fe8ab7e15b7f0646) }
 
 var fileDescriptor_fe8ab7e15b7f0646 = []byte{
-	// 635 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xc1, 0x6e, 0xd3, 0x4c,
-	0x10, 0x8e, 0x1d, 0xa7, 0x4e, 0xc6, 0x4d, 0xdb, 0x7f, 0xff, 0x08, 0xb9, 0x1c, 0xec, 0x2a, 0x42,
-	0xa2, 0x12, 0x28, 0x11, 0x45, 0xe2, 0x50, 0x6e, 0xa6, 0xaa, 0x08, 0x12, 0x45, 0xb2, 0xca, 0x85,
-	0x4b, 0xb4, 0xf5, 0x6e, 0x9a, 0x15, 0xb1, 0x37, 0xda, 0xdd, 0xa8, 0x2a, 0x2f, 0x01, 0x12, 0x2f,
-	0xc0, 0x2b, 0x20, 0xf1, 0x10, 0x3d, 0xf6, 0xc8, 0x29, 0x82, 0xf4, 0xc2, 0xb9, 0x4f, 0x80, 0xbc,
-	0x6b, 0x07, 0x47, 0x01, 0xa9, 0xb7, 0x99, 0x6f, 0xbe, 0xdd, 0xf9, 0xe6, 0x1b, 0x7b, 0xa1, 0x9d,
-	0x8d, 0x54, 0x3f, 0x1b, 0xa9, 0xde, 0x54, 0x70, 0xc5, 0x91, 0xc7, 0x04, 0x93, 0x29, 0x27, 0xbd,
-	0x6c, 0xa4, 0xee, 0x77, 0xce, 0xf9, 0x39, 0xd7, 0x78, 0x3f, 0x8f, 0x0c, 0xa5, 0xfb, 0xd9, 0x02,
-	0x37, 0xc2, 0x92, 0x9e, 0x1c, 0x9f, 0xa2, 0x2d, 0xb0, 0x19, 0xf1, 0xad, 0x3d, 0x6b, 0xbf, 0x15,
-	0xdb, 0x8c, 0x20, 0x04, 0x4e, 0x86, 0x53, 0xea, 0xdb, 0x1a, 0xd1, 0x31, 0xda, 0x85, 0xfa, 0x4c,
-	0x30, 0xbf, 0x9e, 0x43, 0x91, 0xbb, 0x98, 0x87, 0xf5, 0xb7, 0xf1, 0x20, 0xce, 0xb1, 0x9c, 0x4e,
-	0xb0, 0xc2, 0xbe, 0x63, 0xe8, 0x79, 0x8c, 0x3a, 0xd0, 0xe0, 0x17, 0x19, 0x15, 0x7e, 0x43, 0x83,
-	0x26, 0x41, 0xbb, 0xd0, 0x9c, 0x09, 0x36, 0x1c, 0x63, 0x39, 0xf6, 0x37, 0x74, 0xc1, 0x9d, 0x09,
-	0xf6, 0x12, 0xcb, 0xf1, 0xa1, 0xf3, 0xeb, 0x4b, 0x68, 0x75, 0x9f, 0x83, 0x77, 0x72, 0x7c, 0xfa,
-	0x9a, 0x2a, 0xac, 0x6f, 0x29, 0x85, 0x58, 0x15, 0x21, 0x65, 0x37, 0xfb, 0x4f, 0xb7, 0xe2, 0xf0,
-	0x37, 0x1b, 0x1a, 0x47, 0x34, 0xe3, 0xe9, 0x9d, 0x06, 0xba, 0x07, 0x1b, 0x32, 0x19, 0xd3, 0x14,
-	0x9b, 0x99, 0xe2, 0x22, 0x43, 0x3e, 0xb8, 0x89, 0xa0, 0x58, 0x71, 0x51, 0x0c, 0x54, 0xa6, 0xfa,
-	0xc4, 0x65, 0x7a, 0xc6, 0x27, 0xc5, 0x50, 0x45, 0x86, 0x1e, 0xc2, 0x76, 0xca, 0x32, 0x35, 0x14,
-	0x54, 0x2a, 0xc1, 0x12, 0x45, 0x89, 0x1e, 0xae, 0x19, 0x6f, 0xe5, 0x70, 0xbc, 0x44, 0xd1, 0x23,
-	0xf8, 0x6f, 0x36, 0x25, 0x58, 0xd1, 0x2a, 0xd5, 0xd5, 0xd4, 0x1d, 0x53, 0xa8, 0x90, 0xf7, 0xc0,
-	0x23, 0x54, 0x26, 0x82, 0x4d, 0x15, 0xe3, 0x99, 0xdf, 0xd4, 0x2d, 0xab, 0x10, 0xda, 0x31, 0x2b,
-	0x69, 0xe9, 0x8a, 0xde, 0x44, 0xd5, 0x5f, 0x58, 0xf1, 0x77, 0x69, 0x9b, 0xb7, 0x66, 0xdb, 0x57,
-	0x0b, 0xda, 0xda, 0xb6, 0xa5, 0xed, 0x15, 0x0b, 0xac, 0x75, 0x0b, 0x8c, 0x69, 0xf6, 0x8a, 0x69,
-	0x7f, 0xb1, 0xa0, 0x7e, 0x77, 0x0b, 0x9c, 0x7f, 0x58, 0x50, 0x6a, 0x6e, 0xac, 0x69, 0xbe, 0x80,
-	0xcd, 0xc1, 0xd1, 0x0b, 0x3e, 0x99, 0xd0, 0x44, 0x5b, 0xd1, 0x83, 0x26, 0xc9, 0x47, 0x18, 0x96,
-	0x6b, 0x8f, 0xfe, 0xbf, 0x9d, 0x87, 0xdb, 0x97, 0x38, 0x9d, 0x1c, 0x76, 0xcb, 0x4a, 0x37, 0x76,
-	0x75, 0x38, 0x20, 0xe8, 0x09, 0xb4, 0x14, 0x7f, 0x4f, 0xb3, 0x21, 0x23, 0xd2, 0xb7, 0xf7, 0xea,
-	0xfb, 0xad, 0xa8, 0x73, 0x3b, 0x0f, 0x77, 0xcc, 0x81, 0x65, 0xa9, 0x1b, 0x37, 0x75, 0x3c, 0x20,
-	0xb2, 0x68, 0xfc, 0xd1, 0x82, 0xc6, 0x1b, 0xfd, 0x2d, 0xfb, 0xe0, 0x62, 0x42, 0x04, 0x95, 0xb2,
-	0x34, 0xa9, 0x48, 0xd1, 0x08, 0xb6, 0x18, 0x19, 0x26, 0x4b, 0x75, 0xa6, 0x83, 0x77, 0xb0, 0xdb,
-	0xab, 0xfc, 0x96, 0xbd, 0xaa, 0xfe, 0xe8, 0xc1, 0xd5, 0x3c, 0xac, 0x2d, 0xe6, 0x61, 0xbb, 0x8a,
-	0xca, 0xdb, 0x79, 0xe8, 0x19, 0x45, 0x8c, 0x24, 0xb2, 0x1b, 0xb7, 0x19, 0xa9, 0x54, 0x0b, 0x45,
-	0x1f, 0x00, 0x56, 0x8c, 0x68, 0xe8, 0x19, 0xb5, 0x26, 0xef, 0x00, 0xad, 0xb4, 0xd4, 0x5b, 0x8e,
-	0x9c, 0xbc, 0x57, 0x6c, 0x68, 0xe8, 0x19, 0x38, 0xd9, 0x48, 0x95, 0x0a, 0x3b, 0x2b, 0xf4, 0xe2,
-	0x79, 0x88, 0x36, 0x0b, 0x71, 0xce, 0xc9, 0xf1, 0xa9, 0x8c, 0x35, 0xdf, 0xf4, 0x8e, 0x5e, 0x5d,
-	0xfd, 0x0c, 0x6a, 0x57, 0x8b, 0xc0, 0xba, 0x5e, 0x04, 0xd6, 0x8f, 0x45, 0x60, 0x7d, 0xba, 0x09,
-	0x6a, 0xd7, 0x37, 0x41, 0xed, 0xfb, 0x4d, 0x50, 0x7b, 0xf7, 0xf8, 0x9c, 0xa9, 0xf1, 0xec, 0xac,
-	0x97, 0xf0, 0xb4, 0x9f, 0xdf, 0x9b, 0x51, 0xd5, 0x2f, 0xee, 0xef, 0xa7, 0x9c, 0xcc, 0x26, 0x54,
-	0xe6, 0x6f, 0x56, 0x5f, 0x5d, 0x4e, 0xa9, 0x3c, 0xdb, 0xd0, 0xef, 0xd2, 0xd3, 0xdf, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0x4a, 0x49, 0x33, 0x49, 0xcb, 0x04, 0x00, 0x00,
+	// 843 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0xcf, 0x6f, 0xe3, 0x44,
+	0x14, 0xc7, 0x63, 0x27, 0x69, 0xd2, 0xe7, 0xa6, 0x5b, 0x86, 0xb0, 0x72, 0xf7, 0x10, 0x57, 0x11,
+	0x12, 0x2b, 0x81, 0x12, 0x6d, 0x10, 0xbf, 0x7a, 0x34, 0xab, 0x8a, 0x22, 0x51, 0xd0, 0xd0, 0x15,
+	0x12, 0x97, 0x68, 0xea, 0x99, 0x24, 0xa3, 0xb5, 0x3d, 0xd5, 0xcc, 0x84, 0x55, 0xb8, 0x73, 0x06,
+	0x89, 0x3b, 0xe2, 0xc4, 0x5f, 0xc0, 0x1f, 0xd1, 0xe3, 0x5e, 0x90, 0x10, 0x07, 0x0b, 0xd2, 0x0b,
+	0xea, 0xb1, 0x7f, 0x01, 0xf2, 0x78, 0x1c, 0x6c, 0xa5, 0x88, 0xd5, 0x6a, 0x6f, 0x33, 0xef, 0x7d,
+	0xe7, 0xbd, 0x37, 0x9f, 0xf7, 0x3c, 0x86, 0x5e, 0x3a, 0xd3, 0xe3, 0x74, 0xa6, 0x47, 0x97, 0x52,
+	0x68, 0x81, 0x3c, 0x2e, 0xb9, 0x4a, 0x04, 0x1d, 0xa5, 0x33, 0xfd, 0xa0, 0x3f, 0x17, 0x73, 0x61,
+	0xec, 0xe3, 0x7c, 0x55, 0x48, 0x86, 0x3f, 0x3a, 0xd0, 0x09, 0x89, 0x62, 0x67, 0x27, 0xe7, 0x68,
+	0x1f, 0x5c, 0x4e, 0x7d, 0xe7, 0xc8, 0x79, 0xb8, 0x8b, 0x5d, 0x4e, 0x11, 0x82, 0x56, 0x4a, 0x12,
+	0xe6, 0xbb, 0xc6, 0x62, 0xd6, 0xe8, 0x10, 0x9a, 0x4b, 0xc9, 0xfd, 0x66, 0x6e, 0x0a, 0x3b, 0xeb,
+	0x2c, 0x68, 0x3e, 0xc1, 0xa7, 0x38, 0xb7, 0xe5, 0x72, 0x4a, 0x34, 0xf1, 0x5b, 0x85, 0x3c, 0x5f,
+	0xa3, 0x3e, 0xb4, 0xc5, 0xb3, 0x94, 0x49, 0xbf, 0x6d, 0x8c, 0xc5, 0x06, 0x1d, 0x42, 0x77, 0x29,
+	0xf9, 0x74, 0x41, 0xd4, 0xc2, 0xdf, 0x31, 0x8e, 0xce, 0x52, 0xf2, 0x4f, 0x88, 0x5a, 0x1c, 0xb7,
+	0xfe, 0xfe, 0x39, 0x70, 0x86, 0x3f, 0x39, 0xe0, 0x9d, 0x9d, 0x9c, 0x7f, 0xc6, 0x34, 0x31, 0x61,
+	0xca, 0x4a, 0x9c, 0x4a, 0x25, 0x65, 0x3a, 0xb7, 0x92, 0x8e, 0x00, 0xd2, 0xe2, 0x29, 0x4b, 0xb1,
+	0x58, 0x91, 0x58, 0xaf, 0xbe, 0x88, 0x97, 0x73, 0x9e, 0x9a, 0x62, 0xbd, 0x49, 0x30, 0xaa, 0xd0,
+	0x18, 0x9d, 0x6f, 0xc9, 0xc2, 0x83, 0x9b, 0x2c, 0xd8, 0xb3, 0x9a, 0xe3, 0xc9, 0x47, 0x1f, 0x3e,
+	0xc2, 0x77, 0x04, 0xb3, 0x05, 0xfe, 0xea, 0x42, 0xfb, 0x31, 0x4b, 0x45, 0xf2, 0x42, 0xd0, 0xee,
+	0xc3, 0x8e, 0x8a, 0x16, 0x2c, 0x21, 0x05, 0x37, 0x6c, 0x77, 0xc8, 0x87, 0x4e, 0x24, 0x19, 0xd1,
+	0x42, 0x5a, 0x68, 0xe5, 0xd6, 0x9c, 0x58, 0x25, 0x17, 0x22, 0xb6, 0xe0, 0xec, 0x0e, 0xbd, 0x05,
+	0xf7, 0x12, 0x9e, 0xea, 0xa9, 0x64, 0x4a, 0x4b, 0x1e, 0x69, 0x46, 0x0d, 0xc0, 0x2e, 0xde, 0xcf,
+	0xcd, 0x78, 0x63, 0x45, 0x6f, 0xc3, 0x6b, 0xcb, 0x4b, 0x4a, 0x34, 0xab, 0x4a, 0x3b, 0x46, 0x7a,
+	0x50, 0x38, 0x2a, 0xe2, 0x23, 0xf0, 0x28, 0x53, 0x91, 0xe4, 0x97, 0x9a, 0x8b, 0xd4, 0xef, 0x9a,
+	0x94, 0x55, 0x13, 0x3a, 0x28, 0xda, 0xbe, 0x6b, 0x3c, 0xa6, 0xdb, 0xd5, 0x1e, 0x42, 0xad, 0x87,
+	0x9b, 0xce, 0x78, 0xff, 0x76, 0xc6, 0x62, 0xfb, 0xce, 0x85, 0x9e, 0xc1, 0xb6, 0xe9, 0x6c, 0x05,
+	0x81, 0xb3, 0x8d, 0xa0, 0x80, 0xe6, 0xd6, 0xa0, 0xdd, 0x81, 0xa0, 0xf9, 0xe2, 0x08, 0x5a, 0xff,
+	0x81, 0xa0, 0xac, 0xb9, 0x5d, 0x99, 0x26, 0x0c, 0x3d, 0x59, 0x1b, 0xa4, 0x1d, 0x33, 0x48, 0x0f,
+	0x6a, 0x83, 0xf4, 0x7f, 0x33, 0x54, 0x0f, 0x61, 0x39, 0x3c, 0x83, 0xbd, 0xd3, 0xc7, 0x1f, 0x8b,
+	0x38, 0x66, 0x91, 0xc1, 0x3b, 0x82, 0x2e, 0xcd, 0xb1, 0x4c, 0xcb, 0x51, 0x0a, 0x5f, 0xbf, 0xcd,
+	0x82, 0x7b, 0x2b, 0x92, 0xc4, 0xc7, 0xc3, 0xd2, 0x33, 0xc4, 0x1d, 0xb3, 0x3c, 0xa5, 0xe8, 0x11,
+	0xec, 0x9a, 0xd1, 0x9c, 0x72, 0xaa, 0x7c, 0xf7, 0xa8, 0xf9, 0x70, 0x37, 0xec, 0xdf, 0x66, 0xc1,
+	0x41, 0x71, 0x60, 0xe3, 0x1a, 0xe2, 0xae, 0x59, 0x9f, 0x52, 0x65, 0x13, 0x7f, 0xef, 0x40, 0xfb,
+	0x73, 0xf3, 0x0d, 0xfa, 0xd0, 0x21, 0x94, 0x4a, 0xa6, 0x54, 0x09, 0xde, 0x6e, 0xd1, 0x0c, 0xf6,
+	0x39, 0x9d, 0x46, 0x9b, 0xea, 0x8a, 0x0c, 0xde, 0xe4, 0xb0, 0x76, 0xef, 0x6a, 0xfd, 0xe1, 0x9b,
+	0x57, 0x59, 0xd0, 0x58, 0x67, 0x41, 0xaf, 0x6a, 0x55, 0xb7, 0x59, 0xe0, 0x15, 0x15, 0x71, 0x1a,
+	0xa9, 0x21, 0xee, 0x71, 0x5a, 0xf1, 0xda, 0x8a, 0xbe, 0x05, 0xa8, 0x81, 0x68, 0x9b, 0x3b, 0x9a,
+	0x9a, 0xbc, 0x09, 0xaa, 0xa5, 0x34, 0x93, 0x13, 0xb6, 0xf2, 0x5c, 0xb8, 0x90, 0xa1, 0xf7, 0xa1,
+	0x95, 0xce, 0x74, 0x59, 0x61, 0xbf, 0x26, 0xb7, 0xcf, 0x5a, 0xb8, 0x67, 0x8b, 0x6b, 0x9d, 0x9d,
+	0x9c, 0x2b, 0x6c, 0xf4, 0x36, 0xf7, 0x1c, 0x3c, 0x13, 0xb3, 0xe8, 0xcd, 0x76, 0xbf, 0x9d, 0x57,
+	0xd5, 0xef, 0xdf, 0x1c, 0xe8, 0xd5, 0x0e, 0xa2, 0x09, 0x74, 0x58, 0x4a, 0x2e, 0x62, 0x56, 0x34,
+	0xbc, 0x1b, 0xfa, 0x37, 0x59, 0xd0, 0xaf, 0x46, 0x3a, 0xb6, 0x7e, 0x5c, 0x0a, 0xd1, 0x7b, 0xd0,
+	0x95, 0x2c, 0x62, 0xfc, 0x1b, 0x26, 0x8b, 0x6f, 0x22, 0x3c, 0xbc, 0xc9, 0x82, 0x37, 0x6a, 0x87,
+	0x4a, 0x01, 0xde, 0x48, 0xd1, 0x97, 0xd0, 0x9d, 0x49, 0x62, 0xf8, 0xda, 0x77, 0xfb, 0x83, 0x9c,
+	0xc8, 0x1f, 0x59, 0x70, 0x3f, 0x12, 0x2a, 0x11, 0x4a, 0xd1, 0xa7, 0x23, 0x2e, 0xc6, 0x09, 0xd1,
+	0x8b, 0xd1, 0x13, 0x9e, 0xea, 0xad, 0xa0, 0xe5, 0x71, 0xbc, 0x09, 0x64, 0xef, 0x15, 0x83, 0x67,
+	0x1e, 0x52, 0x7b, 0xa9, 0xaf, 0xee, 0x06, 0xf8, 0x12, 0x2f, 0xef, 0x9d, 0x14, 0x7f, 0x71, 0x00,
+	0x6d, 0x9f, 0xae, 0x61, 0x71, 0x5e, 0x0e, 0x8b, 0xfb, 0x4a, 0xb1, 0x84, 0x9f, 0x5e, 0xfd, 0x35,
+	0x68, 0x5c, 0xad, 0x07, 0xce, 0xf3, 0xf5, 0xc0, 0xf9, 0x73, 0x3d, 0x70, 0x7e, 0xb8, 0x1e, 0x34,
+	0x9e, 0x5f, 0x0f, 0x1a, 0xbf, 0x5f, 0x0f, 0x1a, 0x5f, 0xbf, 0x33, 0xe7, 0x7a, 0xb1, 0xbc, 0x18,
+	0x45, 0x22, 0x19, 0xe7, 0xf1, 0x52, 0xa6, 0xc7, 0x36, 0xee, 0x38, 0x11, 0x74, 0x19, 0x33, 0x95,
+	0xff, 0xc3, 0xc7, 0x7a, 0x75, 0xc9, 0xd4, 0xc5, 0x8e, 0xf9, 0x4f, 0xbf, 0xfb, 0x4f, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0x40, 0x63, 0x33, 0xca, 0xdb, 0x07, 0x00, 0x00,
 }
 
 func (this *BaseNFT) Equal(that interface{}) bool {
@@ -428,6 +602,9 @@ func (this *NFTMetadata) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Data != that1.Data {
+		return false
+	}
+	if !this.TokenRoyaltyPlugin.Equal(that1.TokenRoyaltyPlugin) {
 		return false
 	}
 	return true
@@ -518,6 +695,9 @@ func (this *DenomMetadata) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Data != that1.Data {
+		return false
+	}
+	if !this.RoyaltyPlugin.Equal(that1.RoyaltyPlugin) {
 		return false
 	}
 	return true
@@ -618,6 +798,111 @@ func (this *Collection) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *DenomPlugin) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*DenomPlugin)
+	if !ok {
+		that2, ok := that.(DenomPlugin)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.RoyaltyPlugin.Equal(that1.RoyaltyPlugin) {
+		return false
+	}
+	return true
+}
+func (this *RoyaltyPlugin) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*RoyaltyPlugin)
+	if !ok {
+		that2, ok := that.(RoyaltyPlugin)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Enabled != that1.Enabled {
+		return false
+	}
+	if this.Receiver != that1.Receiver {
+		return false
+	}
+	if !this.Fraction.Equal(that1.Fraction) {
+		return false
+	}
+	return true
+}
+func (this *TokenPlugin) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*TokenPlugin)
+	if !ok {
+		that2, ok := that.(TokenPlugin)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.RoyaltyPlugin.Equal(that1.RoyaltyPlugin) {
+		return false
+	}
+	return true
+}
+func (this *TokenRoyaltyPlugin) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*TokenRoyaltyPlugin)
+	if !ok {
+		that2, ok := that.(TokenRoyaltyPlugin)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Receiver != that1.Receiver {
+		return false
+	}
+	if !this.Fraction.Equal(that1.Fraction) {
+		return false
+	}
+	return true
+}
 func (m *BaseNFT) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -703,6 +988,18 @@ func (m *NFTMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.TokenRoyaltyPlugin != nil {
+		{
+			size, err := m.TokenRoyaltyPlugin.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
 	if len(m.Data) > 0 {
 		i -= len(m.Data)
 		copy(dAtA[i:], m.Data)
@@ -846,6 +1143,18 @@ func (m *DenomMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.RoyaltyPlugin != nil {
+		{
+			size, err := m.RoyaltyPlugin.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x32
+	}
 	if len(m.Data) > 0 {
 		i -= len(m.Data)
 		copy(dAtA[i:], m.Data)
@@ -1020,6 +1329,166 @@ func (m *Collection) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *DenomPlugin) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DenomPlugin) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DenomPlugin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.RoyaltyPlugin != nil {
+		{
+			size, err := m.RoyaltyPlugin.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RoyaltyPlugin) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RoyaltyPlugin) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RoyaltyPlugin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.Fraction.Size()
+		i -= size
+		if _, err := m.Fraction.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintNft(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.Receiver) > 0 {
+		i -= len(m.Receiver)
+		copy(dAtA[i:], m.Receiver)
+		i = encodeVarintNft(dAtA, i, uint64(len(m.Receiver)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Enabled {
+		i--
+		if m.Enabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *TokenPlugin) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TokenPlugin) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TokenPlugin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.RoyaltyPlugin != nil {
+		{
+			size, err := m.RoyaltyPlugin.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *TokenRoyaltyPlugin) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TokenRoyaltyPlugin) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TokenRoyaltyPlugin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.Fraction.Size()
+		i -= size
+		if _, err := m.Fraction.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintNft(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if len(m.Receiver) > 0 {
+		i -= len(m.Receiver)
+		copy(dAtA[i:], m.Receiver)
+		i = encodeVarintNft(dAtA, i, uint64(len(m.Receiver)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintNft(dAtA []byte, offset int, v uint64) int {
 	offset -= sovNft(v)
 	base := offset
@@ -1076,6 +1545,10 @@ func (m *NFTMetadata) Size() (n int) {
 	}
 	l = len(m.Data)
 	if l > 0 {
+		n += 1 + l + sovNft(uint64(l))
+	}
+	if m.TokenRoyaltyPlugin != nil {
+		l = m.TokenRoyaltyPlugin.Size()
 		n += 1 + l + sovNft(uint64(l))
 	}
 	return n
@@ -1156,6 +1629,10 @@ func (m *DenomMetadata) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovNft(uint64(l))
 	}
+	if m.RoyaltyPlugin != nil {
+		l = m.RoyaltyPlugin.Size()
+		n += 1 + l + sovNft(uint64(l))
+	}
 	return n
 }
 
@@ -1211,6 +1688,65 @@ func (m *Collection) Size() (n int) {
 			n += 1 + l + sovNft(uint64(l))
 		}
 	}
+	return n
+}
+
+func (m *DenomPlugin) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.RoyaltyPlugin != nil {
+		l = m.RoyaltyPlugin.Size()
+		n += 1 + l + sovNft(uint64(l))
+	}
+	return n
+}
+
+func (m *RoyaltyPlugin) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Enabled {
+		n += 2
+	}
+	l = len(m.Receiver)
+	if l > 0 {
+		n += 1 + l + sovNft(uint64(l))
+	}
+	l = m.Fraction.Size()
+	n += 1 + l + sovNft(uint64(l))
+	return n
+}
+
+func (m *TokenPlugin) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.RoyaltyPlugin != nil {
+		l = m.RoyaltyPlugin.Size()
+		n += 1 + l + sovNft(uint64(l))
+	}
+	return n
+}
+
+func (m *TokenRoyaltyPlugin) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Receiver)
+	if l > 0 {
+		n += 1 + l + sovNft(uint64(l))
+	}
+	l = m.Fraction.Size()
+	n += 1 + l + sovNft(uint64(l))
 	return n
 }
 
@@ -1554,6 +2090,42 @@ func (m *NFTMetadata) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Data = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TokenRoyaltyPlugin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.TokenRoyaltyPlugin == nil {
+				m.TokenRoyaltyPlugin = &TokenRoyaltyPlugin{}
+			}
+			if err := m.TokenRoyaltyPlugin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2119,6 +2691,42 @@ func (m *DenomMetadata) Unmarshal(dAtA []byte) error {
 			}
 			m.Data = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyPlugin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RoyaltyPlugin == nil {
+				m.RoyaltyPlugin = &RoyaltyPlugin{}
+			}
+			if err := m.RoyaltyPlugin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipNft(dAtA[iNdEx:])
@@ -2463,6 +3071,430 @@ func (m *Collection) Unmarshal(dAtA []byte) error {
 			}
 			m.NFTs = append(m.NFTs, BaseNFT{})
 			if err := m.NFTs[len(m.NFTs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DenomPlugin) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DenomPlugin: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DenomPlugin: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyPlugin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RoyaltyPlugin == nil {
+				m.RoyaltyPlugin = &RoyaltyPlugin{}
+			}
+			if err := m.RoyaltyPlugin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RoyaltyPlugin) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RoyaltyPlugin: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RoyaltyPlugin: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Enabled = bool(v != 0)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Receiver", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Receiver = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Fraction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Fraction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *TokenPlugin) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TokenPlugin: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TokenPlugin: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoyaltyPlugin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RoyaltyPlugin == nil {
+				m.RoyaltyPlugin = &TokenRoyaltyPlugin{}
+			}
+			if err := m.RoyaltyPlugin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *TokenRoyaltyPlugin) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TokenRoyaltyPlugin: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TokenRoyaltyPlugin: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Receiver", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Receiver = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Fraction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Fraction.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
