@@ -31,7 +31,6 @@ type (
 		getModuleAddress func(string) sdk.AccAddress
 	}
 	TokenMetadataResolver struct{ cdc codec.Codec }
-	Type                  interface{ bool | string }
 	MediaField            struct {
 		Value interface{} `json:"value"`
 		Mime  string      `json:"mime,omitempty"`
@@ -195,7 +194,7 @@ func (cmr TokenMetadataResolver) Decode(tokenInfo string) (*codectypes.Any, erro
 		if vMap, ok := v.(map[string]interface{}); ok {
 			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
 				name = vStr
-				delete(dataMap, MintRestrictedFieldKey)
+				delete(dataMap, NameFieldKey)
 			}
 		}
 	}
