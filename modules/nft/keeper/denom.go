@@ -24,18 +24,23 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 	uriHash,
 	data string,
 ) error {
+
+	// make sure that plugin has default value if failed to convert input data
+	denomPlugin := k.DenomDataToDenomPlugin(data)
+
 	denomMetadata := &types.DenomMetadata{
 		Creator:          creator.String(),
 		Schema:           schema,
 		MintRestricted:   mintRestricted,
 		UpdateRestricted: updateRestricted,
-		Data:             data,
+		Data:             "",
+		RentalPlugin:     denomPlugin.RentalPlugin,
 	}
 	metadata, err := codectypes.NewAnyWithValue(denomMetadata)
 	if err != nil {
 		return err
 	}
-	err = k.nk.SaveClass(ctx, nft.Class{
+	return k.nk.SaveClass(ctx, nft.Class{
 		Id:          id,
 		Name:        name,
 		Symbol:      symbol,
@@ -44,12 +49,6 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 		UriHash:     uriHash,
 		Data:        metadata,
 	})
-	if err != nil {
-		return err
-	}
-
-	k.HandleDenomUserdata(ctx, id, data)
-	return nil
 }
 
 // TransferDenomOwner transfers the ownership of the given denom to the new owner
@@ -105,6 +104,13 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 	if err := k.cdc.Unmarshal(class.Data.GetValue(), &denomMetadata); err != nil {
 		return nil, err
 	}
+
+	denomPlugin := k.DenomMetadataToDenomPlugin(denomMetadata)
+	data, err := json.Marshal(denomPlugin)
+	if err != nil {
+		return nil, err
+	}
+
 	return &types.Denom{
 		Id:               class.Id,
 		Name:             class.Name,
@@ -116,7 +122,7 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 		Description:      class.Description,
 		Uri:              class.Uri,
 		UriHash:          class.UriHash,
-		Data:             denomMetadata.Data,
+		Data:             string(data),
 	}, nil
 }
 
@@ -125,14 +131,27 @@ func (k Keeper) HasDenom(ctx sdk.Context, denomID string) bool {
 	return k.nk.HasClass(ctx, denomID)
 }
 
-// HandleDenomUserdata sets extensible options for a denom according to denom userdata
-func (k Keeper) HandleDenomUserdata(ctx sdk.Context, denomId, data string) {
-	var userData types.DenomUserdata
-	if err := json.Unmarshal([]byte(data), &userData); err != nil {
-		return
+// DefaultDenomPlugin returns a default DenomPlugin
+func (k Keeper) DefaultDenomPlugin() types.DenomPlugin {
+	rentalPlugin := k.DefaultRentalPlugin()
+	return types.DenomPlugin{
+		RentalPlugin: &rentalPlugin,
 	}
+}
 
-	if userData.RentalMetadata != nil && userData.RentalMetadata.Enabled {
-		k.setRentalOption(ctx, denomId)
+// DenomDataToDenomPlugin converts user denom data to denom plugin struct
+func (k Keeper) DenomDataToDenomPlugin(data string) types.DenomPlugin {
+	var denomPlugin types.DenomPlugin
+	if err := json.Unmarshal([]byte(data), &denomPlugin); err != nil {
+		denomPlugin = k.DefaultDenomPlugin()
 	}
+	return denomPlugin
+}
+
+// DenomMetadataToDenomPlugin extracts plugin config from denom metadata
+func (k Keeper) DenomMetadataToDenomPlugin(denomMetadata types.DenomMetadata) types.DenomPlugin {
+	denomPlugin := types.DenomPlugin{
+		RentalPlugin: denomMetadata.RentalPlugin,
+	}
+	return denomPlugin
 }

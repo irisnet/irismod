@@ -188,9 +188,9 @@ func (k Keeper) UserOf(goCtx context.Context, msg *types.QueryUserOfRequest) (*t
 		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.DenomId, msg.NftId)
 	}
 
-	rental, exist := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
-	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistentRentalInfo, "rental info is not existent", msg.DenomId, msg.NftId)
+	rental, err := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
+	if err != nil {
+		return nil, err
 	}
 
 	return &types.QueryUserOfResponse{User: rental.User}, nil
@@ -204,16 +204,15 @@ func (k Keeper) UserExpires(goCtx context.Context, msg *types.QueryUserExpiresRe
 		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.DenomId, msg.NftId)
 	}
 
-	rental, exist := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
-	if !exist {
-		return nil, sdkerrors.Wrapf(types.ErrNotExistentRentalInfo, "rental info is not existent", msg.DenomId, msg.NftId)
+	rental, err := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
+	if err != nil {
+		return nil, err
 	}
 
 	return &types.QueryUserExpiresResponse{Expires: rental.Expires}, nil
 }
 
 // HasUser queries if an nft has the user
-// WARNING: it doesn't check if this rental has expires
 func (k Keeper) HasUser(goCtx context.Context, msg *types.QueryHasUserRequest) (*types.QueryHasUserResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -221,6 +220,16 @@ func (k Keeper) HasUser(goCtx context.Context, msg *types.QueryHasUserRequest) (
 		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.DenomId, msg.NftId)
 	}
 
-	_, exist := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
-	return &types.QueryHasUserResponse{HasUser: exist}, nil
+	rental, err := k.GetRentalInfo(ctx, msg.DenomId, msg.NftId)
+	if err != nil {
+		return nil, err
+	}
+
+	// if expires or user not existent, return false
+	var resp types.QueryHasUserResponse
+	if ctx.BlockTime().Unix() > rental.Expires || rental.User == "" {
+		resp.HasUser = false
+	}
+
+	return &resp, nil
 }

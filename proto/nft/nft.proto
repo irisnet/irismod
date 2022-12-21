@@ -19,11 +19,18 @@ message BaseNFT {
   string uri_hash = 6;
 }
 
+message PluginInfo {
+  // RoyaltyInfo royaltyInfo = 1 [] ;
+  RentalInfo rentalInfo = 2 [ (gogoproto.jsontag) = "irismod:4907" ];
+}
+
 message NFTMetadata {
   option (gogoproto.equal) = true;
 
   string name = 1;
   string data = 2;
+  // RoyaltyInfo royaltyInfo = 3 [];
+  RentalInfo rentalInfo = 4 [ (gogoproto.jsontag) = "irismod:4907" ];
 }
 
 // Denom defines a type of NFT
@@ -43,6 +50,11 @@ message Denom {
   string data = 11;
 }
 
+message DenomPlugin {
+  // RoyaltyPlugin royaltyPlugin = 1 [] ;
+  RentalPlugin rentalPlugin = 2 [ (gogoproto.jsontag) = "irismod:4907" ];
+}
+
 message DenomMetadata {
   option (gogoproto.equal) = true;
 
@@ -51,11 +63,9 @@ message DenomMetadata {
   bool mint_restricted = 3;
   bool update_restricted = 4;
   string data = 5;
-}
 
-// DenomUserData defines the unmarshalled DenomMetadata.data
-message DenomUserdata {
-  RentalMetadata rentalMetadata = 1 [ (gogoproto.jsontag) = "irismod:4907" ];
+  // RoyaltyPlugin royaltyPlugin = 6 [];
+  RentalPlugin rentalPlugin = 7 [ (gogoproto.jsontag) = "irismod:4907" ];
 }
 
 // IDCollection defines a type of collection with specified ID

@@ -2,7 +2,6 @@ package keeper_test
 
 import (
 	"encoding/json"
-
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
@@ -20,11 +19,11 @@ var (
 	rentalCreator = CreateTestAddrs(4)[3]
 	rentalRenter  = CreateTestAddrs(5)[4]
 
-	rentalUserData = types.DenomUserdata{
-		RentalMetadata: &types.RentalMetadata{Enabled: true},
+	rentalUserData = types.DenomPlugin{
+		RentalPlugin: &types.RentalPlugin{Enabled: true},
 	}
-	rentalUserData2 = types.DenomUserdata{
-		RentalMetadata: &types.RentalMetadata{Enabled: false},
+	rentalUserData2 = types.DenomPlugin{
+		RentalPlugin: &types.RentalPlugin{Enabled: false},
 	}
 )
 
@@ -108,30 +107,30 @@ func (suite *KeeperSuite) TestSetUser() {
 
 	// able to rent
 	err := suite.keeper.Rent(suite.ctx,
+		rentalDenomId,
+		rentalNftId,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			DenomId: rentalDenomId,
-			NftId:   rentalNftId,
 			Expires: expiry,
 		})
 	suite.NoError(err)
 
 	// unable to rent for invalid expiry
 	err = suite.keeper.Rent(suite.ctx,
+		rentalDenomId,
+		rentalNftId,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			DenomId: rentalDenomId,
-			NftId:   rentalNftId,
 			Expires: expiry2,
 		})
 	suite.Error(err)
 
 	// unable to rent for not enabling rental
 	err = suite.keeper.Rent(suite.ctx,
+		rentalDenomId2,
+		rentalNftId3,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			DenomId: rentalDenomId2,
-			NftId:   rentalNftId3,
 			Expires: expiry2,
 		})
 	suite.Error(err)
@@ -141,10 +140,10 @@ func (suite *KeeperSuite) TestUserOf() {
 	expiry := suite.ctx.BlockTime().Unix() + 10
 
 	err := suite.keeper.Rent(suite.ctx,
+		rentalDenomId,
+		rentalNftId,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			DenomId: rentalDenomId,
-			NftId:   rentalNftId,
 			Expires: expiry,
 		})
 	suite.NoError(err)
@@ -160,10 +159,10 @@ func (suite *KeeperSuite) TestUserOf() {
 func (suite *KeeperSuite) TestUserExpires() {
 	expiry := suite.ctx.BlockTime().Unix() + 10
 	err := suite.keeper.Rent(suite.ctx,
+		rentalDenomId,
+		rentalNftId,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			DenomId: rentalDenomId,
-			NftId:   rentalNftId,
 			Expires: expiry,
 		})
 	suite.NoError(err)
@@ -180,10 +179,10 @@ func (suite *KeeperSuite) TestHasUser() {
 	expiry := suite.ctx.BlockTime().Unix() + 10
 
 	err := suite.keeper.Rent(suite.ctx,
+		rentalDenomId,
+		rentalNftId,
 		types.RentalInfo{
 			User:    rentalRenter.String(),
-			DenomId: rentalDenomId,
-			NftId:   rentalNftId,
 			Expires: expiry,
 		})
 	suite.NoError(err)
@@ -193,5 +192,5 @@ func (suite *KeeperSuite) TestHasUser() {
 		NftId:   rentalNftId,
 	})
 	suite.NoError(err)
-	suite.Equal(true, resp.HasUser)
+	suite.Equal(false, resp.HasUser)
 }

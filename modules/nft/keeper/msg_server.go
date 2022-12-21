@@ -270,10 +270,8 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not owner of the nft", msg.Sender)
 	}
 
-	if err := k.Rent(ctx, types.RentalInfo{
+	if err := k.Rent(ctx, msg.DenomId, msg.NftId, types.RentalInfo{
 		User:    user.String(),
-		DenomId: msg.DenomId,
-		NftId:   msg.NftId,
 		Expires: msg.Expires,
 	}); err != nil {
 		return nil, err

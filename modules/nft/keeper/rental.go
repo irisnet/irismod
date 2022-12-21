@@ -1,91 +1,96 @@
 package keeper
 
 import (
-	"bytes"
-
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
+// DefaultRentalPlugin returns a default rental plugin config
+func (k Keeper) DefaultRentalPlugin() types.RentalPlugin {
+	return types.RentalPlugin{Enabled: false}
+}
+
+func (k Keeper) DefaultRentalInfo() types.RentalInfo {
+	return types.RentalInfo{
+		User:    "",
+		Expires: 0,
+	}
+}
+
 // Rent set or update rental info for an nft.
-func (k Keeper) Rent(ctx sdk.Context, rental types.RentalInfo) error {
-	// if disabled, return err
-	if enabled := k.GetRentalOption(ctx, rental.DenomId); !enabled {
+func (k Keeper) Rent(ctx sdk.Context, denomID, tokenID string, rental types.RentalInfo) error {
+	// 1. get rental plugin info
+	cfg, err := k.GetRentalPlugin(ctx, denomID)
+	if err != nil {
+		return err
+	}
+
+	// 2. check rental is enabled
+	if !cfg.Enabled {
 		return sdkerrors.Wrapf(types.ErrRentalOption, "Rental is disabled")
 	}
 
-	// expiry should be greater than the current time
-	if ctx.BlockTime().Unix() >= int64(rental.Expires) {
+	// 3. expiry must be greater than the current block time.
+	if ctx.BlockTime().Unix() >= rental.Expires {
 		return sdkerrors.Wrapf(types.ErrInvalidExpiry, "Expiry is (%d)", rental.Expires)
 	}
 
-	// set rental info
-	k.setRentalInfo(ctx, rental.DenomId, rental.NftId, rental.User, rental.Expires)
+	// 4. construct new nft data info (we have examined its existence)
+	var data types.NFTMetadata
+	token, _ := k.nk.GetNFT(ctx, denomID, tokenID)
+	if err := k.cdc.Unmarshal(token.Data.GetValue(), &data); err != nil {
+		return err
+	}
+	data.RentalInfo = &rental
+
+	newData, err := codectypes.NewAnyWithValue(&data)
+	if err != nil {
+		return err
+	}
+	token.Data = newData
+
+	// 5. set rental info with nft update.
+	err = k.nk.Update(ctx, token)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-// setRentalInfo sets the rental info for an nft.
-func (k Keeper) setRentalInfo(ctx sdk.Context,
-	classId, nftId, user string,
-	expires int64) {
-	store := ctx.KVStore(k.storeKey)
-	r := types.RentalInfo{
-		User:    user,
-		DenomId: classId,
-		NftId:   nftId,
-		Expires: expires,
+// GetRentalPlugin returns the rental plugin config
+func (k Keeper) GetRentalPlugin(ctx sdk.Context, denomID string) (*types.RentalPlugin, error) {
+	var r *types.RentalPlugin
+	denom, has := k.nk.GetClass(ctx, denomID)
+	if !has {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
-	bz := k.cdc.MustMarshal(&r)
-	store.Set(rentalInfoKey(r.DenomId, r.NftId), bz)
+
+	var denomMetadata types.DenomMetadata
+	if err := k.cdc.Unmarshal(denom.Data.GetValue(), &denomMetadata); err != nil {
+		return nil, err
+	}
+
+	r = denomMetadata.RentalPlugin
+	return r, nil
 }
 
 // GetRentalInfo returns the rental info for an nft.
 func (k Keeper) GetRentalInfo(ctx sdk.Context,
-	classId, nftId string) (types.RentalInfo, bool) {
-	var v types.RentalInfo
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(rentalInfoKey(classId, nftId))
-	if bz == nil {
-		return types.RentalInfo{}, false
+	denomID, tokenID string) (*types.RentalInfo, error) {
+	var r *types.RentalInfo
+	token, exist := k.nk.GetNFT(ctx, denomID, tokenID)
+	if !exist {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidNFT, "token ID %s not exists", tokenID)
 	}
-	k.cdc.MustUnmarshal(bz, &v)
-	return v, true
-}
 
-// GetRentalInfos returns all rental infos.
-func (k Keeper) GetRentalInfos(ctx sdk.Context) (ris []types.RentalInfo) {
-	store := ctx.KVStore(k.storeKey)
-	iterator := store.Iterator(nil, nil)
-	defer iterator.Close()
-	for ; iterator.Valid(); iterator.Next() {
-		var rental types.RentalInfo
-		k.cdc.MustUnmarshal(iterator.Value(), &rental)
-		ris = append(ris, rental)
+	var nftMetadata types.NFTMetadata
+	if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
+		return nil, err
 	}
-	return ris
-}
-
-// setRentalOption enables the rental feature for a class.
-func (k Keeper) setRentalOption(ctx sdk.Context, denomId string) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(rentalOptionKey(denomId), []byte{0x01})
-}
-
-// unsetRentalOption disables the rental feature for a class.
-func (k Keeper) unsetRentalOption(ctx sdk.Context, denomId string) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(rentalOptionKey(denomId), []byte{0x00})
-}
-
-// GetRentalEnabled checks if a class has its rental option enabled.
-func (k Keeper) GetRentalOption(ctx sdk.Context, denomId string) bool {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(rentalOptionKey(denomId))
-
-	if bytes.Equal(bz, []byte{0x01}) {
-		return true
-	}
-	return false
+	r = nftMetadata.RentalInfo
+	return r, nil
 }

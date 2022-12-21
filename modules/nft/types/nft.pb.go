@@ -66,16 +66,56 @@ func (m *BaseNFT) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BaseNFT proto.InternalMessageInfo
 
+type PluginInfo struct {
+	// RoyaltyInfo royaltyInfo = 1 [] ;
+	RentalInfo *RentalInfo `protobuf:"bytes,2,opt,name=rentalInfo,proto3" json:"irismod:4907"`
+}
+
+func (m *PluginInfo) Reset()         { *m = PluginInfo{} }
+func (m *PluginInfo) String() string { return proto.CompactTextString(m) }
+func (*PluginInfo) ProtoMessage()    {}
+func (*PluginInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{1}
+}
+func (m *PluginInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PluginInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PluginInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PluginInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PluginInfo.Merge(m, src)
+}
+func (m *PluginInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *PluginInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_PluginInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PluginInfo proto.InternalMessageInfo
+
 type NFTMetadata struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Data string `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	// RoyaltyInfo royaltyInfo = 3 [];
+	RentalInfo *RentalInfo `protobuf:"bytes,4,opt,name=rentalInfo,proto3" json:"irismod:4907"`
 }
 
 func (m *NFTMetadata) Reset()         { *m = NFTMetadata{} }
 func (m *NFTMetadata) String() string { return proto.CompactTextString(m) }
 func (*NFTMetadata) ProtoMessage()    {}
 func (*NFTMetadata) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fe8ab7e15b7f0646, []int{1}
+	return fileDescriptor_fe8ab7e15b7f0646, []int{2}
 }
 func (m *NFTMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -123,7 +163,7 @@ func (m *Denom) Reset()         { *m = Denom{} }
 func (m *Denom) String() string { return proto.CompactTextString(m) }
 func (*Denom) ProtoMessage()    {}
 func (*Denom) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fe8ab7e15b7f0646, []int{2}
+	return fileDescriptor_fe8ab7e15b7f0646, []int{3}
 }
 func (m *Denom) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -152,19 +192,59 @@ func (m *Denom) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Denom proto.InternalMessageInfo
 
+type DenomPlugin struct {
+	// RoyaltyPlugin royaltyPlugin = 1 [] ;
+	RentalPlugin *RentalPlugin `protobuf:"bytes,2,opt,name=rentalPlugin,proto3" json:"irismod:4907"`
+}
+
+func (m *DenomPlugin) Reset()         { *m = DenomPlugin{} }
+func (m *DenomPlugin) String() string { return proto.CompactTextString(m) }
+func (*DenomPlugin) ProtoMessage()    {}
+func (*DenomPlugin) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{4}
+}
+func (m *DenomPlugin) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DenomPlugin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DenomPlugin.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DenomPlugin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DenomPlugin.Merge(m, src)
+}
+func (m *DenomPlugin) XXX_Size() int {
+	return m.Size()
+}
+func (m *DenomPlugin) XXX_DiscardUnknown() {
+	xxx_messageInfo_DenomPlugin.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DenomPlugin proto.InternalMessageInfo
+
 type DenomMetadata struct {
 	Creator          string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Schema           string `protobuf:"bytes,2,opt,name=schema,proto3" json:"schema,omitempty"`
 	MintRestricted   bool   `protobuf:"varint,3,opt,name=mint_restricted,json=mintRestricted,proto3" json:"mint_restricted,omitempty"`
 	UpdateRestricted bool   `protobuf:"varint,4,opt,name=update_restricted,json=updateRestricted,proto3" json:"update_restricted,omitempty"`
 	Data             string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
+	// RoyaltyPlugin royaltyPlugin = 6 [];
+	RentalPlugin *RentalPlugin `protobuf:"bytes,7,opt,name=rentalPlugin,proto3" json:"irismod:4907"`
 }
 
 func (m *DenomMetadata) Reset()         { *m = DenomMetadata{} }
 func (m *DenomMetadata) String() string { return proto.CompactTextString(m) }
 func (*DenomMetadata) ProtoMessage()    {}
 func (*DenomMetadata) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fe8ab7e15b7f0646, []int{3}
+	return fileDescriptor_fe8ab7e15b7f0646, []int{5}
 }
 func (m *DenomMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -193,44 +273,6 @@ func (m *DenomMetadata) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DenomMetadata proto.InternalMessageInfo
 
-// DenomUserData defines the unmarshalled DenomMetadata.data
-type DenomUserdata struct {
-	RentalMetadata *RentalMetadata `protobuf:"bytes,1,opt,name=rentalMetadata,proto3" json:"irismod:4907"`
-}
-
-func (m *DenomUserdata) Reset()         { *m = DenomUserdata{} }
-func (m *DenomUserdata) String() string { return proto.CompactTextString(m) }
-func (*DenomUserdata) ProtoMessage()    {}
-func (*DenomUserdata) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fe8ab7e15b7f0646, []int{4}
-}
-func (m *DenomUserdata) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *DenomUserdata) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_DenomUserdata.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *DenomUserdata) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DenomUserdata.Merge(m, src)
-}
-func (m *DenomUserdata) XXX_Size() int {
-	return m.Size()
-}
-func (m *DenomUserdata) XXX_DiscardUnknown() {
-	xxx_messageInfo_DenomUserdata.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DenomUserdata proto.InternalMessageInfo
-
 // IDCollection defines a type of collection with specified ID
 type IDCollection struct {
 	DenomId  string   `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
@@ -241,7 +283,7 @@ func (m *IDCollection) Reset()         { *m = IDCollection{} }
 func (m *IDCollection) String() string { return proto.CompactTextString(m) }
 func (*IDCollection) ProtoMessage()    {}
 func (*IDCollection) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fe8ab7e15b7f0646, []int{5}
+	return fileDescriptor_fe8ab7e15b7f0646, []int{6}
 }
 func (m *IDCollection) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -280,7 +322,7 @@ func (m *Owner) Reset()         { *m = Owner{} }
 func (m *Owner) String() string { return proto.CompactTextString(m) }
 func (*Owner) ProtoMessage()    {}
 func (*Owner) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fe8ab7e15b7f0646, []int{6}
+	return fileDescriptor_fe8ab7e15b7f0646, []int{7}
 }
 func (m *Owner) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -319,7 +361,7 @@ func (m *Collection) Reset()         { *m = Collection{} }
 func (m *Collection) String() string { return proto.CompactTextString(m) }
 func (*Collection) ProtoMessage()    {}
 func (*Collection) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fe8ab7e15b7f0646, []int{7}
+	return fileDescriptor_fe8ab7e15b7f0646, []int{8}
 }
 func (m *Collection) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -350,10 +392,11 @@ var xxx_messageInfo_Collection proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*BaseNFT)(nil), "irismod.nft.BaseNFT")
+	proto.RegisterType((*PluginInfo)(nil), "irismod.nft.PluginInfo")
 	proto.RegisterType((*NFTMetadata)(nil), "irismod.nft.NFTMetadata")
 	proto.RegisterType((*Denom)(nil), "irismod.nft.Denom")
+	proto.RegisterType((*DenomPlugin)(nil), "irismod.nft.DenomPlugin")
 	proto.RegisterType((*DenomMetadata)(nil), "irismod.nft.DenomMetadata")
-	proto.RegisterType((*DenomUserdata)(nil), "irismod.nft.DenomUserdata")
 	proto.RegisterType((*IDCollection)(nil), "irismod.nft.IDCollection")
 	proto.RegisterType((*Owner)(nil), "irismod.nft.Owner")
 	proto.RegisterType((*Collection)(nil), "irismod.nft.Collection")
@@ -362,50 +405,53 @@ func init() {
 func init() { proto.RegisterFile("nft/nft.proto", fileDescriptor_fe8ab7e15b7f0646) }
 
 var fileDescriptor_fe8ab7e15b7f0646 = []byte{
-	// 684 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcf, 0x6e, 0xd3, 0x30,
-	0x1c, 0x6e, 0xfa, 0x67, 0x69, 0x9d, 0xb5, 0x2b, 0xa6, 0x42, 0xd9, 0x90, 0x92, 0x29, 0x42, 0x62,
-	0x12, 0xa8, 0x85, 0x81, 0x40, 0x8c, 0x5b, 0x98, 0x26, 0x8a, 0xc4, 0x90, 0xa2, 0xed, 0xc2, 0xa5,
-	0xca, 0x62, 0x77, 0xb5, 0x68, 0xe2, 0xca, 0x76, 0x35, 0x8d, 0x97, 0x00, 0x89, 0x17, 0xe0, 0x15,
-	0x90, 0x78, 0x88, 0x1d, 0x77, 0xe4, 0x14, 0x41, 0x77, 0x41, 0x1c, 0xf7, 0x04, 0x28, 0xb6, 0x53,
-	0x12, 0x06, 0xd2, 0x6e, 0xfe, 0x7d, 0xbf, 0xcf, 0xfe, 0x7d, 0xdf, 0xe7, 0xc4, 0xa0, 0x9d, 0x8c,
-	0xc5, 0x20, 0x19, 0x8b, 0xfe, 0x8c, 0x51, 0x41, 0xa1, 0x45, 0x18, 0xe1, 0x31, 0x45, 0xfd, 0x64,
-	0x2c, 0x36, 0x7a, 0xc7, 0xf4, 0x98, 0x4a, 0x7c, 0x90, 0xad, 0x14, 0x65, 0xa3, 0x9b, 0xed, 0x60,
-	0x38, 0x11, 0xe1, 0x54, 0x21, 0xde, 0x27, 0x03, 0x98, 0x7e, 0xc8, 0xf1, 0xfe, 0xde, 0x01, 0xec,
-	0x80, 0x2a, 0x41, 0xb6, 0xb1, 0x69, 0x6c, 0xb5, 0x82, 0x2a, 0x41, 0x10, 0x82, 0x7a, 0x12, 0xc6,
-	0xd8, 0xae, 0x4a, 0x44, 0xae, 0xe1, 0x3a, 0xa8, 0xcd, 0x19, 0xb1, 0x6b, 0x19, 0xe4, 0x9b, 0x8b,
-	0xd4, 0xad, 0x1d, 0x06, 0xc3, 0x20, 0xc3, 0x32, 0x3a, 0x0a, 0x45, 0x68, 0xd7, 0x15, 0x3d, 0x5b,
-	0xc3, 0x1e, 0x68, 0xd0, 0x93, 0x04, 0x33, 0xbb, 0x21, 0x41, 0x55, 0xc0, 0x75, 0xd0, 0x9c, 0x33,
-	0x32, 0x9a, 0x84, 0x7c, 0x62, 0xaf, 0xc8, 0x86, 0x39, 0x67, 0xe4, 0x65, 0xc8, 0x27, 0x3b, 0xf5,
-	0x9f, 0x9f, 0x5d, 0xc3, 0x7b, 0x0e, 0xac, 0xfd, 0xbd, 0x83, 0xd7, 0x58, 0x84, 0xf2, 0x94, 0x5c,
-	0x88, 0x51, 0x10, 0x92, 0x4f, 0xab, 0xfe, 0x99, 0xa6, 0x37, 0x7f, 0xad, 0x82, 0xc6, 0x2e, 0x4e,
-	0x68, 0x7c, 0x2d, 0x43, 0xb7, 0xc0, 0x0a, 0x8f, 0x26, 0x38, 0x0e, 0x95, 0xa7, 0x40, 0x57, 0xd0,
-	0x06, 0x66, 0xc4, 0x70, 0x28, 0x28, 0xd3, 0x86, 0xf2, 0x52, 0xee, 0x38, 0x8d, 0x8f, 0xe8, 0x54,
-	0x9b, 0xd2, 0x15, 0xbc, 0x0b, 0xd6, 0x62, 0x92, 0x88, 0x11, 0xc3, 0x5c, 0x30, 0x12, 0x09, 0x8c,
-	0xa4, 0xb9, 0x66, 0xd0, 0xc9, 0xe0, 0x60, 0x89, 0xc2, 0x7b, 0xe0, 0xc6, 0x7c, 0x86, 0x42, 0x81,
-	0x8b, 0x54, 0x53, 0x52, 0xbb, 0xaa, 0x51, 0x20, 0x6f, 0x02, 0x0b, 0x61, 0x1e, 0x31, 0x32, 0x13,
-	0x84, 0x26, 0x76, 0x53, 0x8e, 0x2c, 0x42, 0xb0, 0xab, 0xae, 0xa4, 0x25, 0x3b, 0xf2, 0x26, 0x8a,
-	0xf9, 0x82, 0x52, 0xbe, 0xcb, 0xd8, 0xac, 0x2b, 0xb1, 0x7d, 0x31, 0x40, 0x5b, 0xc6, 0xb6, 0x8c,
-	0xbd, 0x10, 0x81, 0x71, 0x35, 0x02, 0x15, 0x5a, 0xb5, 0x14, 0xda, 0x3f, 0x22, 0xa8, 0x5d, 0x3f,
-	0x82, 0xfa, 0x7f, 0x22, 0xc8, 0x35, 0x37, 0xae, 0x68, 0x1e, 0x6b, 0xc9, 0x87, 0x1c, 0x33, 0x29,
-	0xf9, 0x10, 0x74, 0xd4, 0xe7, 0x9d, 0x9b, 0x90, 0xca, 0xad, 0xed, 0xdb, 0xfd, 0xc2, 0xcf, 0xd1,
-	0x0f, 0x4a, 0x14, 0xbf, 0xfb, 0x2b, 0x75, 0x57, 0x75, 0x7f, 0xe7, 0xf1, 0xb3, 0x07, 0x4f, 0x83,
-	0xbf, 0x0e, 0xf1, 0x4e, 0xc0, 0xea, 0x70, 0xf7, 0x05, 0x9d, 0x4e, 0x71, 0x24, 0x23, 0xef, 0x83,
-	0x26, 0xca, 0xe6, 0x8e, 0xf2, 0xcf, 0xcb, 0xbf, 0x79, 0x99, 0xba, 0x6b, 0xa7, 0x61, 0x3c, 0xdd,
-	0xf1, 0xf2, 0x8e, 0x17, 0x98, 0x72, 0x39, 0x44, 0xf0, 0x21, 0x68, 0x09, 0xfa, 0x0e, 0x27, 0x23,
-	0x82, 0xb8, 0x5d, 0xdd, 0xac, 0x6d, 0xb5, 0xfc, 0xde, 0x65, 0xea, 0x76, 0xd5, 0x86, 0x65, 0xcb,
-	0x0b, 0x9a, 0x72, 0x3d, 0x44, 0x5c, 0x1b, 0xfc, 0x60, 0x80, 0xc6, 0x1b, 0xf9, 0xcf, 0xd8, 0xc0,
-	0x0c, 0x11, 0x62, 0x98, 0xf3, 0xfc, 0x32, 0x74, 0x09, 0xc7, 0xa0, 0x43, 0xd0, 0x28, 0x5a, 0xaa,
-	0x53, 0x13, 0xac, 0xed, 0xf5, 0x92, 0xe7, 0xa2, 0x7e, 0xff, 0xce, 0x59, 0xea, 0x56, 0x16, 0xa9,
-	0xdb, 0x2e, 0xa2, 0xfc, 0x32, 0x75, 0x2d, 0xa5, 0x88, 0xa0, 0x88, 0x7b, 0x41, 0x9b, 0xa0, 0x42,
-	0x57, 0x2b, 0x7a, 0x0f, 0x40, 0x29, 0x88, 0x86, 0xf4, 0xa8, 0x63, 0x86, 0xa5, 0x91, 0xf2, 0x6a,
-	0xfc, 0x7a, 0x36, 0x2b, 0x50, 0x34, 0xf8, 0x04, 0xd4, 0x93, 0xb1, 0xc8, 0x15, 0xf6, 0x4a, 0x74,
-	0xfd, 0x0c, 0xf9, 0xab, 0x5a, 0x5c, 0x7d, 0x7f, 0xef, 0x80, 0x07, 0x92, 0xaf, 0x66, 0xfb, 0xaf,
-	0xce, 0x7e, 0x38, 0x95, 0xb3, 0x85, 0x63, 0x9c, 0x2f, 0x1c, 0xe3, 0xfb, 0xc2, 0x31, 0x3e, 0x5e,
-	0x38, 0x95, 0xf3, 0x0b, 0xa7, 0xf2, 0xed, 0xc2, 0xa9, 0xbc, 0xbd, 0x7f, 0x4c, 0xc4, 0x64, 0x7e,
-	0xd4, 0x8f, 0x68, 0x3c, 0xc8, 0xce, 0x4d, 0xb0, 0x18, 0xe8, 0xf3, 0x07, 0x31, 0x45, 0xf3, 0x29,
-	0xe6, 0xd9, 0x6b, 0x39, 0x10, 0xa7, 0x33, 0xcc, 0x8f, 0x56, 0xe4, 0xfb, 0xf7, 0xe8, 0x77, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x3e, 0x96, 0xe0, 0x2e, 0x45, 0x05, 0x00, 0x00,
+	// 735 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x55, 0x4d, 0x6f, 0xd3, 0x48,
+	0x18, 0x8e, 0x1d, 0xa7, 0x4e, 0x5e, 0x27, 0x6d, 0x76, 0x36, 0xda, 0x75, 0x7b, 0x88, 0x2b, 0x6b,
+	0xa5, 0xad, 0xb4, 0xab, 0x04, 0x0a, 0x02, 0xd1, 0xa3, 0xa9, 0x2a, 0x82, 0x44, 0x8b, 0xac, 0x22,
+	0x24, 0x0e, 0x44, 0xae, 0x67, 0x92, 0x8c, 0x88, 0xed, 0xc8, 0x33, 0x51, 0x55, 0x8e, 0x1c, 0xb8,
+	0x82, 0xc4, 0x1f, 0xe0, 0x47, 0xf0, 0x23, 0x7a, 0xec, 0x91, 0x53, 0x04, 0xe9, 0x05, 0x71, 0xec,
+	0x2f, 0x40, 0x9e, 0x19, 0x07, 0xa7, 0x14, 0xa9, 0x52, 0x6f, 0xf3, 0x7e, 0x8c, 0xdf, 0xe7, 0x79,
+	0xde, 0x47, 0x63, 0x68, 0xc4, 0x03, 0xde, 0x8d, 0x07, 0xbc, 0x33, 0x49, 0x13, 0x9e, 0x20, 0x8b,
+	0xa6, 0x94, 0x45, 0x09, 0xee, 0xc4, 0x03, 0xbe, 0xd1, 0x1a, 0x26, 0xc3, 0x44, 0xe4, 0xbb, 0xd9,
+	0x49, 0xb6, 0x6c, 0x34, 0xb3, 0x1b, 0x29, 0x89, 0x79, 0x30, 0x96, 0x19, 0xf7, 0x83, 0x06, 0xa6,
+	0x17, 0x30, 0xb2, 0xbf, 0x77, 0x88, 0x56, 0x41, 0xa7, 0xd8, 0xd6, 0x36, 0xb5, 0xad, 0x9a, 0xaf,
+	0x53, 0x8c, 0x10, 0x18, 0x71, 0x10, 0x11, 0x5b, 0x17, 0x19, 0x71, 0x46, 0xeb, 0x50, 0x9e, 0xa6,
+	0xd4, 0x2e, 0x67, 0x29, 0xcf, 0x9c, 0xcf, 0x9c, 0xf2, 0x33, 0xbf, 0xe7, 0x67, 0xb9, 0xac, 0x1d,
+	0x07, 0x3c, 0xb0, 0x0d, 0xd9, 0x9e, 0x9d, 0x51, 0x0b, 0x2a, 0xc9, 0x71, 0x4c, 0x52, 0xbb, 0x22,
+	0x92, 0x32, 0x40, 0xeb, 0x50, 0x9d, 0xa6, 0xb4, 0x3f, 0x0a, 0xd8, 0xc8, 0x5e, 0x11, 0x05, 0x73,
+	0x9a, 0xd2, 0x47, 0x01, 0x1b, 0xed, 0x18, 0xdf, 0x3e, 0x3a, 0x9a, 0xfb, 0x1c, 0xe0, 0xe9, 0x78,
+	0x3a, 0xa4, 0x71, 0x2f, 0x1e, 0x24, 0xa8, 0x07, 0x20, 0x31, 0x67, 0x91, 0x40, 0x63, 0x6d, 0xff,
+	0xdd, 0x29, 0xb0, 0xed, 0xf8, 0x8b, 0xb2, 0xd7, 0xfc, 0x3e, 0x73, 0xea, 0xaa, 0xb6, 0x73, 0xf7,
+	0xc1, 0xad, 0xfb, 0x7e, 0xe1, 0xb2, 0xfb, 0x56, 0x03, 0x6b, 0x7f, 0xef, 0xf0, 0x09, 0xe1, 0x81,
+	0xc0, 0x97, 0x53, 0xd4, 0x0a, 0x14, 0x73, 0x1e, 0x7a, 0x81, 0xc7, 0x32, 0x04, 0xe3, 0x06, 0x10,
+	0x14, 0xc3, 0x4f, 0x3a, 0x54, 0x76, 0x49, 0x9c, 0x44, 0xd7, 0x52, 0xfd, 0x2f, 0x58, 0x61, 0xe1,
+	0x88, 0x44, 0x81, 0x14, 0xde, 0x57, 0x11, 0xb2, 0xc1, 0x0c, 0x53, 0x12, 0xf0, 0x24, 0x55, 0xaa,
+	0xe7, 0xa1, 0xb8, 0x71, 0x12, 0x1d, 0x25, 0x63, 0xa5, 0xbc, 0x8a, 0xd0, 0xbf, 0xb0, 0x16, 0xd1,
+	0x98, 0xf7, 0x53, 0xc2, 0x78, 0x4a, 0x43, 0x4e, 0xb0, 0xd8, 0x40, 0xd5, 0x5f, 0xcd, 0xd2, 0xfe,
+	0x22, 0x8b, 0xfe, 0x83, 0x3f, 0xa6, 0x13, 0x1c, 0x70, 0x52, 0x6c, 0x35, 0x45, 0x6b, 0x53, 0x16,
+	0x0a, 0xcd, 0x9b, 0x60, 0x61, 0xc2, 0xc2, 0x94, 0x4e, 0x38, 0x4d, 0x62, 0xbb, 0x2a, 0x46, 0x16,
+	0x53, 0xa8, 0x29, 0x7d, 0x53, 0x13, 0x15, 0x61, 0x97, 0xa2, 0x09, 0x60, 0xc9, 0x04, 0x8b, 0x0d,
+	0x58, 0x3f, 0x37, 0xa0, 0x64, 0x7b, 0x09, 0x96, 0x50, 0x4d, 0xba, 0x03, 0x1d, 0x40, 0x5d, 0x2a,
+	0x2b, 0x63, 0xe5, 0x8d, 0xf5, 0x2b, 0x16, 0x23, 0x1b, 0xae, 0x58, 0xcd, 0xd2, 0x07, 0xdc, 0x37,
+	0x3a, 0x34, 0xc4, 0x80, 0x85, 0x43, 0x0a, 0x12, 0x6b, 0xbf, 0x4a, 0x2c, 0x97, 0xa2, 0x2f, 0x2d,
+	0xe5, 0x0a, 0x89, 0xcb, 0xd7, 0x97, 0xd8, 0xf8, 0x8d, 0xc4, 0xb9, 0x26, 0x95, 0x82, 0x2b, 0x2f,
+	0xd3, 0x37, 0x6f, 0x48, 0x5f, 0x89, 0x7c, 0x0c, 0xf5, 0xde, 0xee, 0xc3, 0x64, 0x3c, 0x26, 0xa1,
+	0xd8, 0x5d, 0x07, 0xaa, 0x38, 0xd3, 0xa4, 0x9f, 0xfb, 0xd4, 0xfb, 0xf3, 0x62, 0xe6, 0xac, 0x9d,
+	0x04, 0xd1, 0x78, 0xc7, 0xcd, 0x2b, 0xae, 0x6f, 0x8a, 0x63, 0x0f, 0xa3, 0xdb, 0x50, 0xe3, 0xc9,
+	0x2b, 0x12, 0xf7, 0x29, 0x66, 0xb6, 0xbe, 0x59, 0xde, 0xaa, 0x79, 0xad, 0x8b, 0x99, 0xd3, 0x94,
+	0x17, 0x16, 0x25, 0xd7, 0xaf, 0x8a, 0x73, 0x0f, 0x33, 0x35, 0xf8, 0x9d, 0x06, 0x95, 0x03, 0xf1,
+	0x42, 0xd8, 0x60, 0x06, 0x18, 0xa7, 0x84, 0xb1, 0x5c, 0x75, 0x15, 0xa2, 0x01, 0xac, 0x52, 0xdc,
+	0x0f, 0x17, 0xe8, 0xe4, 0x84, 0xcb, 0xac, 0x8b, 0xf8, 0xbd, 0x7f, 0x4e, 0x67, 0x4e, 0x69, 0x3e,
+	0x73, 0x1a, 0xc5, 0x2c, 0xbb, 0x98, 0x39, 0x96, 0x44, 0x44, 0x71, 0xc8, 0x5c, 0xbf, 0x41, 0x71,
+	0xa1, 0xaa, 0x10, 0xbd, 0x06, 0x58, 0x12, 0xa2, 0x22, 0x38, 0x0a, 0x4c, 0xd6, 0x36, 0x5a, 0x1a,
+	0x29, 0x6c, 0xe3, 0x19, 0xd9, 0x2c, 0x5f, 0xb6, 0xa1, 0x7b, 0x60, 0xc4, 0x03, 0x9e, 0x23, 0x6c,
+	0x2d, 0xb5, 0xab, 0x47, 0xd7, 0xab, 0x2b, 0x70, 0xc6, 0xfe, 0xde, 0x21, 0xf3, 0x45, 0xbf, 0x9c,
+	0xed, 0x3d, 0x3e, 0xfd, 0xda, 0x2e, 0x9d, 0xce, 0xdb, 0xda, 0xd9, 0xbc, 0xad, 0x7d, 0x99, 0xb7,
+	0xb5, 0xf7, 0xe7, 0xed, 0xd2, 0xd9, 0x79, 0xbb, 0xf4, 0xf9, 0xbc, 0x5d, 0x7a, 0xf1, 0xff, 0x90,
+	0xf2, 0xd1, 0xf4, 0xa8, 0x13, 0x26, 0x51, 0x37, 0xfb, 0x6e, 0x4c, 0x78, 0x57, 0x7d, 0xbf, 0x1b,
+	0x25, 0x78, 0x3a, 0x26, 0x2c, 0xfb, 0x37, 0x74, 0xf9, 0xc9, 0x84, 0xb0, 0xa3, 0x15, 0xf1, 0xda,
+	0xdf, 0xf9, 0x11, 0x00, 0x00, 0xff, 0xff, 0x48, 0x8f, 0xbe, 0x63, 0x33, 0x06, 0x00, 0x00,
 }
 
 func (this *BaseNFT) Equal(that interface{}) bool {
@@ -470,6 +516,9 @@ func (this *NFTMetadata) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Data != that1.Data {
+		return false
+	}
+	if !this.RentalInfo.Equal(that1.RentalInfo) {
 		return false
 	}
 	return true
@@ -560,6 +609,9 @@ func (this *DenomMetadata) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Data != that1.Data {
+		return false
+	}
+	if !this.RentalPlugin.Equal(that1.RentalPlugin) {
 		return false
 	}
 	return true
@@ -725,6 +777,41 @@ func (m *BaseNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *PluginInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PluginInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PluginInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.RentalInfo != nil {
+		{
+			size, err := m.RentalInfo.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *NFTMetadata) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -745,6 +832,18 @@ func (m *NFTMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.RentalInfo != nil {
+		{
+			size, err := m.RentalInfo.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.Data) > 0 {
 		i -= len(m.Data)
 		copy(dAtA[i:], m.Data)
@@ -868,6 +967,41 @@ func (m *Denom) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *DenomPlugin) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DenomPlugin) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DenomPlugin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.RentalPlugin != nil {
+		{
+			size, err := m.RentalPlugin.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *DenomMetadata) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -888,6 +1022,18 @@ func (m *DenomMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.RentalPlugin != nil {
+		{
+			size, err := m.RentalPlugin.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintNft(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.Data) > 0 {
 		i -= len(m.Data)
 		copy(dAtA[i:], m.Data)
@@ -926,41 +1072,6 @@ func (m *DenomMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.Creator)
 		copy(dAtA[i:], m.Creator)
 		i = encodeVarintNft(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *DenomUserdata) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *DenomUserdata) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *DenomUserdata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.RentalMetadata != nil {
-		{
-			size, err := m.RentalMetadata.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintNft(dAtA, i, uint64(size))
-		}
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1141,6 +1252,19 @@ func (m *BaseNFT) Size() (n int) {
 	return n
 }
 
+func (m *PluginInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.RentalInfo != nil {
+		l = m.RentalInfo.Size()
+		n += 1 + l + sovNft(uint64(l))
+	}
+	return n
+}
+
 func (m *NFTMetadata) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1153,6 +1277,10 @@ func (m *NFTMetadata) Size() (n int) {
 	}
 	l = len(m.Data)
 	if l > 0 {
+		n += 1 + l + sovNft(uint64(l))
+	}
+	if m.RentalInfo != nil {
+		l = m.RentalInfo.Size()
 		n += 1 + l + sovNft(uint64(l))
 	}
 	return n
@@ -1209,6 +1337,19 @@ func (m *Denom) Size() (n int) {
 	return n
 }
 
+func (m *DenomPlugin) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.RentalPlugin != nil {
+		l = m.RentalPlugin.Size()
+		n += 1 + l + sovNft(uint64(l))
+	}
+	return n
+}
+
 func (m *DenomMetadata) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1233,17 +1374,8 @@ func (m *DenomMetadata) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovNft(uint64(l))
 	}
-	return n
-}
-
-func (m *DenomUserdata) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.RentalMetadata != nil {
-		l = m.RentalMetadata.Size()
+	if m.RentalPlugin != nil {
+		l = m.RentalPlugin.Size()
 		n += 1 + l + sovNft(uint64(l))
 	}
 	return n
@@ -1552,6 +1684,92 @@ func (m *BaseNFT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *PluginInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PluginInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PluginInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RentalInfo", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RentalInfo == nil {
+				m.RentalInfo = &RentalInfo{}
+			}
+			if err := m.RentalInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *NFTMetadata) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1644,6 +1862,42 @@ func (m *NFTMetadata) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Data = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RentalInfo", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RentalInfo == nil {
+				m.RentalInfo = &RentalInfo{}
+			}
+			if err := m.RentalInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2044,6 +2298,92 @@ func (m *Denom) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *DenomPlugin) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DenomPlugin: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DenomPlugin: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RentalPlugin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RentalPlugin == nil {
+				m.RentalPlugin = &RentalPlugin{}
+			}
+			if err := m.RentalPlugin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *DenomMetadata) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2209,59 +2549,9 @@ func (m *DenomMetadata) Unmarshal(dAtA []byte) error {
 			}
 			m.Data = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipNft(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthNft
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *DenomUserdata) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowNft
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: DenomUserdata: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: DenomUserdata: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
+		case 7:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RentalMetadata", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RentalPlugin", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2288,10 +2578,10 @@ func (m *DenomUserdata) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.RentalMetadata == nil {
-				m.RentalMetadata = &RentalMetadata{}
+			if m.RentalPlugin == nil {
+				m.RentalPlugin = &RentalPlugin{}
 			}
-			if err := m.RentalMetadata.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.RentalPlugin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
