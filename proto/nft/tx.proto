@@ -25,6 +25,11 @@ service Msg {
 
   // TransferDenom defines a method for transferring a denom.
   rpc TransferDenom(MsgTransferDenom) returns (MsgTransferDenomResponse);
+
+  // Rental Plugin Service
+
+  // SetUser defines a method for set user for an NFT.
+  rpc SetUser(MsgSetUser) returns (MsgSetUserResponse) {}
 }
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
@@ -120,3 +125,15 @@ message MsgTransferDenom {
 
 // MsgTransferDenomResponse defines the Msg/TransferDenom response type.
 message MsgTransferDenomResponse {}
+
+// MsgSetUser defines the Msg/SetUser response type.
+message MsgSetUser {
+  string denom_id = 1;
+  string nft_id = 2;
+  string user = 3;
+  int64 expiry = 4;
+  string sender = 5;
+}
+
+// MsgSetUserResponse defines the Msg/SetUser response type.
+message MsgSetUserResponse {}

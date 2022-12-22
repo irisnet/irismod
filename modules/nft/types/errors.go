@@ -15,4 +15,10 @@ var (
 	ErrInvalidDenom      = sdkerrors.Register(ModuleName, 16, "invalid denom")
 	ErrInvalidTokenID    = sdkerrors.Register(ModuleName, 17, "invalid nft id")
 	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 18, "invalid nft uri")
+
+	// Rental Plugin errors
+	ErrRentalPluginNotExistent = sdkerrors.Register(ModuleName, 30, "rental plugin is not existent")
+	ErrRentalPluginDisabled    = sdkerrors.Register(ModuleName, 31, "rental plugin is disabled")
+	ErrRentalExpiryInvalid     = sdkerrors.Register(ModuleName, 32, "rental expiry is invalid")
+	ErrRentalInfoNotExsitent   = sdkerrors.Register(ModuleName, 33, "rental info is not existent")
 )

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -241,4 +242,55 @@ func (k Keeper) TransferDenom(goCtx context.Context, msg *types.MsgTransferDenom
 	})
 
 	return &types.MsgTransferDenomResponse{}, nil
+}
+
+// Rental Plugin
+
+// SetUser set a user and expires time for an existent nft
+func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.MsgSetUserResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := sdk.AccAddressFromBech32(msg.User)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// nft must exist
+	if exist := k.HasNFT(ctx, msg.DenomId, msg.NftId); !exist {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "%s-%s is not existent", msg.DenomId, msg.NftId)
+	}
+
+	// sender must own or be approved for this nft
+	if owner := k.nk.GetOwner(ctx, msg.DenomId, msg.NftId); !owner.Equals(sender) {
+		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not owner of the nft", msg.Sender)
+	}
+
+	if err := k.Rent(ctx, msg.DenomId, msg.NftId, types.RentalInfo{
+		User:   user.String(),
+		Expiry: msg.Expiry,
+	}); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeSetUser,
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.NftId),
+			sdk.NewAttribute(types.AttributeKeyExpires, strconv.FormatInt(msg.Expiry, 10)),
+			sdk.NewAttribute(types.AttributeKeyUser, msg.User),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
+
+	return &types.MsgSetUserResponse{}, nil
 }

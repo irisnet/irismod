@@ -94,6 +94,8 @@ func (suite *KeeperSuite) SetupTest() {
 	suite.NoError(err)
 	suite.NotEmpty(collections)
 	suite.Equal(len(collections), 3)
+
+	suite.SetupRentalTest()
 }
 
 func TestKeeperSuite(t *testing.T) {

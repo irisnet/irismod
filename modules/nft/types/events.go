@@ -8,6 +8,7 @@ var (
 	EventTypeMintNFT       = "mint_nft"
 	EventTypeBurnNFT       = "burn_nft"
 	EventTypeTransferDenom = "transfer_denom"
+	EventTypeSetUser       = "set_user"
 
 	AttributeValueCategory = ModuleName
 
@@ -19,4 +20,7 @@ var (
 	AttributeKeyTokenURI  = "token_uri"
 	AttributeKeyDenomID   = "denom_id"
 	AttributeKeyDenomName = "denom_name"
+
+	AttributeKeyUser    = "user"
+	AttributeKeyExpires = "expires"
 )

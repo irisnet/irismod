@@ -22,12 +22,17 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 	uriHash,
 	data string,
 ) error {
+
+	// make sure that plugin has default value if failed to convert input data
+	userData, denomPlugin := decomposeDenomData(data)
+
 	denomMetadata := &types.DenomMetadata{
 		Creator:          creator.String(),
 		Schema:           schema,
 		MintRestricted:   mintRestricted,
 		UpdateRestricted: updateRestricted,
-		Data:             data,
+		Data:             userData,
+		RentalPlugin:     denomPlugin.RentalPlugin,
 	}
 	metadata, err := codectypes.NewAnyWithValue(denomMetadata)
 	if err != nil {
@@ -56,6 +61,11 @@ func (k Keeper) TransferDenomOwner(
 		return err
 	}
 
+	plugin, err := k.GetDenomPlugin(ctx, denomID)
+	if err != nil {
+		return err
+	}
+
 	// authorize
 	if srcOwner.String() != denom.Creator {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to transfer denom %s", srcOwner.String(), denomID)
@@ -67,6 +77,7 @@ func (k Keeper) TransferDenomOwner(
 		MintRestricted:   denom.MintRestricted,
 		UpdateRestricted: denom.UpdateRestricted,
 		Data:             denom.Data,
+		RentalPlugin:     plugin.RentalPlugin,
 	}
 	data, err := codectypes.NewAnyWithValue(denomMetadata)
 	if err != nil {
@@ -97,6 +108,7 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 	if err := k.cdc.Unmarshal(class.Data.GetValue(), &denomMetadata); err != nil {
 		return nil, err
 	}
+
 	return &types.Denom{
 		Id:               class.Id,
 		Name:             class.Name,
@@ -115,4 +127,21 @@ func (k Keeper) GetDenomInfo(ctx sdk.Context, denomID string) (*types.Denom, err
 // HasDenom determine whether denom exists
 func (k Keeper) HasDenom(ctx sdk.Context, denomID string) bool {
 	return k.nk.HasClass(ctx, denomID)
+}
+
+// GetDenomPlugin returns denom plugin config of a denom
+func (k Keeper) GetDenomPlugin(ctx sdk.Context, denomID string) (*types.DenomPlugin, error) {
+	class, has := k.nk.GetClass(ctx, denomID)
+	if !has {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+	}
+
+	var denomMetadata types.DenomMetadata
+	if err := k.cdc.Unmarshal(class.Data.GetValue(), &denomMetadata); err != nil {
+		return nil, err
+	}
+
+	return &types.DenomPlugin{
+		RentalPlugin: denomMetadata.RentalPlugin,
+	}, nil
 }

@@ -39,6 +39,25 @@ service Query {
   rpc NFT(QueryNFTRequest) returns (QueryNFTResponse) {
     option (google.api.http).get = "/irismod/nft/nfts/{denom_id}/{token_id}";
   }
+
+  // Rental Plugin Query Service
+
+  // UserOf queries the user/renter of an NFT
+  rpc UserOf(QueryUserOfRequest) returns (QueryUserOfResponse) {
+    option (google.api.http).get = "/irismod/rental/user/{denom_id}/{nft_id}";
+  }
+
+  // UserOf queries the rental expiry of an NFT
+  rpc UserExpires(QueryUserExpiresRequest) returns (QueryUserExpiresResponse) {
+    option (google.api.http).get =
+        "/irismod/rental/expires/{denom_id}/{nft_id}";
+  }
+
+  // HasUser queries if an NFT has a user/renter
+  rpc HasUser(QueryHasUserRequest) returns (QueryHasUserResponse) {
+    option (google.api.http).get =
+        "/irismod/rental/has_user/{denom_id}/{nft_id}";
+  }
 }
 
 // QuerySupplyRequest is the request type for the Query/HTLC RPC method
@@ -110,3 +129,32 @@ message QueryNFTRequest {
 
 // QueryNFTResponse is the response type for the Query/NFT RPC method
 message QueryNFTResponse { BaseNFT nft = 1 [ (gogoproto.customname) = "NFT" ]; }
+
+// Rental Plugin Query Message Definition
+
+// QueryUserOfRequest is the request type for the Query/Renter RPC method
+message QueryUserOfRequest {
+  string denom_id = 1;
+  string nft_id = 2;
+}
+
+// QueryUserOfResponse is the response type for the Query/Renter RPC method
+message QueryUserOfResponse { string user = 1; }
+
+// QueryExpiresRequest is the request type for the Query/Expires RPC method
+message QueryUserExpiresRequest {
+  string denom_id = 1;
+  string nft_id = 2;
+}
+
+// QueryExpiresResponse is the response type for the Query/Expires RPC method
+message QueryUserExpiresResponse { int64 expiry = 1; }
+
+// QueryHasUserRequest is the request type for the Query/HasUser RPC method
+message QueryHasUserRequest {
+  string denom_id = 1;
+  string nft_id = 2;
+}
+
+// QueryHasUserResponse is the response type for the Query/HasUser RPC method
+message QueryHasUserResponse { bool has_user = 1; }

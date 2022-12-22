@@ -2,6 +2,7 @@ syntax = "proto3";
 package irismod.nft;
 
 import "gogoproto/gogo.proto";
+import "nft/rental.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/nft/types";
 option (gogoproto.goproto_getters_all) = false;
@@ -18,11 +19,18 @@ message BaseNFT {
   string uri_hash = 6;
 }
 
+message PluginInfo {
+  // RoyaltyInfo royaltyInfo = 1 [] ;
+  RentalInfo rentalInfo = 2 [ (gogoproto.jsontag) = "irismod:4907" ];
+}
+
 message NFTMetadata {
   option (gogoproto.equal) = true;
 
   string name = 1;
   string data = 2;
+  // RoyaltyInfo royaltyInfo = 3 [];
+  RentalInfo rentalInfo = 4 [ (gogoproto.jsontag) = "irismod:4907" ];
 }
 
 // Denom defines a type of NFT
@@ -42,6 +50,18 @@ message Denom {
   string data = 11;
 }
 
+// The message is an intermediate struct for composing user data and plugin
+// config
+message DenomComposedData {
+  string userData = 1;
+  DenomPlugin denomPlugin = 2;
+}
+
+message DenomPlugin {
+  // RoyaltyPlugin royaltyPlugin = 1 [] ;
+  RentalPlugin rentalPlugin = 2 [ (gogoproto.jsontag) = "irismod:4907" ];
+}
+
 message DenomMetadata {
   option (gogoproto.equal) = true;
 
@@ -50,6 +70,9 @@ message DenomMetadata {
   bool mint_restricted = 3;
   bool update_restricted = 4;
   string data = 5;
+
+  // RoyaltyPlugin royaltyPlugin = 6 [];
+  RentalPlugin rentalPlugin = 7 [ (gogoproto.jsontag) = "irismod:4907" ];
 }
 
 // IDCollection defines a type of collection with specified ID
