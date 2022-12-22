@@ -66,7 +66,8 @@ func (cb ClassBuilder) BuildMetadata(class nft.Class) (string, error) {
 
 	kvals := make(map[string]interface{})
 	if len(metadata.Data) > 0 {
-		if err := json.Unmarshal([]byte(metadata.Data), &kvals); err != nil {
+		err := json.Unmarshal([]byte(metadata.Data), &kvals)
+		if err != nil && IsIBCDenom(class.Id) {
 			//when classData is not a legal json, there is no need to parse the data
 			return base64.RawStdEncoding.EncodeToString([]byte(metadata.Data)), nil
 		}
@@ -87,8 +88,8 @@ func (cb ClassBuilder) BuildMetadata(class nft.Class) (string, error) {
 }
 
 // Build create a class from ics721 packetData
-func (cb ClassBuilder) Build(classID, classURI, classInfo string) (nft.Class, error) {
-	classInfoBz, err := base64.RawStdEncoding.DecodeString(classInfo)
+func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, error) {
+	classDataBz, err := base64.RawStdEncoding.DecodeString(classData)
 	if err != nil {
 		return nft.Class{}, err
 	}
@@ -105,13 +106,13 @@ func (cb ClassBuilder) Build(classID, classURI, classInfo string) (nft.Class, er
 	)
 
 	dataMap := make(map[string]interface{})
-	if err := json.Unmarshal(classInfoBz, &dataMap); err != nil {
+	if err := json.Unmarshal(classDataBz, &dataMap); err != nil {
 		any, err := codectypes.NewAnyWithValue(&DenomMetadata{
 			Creator:          creator,
 			Schema:           schema,
 			MintRestricted:   mintRestricted,
 			UpdateRestricted: updateRestricted,
-			Data:             string(classInfoBz),
+			Data:             string(classDataBz),
 		})
 		if err != nil {
 			return nft.Class{}, err
@@ -244,7 +245,8 @@ func (tb TokenBuilder) BuildMetadata(token nft.NFT) (string, error) {
 	}
 	kvals := make(map[string]interface{})
 	if len(nftMetadata.Data) > 0 {
-		if err := json.Unmarshal([]byte(nftMetadata.Data), &kvals); err != nil {
+		err := json.Unmarshal([]byte(nftMetadata.Data), &kvals)
+		if err != nil && IsIBCDenom(token.ClassId) {
 			//when nftMetadata is not a legal json, there is no need to parse the data
 			return base64.RawStdEncoding.EncodeToString([]byte(nftMetadata.Data)), nil
 		}
@@ -259,16 +261,16 @@ func (tb TokenBuilder) BuildMetadata(token nft.NFT) (string, error) {
 }
 
 // Build create a nft from ics721 packet data
-func (tb TokenBuilder) Build(classId, tokenId, tokenURI, tokenInfo string) (nft.NFT, error) {
-	tokenInfoBz, err := base64.RawStdEncoding.DecodeString(tokenInfo)
+func (tb TokenBuilder) Build(classId, tokenId, tokenURI, tokenData string) (nft.NFT, error) {
+	tokenDataBz, err := base64.RawStdEncoding.DecodeString(tokenData)
 	if err != nil {
 		return nft.NFT{}, err
 	}
 
 	dataMap := make(map[string]interface{})
-	if err := json.Unmarshal(tokenInfoBz, &dataMap); err != nil {
+	if err := json.Unmarshal(tokenDataBz, &dataMap); err != nil {
 		metadata, err := codectypes.NewAnyWithValue(&NFTMetadata{
-			Data: string(tokenInfoBz),
+			Data: string(tokenDataBz),
 		})
 		if err != nil {
 			return nft.NFT{}, err
@@ -324,4 +326,8 @@ func (tb TokenBuilder) Build(classId, tokenId, tokenURI, tokenInfo string) (nft.
 		UriHash: uriHash,
 		Data:    metadata,
 	}, nil
+}
+
+func PopIfExist() {
+
 }

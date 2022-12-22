@@ -76,3 +76,7 @@ func ValidateKeywords(denomId string) error {
 	}
 	return nil
 }
+
+func IsIBCDenom(denomID string) bool {
+	return strings.HasPrefix(denomID, "ibc/")
+}
