@@ -126,14 +126,7 @@ func (k Keeper) SaveTokenRoyalty(ctx sdk.Context, denomId string, tokenId string
 		Fraction: fraction,
 	}
 
-	tokenPlugin := k.UserDataToTokenPlugin(nftM.GetData())
-	if tokenPlugin == nil {
-		tokenPlugin = &types.TokenPlugin{RoyaltyPlugin: tokenRoyaltyInfo}
-	} else {
-		tokenPlugin.RoyaltyPlugin = tokenRoyaltyInfo
-	}
-
-	dstData, err := codectypes.NewAnyWithValue(tokenRoyaltyInfo)
+	dstData, err := k.cdc.Marshal(tokenRoyaltyInfo)
 	if err != nil {
 		return err
 	}
@@ -146,7 +139,7 @@ func (k Keeper) SaveTokenRoyalty(ctx sdk.Context, denomId string, tokenId string
 		nftM.GetName(),
 		nftM.GetURI(),
 		nftM.GetURIHash(),
-		dstData.String(),
+		string(dstData),
 		nftM.GetOwner(),
 	)
 }
@@ -167,18 +160,6 @@ func (k Keeper) RemoveTokenRoyalty(ctx sdk.Context, denomId string, tokenId stri
 		return errorsmod.Wrapf(types.ErrUnknownNFT, "not found NFT: %s", denomId)
 	}
 
-	tokenPlugin := k.UserDataToTokenPlugin(nftM.GetData())
-	if tokenPlugin == nil {
-		tokenPlugin = &types.TokenPlugin{}
-	} else {
-		tokenPlugin.RoyaltyPlugin = nil
-	}
-
-	dstData, err := codectypes.NewAnyWithValue(tokenPlugin)
-	if err != nil {
-		return err
-	}
-
 	// modify nftMetadata
 	return k.UpdateNFT(
 		ctx,
@@ -187,7 +168,7 @@ func (k Keeper) RemoveTokenRoyalty(ctx sdk.Context, denomId string, tokenId stri
 		nftM.GetName(),
 		nftM.GetURI(),
 		nftM.GetURIHash(),
-		dstData.String(),
+		"",
 		nftM.GetOwner(),
 	)
 
@@ -223,14 +204,12 @@ func (k Keeper) GetDefaultRoyaltyInfo(ctx sdk.Context, denomId string) (string, 
 		return "", sdkmath.Uint{}, types.ErrNotEnabledRoyalty
 	}
 
-	denom, err := k.GetDenomInfo(ctx, denomId)
+	denomMetadata, err := k.GetDenomMetadata(ctx, denomId)
 	if err != nil {
 		return "", sdkmath.Uint{}, err
 	}
 
-	denomPlugin := k.UserDataToDenomPlugin(denom.Data)
-
-	return denomPlugin.RoyaltyPlugin.Receiver, denomPlugin.RoyaltyPlugin.Fraction, nil
+	return denomMetadata.RoyaltyPlugin.Receiver, denomMetadata.RoyaltyPlugin.Fraction, nil
 
 }
 
@@ -241,26 +220,26 @@ func (k Keeper) GetTokenRoyaltyInfo(ctx sdk.Context, denomId string, tokenId str
 		return "", sdkmath.Uint{}, types.ErrNotEnabledRoyalty
 	}
 
-	nftM, err := k.GetNFT(ctx, denomId, tokenId)
+	nftMetadata, err := k.GetNftMetadata(ctx, denomId, tokenId)
 	if err != nil {
 		return "", sdkmath.Uint{}, errorsmod.Wrapf(types.ErrUnknownNFT, "not found NFT: %s", denomId)
 	}
-	tokenPlugin := k.UserDataToTokenPlugin(nftM.GetData())
-	if tokenPlugin.RoyaltyPlugin == nil || tokenPlugin == nil {
-		return "", sdkmath.Uint{}, err
+
+	if nftMetadata.TokenRoyaltyPlugin == nil {
+		return "", sdkmath.Uint{}, types.ErrNullTokenRoyaltyInfo
 	}
 
-	return tokenPlugin.RoyaltyPlugin.Receiver, tokenPlugin.RoyaltyPlugin.Fraction, nil
+	return nftMetadata.TokenRoyaltyPlugin.Receiver, nftMetadata.TokenRoyaltyPlugin.Fraction, nil
 }
 
 func (k Keeper) IsNotEnabledRoyalty(ctx sdk.Context, denomId string) bool {
-	denom, err := k.GetDenomInfo(ctx, denomId)
+
+	denomMetadata, err := k.GetDenomMetadata(ctx, denomId)
 	if err != nil {
 		return false
 	}
-	denomPlugin := k.UserDataToDenomPlugin(denom.Data)
 
-	if denomPlugin == nil || denomPlugin.RoyaltyPlugin == nil || !denomPlugin.RoyaltyPlugin.Enabled {
+	if denomMetadata.RoyaltyPlugin == nil || !denomMetadata.RoyaltyPlugin.Enabled {
 		return false
 	}
 
@@ -270,9 +249,15 @@ func (k Keeper) IsNotEnabledRoyalty(ctx sdk.Context, denomId string) bool {
 func (k Keeper) getTokenRoyaltyInfoFromTokenData(ctx sdk.Context, tokenData, denomId string) (*types.TokenRoyaltyPlugin, string) {
 	// royalty option
 	if k.IsNotEnabledRoyalty(ctx, denomId) {
-		tokenPlugin := k.UserDataToTokenPlugin(tokenData)
-		if tokenPlugin != nil && tokenPlugin.RoyaltyPlugin != nil {
-			return tokenPlugin.RoyaltyPlugin, tokenData
+		if len(tokenData) == 0 {
+			return nil, ""
+		}
+		tokenRoyaltyPlugin := new(types.TokenRoyaltyPlugin)
+		if err := k.cdc.Unmarshal([]byte(tokenData), tokenRoyaltyPlugin); err != nil {
+			return nil, ""
+		}
+		if tokenRoyaltyPlugin != nil {
+			return tokenRoyaltyPlugin, tokenData
 		} else {
 			return nil, ""
 		}

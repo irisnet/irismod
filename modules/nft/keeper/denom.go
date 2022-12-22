@@ -30,7 +30,7 @@ func (k Keeper) SaveDenom(ctx sdk.Context, id,
 		Data:             data,
 	}
 
-	denomPlugin := k.UserDataToDenomPlugin(data)
+	denomPlugin := k.UserDataToDenomPlugin(ctx, data)
 
 	// royalty option
 	if denomPlugin != nil && denomPlugin.RoyaltyPlugin != nil {

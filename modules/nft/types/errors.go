@@ -19,4 +19,5 @@ var (
 
 	ErrNotEnabledRoyalty      = errorsmod.Register(ModuleName, 21, "royalty feature is not enabled")
 	ErrNullDefaultRoyaltyInfo = errorsmod.Register(ModuleName, 22, "default royalty in is null")
+	ErrNullTokenRoyaltyInfo   = errorsmod.Register(ModuleName, 23, "token royalty in is null")
 )

@@ -92,9 +92,7 @@ func (k Keeper) UpdateNFT(ctx sdk.Context, denomID,
 
 		nftMetadata.Data = types.Modify(nftMetadata.Data, tokenData)
 
-		if tokenRoyaltyPlugin != nil {
-			nftMetadata.TokenRoyaltyPlugin = tokenRoyaltyPlugin
-		}
+		nftMetadata.TokenRoyaltyPlugin = tokenRoyaltyPlugin
 
 		data, err := codectypes.NewAnyWithValue(&nftMetadata)
 		if err != nil {
