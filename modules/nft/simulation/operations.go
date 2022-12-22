@@ -29,9 +29,8 @@ const (
 
 var (
 	data = []string{
-		"",
-		types.DoNotModify,
 		"{\"key1\":\"value1\",\"key2\":\"value2\"}",
+		"{\"irismod:key1\":\"value1\",\"irismod:key2\":\"value2\"}",
 	}
 )
 
