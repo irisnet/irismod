@@ -117,6 +117,10 @@ func (msg MsgTransferNFT) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
+
+	if len(msg.Data) != 0 && Modified(msg.Data) && !gjson.Valid(msg.Data) {
+		return sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, "invalid data, must be a JSON string or empty")
+	}
 	return ValidateTokenID(msg.Id)
 }
 
