@@ -209,7 +209,7 @@ func (k Keeper) UserExpires(goCtx context.Context, msg *types.QueryUserExpiresRe
 		return nil, err
 	}
 
-	return &types.QueryUserExpiresResponse{Expires: rental.Expiry}, nil
+	return &types.QueryUserExpiresResponse{Expiry: rental.Expiry}, nil
 }
 
 // HasUser queries if an nft has the user

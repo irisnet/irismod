@@ -272,7 +272,7 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 
 	if err := k.Rent(ctx, msg.DenomId, msg.NftId, types.RentalInfo{
 		User:   user.String(),
-		Expiry: msg.Expires,
+		Expiry: msg.Expiry,
 	}); err != nil {
 		return nil, err
 	}
@@ -282,7 +282,7 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 			types.EventTypeSetUser,
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
 			sdk.NewAttribute(types.AttributeKeyTokenID, msg.NftId),
-			sdk.NewAttribute(types.AttributeKeyExpires, strconv.FormatInt(msg.Expires, 10)),
+			sdk.NewAttribute(types.AttributeKeyExpires, strconv.FormatInt(msg.Expiry, 10)),
 			sdk.NewAttribute(types.AttributeKeyUser, msg.User),
 		),
 		sdk.NewEvent(

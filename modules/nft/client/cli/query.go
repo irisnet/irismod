@@ -29,6 +29,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQuerySupply(),
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
+		GetCmdQueryRental(),
 	)
 
 	return queryCmd

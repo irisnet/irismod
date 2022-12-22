@@ -330,12 +330,12 @@ func (msg MsgTransferDenom) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgSetUser(denomId, nftId, user string,
-	expires int64, sender string) *MsgSetUser {
+	expiry int64, sender string) *MsgSetUser {
 	return &MsgSetUser{
 		DenomId: denomId,
 		NftId:   nftId,
 		User:    user,
-		Expires: expires,
+		Expiry:  expiry,
 		Sender:  sender,
 	}
 }

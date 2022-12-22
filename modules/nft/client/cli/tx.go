@@ -33,6 +33,7 @@ func NewTxCmd() *cobra.Command {
 		GetCmdTransferNFT(),
 		GetCmdBurnNFT(),
 		GetCmdTransferDenom(),
+		GetCmdRental(),
 	)
 
 	return txCmd
@@ -107,6 +108,12 @@ func GetCmdIssueDenom() *cobra.Command {
 				schema = string(optionsContent)
 			}
 
+			// compose plugin config and user data
+			composeData, err := composeDenomData(cmd, data)
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgIssueDenom(
 				args[0],
 				denomName,
@@ -118,7 +125,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				description,
 				uri,
 				uriHash,
-				data,
+				composeData,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

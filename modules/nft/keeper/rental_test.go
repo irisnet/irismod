@@ -176,7 +176,7 @@ func (suite *KeeperSuite) TestUserExpires() {
 		NftId:   rentalNftId,
 	})
 	suite.NoError(err)
-	suite.Equal(expiry, resp.Expires)
+	suite.Equal(expiry, resp.Expiry)
 }
 
 func (suite *KeeperSuite) TestHasUser() {

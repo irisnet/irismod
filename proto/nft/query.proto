@@ -148,7 +148,7 @@ message QueryUserExpiresRequest {
 }
 
 // QueryExpiresResponse is the response type for the Query/Expires RPC method
-message QueryUserExpiresResponse { int64 expires = 1; }
+message QueryUserExpiresResponse { int64 expiry = 1; }
 
 // QueryHasUserRequest is the request type for the Query/HasUser RPC method
 message QueryHasUserRequest {

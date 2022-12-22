@@ -19,6 +19,10 @@ const (
 	FlagSymbol           = "symbol"
 	FlagMintRestricted   = "mint-restricted"
 	FlagUpdateRestricted = "update-restricted"
+
+	FlagRentable     = "rentable"
+	FlagRentalExpiry = "expiry"
+	FlagRentalUser   = "user"
 )
 
 var (
@@ -29,6 +33,7 @@ var (
 	FsQuerySupply   = flag.NewFlagSet("", flag.ContinueOnError)
 	FsQueryOwner    = flag.NewFlagSet("", flag.ContinueOnError)
 	FsTransferDenom = flag.NewFlagSet("", flag.ContinueOnError)
+	FsRental        = flag.NewFlagSet("", flag.ContinueOnError)
 )
 
 func init() {
@@ -41,6 +46,7 @@ func init() {
 	FsIssueDenom.String(FlagData, "", "The data is the app specific metadata of the NFT class. Optional")
 	FsIssueDenom.Bool(FlagMintRestricted, false, "mint restricted of nft under denom")
 	FsIssueDenom.Bool(FlagUpdateRestricted, false, "update restricted of nft under denom")
+	FsIssueDenom.Bool(FlagRentable, false, "rental plugin enable option")
 
 	FsMintNFT.String(FlagURI, "", "The uri for supplemental off-chain tokenData (should return a JSON object)")
 	FsMintNFT.String(FlagURIHash, "", "The uri_hash is a hash of the document pointed by uri. Optional")
@@ -61,4 +67,7 @@ func init() {
 	FsQuerySupply.String(FlagOwner, "", "The owner of the nft")
 
 	FsQueryOwner.String(FlagDenomID, "", "The name of the collection")
+
+	FsRental.String(FlagRentalUser, "", "The user of the rented nft")
+	FsRental.Int64(FlagRentalExpiry, 0, "The expiry of the rented nft")
 }
