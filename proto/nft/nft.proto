@@ -50,6 +50,13 @@ message Denom {
   string data = 11;
 }
 
+// The message is an intermediate struct for composing user data and plugin
+// config
+message DenomComposedData {
+  string userData = 1;
+  DenomPlugin denomPlugin = 2;
+}
+
 message DenomPlugin {
   // RoyaltyPlugin royaltyPlugin = 1 [] ;
   RentalPlugin rentalPlugin = 2 [ (gogoproto.jsontag) = "irismod:4907" ];

@@ -5,17 +5,17 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/nft/types";
 
-// RentalPlugin defines the message for a denom rental plugin config
+// RentalPlugin is denom-level rental config
 message RentalPlugin {
   option (gogoproto.equal) = true;
 
-  bool enabled = 1;
+  bool enabled = 1 [ (gogoproto.jsontag) = "irismod:4907:enabled" ];
 }
 
-// RentalInfo defines the message for an nft rental info
+// RentalInfo is token-level rental info
 message RentalInfo {
   option (gogoproto.equal) = true;
 
-  string user = 1;
-  int64 expires = 2;
+  string user = 1 [ (gogoproto.jsontag) = "irismod:4907:user" ];
+  int64 expiry = 2 [ (gogoproto.jsontag) = "irismod:4907:expiry" ];
 }

@@ -209,7 +209,7 @@ func (k Keeper) UserExpires(goCtx context.Context, msg *types.QueryUserExpiresRe
 		return nil, err
 	}
 
-	return &types.QueryUserExpiresResponse{Expires: rental.Expires}, nil
+	return &types.QueryUserExpiresResponse{Expires: rental.Expiry}, nil
 }
 
 // HasUser queries if an nft has the user
@@ -227,7 +227,7 @@ func (k Keeper) HasUser(goCtx context.Context, msg *types.QueryHasUserRequest) (
 
 	// if expires or user not existent, return false
 	var resp types.QueryHasUserResponse
-	if ctx.BlockTime().Unix() > rental.Expires || rental.User == "" {
+	if ctx.BlockTime().Unix() > rental.Expiry || rental.User == "" {
 		resp.HasUser = false
 	}
 

@@ -8,19 +8,25 @@ import (
 	"github.com/irisnet/irismod/modules/nft/types"
 )
 
-// DefaultRentalPlugin returns a default rental plugin config
-func (k Keeper) DefaultRentalPlugin() types.RentalPlugin {
-	return types.RentalPlugin{Enabled: false}
-}
+const defaultExpiry = 0
 
-func (k Keeper) DefaultRentalInfo() types.RentalInfo {
-	return types.RentalInfo{
-		User:    "",
-		Expires: 0,
+// DefaultRentalPlugin returns a default rental plugin config
+func (k Keeper) DefaultRentalPlugin() *types.RentalPlugin {
+	return &types.RentalPlugin{
+		Enabled: false,
 	}
 }
 
-// Rent set or update rental info for an nft.
+// DefaultRentalInfo returns a default rental info
+func (k Keeper) DefaultRentalInfo() *types.RentalInfo {
+	return &types.RentalInfo{
+		User:   "",
+		Expiry: defaultExpiry,
+	}
+}
+
+// Rent set rental info for an nft.
+// Warning: Rent will overwrite previous rental info no matter whether it arrives expiry thus should be used carefully.
 func (k Keeper) Rent(ctx sdk.Context, denomID, tokenID string, rental types.RentalInfo) error {
 	// 1. get rental plugin info
 	cfg, err := k.GetRentalPlugin(ctx, denomID)
@@ -30,12 +36,12 @@ func (k Keeper) Rent(ctx sdk.Context, denomID, tokenID string, rental types.Rent
 
 	// 2. check rental is enabled
 	if !cfg.Enabled {
-		return sdkerrors.Wrapf(types.ErrRentalOption, "Rental is disabled")
+		return sdkerrors.Wrapf(types.ErrRentalPluginDisabled, "Rental is disabled")
 	}
 
 	// 3. expiry must be greater than the current block time.
-	if ctx.BlockTime().Unix() >= rental.Expires {
-		return sdkerrors.Wrapf(types.ErrInvalidExpiry, "Expiry is (%d)", rental.Expires)
+	if ctx.BlockTime().Unix() >= rental.Expiry {
+		return sdkerrors.Wrapf(types.ErrRentalExpiryInvalid, "Expiry is (%d)", rental.Expiry)
 	}
 
 	// 4. construct new nft data info (we have examined its existence)
@@ -63,7 +69,6 @@ func (k Keeper) Rent(ctx sdk.Context, denomID, tokenID string, rental types.Rent
 
 // GetRentalPlugin returns the rental plugin config
 func (k Keeper) GetRentalPlugin(ctx sdk.Context, denomID string) (*types.RentalPlugin, error) {
-	var r *types.RentalPlugin
 	denom, has := k.nk.GetClass(ctx, denomID)
 	if !has {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
@@ -74,14 +79,15 @@ func (k Keeper) GetRentalPlugin(ctx sdk.Context, denomID string) (*types.RentalP
 		return nil, err
 	}
 
-	r = denomMetadata.RentalPlugin
-	return r, nil
+	if denomMetadata.RentalPlugin != nil {
+		return denomMetadata.RentalPlugin, nil
+	}
+
+	return k.DefaultRentalPlugin(), nil
 }
 
-// GetRentalInfo returns the rental info for an nft.
-func (k Keeper) GetRentalInfo(ctx sdk.Context,
-	denomID, tokenID string) (*types.RentalInfo, error) {
-	var r *types.RentalInfo
+// GetRentalInfo returns the rental info of an nft.
+func (k Keeper) GetRentalInfo(ctx sdk.Context, denomID, tokenID string) (*types.RentalInfo, error) {
 	token, exist := k.nk.GetNFT(ctx, denomID, tokenID)
 	if !exist {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidNFT, "token ID %s not exists", tokenID)
@@ -91,6 +97,10 @@ func (k Keeper) GetRentalInfo(ctx sdk.Context,
 	if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 		return nil, err
 	}
-	r = nftMetadata.RentalInfo
-	return r, nil
+
+	if nftMetadata.RentalInfo != nil {
+		return nftMetadata.RentalInfo, nil
+	}
+
+	return k.DefaultRentalInfo(), nil
 }

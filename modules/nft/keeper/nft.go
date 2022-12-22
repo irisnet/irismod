@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"encoding/json"
-
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -21,13 +19,9 @@ func (k Keeper) SaveNFT(ctx sdk.Context, denomID,
 	tokenData string,
 	receiver sdk.AccAddress,
 ) error {
-
-	pluginInfo := k.TokenDataToPluginInfo(tokenData)
-
 	nftMetadata := &types.NFTMetadata{
-		Name:       tokenNm,
-		Data:       "",
-		RentalInfo: pluginInfo.RentalInfo,
+		Name: tokenNm,
+		Data: tokenData,
 	}
 	data, err := codectypes.NewAnyWithValue(nftMetadata)
 	if err != nil {
@@ -175,18 +169,12 @@ func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.N
 		return nil, err
 	}
 
-	pluginInfo := k.TokenMetadataToPluginInfo(nftMetadata)
-	data, err := json.Marshal(pluginInfo)
-	if err != nil {
-		return nil, err
-	}
-
 	owner := k.nk.GetOwner(ctx, denomID, tokenID)
 	return types.BaseNFT{
 		Id:      token.Id,
 		Name:    nftMetadata.Name,
 		URI:     token.Uri,
-		Data:    string(data),
+		Data:    nftMetadata.Data,
 		Owner:   owner.String(),
 		UriHash: token.UriHash,
 	}, nil
@@ -200,19 +188,12 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT, err
 		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
 			return nil, err
 		}
-
-		pluginInfo := k.TokenMetadataToPluginInfo(nftMetadata)
-		data, err := json.Marshal(pluginInfo)
-		if err != nil {
-			return nil, err
-		}
-
 		nfts = append(nfts, types.BaseNFT{
 			Id:      token.GetId(),
 			Name:    nftMetadata.Name,
 			URI:     token.GetUri(),
 			UriHash: token.GetUriHash(),
-			Data:    string(data),
+			Data:    nftMetadata.Data,
 			Owner:   k.nk.GetOwner(ctx, denom, token.GetId()).String(),
 		})
 	}
@@ -231,29 +212,4 @@ func (k Keeper) Authorize(ctx sdk.Context, denomID, tokenID string, owner sdk.Ac
 // HasNFT checks if the specified NFT exists
 func (k Keeper) HasNFT(ctx sdk.Context, denomID, tokenID string) bool {
 	return k.nk.HasNFT(ctx, denomID, tokenID)
-}
-
-// DefaultPluginInfo returns a default PluginInfo
-func (k Keeper) DefaultPluginInfo() types.PluginInfo {
-	rentalInfo := k.DefaultRentalInfo()
-	return types.PluginInfo{
-		RentalInfo: &rentalInfo,
-	}
-}
-
-// TokenDataToPluginInfo converts user token data to plugin info struct
-func (k Keeper) TokenDataToPluginInfo(data string) types.PluginInfo {
-	var pluginInfo types.PluginInfo
-	if err := json.Unmarshal([]byte(data), &pluginInfo); err != nil {
-		pluginInfo = k.DefaultPluginInfo()
-	}
-	return pluginInfo
-}
-
-// TokenMetadataToPluginInfo extracts plugin info from token metadata
-func (k Keeper) TokenMetadataToPluginInfo(tokenMetadata types.NFTMetadata) types.PluginInfo {
-	pluginInfo := types.PluginInfo{
-		RentalInfo: tokenMetadata.RentalInfo,
-	}
-	return pluginInfo
 }

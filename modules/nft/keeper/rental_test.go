@@ -6,24 +6,28 @@ import (
 )
 
 var (
-	rentalDenomId   = "rentalDenomId"
-	rentalDenomId2  = "rentalDenomId2"
-	rentalDenomName = "rentalDenomName"
-	rentalSchema    = "rental schema"
-	rentalSymbol    = "ren"
-	rentalNftId     = "rentalNftId"
-	rentalNftId2    = "rentalNftId2"
-	rentalNftId3    = "rentalNftId3"
-	rentalNftName   = "rentalNftName"
+	rentalDenomId       = "rentalDenomId"
+	rentalDenomId2      = "rentalDenomId2"
+	rentalDenomName     = "rentalDenomName"
+	rentalDenomUserData = "rentalDenomUserData"
+	rentalSchema        = "rental schema"
+	rentalSymbol        = "ren"
+	rentalNftId         = "rentalNftId"
+	rentalNftId2        = "rentalNftId2"
+	rentalNftId3        = "rentalNftId3"
+	rentalNftName       = "rentalNftName"
 
 	rentalCreator = CreateTestAddrs(4)[3]
 	rentalRenter  = CreateTestAddrs(5)[4]
 
-	rentalUserData = types.DenomPlugin{
-		RentalPlugin: &types.RentalPlugin{Enabled: true},
+	rentalUserData = types.DenomComposedData{
+		UserData:    rentalDenomUserData,
+		DenomPlugin: &types.DenomPlugin{RentalPlugin: &types.RentalPlugin{Enabled: true}},
 	}
-	rentalUserData2 = types.DenomPlugin{
-		RentalPlugin: &types.RentalPlugin{Enabled: false},
+
+	rentalUserData2 = types.DenomComposedData{
+		UserData:    rentalDenomUserData,
+		DenomPlugin: &types.DenomPlugin{RentalPlugin: &types.RentalPlugin{Enabled: false}},
 	}
 )
 
@@ -110,8 +114,8 @@ func (suite *KeeperSuite) TestSetUser() {
 		rentalDenomId,
 		rentalNftId,
 		types.RentalInfo{
-			User:    rentalRenter.String(),
-			Expires: expiry,
+			User:   rentalRenter.String(),
+			Expiry: expiry,
 		})
 	suite.NoError(err)
 
@@ -120,8 +124,8 @@ func (suite *KeeperSuite) TestSetUser() {
 		rentalDenomId,
 		rentalNftId,
 		types.RentalInfo{
-			User:    rentalRenter.String(),
-			Expires: expiry2,
+			User:   rentalRenter.String(),
+			Expiry: expiry2,
 		})
 	suite.Error(err)
 
@@ -130,8 +134,8 @@ func (suite *KeeperSuite) TestSetUser() {
 		rentalDenomId2,
 		rentalNftId3,
 		types.RentalInfo{
-			User:    rentalRenter.String(),
-			Expires: expiry2,
+			User:   rentalRenter.String(),
+			Expiry: expiry2,
 		})
 	suite.Error(err)
 }
@@ -143,8 +147,8 @@ func (suite *KeeperSuite) TestUserOf() {
 		rentalDenomId,
 		rentalNftId,
 		types.RentalInfo{
-			User:    rentalRenter.String(),
-			Expires: expiry,
+			User:   rentalRenter.String(),
+			Expiry: expiry,
 		})
 	suite.NoError(err)
 
@@ -162,8 +166,8 @@ func (suite *KeeperSuite) TestUserExpires() {
 		rentalDenomId,
 		rentalNftId,
 		types.RentalInfo{
-			User:    rentalRenter.String(),
-			Expires: expiry,
+			User:   rentalRenter.String(),
+			Expiry: expiry,
 		})
 	suite.NoError(err)
 
@@ -182,8 +186,8 @@ func (suite *KeeperSuite) TestHasUser() {
 		rentalDenomId,
 		rentalNftId,
 		types.RentalInfo{
-			User:    rentalRenter.String(),
-			Expires: expiry,
+			User:   rentalRenter.String(),
+			Expiry: expiry,
 		})
 	suite.NoError(err)
 

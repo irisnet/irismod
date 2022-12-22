@@ -271,8 +271,8 @@ func (k Keeper) SetUser(goCtx context.Context, msg *types.MsgSetUser) (*types.Ms
 	}
 
 	if err := k.Rent(ctx, msg.DenomId, msg.NftId, types.RentalInfo{
-		User:    user.String(),
-		Expires: msg.Expires,
+		User:   user.String(),
+		Expiry: msg.Expires,
 	}); err != nil {
 		return nil, err
 	}
