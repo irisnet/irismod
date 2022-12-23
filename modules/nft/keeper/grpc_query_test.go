@@ -104,7 +104,7 @@ func (suite *KeeperSuite) TestDefaultRoyaltyInfo() {
 	})
 	suite.NoError(err)
 
-	suite.Equal(response.Receiver, address2.String())
+	suite.Equal(response.Receiver, address.String())
 	suite.Equal(response.RoyaltyFraction, sdkmath.NewUintFromBigInt(new(big.Int).SetUint64(1000)))
 
 }
