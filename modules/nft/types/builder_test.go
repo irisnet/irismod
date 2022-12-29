@@ -111,7 +111,7 @@ func TestClassBuilder_BuildMetadata(t *testing.T) {
 				classID:   "cat",
 				classData: "",
 			},
-			want:    `{"irismod:creator":{"value":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"}}`,
+			want:    `{"irismod:creator":{"value":"f8a9eee6bce5bc043e5feec2baef355f87dbfcdf"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"}}`,
 			wantErr: false,
 		},
 		{
@@ -120,7 +120,7 @@ func TestClassBuilder_BuildMetadata(t *testing.T) {
 				classID:   "cat",
 				classData: "hhaahha",
 			},
-			want:    `{"irismod:creator":{"value":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"}}`,
+			want:    `{"irismod:creator":{"value":"f8a9eee6bce5bc043e5feec2baef355f87dbfcdf"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"}}`,
 			wantErr: false,
 		},
 		{
@@ -129,7 +129,7 @@ func TestClassBuilder_BuildMetadata(t *testing.T) {
 				classID:   "cat",
 				classData: "{\"key1\":\"value1\",\"key2\":\"value2\"}",
 			},
-			want:    `{"irismod:creator":{"value":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"},"key1":"value1","key2":"value2"}`,
+			want:    `{"irismod:creator":{"value":"f8a9eee6bce5bc043e5feec2baef355f87dbfcdf"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"},"key1":"value1","key2":"value2"}`,
 			wantErr: false,
 		},
 		{
@@ -147,7 +147,7 @@ func TestClassBuilder_BuildMetadata(t *testing.T) {
 				classID:   "ibc/943B966B2B8A53C50A198EDAB7C9A41FCEAF24400A94167846679769D8BF8311",
 				classData: "{\"key1\":\"value1\",\"key2\":\"value2\"}",
 			},
-			want:    `{"irismod:creator":{"value":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"},"key1":"value1","key2":"value2"}`,
+			want:    `{"irismod:creator":{"value":"f8a9eee6bce5bc043e5feec2baef355f87dbfcdf"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"},"key1":"value1","key2":"value2"}`,
 			wantErr: false,
 		},
 	}
@@ -201,7 +201,7 @@ func TestClassBuilder_Build(t *testing.T) {
 		{
 			name: "empty classData",
 			args: args{
-				classData: `{"irismod:creator":{"value":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"}}`,
+				classData: `{"irismod:creator":{"value":"f8a9eee6bce5bc043e5feec2baef355f87dbfcdf"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"}}`,
 			},
 			want:    `{"@type":"/cosmos.nft.v1beta1.Class","id":"cat","name":"kitty","symbol":"symbol","description":"digital cat","uri":"uri","uri_hash":"uri_hash","data":{"@type":"/irismod.nft.DenomMetadata","creator":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y","schema":"{}","mint_restricted":true,"update_restricted":true,"data":"{}"}}`,
 			wantErr: false,
@@ -217,7 +217,7 @@ func TestClassBuilder_Build(t *testing.T) {
 		{
 			name: "classData is valid json string",
 			args: args{
-				classData: `{"irismod:creator":{"value":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"},"key1":"value1","key2":"value2"}`,
+				classData: `{"irismod:creator":{"value":"f8a9eee6bce5bc043e5feec2baef355f87dbfcdf"},"irismod:description":{"value":"digital cat"},"irismod:mint_restricted":{"value":true},"irismod:name":{"value":"kitty"},"irismod:schema":{"value":"{}"},"irismod:symbol":{"value":"symbol"},"irismod:update_restricted":{"value":true},"irismod:uri_hash":{"value":"uri_hash"},"key1":"value1","key2":"value2"}`,
 			},
 			want:    `{"@type":"/cosmos.nft.v1beta1.Class","id":"cat","name":"kitty","symbol":"symbol","description":"digital cat","uri":"uri","uri_hash":"uri_hash","data":{"@type":"/irismod.nft.DenomMetadata","creator":"cosmos1lz57ae4uuk7qg0jlampt4me4t7rahlxl5pnn3y","schema":"{}","mint_restricted":true,"update_restricted":true,"data":"{\"key1\":\"value1\",\"key2\":\"value2\"}"}}`,
 			wantErr: false,

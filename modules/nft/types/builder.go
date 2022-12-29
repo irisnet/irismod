@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -72,13 +73,19 @@ func (cb ClassBuilder) BuildMetadata(class nft.Class) (string, error) {
 			return base64.RawStdEncoding.EncodeToString([]byte(metadata.Data)), nil
 		}
 	}
+	creator, err := sdk.AccAddressFromBech32(metadata.Creator)
+	if err != nil {
+		return "", err
+	}
+
+	hexCreator := hex.EncodeToString(creator)
 	kvals[ClassKeyName] = MediaField{Value: class.Name}
 	kvals[ClassKeySymbol] = MediaField{Value: class.Symbol}
 	kvals[ClassKeyDescription] = MediaField{Value: class.Description}
 	kvals[ClassKeyURIhash] = MediaField{Value: class.UriHash}
 	kvals[ClassKeyMintRestricted] = MediaField{Value: metadata.MintRestricted}
 	kvals[ClassKeyUpdateRestricted] = MediaField{Value: metadata.UpdateRestricted}
-	kvals[ClassKeyCreator] = MediaField{Value: metadata.Creator}
+	kvals[ClassKeyCreator] = MediaField{Value: hexCreator}
 	kvals[ClassKeySchema] = MediaField{Value: metadata.Schema}
 	data, err := json.Marshal(kvals)
 	if err != nil {
@@ -184,7 +191,11 @@ func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, er
 	if v, ok := dataMap[ClassKeyCreator]; ok {
 		if vMap, ok := v.(map[string]interface{}); ok {
 			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
-				creator = vStr
+				creatorAcc, err := sdk.AccAddressFromHexUnsafe(vStr)
+				if err != nil {
+					return nft.Class{}, err
+				}
+				creator = creatorAcc.String()
 				delete(dataMap, ClassKeyCreator)
 			}
 		}
