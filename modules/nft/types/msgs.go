@@ -228,9 +228,6 @@ func (msg MsgMintNFT) ValidateBasic() error {
 	if err := ValidateDenomID(msg.DenomId); err != nil {
 		return err
 	}
-	if err := ValidateKeywords(msg.DenomId); err != nil {
-		return err
-	}
 	if err := ValidateTokenURI(msg.URI); err != nil {
 		return err
 	}
