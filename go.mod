@@ -3,6 +3,7 @@ go 1.18
 module github.com/irisnet/irismod
 
 require (
+	cosmossdk.io/api v0.2.6
 	cosmossdk.io/math v1.0.0-beta.4
 	cosmossdk.io/simapp v0.0.0-20230112064147-a10ada1ae1ca
 	github.com/cosmos/cosmos-sdk v0.47.0-rc1
@@ -31,7 +32,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.1 // indirect
 	cloud.google.com/go/iam v0.8.0 // indirect
 	cloud.google.com/go/storage v1.27.0 // indirect
-	cosmossdk.io/api v0.2.6 // indirect
 	cosmossdk.io/client/v2 v2.0.0-20230104083136-11f46a0bae58 // indirect
 	cosmossdk.io/core v0.4.0 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect

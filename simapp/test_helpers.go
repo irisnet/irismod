@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/simapp"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -19,17 +20,20 @@ import (
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
@@ -41,31 +45,23 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-// DefaultConsensusParams defines the default Tendermint consensus params used in
-// SimApp testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
-		MaxBytes: 200000,
-		MaxGas:   2000000,
-	},
-	Evidence: &tmproto.EvidenceParams{
-		MaxAgeNumBlocks: 302400,
-		MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
-		MaxBytes:        10000,
-	},
-	Validator: &tmproto.ValidatorParams{
-		PubKeyTypes: []string{
-			tmtypes.ABCIPubKeyTypeEd25519,
-		},
-	},
+// SetupOptions defines arguments that are passed into `Simapp` constructor.
+type SetupOptions struct {
+	Logger  log.Logger
+	DB      *dbm.MemDB
+	AppOpts servertypes.AppOptions
 }
 
 func setup(withGenesis bool, invCheckPeriod uint) (*SimApp, GenesisState) {
 	db := dbm.NewMemDB()
-	encCdc := MakeTestEncodingConfig()
-	app := NewSimApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, EmptyAppOptions{})
+
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = DefaultNodeHome
+	appOptions[server.FlagInvCheckPeriod] = invCheckPeriod
+
+	app := NewSimApp(log.NewNopLogger(), db, nil, true, appOptions)
 	if withGenesis {
-		return app, NewDefaultGenesisState(encCdc.Codec)
+		return app, app.DefaultGenesis()
 	}
 	return app, GenesisState{}
 }
@@ -128,7 +124,7 @@ func SetupWithGenesisStateFn(t *testing.T, merge func(cdc codec.Codec, state Gen
 	app.InitChain(
 		abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: DefaultConsensusParams,
+			ConsensusParams: simtestutil.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
@@ -144,7 +140,7 @@ func SetupWithGenesisStateFn(t *testing.T, merge func(cdc codec.Codec, state Gen
 }
 
 func NewConfig() network.Config {
-	cfg := network.DefaultConfig()
+	cfg := network.DefaultConfig(simapp.NewTestNetworkFixture)
 	encCfg := MakeTestEncodingConfig() // redundant
 	cfg.Codec = encCfg.Codec
 	cfg.TxConfig = encCfg.TxConfig
@@ -155,11 +151,10 @@ func NewConfig() network.Config {
 	return cfg
 }
 
-func SimAppConstructor(val network.Validator) servertypes.Application {
+func SimAppConstructor(val network.ValidatorI) servertypes.Application {
 	return NewSimApp(
-		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool),
-		val.Ctx.Config.RootDir, 0, MakeTestEncodingConfig(), EmptyAppOptions{},
-		bam.SetMinGasPrices(val.AppConfig.MinGasPrices),
+		val.GetCtx().Logger, dbm.NewMemDB(), nil, true, EmptyAppOptions{},
+		bam.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 	)
 }
 
@@ -221,7 +216,7 @@ func genesisStateWithValSet(t *testing.T,
 	})
 
 	// update total supply
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	return genesisState
@@ -244,7 +239,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	app.InitChain(
 		abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: DefaultConsensusParams,
+			ConsensusParams: simtestutil.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
