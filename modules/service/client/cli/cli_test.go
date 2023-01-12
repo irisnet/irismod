@@ -16,10 +16,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	servicecli "github.com/irisnet/irismod/modules/service/client/cli"
@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagSchemas, serviceSchemas),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
@@ -140,7 +140,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagProvider, provider),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -171,7 +171,7 @@ func (s *IntegrationTestSuite) TestService() {
 	//------test GetCmdDisableServiceBinding()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -192,7 +192,7 @@ func (s *IntegrationTestSuite) TestService() {
 	//------test GetCmdRefundServiceDeposit()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -215,7 +215,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagDeposit, serviceDeposit),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -239,13 +239,13 @@ func (s *IntegrationTestSuite) TestService() {
 	)
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = banktestutil.MsgSendExec(clientCtx, provider, consumer, amount, args...)
+	bz, err = clitestutil.MsgSendExec(clientCtx, provider, consumer, amount, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -260,7 +260,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%d", servicecli.FlagTimeout, timeout),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -273,7 +273,7 @@ func (s *IntegrationTestSuite) TestService() {
 	requestContextId := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
 	requestHeight := txResp.Height
 
-	blockResult, err := clientCtx.Client.BlockResults(context.Background(), &requestHeight)
+	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var compactRequest servicetypes.CompactRequest
 	for _, event := range blockResult.EndBlockEvents {
@@ -327,7 +327,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagData, respOutput),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -349,7 +349,7 @@ func (s *IntegrationTestSuite) TestService() {
 	//------GetCmdSetWithdrawAddr()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -363,7 +363,7 @@ func (s *IntegrationTestSuite) TestService() {
 	//------GetCmdWithdrawEarnedFees()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -375,14 +375,14 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	bz, err = banktestutil.QueryBalancesExec(val.ClientCtx, withdrawalAddress)
+	bz, err = clitestutil.QueryBalancesExec(val.ClientCtx, withdrawalAddress)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	withdrawalFees := respType.(*banktypes.QueryAllBalancesResponse).Balances
 	s.Require().Equal(expectedEarnedFees, withdrawalFees.String())
 
 	//------check service tax-------------
-	bz, err = banktestutil.QueryBalancesExec(val.ClientCtx, authtypes.NewModuleAddress(servicetypes.FeeCollectorName))
+	bz, err = clitestutil.QueryBalancesExec(val.ClientCtx, authtypes.NewModuleAddress(servicetypes.FeeCollectorName))
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	taxFees := respType.(*banktypes.QueryAllBalancesResponse).Balances

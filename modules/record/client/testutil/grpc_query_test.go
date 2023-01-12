@@ -9,8 +9,8 @@ import (
 	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	recordcli "github.com/irisnet/irismod/modules/record/client/cli"
@@ -68,7 +68,7 @@ func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
 		fmt.Sprintf("--%s=%s", recordcli.FlagMeta, meta),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -96,7 +96,7 @@ func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
 		Meta:       meta,
 	}}
 
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
 	record := respType.(*recordtypes.QueryRecordResponse).Record

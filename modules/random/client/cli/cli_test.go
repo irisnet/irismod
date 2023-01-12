@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) TestRandom() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagProvider, provider),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
@@ -103,7 +103,7 @@ func (s *IntegrationTestSuite) TestRandom() {
 		fmt.Sprintf("--%s=%d", randomcli.FlagBlockInterval, blockInterval),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -132,7 +132,7 @@ func (s *IntegrationTestSuite) TestRandom() {
 	_, err = s.network.WaitForHeightWithTimeout(requestHeight, time.Duration(int64(blockInterval+2)*int64(s.cfg.TimeoutCommit)))
 	s.Require().NoError(err)
 
-	blockResult, err := clientCtx.Client.BlockResults(context.Background(), &requestHeight)
+	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var requestId string
 	for _, event := range blockResult.EndBlockEvents {
@@ -164,7 +164,7 @@ func (s *IntegrationTestSuite) TestRandom() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagData, respOutput),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})

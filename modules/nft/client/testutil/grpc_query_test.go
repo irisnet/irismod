@@ -11,8 +11,8 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
@@ -87,7 +87,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%t", nftcli.FlagUpdateRestricted, updateRestricted),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	//------test GetCmdQueryDenom()-------------
 	url := fmt.Sprintf("%s/irismod/nft/denoms/%s", baseURL, denomID)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	respType = proto.Message(&nfttypes.QueryDenomResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -121,7 +121,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	//------test GetCmdQueryDenoms()-------------
 	url = fmt.Sprintf("%s/irismod/nft/denoms", baseURL)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&nfttypes.QueryDenomsResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -138,7 +138,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, tokenName),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -152,7 +152,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	//------test GetCmdQuerySupply()-------------
 	url = fmt.Sprintf("%s/irismod/nft/collections/%s/supply", baseURL, denomID)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&nfttypes.QuerySupplyResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -161,7 +161,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	//------test GetCmdQueryNFT()-------------
 	url = fmt.Sprintf("%s/irismod/nft/nfts/%s/%s", baseURL, denomID, tokenID)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&nfttypes.QueryNFTResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -175,7 +175,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	//------test GetCmdQueryOwner()-------------
 	url = fmt.Sprintf("%s/irismod/nft/nfts?owner=%s", baseURL, from.String())
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&nfttypes.QueryNFTsOfOwnerResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -186,7 +186,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	//------test GetCmdQueryCollection()-------------
 	url = fmt.Sprintf("%s/irismod/nft/collections/%s", baseURL, denomID)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&nfttypes.QueryCollectionResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -196,7 +196,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	//------test GetCmdTransferDenom()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 

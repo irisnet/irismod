@@ -7,8 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
-
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
@@ -16,9 +14,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/testutil"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
 	servicecli "github.com/irisnet/irismod/modules/service/client/cli"
 	servicetestutil "github.com/irisnet/irismod/modules/service/client/testutil"
@@ -108,7 +107,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagSchemas, serviceSchemas),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
@@ -121,7 +120,7 @@ func (s *IntegrationTestSuite) TestService() {
 
 	//------test GetCmdQueryServiceDefinition()-------------
 	url := fmt.Sprintf("%s/irismod/service/definitions/%s", baseURL, serviceName)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryDefinitionResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -138,7 +137,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagProvider, provider),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -151,7 +150,7 @@ func (s *IntegrationTestSuite) TestService() {
 
 	//------test GetCmdQueryServiceBinding()-------------
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryBindingResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -161,7 +160,7 @@ func (s *IntegrationTestSuite) TestService() {
 
 	//------test GetCmdQueryServiceBindings()-------------
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s", baseURL, serviceName)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryBindingsResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -171,7 +170,7 @@ func (s *IntegrationTestSuite) TestService() {
 	//------test GetCmdDisableServiceBinding()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -183,7 +182,7 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryBindingResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -193,7 +192,7 @@ func (s *IntegrationTestSuite) TestService() {
 	//------test GetCmdRefundServiceDeposit()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -205,7 +204,7 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryBindingResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -217,7 +216,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagDeposit, serviceDeposit),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -229,7 +228,7 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryBindingResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -242,13 +241,13 @@ func (s *IntegrationTestSuite) TestService() {
 	)
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
-	bz, err = banktestutil.MsgSendExec(clientCtx, provider, consumer, amount, args...)
+	bz, err = clitestutil.MsgSendExec(clientCtx, provider, consumer, amount, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
@@ -263,7 +262,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%d", servicecli.FlagTimeout, timeout),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -276,7 +275,7 @@ func (s *IntegrationTestSuite) TestService() {
 	requestContextId := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
 	requestHeight := txResp.Height
 
-	blockResult, err := clientCtx.Client.BlockResults(context.Background(), &requestHeight)
+	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var compactRequest servicetypes.CompactRequest
 	for _, event := range blockResult.EndBlockEvents {
@@ -286,7 +285,7 @@ func (s *IntegrationTestSuite) TestService() {
 			var requestsBz []byte
 			for _, attribute := range event.Attributes {
 				if string(attribute.Key) == types.AttributeKeyRequests {
-					requestsBz = attribute.GetValue()
+					requestsBz = []byte(attribute.Value)
 				}
 				if string(attribute.Key) == types.AttributeKeyRequestContextID &&
 					string(attribute.GetValue()) == requestContextId {
@@ -306,7 +305,7 @@ func (s *IntegrationTestSuite) TestService() {
 
 	//------test GetCmdQueryServiceRequests()-------------
 	url = fmt.Sprintf("%s/irismod/service/requests/%s/%s", baseURL, serviceName, provider.String())
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryRequestsResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -322,7 +321,7 @@ func (s *IntegrationTestSuite) TestService() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagData, respOutput),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -335,7 +334,7 @@ func (s *IntegrationTestSuite) TestService() {
 
 	//------test GetCmdQueryEarnedFees()-------------
 	url = fmt.Sprintf("%s/irismod/service/fees/%s", baseURL, provider.String())
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryEarnedFeesResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))

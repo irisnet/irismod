@@ -12,8 +12,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clienttx "github.com/cosmos/cosmos-sdk/client/tx"
 	codectype "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
@@ -88,7 +88,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 		fmt.Sprintf("--%s=%t", tokencli.FlagMintable, mintable),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err := val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	res, err := rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
+	res, err := testutil.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
 	var result tx.BroadcastTxResponse
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
@@ -180,7 +180,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	queryPoolResponse := proto.Message(&coinswaptypes.QueryLiquidityPoolResponse{})
 	url := fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryPoolResponse))
 
@@ -231,7 +231,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	res, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
+	res, err = testutil.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
@@ -250,7 +250,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryPoolResponse))
 
@@ -301,7 +301,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
+	_, err = testutil.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
@@ -320,7 +320,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryPoolResponse))
 
@@ -371,7 +371,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
+	_, err = testutil.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
@@ -390,7 +390,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryPoolResponse))
 
@@ -436,7 +436,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
+	_, err = testutil.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
@@ -455,7 +455,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("1000", coins.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryPoolResponse))
 
@@ -501,7 +501,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	reqBz, err = val.ClientCtx.Codec.MarshalJSON(req)
 	s.Require().NoError(err)
-	_, err = rest.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
+	_, err = testutil.PostRequest(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs", baseURL), "application/json", reqBz)
 	s.Require().NoError(err)
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
@@ -520,7 +520,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal("0", coins.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryPoolResponse))
 
@@ -530,7 +530,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	queryPoolsResponse := proto.Message(&coinswaptypes.QueryLiquidityPoolsResponse{})
 	url = fmt.Sprintf("%s/irismod/coinswap/pools", baseURL)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryPoolsResponse))
 

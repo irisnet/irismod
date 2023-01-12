@@ -10,8 +10,8 @@ import (
 	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
@@ -78,7 +78,7 @@ func (s *IntegrationTestSuite) TestToken() {
 		fmt.Sprintf("--%s=%t", tokencli.FlagMintable, mintable),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
@@ -93,7 +93,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 	//------test GetCmdQueryTokens()-------------
 	url := fmt.Sprintf("%s/irismod/token/tokens", baseURL)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	respType = proto.Message(&tokentypes.QueryTokensResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -102,7 +102,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 	//------test GetCmdQueryToken()-------------
 	url = fmt.Sprintf("%s/irismod/token/tokens/%s", baseURL, tokenSymbol)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&tokentypes.QueryTokenResponse{})
 	var token tokentypes.TokenI
 	s.Require().NoError(err)
@@ -116,7 +116,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 	//------test GetCmdQueryFee()-------------
 	url = fmt.Sprintf("%s/irismod/token/tokens/%s/fees", baseURL, tokenSymbol)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&tokentypes.QueryFeesResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -127,7 +127,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 	//------test GetCmdQueryParams()-------------
 	url = fmt.Sprintf("%s/irismod/token/params", baseURL)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&tokentypes.QueryParamsResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))

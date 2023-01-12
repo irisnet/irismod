@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	oraclecli "github.com/irisnet/irismod/modules/oracle/client/cli"
@@ -96,7 +96,7 @@ func (s *IntegrationTestSuite) TestOracle() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagSchemas, serviceSchemas),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
@@ -118,7 +118,7 @@ func (s *IntegrationTestSuite) TestOracle() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagProvider, provider),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
@@ -146,7 +146,7 @@ func (s *IntegrationTestSuite) TestOracle() {
 		fmt.Sprintf("--%s=%s", oraclecli.FlagCreator, creator),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -161,7 +161,7 @@ func (s *IntegrationTestSuite) TestOracle() {
 
 	// ------test GetCmdQueryFeed()-------------
 	url := fmt.Sprintf("%s/irismod/oracle/feeds/%s", baseURL, feedName)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	s.Require().NoError(err)
 	respType = proto.Message(&oracletypes.QueryFeedResponse{})
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -172,7 +172,7 @@ func (s *IntegrationTestSuite) TestOracle() {
 
 	// ------test GetCmdQueryFeeds()-------------
 	url = fmt.Sprintf("%s/irismod/oracle/feeds", baseURL)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	respType = proto.Message(&oracletypes.QueryFeedsResponse{})
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -183,7 +183,7 @@ func (s *IntegrationTestSuite) TestOracle() {
 
 	// ------test GetCmdQueryFeedValue()-------------
 	url = fmt.Sprintf("%s/irismod/oracle/feeds/%s/values", baseURL, feedName)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&oracletypes.QueryFeedValueResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))

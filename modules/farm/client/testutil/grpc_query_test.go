@@ -9,12 +9,12 @@ import (
 	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	farmcli "github.com/irisnet/irismod/modules/farm/client/cli"
-	"github.com/irisnet/irismod/modules/farm/client/testutil"
+	farmtestutil "github.com/irisnet/irismod/modules/farm/client/testutil"
 	farmtypes "github.com/irisnet/irismod/modules/farm/types"
 	"github.com/irisnet/irismod/simapp"
 )
@@ -67,7 +67,7 @@ func (s *IntegrationTestSuite) TestRest() {
 
 	globalFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -84,7 +84,7 @@ func (s *IntegrationTestSuite) TestRest() {
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := testutil.CreateFarmPoolExec(clientCtx,
+	bz, err := farmtestutil.CreateFarmPoolExec(clientCtx,
 		creator.String(),
 		args...,
 	)
@@ -110,7 +110,7 @@ func (s *IntegrationTestSuite) TestRest() {
 
 	respType = proto.Message(&farmtypes.QueryFarmPoolsResponse{})
 	queryPoolURL := fmt.Sprintf("%s/irismod/farm/pools", baseURL)
-	resp, err := rest.GetRequest(queryPoolURL)
+	resp, err := testutil.GetRequest(queryPoolURL)
 
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) TestRest() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 	lpToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(100))
-	bz, err = testutil.StakeExec(clientCtx,
+	bz, err = farmtestutil.StakeExec(clientCtx,
 		creator.String(),
 		poolId,
 		lpToken.String(),
@@ -141,7 +141,7 @@ func (s *IntegrationTestSuite) TestRest() {
 
 	queryFarmerRespType := proto.Message(&farmtypes.QueryFarmerResponse{})
 	queryFarmInfoURL := fmt.Sprintf("%s/irismod/farm/farmers/%s", baseURL, creator.String())
-	resp, err = rest.GetRequest(queryFarmInfoURL)
+	resp, err = testutil.GetRequest(queryFarmInfoURL)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(resp, queryFarmerRespType))
 	farmer := queryFarmerRespType.(*farmtypes.QueryFarmerResponse)

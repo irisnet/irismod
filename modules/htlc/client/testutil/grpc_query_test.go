@@ -73,7 +73,7 @@ func (s *IntegrationTestSuite) TestHtlc() {
 		fmt.Sprintf("--%s=%d", htlccli.FlagTimestamp, timestamp),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -88,7 +88,7 @@ func (s *IntegrationTestSuite) TestHtlc() {
 
 	//------test GetCmdQueryHTLC()-------------
 	//url := fmt.Sprintf("%s/irismod/htlc/htlcs/%s", baseURL, hashLock)
-	//resp, err := rest.GetRequest(url)
+	//resp, err := testutil.GetRequest(url)
 	//respType = proto.Message(&htlctypes.QueryHTLCResponse{})
 	//s.Require().NoError(err)
 	//s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))

@@ -12,20 +12,6 @@ import (
 	"github.com/irisnet/irismod/modules/random/types"
 )
 
-// NewQuerier creates a new random Querier instance
-func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
-	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
-		switch path[0] {
-		case types.QueryRandom:
-			return queryRandom(ctx, req, k, legacyQuerierCdc)
-		case types.QueryRandomRequestQueue:
-			return queryRandomRequestQueue(ctx, req, k, legacyQuerierCdc)
-		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
-		}
-	}
-}
-
 func queryRandom(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
 	var params types.QueryRandomParams
 	if err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params); err != nil {

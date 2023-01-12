@@ -2,10 +2,10 @@ package testutil_test
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
 	mtcli "github.com/irisnet/irismod/modules/mt/client/cli"
@@ -71,7 +71,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		fmt.Sprintf("--%s=%s", mtcli.FlagData, data),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -89,7 +89,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		fmt.Sprintf("--%s=%s", mtcli.FlagAmount, mintAmt),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(100))).String()),
 	}
 
@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) TestMT() {
 	//Denom
 	respType = proto.Message(&mttypes.QueryDenomResponse{})
 	url := fmt.Sprintf("%s/irismod/mt/denoms/%s", baseURL, denomID)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
 
@@ -116,7 +116,7 @@ func (s *IntegrationTestSuite) TestMT() {
 	//Denoms
 	respType = proto.Message(&mttypes.QueryDenomsResponse{})
 	url = fmt.Sprintf("%s/irismod/mt/denoms", baseURL)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
@@ -128,7 +128,7 @@ func (s *IntegrationTestSuite) TestMT() {
 	//MTSupply
 	respType = proto.Message(&mttypes.QueryMTSupplyResponse{})
 	url = fmt.Sprintf("%s/irismod/mt/mts/%s/%s/supply", baseURL, denomID, mtID)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
 
@@ -138,7 +138,7 @@ func (s *IntegrationTestSuite) TestMT() {
 	//MT
 	respType = proto.Message(&mttypes.QueryMTResponse{})
 	url = fmt.Sprintf("%s/irismod/mt/mts/%s/%s", baseURL, denomID, mtID)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
 
@@ -148,7 +148,7 @@ func (s *IntegrationTestSuite) TestMT() {
 	//MTs
 	respType = proto.Message(&mttypes.QueryMTsResponse{})
 	url = fmt.Sprintf("%s/irismod/mt/mts/%s", baseURL, denomID)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
 
