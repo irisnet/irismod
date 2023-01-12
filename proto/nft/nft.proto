@@ -102,14 +102,6 @@ message RoyaltyPlugin {
   string fraction = 3 [(gogoproto.customtype) = "cosmossdk.io/math.Uint", (gogoproto.nullable) = false];
 }
 
-message TokenPlugin {
-  option (gogoproto.equal) = true;
-
-  // Royalty field
-  TokenRoyaltyPlugin royaltyPlugin = 1;
-}
-
-
 message TokenRoyaltyPlugin {
   option (gogoproto.equal) = true;
 

@@ -28,8 +28,18 @@ var (
 	ClassKeyUpdateRestricted = fmt.Sprintf("%s%s", Namespace, "update_restricted")
 	ClassKeyCreator          = fmt.Sprintf("%s%s", Namespace, "creator")
 	ClassKeySchema           = fmt.Sprintf("%s%s", Namespace, "schema")
-	TokenKeyName             = fmt.Sprintf("%s%s", Namespace, "name")
-	TokenKeyURIhash          = fmt.Sprintf("%s%s", Namespace, "uri_hash")
+
+	ClassRoyalty = fmt.Sprintf("%s%s", Namespace, "2981")
+	//ClassRoyaltyEnabled  = fmt.Sprintf("%s%s", Namespace, "2981:enabled")
+	//ClassRoyaltyReceiver = fmt.Sprintf("%s%s", Namespace, "2981:receiver")
+	//ClassRoyaltyFraction = fmt.Sprintf("%s%s", Namespace, "2981:fraction")
+
+	TokenKeyName    = fmt.Sprintf("%s%s", Namespace, "name")
+	TokenKeyURIhash = fmt.Sprintf("%s%s", Namespace, "uri_hash")
+
+	TokenRoyalty = fmt.Sprintf("%s%s", Namespace, "2981")
+	//TokenRoyaltyReceiver = fmt.Sprintf("%s%s", Namespace, "2981:receiver")
+	//TokenRoyaltyFraction = fmt.Sprintf("%s%s", Namespace, "2981:fraction")
 )
 
 type (
@@ -87,6 +97,10 @@ func (cb ClassBuilder) BuildMetadata(class nft.Class) (string, error) {
 	kvals[ClassKeyUpdateRestricted] = MediaField{Value: metadata.UpdateRestricted}
 	kvals[ClassKeyCreator] = MediaField{Value: hexCreator}
 	kvals[ClassKeySchema] = MediaField{Value: metadata.Schema}
+	if metadata.RoyaltyPlugin != nil {
+		kvals[ClassRoyalty] = MediaField{Value: metadata.RoyaltyPlugin}
+	}
+
 	data, err := json.Marshal(kvals)
 	if err != nil {
 		return "", err
@@ -110,6 +124,7 @@ func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, er
 		updateRestricted = true
 		schema           = ""
 		creator          = cb.getModuleAddress(ModuleName).String()
+		royaltyPlugin    = new(RoyaltyPlugin)
 	)
 
 	dataMap := make(map[string]interface{})
@@ -120,6 +135,7 @@ func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, er
 			MintRestricted:   mintRestricted,
 			UpdateRestricted: updateRestricted,
 			Data:             string(classDataBz),
+			RoyaltyPlugin:    royaltyPlugin,
 		})
 		if err != nil {
 			return nft.Class{}, err
@@ -210,6 +226,15 @@ func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, er
 		}
 	}
 
+	if v, ok := dataMap[ClassRoyalty]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vRoyaltyPlugin, ok := vMap[KeyMediaFieldValue].(RoyaltyPlugin); ok {
+				royaltyPlugin = &vRoyaltyPlugin
+				delete(dataMap, ClassRoyalty)
+			}
+		}
+	}
+
 	data, err := json.Marshal(dataMap)
 	if err != nil {
 		return nft.Class{}, err
@@ -221,6 +246,7 @@ func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, er
 		MintRestricted:   mintRestricted,
 		UpdateRestricted: updateRestricted,
 		Data:             string(data),
+		RoyaltyPlugin:    royaltyPlugin,
 	})
 	if err != nil {
 		return nft.Class{}, err
@@ -264,6 +290,10 @@ func (tb TokenBuilder) BuildMetadata(token nft.NFT) (string, error) {
 	}
 	kvals[TokenKeyName] = MediaField{Value: nftMetadata.Name}
 	kvals[TokenKeyURIhash] = MediaField{Value: token.UriHash}
+	if nftMetadata.TokenRoyaltyPlugin != nil {
+		kvals[TokenRoyalty] = MediaField{Value: nftMetadata.TokenRoyaltyPlugin}
+	}
+
 	data, err := json.Marshal(kvals)
 	if err != nil {
 		return "", err
@@ -313,6 +343,14 @@ func (tb TokenBuilder) Build(classId, tokenId, tokenURI, tokenData string) (nft.
 			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
 				uriHash = vStr
 				delete(dataMap, TokenKeyURIhash)
+			}
+		}
+	}
+	if v, ok := dataMap[TokenRoyalty]; ok {
+		if vMap, ok := v.(map[string]interface{}); ok {
+			if vStr, ok := vMap[KeyMediaFieldValue].(string); ok {
+				uriHash = vStr
+				delete(dataMap, TokenRoyalty)
 			}
 		}
 	}
