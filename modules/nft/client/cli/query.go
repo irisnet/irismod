@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -29,6 +31,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQuerySupply(),
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
+		GetCmdQueryDefaultRoyalty(),
 	)
 
 	return queryCmd
@@ -241,6 +244,114 @@ func GetCmdQueryNFT() *cobra.Command {
 				return err
 			}
 			return clientCtx.PrintProto(resp.NFT)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryDefaultRoyalty queries a single NFTs from a collection
+func GetCmdQueryDefaultRoyalty() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "denom royalty [denom-id] ",
+		Long:    "Query the default royalty information of a denom",
+		Example: fmt.Sprintf("$ %s query nft denom royalty <denom-id> ", version.AppName),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if err := types.ValidateDenomID(args[0]); err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.DefaultRoyaltyInfo(context.Background(), &types.MsgDefaultRoyaltyInfoRequest{
+				DenomId: args[0],
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryTokenRoyalty queries a single NFTs from a collection
+func GetCmdQueryTokenRoyalty() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "token royalty [denom-id] [token-id]",
+		Long:    "Query the default royalty information of a denom",
+		Example: fmt.Sprintf("$ %s query nft token royalty <denom-id> <token-id> ", version.AppName),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if err := types.ValidateDenomID(args[0]); err != nil {
+				return err
+			}
+
+			if err := types.ValidateDenomID(args[1]); err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.TokenRoyaltyInfo(context.Background(), &types.MsgTokenRoyaltyInfoRequest{
+				DenomId: args[0],
+				NftId:   args[1],
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryRoyaltyInfo queries a single NFTs from a collection
+func GetCmdQueryRoyaltyInfo() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "token royalty-info [denom-id] [token-id] [sale-price]",
+		Long:    "Query the default royalty information of a denom",
+		Example: fmt.Sprintf("$ %s query nft token royalty-info <denom-id> <token-id> ", version.AppName),
+		Args:    cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if err := types.ValidateDenomID(args[0]); err != nil {
+				return err
+			}
+
+			if err := types.ValidateDenomID(args[1]); err != nil {
+				return err
+			}
+
+			salePrice := sdkmath.NewUintFromString(args[2])
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.RoyaltyInfo(context.Background(), &types.MsgRoyaltyInfoRequest{
+				DenomId:   args[0],
+				NftId:     args[1],
+				SalePrice: salePrice,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

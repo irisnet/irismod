@@ -242,3 +242,116 @@ func (k Keeper) TransferDenom(goCtx context.Context, msg *types.MsgTransferDenom
 
 	return &types.MsgTransferDenomResponse{}, nil
 }
+
+// Royalty MsgServer
+
+func (k Keeper) SetDefaultRoyalty(goCtx context.Context, msg *types.MsgSetDefaultRoyalty) (*types.MsgSetDefaultRoyaltyResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.SaveDefaultRoyalty(ctx, msg.DenomId, msg.Receiver, msg.FeeNumerator, sender); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeSetDefaultRoyalty,
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
+
+	return &types.MsgSetDefaultRoyaltyResponse{}, nil
+}
+
+// SetTokenRoyalty defines a method for set royalty for token.
+func (k Keeper) SetTokenRoyalty(goCtx context.Context, msg *types.MsgSetTokenRoyalty) (*types.MsgSetTokenRoyaltyResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.SaveTokenRoyalty(ctx, msg.DenomId, msg.NftId, msg.Receiver, msg.FeeNumerator, sender); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeSetTokenRoyalty,
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.NftId),
+			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
+
+	return &types.MsgSetTokenRoyaltyResponse{}, nil
+}
+
+// ResetTokenRoyalty defines a method for reset royalty for token.
+func (k Keeper) ResetTokenRoyalty(goCtx context.Context, msg *types.MsgResetTokenRoyalty) (*types.MsgResetTokenRoyaltyResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.RemoveTokenRoyalty(ctx, msg.DenomId, msg.NftId, sender); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeResetTokenRoyalty,
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.NftId),
+			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
+
+	return &types.MsgResetTokenRoyaltyResponse{}, nil
+}
+
+// DeleteDefaultRoyalty defines a method for delete default royalty for class.
+func (k Keeper) DeleteDefaultRoyalty(goCtx context.Context, msg *types.MsgDeleteDefaultRoyalty) (*types.MsgDeleteDefaultRoyaltyResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.RemoveDefaultRoyalty(ctx, msg.DenomId, sender); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeDeleteDefaultRoyalty,
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
+
+	return &types.MsgDeleteDefaultRoyaltyResponse{}, nil
+}

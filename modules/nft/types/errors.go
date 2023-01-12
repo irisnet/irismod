@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -15,4 +16,8 @@ var (
 	ErrInvalidDenom      = sdkerrors.Register(ModuleName, 16, "invalid denom")
 	ErrInvalidTokenID    = sdkerrors.Register(ModuleName, 17, "invalid nft id")
 	ErrInvalidTokenURI   = sdkerrors.Register(ModuleName, 18, "invalid nft uri")
+
+	ErrNotEnabledRoyalty      = errorsmod.Register(ModuleName, 21, "royalty feature is not enabled")
+	ErrNullDefaultRoyaltyInfo = errorsmod.Register(ModuleName, 22, "default royalty in is null")
+	ErrNullTokenRoyaltyInfo   = errorsmod.Register(ModuleName, 23, "token royalty in is null")
 )

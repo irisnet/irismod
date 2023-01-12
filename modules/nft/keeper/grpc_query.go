@@ -97,8 +97,8 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 	for _, token := range result.Nfts {
 		owner := k.nk.GetOwner(ctx, request.DenomId, token.Id)
 
-		var nftMetadata types.NFTMetadata
-		if err := k.cdc.Unmarshal(token.Data.GetValue(), &nftMetadata); err != nil {
+		nftMetadata, err := types.UnmarshalNFTMetadata(k.cdc, token.Data.GetValue())
+		if err != nil {
 			return nil, err
 		}
 
@@ -176,4 +176,57 @@ func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.Q
 	}
 
 	return &types.QueryNFTResponse{NFT: &baseNFT}, nil
+}
+
+// Royalty query
+
+// FeeDenominator queries the FeeDenominator
+func (k Keeper) FeeDenominator(c context.Context, request *types.MsgFeeDenominatorRequest) (*types.MsgFeeDenominatorResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	feeDenominator := k.GetFeeDenominator(ctx)
+	return &types.MsgFeeDenominatorResponse{RoyaltyFraction: feeDenominator}, nil
+}
+
+// RoyaltyInfo queries the RoyaltyInfo for the class of token
+func (k Keeper) RoyaltyInfo(c context.Context, request *types.MsgRoyaltyInfoRequest) (*types.MsgRoyaltyInfoResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	receiver, amount, err := k.GetRoyaltyInfo(ctx, request.DenomId, request.NftId, request.SalePrice)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MsgRoyaltyInfoResponse{
+		Receiver:      receiver,
+		RoyaltyAmount: amount,
+	}, nil
+
+}
+
+// DefaultRoyaltyInfo queries the default royalty info for the class
+func (k Keeper) DefaultRoyaltyInfo(c context.Context, request *types.MsgDefaultRoyaltyInfoRequest) (*types.MsgDefaultRoyaltyInfoResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	receiver, amount, err := k.GetDefaultRoyaltyInfo(ctx, request.DenomId)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgDefaultRoyaltyInfoResponse{
+		Receiver:        receiver,
+		RoyaltyFraction: amount,
+	}, nil
+}
+
+// TokenRoyaltyInfo queries the royalty info for the class of a token
+func (k Keeper) TokenRoyaltyInfo(c context.Context, request *types.MsgTokenRoyaltyInfoRequest) (*types.MsgTokenRoyaltyInfoResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	receiver, amount, err := k.GetTokenRoyaltyInfo(ctx, request.DenomId, request.NftId)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgTokenRoyaltyInfoResponse{
+		Receiver:        receiver,
+		RoyaltyFraction: amount,
+	}, nil
 }

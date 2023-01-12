@@ -23,7 +23,10 @@ message NFTMetadata {
 
   string name = 1;
   string data = 2;
+
+  TokenRoyaltyPlugin tokenRoyaltyPlugin = 3;
 }
+
 
 // Denom defines a type of NFT
 message Denom {
@@ -50,6 +53,9 @@ message DenomMetadata {
   bool mint_restricted = 3;
   bool update_restricted = 4;
   string data = 5;
+
+  // Royalty field
+  RoyaltyPlugin royaltyPlugin = 6;
 }
 
 // IDCollection defines a type of collection with specified ID
@@ -80,3 +86,27 @@ message Collection {
   repeated BaseNFT nfts = 2
       [ (gogoproto.customname) = "NFTs", (gogoproto.nullable) = false ];
 }
+
+message DenomPlugin {
+  option (gogoproto.equal) = true;
+
+  // Royalty field
+  RoyaltyPlugin royaltyPlugin = 1;
+}
+
+message RoyaltyPlugin {
+  option (gogoproto.equal) = true;
+
+  bool enabled = 1;
+  string receiver = 2;
+  string fraction = 3 [(gogoproto.customtype) = "cosmossdk.io/math.Uint", (gogoproto.nullable) = false];
+}
+
+message TokenRoyaltyPlugin {
+  option (gogoproto.equal) = true;
+
+  string receiver = 1   ;
+  string fraction = 2 [(gogoproto.customtype) = "cosmossdk.io/math.Uint", (gogoproto.nullable) = false];
+}
+
+
