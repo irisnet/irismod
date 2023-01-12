@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"strings"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -33,6 +35,10 @@ func NewTxCmd() *cobra.Command {
 		GetCmdTransferNFT(),
 		GetCmdBurnNFT(),
 		GetCmdTransferDenom(),
+		GetCmdSetDefaultRoyalty(),
+		GetCmdSetTokenRoyalty(),
+		GetCmdResetTokenRoyalty(),
+		GetCmdDeleteDefaultRoyalty(),
 	)
 
 	return txCmd
@@ -394,6 +400,158 @@ func GetCmdTransferDenom() *cobra.Command {
 				args[1],
 				clientCtx.GetFromAddress().String(),
 				args[0],
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsTransferDenom)
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetCmdSetDefaultRoyalty() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "set-default-royalty [denom-id] [receiver] [fee-numerator]",
+		Long: "Set default royalty for denom",
+		Example: fmt.Sprintf(
+			"$ %s tx nft set-default-royalty <denom-id> <receiver> <fee-numerator>"+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if _, err := sdk.AccAddressFromBech32(args[1]); err != nil {
+				return err
+			}
+
+			feeNumerator := sdkmath.NewUintFromString(args[2])
+			msg := types.NewMsgSetDefaultRoyalty(
+				args[0],
+				args[1],
+				feeNumerator,
+				clientCtx.GetFromAddress().String(),
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsTransferDenom)
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetCmdSetTokenRoyalty() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "set-token-royalty [denom-id] [nft-id] [receiver] [fee-numerator]",
+		Long: "Set royalties for a token under denom",
+		Example: fmt.Sprintf(
+			"$ %s tx nft set-token-royalty <denom-id> <nft-id> <receiver> <fee-numerator>"+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			if _, err := sdk.AccAddressFromBech32(args[2]); err != nil {
+				return err
+			}
+
+			feeNumerator := sdkmath.NewUintFromString(args[3])
+			msg := types.NewMsgSetTokenRoyalty(
+				args[0],
+				args[1],
+				args[2],
+				feeNumerator,
+				clientCtx.GetFromAddress().String(),
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsTransferDenom)
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetCmdResetTokenRoyalty() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "reset-token-royalty [denom-id] [nft-id]",
+		Long: "reset royalties for a token under denom",
+		Example: fmt.Sprintf(
+			"$ %s tx nft reset-default-royalty <denom-id> <nft-id>"+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgResetTokenRoyalty(
+				args[0],
+				args[1],
+				clientCtx.GetFromAddress().String(),
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsTransferDenom)
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetCmdDeleteDefaultRoyalty() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "delete-default-royalty [denom-id]",
+		Long: "delete default royalties for a denom",
+		Example: fmt.Sprintf(
+			"$ %s tx nft delete-default-royalty <denom-id>"+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgDeleteDefaultRoyalty(
+				args[0],
+				clientCtx.GetFromAddress().String(),
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

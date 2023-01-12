@@ -139,3 +139,82 @@ func TransferDenomExec(clientCtx client.Context, from string, recipient string, 
 	args = append(args, extraArgs...)
 	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdTransferDenom(), args)
 }
+
+func SetDefaultRoyaltyExec(clientCtx client.Context, from string, receiver string, denomID string, feeNumerator string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomID,
+		receiver,
+		feeNumerator,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+	}
+
+	args = append(args, extraArgs...)
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdSetDefaultRoyalty(), args)
+}
+
+func QueryDefaultRoyaltyExec(clientCtx client.Context, denomID string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomID,
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryDefaultRoyalty(), args)
+}
+
+func SetTokenRoyaltyExec(clientCtx client.Context, from string, receiver string, denomID, nftID string, feeNumerator string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomID,
+		nftID,
+		receiver,
+		feeNumerator,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+	}
+
+	args = append(args, extraArgs...)
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdSetTokenRoyalty(), args)
+}
+
+func QueryTokenRoyaltyExec(clientCtx client.Context, denomID, nftID string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomID,
+		nftID,
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryTokenRoyalty(), args)
+}
+
+func QueryRoyaltyInfoExec(clientCtx client.Context, denomID, nftID string, salePrice string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomID,
+		nftID,
+		salePrice,
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryRoyaltyInfo(), args)
+}
+
+func ResetTokenRoyaltyExec(clientCtx client.Context, from string, denomID, nftID string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomID,
+		nftID,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+	}
+
+	args = append(args, extraArgs...)
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdResetTokenRoyalty(), args)
+}
+
+func DeleteDefaultRoyaltyExec(clientCtx client.Context, from string, denomID string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomID,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+	}
+
+	args = append(args, extraArgs...)
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdDeleteDefaultRoyalty(), args)
+}

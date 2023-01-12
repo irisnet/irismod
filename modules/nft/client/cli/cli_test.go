@@ -2,7 +2,10 @@ package cli_test
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
+
+	sdkmath "cosmossdk.io/math"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -327,4 +330,178 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(symbol, denomItem2.Symbol)
 	s.Require().Equal(mintRestricted, denomItem2.MintRestricted)
 	s.Require().Equal(updateRestricted, denomItem2.UpdateRestricted)
+
+}
+
+func (s *IntegrationTestSuite) TestRoyalty() {
+	val := s.network.Validators[0]
+
+	// ---------------------------------------------------------------------------
+	from := val.Address
+	tokenName := "Kitty Token1"
+	uri := "uri1"
+	uriHash := "uriHash1"
+	description := "description1"
+	data := "{\"key1\":\"value1\",\"key2\":\"value2\"}"
+	tokenID := "kitty1"
+	//owner     := "owner"
+	denomName := "name1"
+	denom := "denom1"
+	schema := "schema"
+	symbol := "symbol"
+	mintRestricted := true
+	updateRestricted := false
+
+	denomDefaultFraction := sdkmath.NewUintFromBigInt(new(big.Int).SetUint64(1000))
+	tokenFraction := sdkmath.NewUintFromBigInt(new(big.Int).SetUint64(100))
+	tokenSalePrice := sdkmath.NewUintFromBigInt(new(big.Int).SetUint64(1000))
+	tokenRoyaltyAmountFromDenom := sdkmath.NewUintFromBigInt(new(big.Int).SetUint64(100))
+	tokenRoyaltyAmount := sdkmath.NewUintFromBigInt(new(big.Int).SetUint64(10))
+
+	//------test GetCmdIssueDenom()-------------
+	args := []string{
+		fmt.Sprintf("--%s=%s", nftcli.FlagDenomName, denomName),
+		fmt.Sprintf("--%s=%s", nftcli.FlagSchema, schema),
+		fmt.Sprintf("--%s=%s", nftcli.FlagSymbol, symbol),
+		fmt.Sprintf("--%s=%s", nftcli.FlagURI, uri),
+		fmt.Sprintf("--%s=%s", nftcli.FlagURIHash, uriHash),
+		fmt.Sprintf("--%s=%s", nftcli.FlagDescription, description),
+		fmt.Sprintf("--%s=%s", nftcli.FlagData, data),
+		fmt.Sprintf("--%s=%t", nftcli.FlagMintRestricted, mintRestricted),
+		fmt.Sprintf("--%s=%t", nftcli.FlagUpdateRestricted, updateRestricted),
+
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType := proto.Message(&sdk.TxResponse{})
+	expectedCode := uint32(0)
+
+	bz, err := nfttestutil.IssueDenomExec(val.ClientCtx, from.String(), denom, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp := respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	denomID := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
+
+	// test Royalty cases
+	//------test GetCmdSetDefaultRoyalty()-------------
+	args = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+	bz, err = nfttestutil.SetDefaultRoyaltyExec(val.ClientCtx, from.String(), val.Address.String(), denomID, denomDefaultFraction.String(), args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	//------test GetCmdQueryDefaultRoyalty()-------------
+	respType = proto.Message(&nfttypes.MsgDefaultRoyaltyInfoResponse{})
+	bz, err = nfttestutil.QueryDefaultRoyaltyExec(val.ClientCtx, denomID)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+
+	defaultRoyaltyInfo := respType.(*nfttypes.MsgDefaultRoyaltyInfoResponse)
+	s.Require().Equal(denomDefaultFraction, defaultRoyaltyInfo.RoyaltyFraction)
+	s.Require().Equal(val.Address.String(), defaultRoyaltyInfo.Receiver)
+
+	//------test GetCmdMintNFT()-------------
+	args = []string{
+		fmt.Sprintf("--%s=%s", nftcli.FlagData, data),
+		fmt.Sprintf("--%s=%s", nftcli.FlagRecipient, from.String()),
+		fmt.Sprintf("--%s=%s", nftcli.FlagURI, uri),
+		fmt.Sprintf("--%s=%s", nftcli.FlagURIHash, uriHash),
+		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, tokenName),
+
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+
+	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	//------test GetCmdSetTokenRoyalty()-------------
+	args = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+	bz, err = nfttestutil.SetTokenRoyaltyExec(val.ClientCtx, from.String(), val.Address.String(), denomID, tokenID, tokenFraction.String(), args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	//------test GetCmdQueryTokenRoyalty()-------------
+	respType = proto.Message(&nfttypes.MsgTokenRoyaltyInfoResponse{})
+	bz, err = nfttestutil.QueryTokenRoyaltyExec(val.ClientCtx, denomID, tokenID)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+
+	tokenRoyaltyInfo := respType.(*nfttypes.MsgTokenRoyaltyInfoResponse)
+	s.Require().Equal(tokenFraction, tokenRoyaltyInfo.RoyaltyFraction)
+	s.Require().Equal(val.Address.String(), tokenRoyaltyInfo.Receiver)
+
+	//------test GetCmdQueryRoyaltyInfo()-------------
+	respType = proto.Message(&nfttypes.MsgRoyaltyInfoResponse{})
+	bz, err = nfttestutil.QueryRoyaltyInfoExec(val.ClientCtx, denomID, tokenID, tokenSalePrice.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+
+	royaltyInfo := respType.(*nfttypes.MsgRoyaltyInfoResponse)
+	s.Require().Equal(tokenRoyaltyAmount, royaltyInfo.RoyaltyAmount)
+	s.Require().Equal(val.Address.String(), royaltyInfo.Receiver)
+
+	//------test GetCmdResetTokenRoyalty()-------------
+	args = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+	bz, err = nfttestutil.ResetTokenRoyaltyExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	//------test GetCmdQueryRoyaltyInfo()-------------
+	respType = proto.Message(&nfttypes.MsgRoyaltyInfoResponse{})
+	bz, err = nfttestutil.QueryRoyaltyInfoExec(val.ClientCtx, denomID, tokenID, tokenSalePrice.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+
+	royaltyInfo = respType.(*nfttypes.MsgRoyaltyInfoResponse)
+	s.Require().Equal(tokenRoyaltyAmountFromDenom, royaltyInfo.RoyaltyAmount)
+	s.Require().Equal(val.Address.String(), royaltyInfo.Receiver)
+
+	//------test GetCmdDeleteDefaultRoyalty()-------------
+	args = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+	bz, err = nfttestutil.DeleteDefaultRoyaltyExec(val.ClientCtx, from.String(), denomID, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
 }

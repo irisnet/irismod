@@ -109,7 +109,7 @@ func (msg MsgSetTokenRoyalty) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgResetTokenRoyalty is a constructor function for MsgSetName
-func NewMsgResetTokenRoyalty(denomId, nftId, receiver string, feeNumerator sdkmath.Uint, sender string) *MsgResetTokenRoyalty {
+func NewMsgResetTokenRoyalty(denomId, nftId, sender string) *MsgResetTokenRoyalty {
 	return &MsgResetTokenRoyalty{
 		DenomId: denomId,
 		NftId:   nftId,
@@ -151,7 +151,7 @@ func (msg MsgResetTokenRoyalty) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgDeleteDefaultRoyalty is a constructor function for MsgSetName
-func NewMsgDeleteDefaultRoyalty(denomId, nftId, receiver string, feeNumerator sdkmath.Uint, sender string) *MsgDeleteDefaultRoyalty {
+func NewMsgDeleteDefaultRoyalty(denomId, sender string) *MsgDeleteDefaultRoyalty {
 	return &MsgDeleteDefaultRoyalty{
 		DenomId: denomId,
 		Sender:  sender,
