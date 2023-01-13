@@ -3,7 +3,7 @@ package simapp
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
 type Network struct {
@@ -28,8 +29,20 @@ type ResponseTx struct {
 
 func SetupNetwork(t *testing.T) Network {
 	cfg := NewConfig()
-	cfg.NumValidators = 1
+	cfg.NumValidators = 4
 
+	network, err := network.New(t, t.TempDir(), cfg)
+	require.NoError(t, err, "SetupNetwork failed")
+
+	_, err = network.WaitForHeight(1)
+	require.NoError(t, err)
+	return Network{
+		Network: network,
+		Config:  cfg,
+	}
+}
+
+func SetupNetworkWithConfig(t *testing.T, cfg network.Config) Network {
 	network, err := network.New(t, t.TempDir(), cfg)
 	require.NoError(t, err, "SetupNetwork failed")
 
@@ -56,14 +69,7 @@ func (n Network) ExecTxCmdWithResult(t *testing.T,
 
 	txResp := respType.(*sdk.TxResponse)
 	require.Equal(t, uint32(0), txResp.Code)
-
-	txHashBz, err := hex.DecodeString(txResp.TxHash)
-	require.NoError(t, err, "query tx failed")
-
-	txResult, err := clientCtx.Client.Tx(context.Background(), txHashBz, false)
-	require.NoError(t, err, "query tx failed")
-	require.Equal(t, uint32(0), txResult.TxResult.Code, fmt.Sprintf("execute %s failed", cmd.Name()))
-	return &ResponseTx{txResult.TxResult, txResult.Height}
+	return n.QueryTx(t, clientCtx, txResp.TxHash)
 }
 
 func (n Network) ExecQueryCmd(t *testing.T,
@@ -75,4 +81,29 @@ func (n Network) ExecQueryCmd(t *testing.T,
 	buf, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, extraArgs)
 	require.NoError(t, err, "ExecTestCLICmd failed")
 	require.NoError(t, clientCtx.Codec.UnmarshalJSON(buf.Bytes(), resp), buf.String())
+}
+
+func (n Network) QueryTx(t *testing.T,
+	clientCtx client.Context,
+	txHash string,
+) *ResponseTx {
+	var (
+		result *coretypes.ResultTx
+		err    error
+		tryCnt = 3
+	)
+
+	txHashBz, err := hex.DecodeString(txHash)
+	require.NoError(t, err, "hex.DecodeString failed")
+
+reTry:
+	result, err = clientCtx.Client.Tx(context.Background(), txHashBz, false)
+	if err != nil && strings.Contains(err.Error(), "not found") && tryCnt > 0 {
+		n.WaitForNextBlock()
+		tryCnt--
+		goto reTry
+	}
+
+	require.NoError(t, err, "query tx failed")
+	return &ResponseTx{result.TxResult, result.Height}
 }

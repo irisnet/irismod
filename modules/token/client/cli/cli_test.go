@@ -118,11 +118,13 @@ func (s *IntegrationTestSuite) TestToken() {
 	s.Require().Equal(expectedParams, string(result))
 
 	//------test GetCmdMintToken()-------------
-	coinType := proto.Message(&sdk.Coin{})
-	out, err := simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), coinType))
-	balance := coinType.(*sdk.Coin)
+	balance := simapp.QueryBalanceExec(
+		s.T(),
+		s.network,
+		clientCtx,
+		from.String(),
+		symbol,
+	)
 	initAmount := balance.Amount.Int64()
 	mintAmount := int64(50000000)
 
@@ -144,10 +146,13 @@ func (s *IntegrationTestSuite) TestToken() {
 
 	s.network.WaitForNextBlock()
 
-	out, err = simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), coinType))
-	balance = coinType.(*sdk.Coin)
+	balance = simapp.QueryBalanceExec(
+		s.T(),
+		s.network,
+		clientCtx,
+		from.String(),
+		symbol,
+	)
 	exceptedAmount := initAmount + mintAmount
 	s.Require().Equal(exceptedAmount, balance.Amount.Int64())
 
@@ -172,10 +177,13 @@ func (s *IntegrationTestSuite) TestToken() {
 
 	s.network.WaitForNextBlock()
 
-	out, err = simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), coinType))
-	balance = coinType.(*sdk.Coin)
+	balance = simapp.QueryBalanceExec(
+		s.T(),
+		s.network,
+		clientCtx,
+		from.String(),
+		symbol,
+	)
 	exceptedAmount = exceptedAmount - burnAmount
 	s.Require().Equal(exceptedAmount, balance.Amount.Int64())
 

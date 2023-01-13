@@ -39,6 +39,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -594,7 +595,7 @@ func QueryBalancesExec(clientCtx client.Context, address string, extraArgs ...st
 	return clitestutil.ExecTestCLICmd(clientCtx, bankcli.GetBalancesCmd(), args)
 }
 
-func QueryBalanceExec(clientCtx client.Context, address string, denom string, extraArgs ...string) (testutil.BufferWriter, error) {
+func QueryBalanceExec(t *testing.T, network Network, clientCtx client.Context, address string, denom string, extraArgs ...string) *sdk.Coin {
 	args := []string{
 		address,
 		fmt.Sprintf("--%s=%s", bankcli.FlagDenom, denom),
@@ -602,7 +603,9 @@ func QueryBalanceExec(clientCtx client.Context, address string, denom string, ex
 	}
 	args = append(args, extraArgs...)
 
-	return clitestutil.ExecTestCLICmd(clientCtx, bankcli.GetBalancesCmd(), args)
+	result := &sdk.Coin{}
+	network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
+	return result
 }
 
 func QueryAccountExec(clientCtx client.Context, address string, extraArgs ...string) (testutil.BufferWriter, error) {
@@ -613,6 +616,13 @@ func QueryAccountExec(clientCtx client.Context, address string, extraArgs ...str
 	args = append(args, extraArgs...)
 
 	return clitestutil.ExecTestCLICmd(clientCtx, authcli.GetAccountCmd(), args)
+}
+
+func MsgSendExec(t *testing.T, network Network, clientCtx client.Context, from, to, amount fmt.Stringer, extraArgs ...string) *ResponseTx {
+	args := []string{from.String(), to.String(), amount.String()}
+	args = append(args, extraArgs...)
+
+	return network.ExecTxCmdWithResult(t, clientCtx, cli.NewSendTxCmd(), args)
 }
 
 func QueryTx(t *testing.T, clientCtx client.Context, txHash string) abci.ResponseDeliverTx {
