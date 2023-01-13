@@ -13,7 +13,6 @@ import (
 	clienttx "github.com/cosmos/cosmos-sdk/client/tx"
 	codectype "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
@@ -29,24 +28,13 @@ import (
 
 type IntegrationTestSuite struct {
 	suite.Suite
-
-	cfg     network.Config
-	network *network.Network
+	network simapp.Network
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := simapp.NewConfig()
-	cfg.NumValidators = 1
-
-	s.cfg = cfg
-	var err error
-	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
-
+	s.network = simapp.SetupNetwork(s.T())
 	sdk.SetCoinDenomRegex(func() string {
 		return `[a-zA-Z][a-zA-Z0-9/\-]{2,127}`
 	})
@@ -89,19 +77,12 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType := proto.Message(&sdk.TxResponse{})
-	expectedCode := uint32(0)
-	bz, err := tokentestutil.IssueTokenExec(clientCtx, from.String(), args...)
 
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp := respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-	s.network.WaitForNextBlock()
+	_ = tokentestutil.IssueTokenExec(s.T(), s.network, clientCtx, from.String(), args...)
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
+	respType := proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err := simapp.QueryBalancesExec(clientCtx, from.String())
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
@@ -132,7 +113,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	// prepare txBuilder with msg
 	txBuilder := val.ClientCtx.TxConfig.NewTxBuilder()
-	feeAmount := sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	feeAmount := sdk.Coins{sdk.NewInt64Coin(s.network.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgAddLiquidity)
 	s.Require().NoError(err)
 	txBuilder.SetFeeAmount(feeAmount)
@@ -205,7 +186,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	// prepare txBuilder with msg
 	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
-	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.network.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgAddLiquidity)
 	s.Require().NoError(err)
 	txBuilder.SetFeeAmount(feeAmount)
@@ -268,7 +249,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 		},
 		Output: coinswaptypes.Output{
 			Address: from.String(),
-			Coin:    sdk.NewInt64Coin(s.cfg.BondDenom, 748),
+			Coin:    sdk.NewInt64Coin(s.network.BondDenom, 748),
 		},
 		Deadline:   deadline.Unix(),
 		IsBuyOrder: false,
@@ -276,7 +257,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	// prepare txBuilder with msg
 	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
-	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.network.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgSellOrder)
 	s.Require().NoError(err)
 	txBuilder.SetFeeAmount(feeAmount)
@@ -335,7 +316,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	msgBuyOrder := &coinswaptypes.MsgSwapOrder{
 		Input: coinswaptypes.Input{
 			Address: from.String(),
-			Coin:    sdk.NewInt64Coin(s.cfg.BondDenom, 753),
+			Coin:    sdk.NewInt64Coin(s.network.BondDenom, 753),
 		},
 		Output: coinswaptypes.Output{
 			Address: from.String(),
@@ -347,7 +328,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	// prepare txBuilder with msg
 	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
-	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.network.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgBuyOrder)
 	s.Require().NoError(err)
 	txBuilder.SetFeeAmount(feeAmount)
@@ -413,7 +394,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	// prepare txBuilder with msg
 	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
-	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.network.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgRemoveLiquidity)
 	s.Require().NoError(err)
 	txBuilder.SetFeeAmount(feeAmount)
@@ -479,7 +460,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	// prepare txBuilder with msg
 	txBuilder = val.ClientCtx.TxConfig.NewTxBuilder()
-	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.cfg.BondDenom, 10)}
+	feeAmount = sdk.Coins{sdk.NewInt64Coin(s.network.BondDenom, 10)}
 	err = txBuilder.SetMsgs(msgRemoveLiquidity)
 	s.Require().NoError(err)
 	txBuilder.SetFeeAmount(feeAmount)

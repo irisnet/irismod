@@ -13,7 +13,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
@@ -25,23 +24,13 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg     network.Config
-	network *network.Network
+	network simapp.Network
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := simapp.NewConfig()
-	cfg.NumValidators = 1
-
-	var err error
-	s.cfg = cfg
-	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
-	s.Require().NoError(err)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
+	s.network = simapp.SetupNetwork(s.T())
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -79,25 +68,17 @@ func (s *IntegrationTestSuite) TestToken() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
-	bz, err := tokentestutil.IssueTokenExec(clientCtx, from.String(), args...)
+	txResult := tokentestutil.IssueTokenExec(s.T(), s.network, clientCtx, from.String(), args...)
 
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp := respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-
-	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
 	tokenSymbol := gjson.Get(txResult.Log, "0.events.4.attributes.0.value").String()
 
 	//------test GetCmdQueryTokens()-------------
 	tokens := &[]tokentypes.TokenI{}
-	bz, err = tokentestutil.QueryTokensExec(clientCtx, from.String())
+	bz, err := tokentestutil.QueryTokensExec(clientCtx, from.String())
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.LegacyAmino.UnmarshalJSON(bz.Bytes(), tokens))
 	s.Require().Equal(1, len(*tokens))
@@ -151,14 +132,14 @@ func (s *IntegrationTestSuite) TestToken() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	bz, err = tokentestutil.MintTokenExec(clientCtx, from.String(), symbol, args...)
 
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
+	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	s.network.WaitForNextBlock()
@@ -179,7 +160,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	bz, err = tokentestutil.BurnTokenExec(clientCtx, from.String(), symbol, args...)
@@ -210,7 +191,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -242,7 +223,7 @@ func (s *IntegrationTestSuite) TestToken() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	bz, err = tokentestutil.TransferTokenOwnerExec(clientCtx, from.String(), symbol, args...)

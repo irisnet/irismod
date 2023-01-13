@@ -10,7 +10,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	farmcli "github.com/irisnet/irismod/modules/farm/client/cli"
@@ -22,23 +21,13 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg     network.Config
-	network *network.Network
+	network simapp.Network
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := simapp.NewConfig()
-	cfg.NumValidators = 1
-
-	s.cfg = cfg
-	var err error
-	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
-	s.Require().NoError(err)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
+	s.network = simapp.SetupNetwork(s.T())
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -60,15 +49,15 @@ func (s *IntegrationTestSuite) TestRest() {
 	creator := val.Address
 	description := "iris-atom farm pool"
 	startHeight := s.LatestHeight() + 1
-	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)))
-	lpTokenDenom := s.cfg.BondDenom
-	totalReward := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(1000)))
+	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10)))
+	lpTokenDenom := s.network.BondDenom
+	totalReward := sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(1000)))
 	editable := true
 
 	globalFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	args := []string{
@@ -81,20 +70,14 @@ func (s *IntegrationTestSuite) TestRest() {
 	}
 
 	args = append(args, globalFlags...)
-	respType := proto.Message(&sdk.TxResponse{})
-	expectedCode := uint32(0)
-
-	bz, err := farmtestutil.CreateFarmPoolExec(clientCtx,
+	txResult := farmtestutil.CreateFarmPoolExec(
+		s.T(),
+		s.network,
+		clientCtx,
 		creator.String(),
 		args...,
 	)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp := respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-	s.network.WaitForNextBlock()
 
-	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
 	poolId := gjson.Get(txResult.Log, "0.events.3.attributes.1.value").String()
 	expectedContents := farmtypes.FarmPoolEntry{
 		Id:              poolId,
@@ -110,7 +93,7 @@ func (s *IntegrationTestSuite) TestRest() {
 		RewardPerBlock:  rewardPerBlock,
 	}
 
-	respType = proto.Message(&farmtypes.QueryFarmPoolsResponse{})
+	respType := proto.Message(&farmtypes.QueryFarmPoolsResponse{})
 	queryPoolURL := fmt.Sprintf("%s/irismod/farm/pools", baseURL)
 	resp, err := testutil.GetRequest(queryPoolURL)
 
@@ -123,20 +106,16 @@ func (s *IntegrationTestSuite) TestRest() {
 	s.Require().NoError(err)
 	s.network.WaitForNextBlock()
 
-	respType = proto.Message(&sdk.TxResponse{})
-	lpToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(100))
-	bz, err = farmtestutil.StakeExec(clientCtx,
+	lpToken := sdk.NewCoin(s.network.BondDenom, sdk.NewInt(100))
+	txResult = farmtestutil.StakeExec(
+		s.T(),
+		s.network,
+		clientCtx,
 		creator.String(),
 		poolId,
 		lpToken.String(),
 		globalFlags...,
 	)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
 
 	expectFarmer := farmtypes.LockedInfo{
 		PoolId:        poolId,

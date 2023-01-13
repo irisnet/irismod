@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/tendermint/tendermint/libs/cli"
 
@@ -11,15 +12,16 @@ import (
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
+	"github.com/irisnet/irismod/simapp"
 )
 
-func IssueTokenExec(clientCtx client.Context, from string, extraArgs ...string) (testutil.BufferWriter, error) {
+func IssueTokenExec(t *testing.T, network simapp.Network, clientCtx client.Context, from string, extraArgs ...string) *simapp.ResponseTx {
 	args := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
 	}
 	args = append(args, extraArgs...)
 
-	return clitestutil.ExecTestCLICmd(clientCtx, tokencli.GetCmdIssueToken(), args)
+	return network.ExecTxCmdWithResult(t, clientCtx, tokencli.GetCmdIssueToken(), args)
 }
 
 func EditTokenExec(clientCtx client.Context, from string, symbol string, extraArgs ...string) (testutil.BufferWriter, error) {
