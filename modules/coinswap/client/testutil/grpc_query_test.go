@@ -99,14 +99,13 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err := simapp.QueryBalancesExec(clientCtx, from.String())
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
 	balances := respType.(*banktypes.QueryAllBalancesResponse)
-	fmt.Println(balances.Balances)
-	// TODO
 	s.Require().Equal("100000000", balances.Balances.AmountOf(symbol).String())
 	s.Require().Equal("399986975", balances.Balances.AmountOf(sdk.DefaultBondDenom).String())
 
@@ -154,7 +153,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txBytes, err := val.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
 	s.Require().NoError(err)
 	req := &tx.BroadcastTxRequest{
-		Mode:    tx.BroadcastMode_BROADCAST_MODE_BLOCK,
+		Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 		TxBytes: txBytes,
 	}
 
@@ -166,6 +165,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -226,7 +226,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txBytes, err = val.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
 	s.Require().NoError(err)
 	req = &tx.BroadcastTxRequest{
-		Mode:    tx.BroadcastMode_BROADCAST_MODE_BLOCK,
+		Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 		TxBytes: txBytes,
 	}
 
@@ -237,6 +237,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -296,7 +297,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txBytes, err = val.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
 	s.Require().NoError(err)
 	req = &tx.BroadcastTxRequest{
-		Mode:    tx.BroadcastMode_BROADCAST_MODE_BLOCK,
+		Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 		TxBytes: txBytes,
 	}
 
@@ -307,6 +308,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -366,7 +368,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txBytes, err = val.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
 	s.Require().NoError(err)
 	req = &tx.BroadcastTxRequest{
-		Mode:    tx.BroadcastMode_BROADCAST_MODE_BLOCK,
+		Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 		TxBytes: txBytes,
 	}
 
@@ -377,6 +379,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -431,7 +434,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txBytes, err = val.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
 	s.Require().NoError(err)
 	req = &tx.BroadcastTxRequest{
-		Mode:    tx.BroadcastMode_BROADCAST_MODE_BLOCK,
+		Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 		TxBytes: txBytes,
 	}
 
@@ -442,6 +445,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
@@ -496,7 +500,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	txBytes, err = val.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
 	s.Require().NoError(err)
 	req = &tx.BroadcastTxRequest{
-		Mode:    tx.BroadcastMode_BROADCAST_MODE_BLOCK,
+		Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 		TxBytes: txBytes,
 	}
 
@@ -507,6 +511,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
 	out, err = simapp.QueryBalancesExec(clientCtx, from.String())

@@ -21,7 +21,6 @@ func CreateFarmPoolExec(clientCtx client.Context,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creator),
 	}
 	args = append(args, extraArgs...)
-
 	return clitestutil.ExecTestCLICmd(clientCtx, farmcli.GetCmdCreateFarmPool(), args)
 }
 

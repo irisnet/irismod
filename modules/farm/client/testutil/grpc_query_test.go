@@ -92,8 +92,10 @@ func (s *IntegrationTestSuite) TestRest() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+	s.network.WaitForNextBlock()
 
-	poolId := gjson.Get(txResp.RawLog, "0.events.3.attributes.1.value").String()
+	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+	poolId := gjson.Get(txResult.Log, "0.events.3.attributes.1.value").String()
 	expectedContents := farmtypes.FarmPoolEntry{
 		Id:              poolId,
 		Description:     description,
@@ -119,6 +121,7 @@ func (s *IntegrationTestSuite) TestRest() {
 
 	_, err = s.network.WaitForHeight(startHeight)
 	s.Require().NoError(err)
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&sdk.TxResponse{})
 	lpToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(100))
@@ -132,6 +135,8 @@ func (s *IntegrationTestSuite) TestRest() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	expectFarmer := farmtypes.LockedInfo{
 		PoolId:        poolId,

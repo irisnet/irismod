@@ -114,6 +114,8 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	// ---------------------------------------------------------------
 
 	type htlcArgs struct {
@@ -205,8 +207,10 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	s.Require().NoError(err)
 	s.Require().NoError(ctx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
-	//TODO
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
+	_, height := simapp.QueryTxWithHeight(s.T(), ctx, txResp.TxHash)
 
 	// ---------------------------------------------------------------
 
@@ -220,7 +224,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		Secret:               "",
 		HashLock:             tmbytes.HexBytes(htlctypes.GetHashLock(testCases[0].args.secret, testCases[0].args.timestamp)).String(),
 		Timestamp:            testCases[0].args.timestamp,
-		ExpirationHeight:     uint64(txResp.Height) + testCases[0].args.timeLock,
+		ExpirationHeight:     uint64(height) + testCases[0].args.timeLock,
 		State:                htlctypes.Open,
 		ClosedBlock:          0,
 		Transfer:             testCases[0].args.transfer,
@@ -248,6 +252,8 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	s.Require().NoError(ctx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&htlctypes.HTLC{})
 	bz, err = htlctestutil.QueryHTLCExec(ctx, expectedhtlc.Id)
@@ -291,6 +297,9 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+	_, height = simapp.QueryTxWithHeight(s.T(), ctx, txResp.TxHash)
+
 	// ---------------------------------------------------------------
 
 	expectedhtlt := htlctypes.HTLC{
@@ -303,7 +312,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		Secret:               "",
 		HashLock:             tmbytes.HexBytes(htlctypes.GetHashLock(testCases[1].args.secret, testCases[1].args.timestamp)).String(),
 		Timestamp:            testCases[1].args.timestamp,
-		ExpirationHeight:     uint64(txResp.Height) + testCases[1].args.timeLock,
+		ExpirationHeight:     uint64(height) + testCases[1].args.timeLock,
 		State:                htlctypes.Open,
 		ClosedBlock:          0,
 		Transfer:             testCases[1].args.transfer,
@@ -331,6 +340,8 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	s.Require().NoError(ctx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&htlctypes.HTLC{})
 	bz, err = htlctestutil.QueryHTLCExec(ctx, expectedhtlc.Id)
@@ -367,6 +378,9 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+	_, height = simapp.QueryTxWithHeight(s.T(), ctx, txResp.TxHash)
+
 	// ---------------------------------------------------------------
 
 	expectedhtlt = htlctypes.HTLC{
@@ -379,7 +393,7 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		Secret:               "",
 		HashLock:             tmbytes.HexBytes(htlctypes.GetHashLock(testCases[2].args.secret, testCases[2].args.timestamp)).String(),
 		Timestamp:            testCases[2].args.timestamp,
-		ExpirationHeight:     uint64(txResp.Height) + testCases[2].args.timeLock,
+		ExpirationHeight:     uint64(height) + testCases[2].args.timeLock,
 		State:                htlctypes.Open,
 		ClosedBlock:          0,
 		Transfer:             testCases[2].args.transfer,
@@ -407,6 +421,8 @@ func (s *IntegrationTestSuite) TestHTLC() {
 	s.Require().NoError(ctx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&htlctypes.HTLC{})
 	bz, err = htlctestutil.QueryHTLCExec(ctx, expectedhtlc.Id)

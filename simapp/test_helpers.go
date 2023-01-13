@@ -2,6 +2,7 @@ package simapp
 
 import (
 	"bytes"
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -612,4 +613,18 @@ func QueryAccountExec(clientCtx client.Context, address string, extraArgs ...str
 	args = append(args, extraArgs...)
 
 	return clitestutil.ExecTestCLICmd(clientCtx, authcli.GetAccountCmd(), args)
+}
+
+func QueryTx(t *testing.T, clientCtx client.Context, txHash string) abci.ResponseDeliverTx {
+	txResult, _ := QueryTxWithHeight(t, clientCtx, txHash)
+	return txResult
+}
+
+func QueryTxWithHeight(t *testing.T, clientCtx client.Context, txHash string) (abci.ResponseDeliverTx, int64) {
+	txHashBz, err := hex.DecodeString(txHash)
+	require.NoError(t, err, "query tx failed")
+
+	txResult, err := clientCtx.Client.Tx(context.Background(), txHashBz, false)
+	require.NoError(t, err, "query tx failed")
+	return txResult.TxResult, txResult.Height
 }

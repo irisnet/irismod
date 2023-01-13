@@ -59,7 +59,6 @@ func (s *IntegrationTestSuite) TestFarm() {
 	description := "iris-atom farm pool"
 	startHeight := s.LatestHeight() + 1
 	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)))
-	lpTokenDenom := s.cfg.BondDenom
 	totalReward := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(1000)))
 	editable := true
 
@@ -73,7 +72,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		fmt.Sprintf("--%s=%s", farmcli.FlagDescription, description),
 		fmt.Sprintf("--%s=%d", farmcli.FlagStartHeight, startHeight),
 		fmt.Sprintf("--%s=%s", farmcli.FlagRewardPerBlock, rewardPerBlock),
-		fmt.Sprintf("--%s=%s", farmcli.FlagLPTokenDenom, lpTokenDenom),
+		fmt.Sprintf("--%s=%s", farmcli.FlagLPTokenDenom, s.cfg.BondDenom),
 		fmt.Sprintf("--%s=%s", farmcli.FlagTotalReward, totalReward),
 		fmt.Sprintf("--%s=%v", farmcli.FlagEditable, editable),
 	}
@@ -92,7 +91,10 @@ func (s *IntegrationTestSuite) TestFarm() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	poolId := gjson.Get(txResp.RawLog, "0.events.3.attributes.1.value").String()
+	s.network.WaitForNextBlock()
+	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+
+	poolId := gjson.Get(txResult.Log, "0.events.3.attributes.1.value").String()
 	respType = proto.Message(&farmtypes.QueryFarmPoolResponse{})
 	expectedContents := farmtypes.FarmPoolEntry{
 		Id:              poolId,
@@ -102,13 +104,12 @@ func (s *IntegrationTestSuite) TestFarm() {
 		EndHeight:       startHeight + 100,
 		Editable:        editable,
 		Expired:         false,
-		TotalLptLocked:  sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
+		TotalLptLocked:  sdk.NewCoin(s.cfg.BondDenom, sdk.ZeroInt()),
 		TotalReward:     totalReward,
 		RemainingReward: totalReward,
 		RewardPerBlock:  rewardPerBlock,
 	}
 
-	//TODO
 	bz, err = testutil.QueryFarmPoolExec(val.ClientCtx, poolId)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
@@ -135,6 +136,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 
 	_, err = s.network.WaitForHeight(startHeight)
 	s.Require().NoError(err)
+	s.network.WaitForNextBlock()
 
 	lpToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(100))
 	bz, err = testutil.StakeExec(
@@ -148,6 +150,8 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	unstakeLPToken := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(50))
 	bz, err = testutil.UnstakeExec(
 		clientCtx,
@@ -159,7 +163,11 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	s.Require().Equal(expectedCode, txResp.Code)
-	rewardGot := gjson.Get(txResp.RawLog, "0.events.4.attributes.3.value").String()
+
+	s.network.WaitForNextBlock()
+	txResult = simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+
+	rewardGot := gjson.Get(txResult.Log, "0.events.4.attributes.3.value").String()
 	s.Require().Equal(rewardPerBlock.String(), rewardGot)
 
 	bz, err = testutil.HarvestExec(
@@ -171,7 +179,11 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	s.Require().Equal(expectedCode, txResp.Code)
-	rewardGot = gjson.Get(txResp.RawLog, "0.events.2.attributes.2.value").String()
+
+	s.network.WaitForNextBlock()
+	txResult = simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+
+	rewardGot = gjson.Get(txResult.Log, "0.events.2.attributes.2.value").String()
 	s.Require().Equal(rewardPerBlock.String(), rewardGot)
 
 	queryFarmerArgs := []string{
@@ -199,7 +211,6 @@ func (s *IntegrationTestSuite) TestFarm() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	s.Require().Equal(expectedCode, txResp.Code)
-
 }
 
 func (s *IntegrationTestSuite) LatestHeight() int64 {
