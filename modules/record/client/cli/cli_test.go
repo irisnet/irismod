@@ -94,5 +94,6 @@ func (s *IntegrationTestSuite) TestRecord() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	record := respType.(*recordtypes.Record)
+	//TODO
 	s.Require().Equal(expectedContents, record.Contents)
 }

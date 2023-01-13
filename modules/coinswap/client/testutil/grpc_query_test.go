@@ -106,6 +106,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
 	balances := respType.(*banktypes.QueryAllBalancesResponse)
 	fmt.Println(balances.Balances)
+	// TODO
 	s.Require().Equal("100000000", balances.Balances.AmountOf(symbol).String())
 	s.Require().Equal("399986975", balances.Balances.AmountOf(sdk.DefaultBondDenom).String())
 

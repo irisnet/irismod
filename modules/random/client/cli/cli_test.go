@@ -114,6 +114,7 @@ func (s *IntegrationTestSuite) TestRandom() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
+	//TODO
 	s.Require().Equal(expectedCode, txResp.Code)
 	requestID := gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
 	requestHeight := gjson.Get(txResp.RawLog, "0.events.1.attributes.2.value").Int()

@@ -34,7 +34,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -53,7 +52,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/capability"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -160,6 +161,7 @@ var (
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		vesting.AppModuleBasic{},
+		consensus.AppModuleBasic{},
 
 		token.AppModuleBasic{},
 		record.AppModuleBasic{},
@@ -283,14 +285,14 @@ func NewSimApp(
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	keys := sdk.NewKVStoreKeys(
-		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
+		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey, crisistypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey,
 		upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		capabilitytypes.StoreKey, tokentypes.StoreKey,
 		nfttypes.StoreKey, mttypes.StoreKey, htlctypes.StoreKey, recordtypes.StoreKey,
 		coinswaptypes.StoreKey, servicetypes.StoreKey, oracletypes.StoreKey,
-		randomtypes.StoreKey, farmtypes.StoreKey,
+		randomtypes.StoreKey, farmtypes.StoreKey, consensusparamtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -539,6 +541,7 @@ func NewSimApp(
 		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		random.NewAppModule(appCodec, app.RandomKeeper, app.AccountKeeper, app.BankKeeper),
 		farm.NewAppModule(appCodec, app.FarmKeeper, app.AccountKeeper, app.BankKeeper),
+		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -555,7 +558,7 @@ func NewSimApp(
 		nfttypes.ModuleName, mttypes.ModuleName,
 		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
+		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName, consensusparamtypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
@@ -567,7 +570,7 @@ func NewSimApp(
 		nfttypes.ModuleName, mttypes.ModuleName,
 		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName,
+		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName, consensusparamtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -585,7 +588,7 @@ func NewSimApp(
 		nfttypes.ModuleName, mttypes.ModuleName,
 		htlctypes.ModuleName, recordtypes.ModuleName,
 		coinswaptypes.ModuleName, servicetypes.ModuleName, oracletypes.ModuleName,
-		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName, crisistypes.ModuleName,
+		randomtypes.ModuleName, farmtypes.ModuleName, feegrant.ModuleName, crisistypes.ModuleName, consensusparamtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)
@@ -603,7 +606,7 @@ func NewSimApp(
 	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
 
 	// add test gRPC service for testing gRPC queries in isolation
-	testdata_pulsar.RegisterQueryServer(app.GRPCQueryRouter(), testdata_pulsar.QueryImpl{})
+	// testdata_pulsar.RegisterQueryServer(app.GRPCQueryRouter(), testdata_pulsar.QueryImpl{})
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//

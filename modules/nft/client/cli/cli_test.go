@@ -93,6 +93,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
+	//TODO
 	bz, err := nfttestutil.IssueDenomExec(val.ClientCtx, from.String(), denom, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())

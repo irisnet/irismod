@@ -88,6 +88,7 @@ func (s *IntegrationTestSuite) TestMT() {
 	//------test GetCmdQueryDenom()-------------
 	respType = proto.Message(&mttypes.Denom{})
 	bz, err = mttestutil.QueryDenomExec(val.ClientCtx, denomID)
+	//TODO
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	denomItem := respType.(*mttypes.Denom)

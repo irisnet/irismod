@@ -130,6 +130,7 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
+	//TODO
 	s.Require().Equal(expectedCode, txResp.Code)
 
 	//------test GetCmdCreateFeed()-------------

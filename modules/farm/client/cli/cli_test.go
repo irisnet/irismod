@@ -108,6 +108,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		RewardPerBlock:  rewardPerBlock,
 	}
 
+	//TODO
 	bz, err = testutil.QueryFarmPoolExec(val.ClientCtx, poolId)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
