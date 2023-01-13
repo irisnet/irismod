@@ -100,7 +100,9 @@ func (s *IntegrationTestSuite) TestNft() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	denomID := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
+	s.network.WaitForNextBlock()
+	txResult := simapp.QueryTx(s.T(), val.ClientCtx, txResp.TxHash)
+	denomID := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
 
 	//------test GetCmdQueryDenom()-------------
 	url := fmt.Sprintf("%s/irismod/nft/denoms/%s", baseURL, denomID)
@@ -149,6 +151,8 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	//------test GetCmdQuerySupply()-------------
 	url = fmt.Sprintf("%s/irismod/nft/collections/%s/supply", baseURL, denomID)
@@ -207,6 +211,8 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&nfttypes.Denom{})
 	bz, err = nfttestutil.QueryDenomExec(val.ClientCtx, denomID)

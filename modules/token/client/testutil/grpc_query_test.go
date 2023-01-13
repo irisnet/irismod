@@ -89,7 +89,11 @@ func (s *IntegrationTestSuite) TestToken() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
-	tokenSymbol := gjson.Get(txResp.RawLog, "0.events.4.attributes.0.value").String()
+
+	s.network.WaitForNextBlock()
+
+	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+	tokenSymbol := gjson.Get(txResult.Log, "0.events.4.attributes.0.value").String()
 
 	//------test GetCmdQueryTokens()-------------
 	url := fmt.Sprintf("%s/irismod/token/tokens", baseURL)

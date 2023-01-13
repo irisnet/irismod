@@ -83,7 +83,10 @@ func (s *IntegrationTestSuite) TestMT() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	denomID := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
+	s.network.WaitForNextBlock()
+
+	txResult := simapp.QueryTx(s.T(), val.ClientCtx, txResp.TxHash)
+	denomID := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
 
 	//------test GetCmdQueryDenom()-------------
 	respType = proto.Message(&mttypes.Denom{})
@@ -121,6 +124,11 @@ func (s *IntegrationTestSuite) TestMT() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
+
+	txResult = simapp.QueryTx(s.T(), val.ClientCtx, txResp.TxHash)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	respType = proto.Message(&mttypes.QueryMTsResponse{})
 	bz, err = mttestutil.QueryMTsExec(val.ClientCtx, denomID)
@@ -166,6 +174,8 @@ func (s *IntegrationTestSuite) TestMT() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	respType = proto.Message(&mttypes.MT{})
 	bz, err = mttestutil.QueryMTExec(val.ClientCtx, denomID, mtID)
 	s.Require().NoError(err)
@@ -190,6 +200,8 @@ func (s *IntegrationTestSuite) TestMT() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	respType = proto.Message(&mttypes.MT{})
 	bz, err = mttestutil.QueryMTExec(val.ClientCtx, denomID, mtID)
 	s.Require().NoError(err)
@@ -212,6 +224,8 @@ func (s *IntegrationTestSuite) TestMT() {
 	s.Require().NoError(val2.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&mttypes.MT{})
 	bz, err = mttestutil.QueryMTExec(val.ClientCtx, denomID, mtID)
@@ -236,6 +250,8 @@ func (s *IntegrationTestSuite) TestMT() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&mttypes.Denom{})
 	bz, err = mttestutil.QueryDenomExec(val.ClientCtx, denomID)

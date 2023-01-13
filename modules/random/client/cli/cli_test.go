@@ -96,6 +96,8 @@ func (s *IntegrationTestSuite) TestRandom() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	// ------test GetCmdRequestRandom()-------------
 	args = []string{
 		fmt.Sprintf("--%s=%s", randomcli.FlagServiceFeeCap, serviceFeeCap),
@@ -114,10 +116,13 @@ func (s *IntegrationTestSuite) TestRandom() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
-	//TODO
 	s.Require().Equal(expectedCode, txResp.Code)
-	requestID := gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
-	requestHeight := gjson.Get(txResp.RawLog, "0.events.1.attributes.2.value").Int()
+
+	s.network.WaitForNextBlock()
+	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+
+	requestID := gjson.Get(txResult.Log, "0.events.1.attributes.0.value").String()
+	requestHeight := gjson.Get(txResult.Log, "0.events.1.attributes.2.value").Int()
 
 	// ------test GetCmdQueryRandomRequestQueue()-------------
 	respType = proto.Message(&randomtypes.QueryRandomRequestQueueResponse{})
@@ -132,6 +137,8 @@ func (s *IntegrationTestSuite) TestRandom() {
 	requestHeight = requestHeight + 1
 	_, err = s.network.WaitForHeightWithTimeout(requestHeight, time.Duration(int64(blockInterval+2)*int64(s.cfg.TimeoutCommit)))
 	s.Require().NoError(err)
+
+	s.network.WaitForNextBlock()
 
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
@@ -175,7 +182,10 @@ func (s *IntegrationTestSuite) TestRandom() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
-	generateHeight := txResp.Height
+
+	s.network.WaitForNextBlock()
+	_, height := simapp.QueryTxWithHeight(s.T(), clientCtx, txResp.TxHash)
+	generateHeight := height
 
 	// ------test GetCmdQueryRandom()-------------
 	respType = proto.Message(&randomtypes.Random{})

@@ -111,6 +111,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	//------test GetCmdBindService()-------------
 	args = []string{
 		fmt.Sprintf("--%s=%s", servicecli.FlagServiceName, serviceName),
@@ -130,8 +132,9 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
-	//TODO
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	//------test GetCmdCreateFeed()-------------
 	args = []string{
@@ -162,6 +165,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	// ------test GetCmdQueryFeed()-------------
 	respType = proto.Message(&oracletypes.FeedContext{})
@@ -197,6 +202,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	respType = proto.Message(&oracletypes.FeedContext{})
 	bz, err = oracletestutil.QueryFeedExec(clientCtx, feedName)
 	s.Require().NoError(err)
@@ -213,6 +220,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&oracletypes.FeedContext{})
 	bz, err = oracletestutil.QueryFeedExec(clientCtx, feedName)
@@ -237,6 +246,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&oracletypes.FeedContext{})
 	bz, err = oracletestutil.QueryFeedExec(clientCtx, feedName)
@@ -269,6 +280,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	respType = proto.Message(&oracletypes.FeedContext{})
 	bz, err = oracletestutil.QueryFeedExec(clientCtx, feedName)
@@ -319,11 +332,12 @@ func (s *IntegrationTestSuite) TestOracle() {
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
 	bz, err = servicetestutil.RespondServiceExec(clientCtx, provider.String(), args...)
-
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	// ------get feedValue-------------
 	respType = proto.Message(&oracletypes.QueryFeedValueResponse{})

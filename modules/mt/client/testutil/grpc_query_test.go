@@ -81,7 +81,10 @@ func (s *IntegrationTestSuite) TestMT() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
-	denomID = gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
+
+	s.network.WaitForNextBlock()
+	txResult := simapp.QueryTx(s.T(), val.ClientCtx, txResp.TxHash)
+	denomID = gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
 
 	// Mint
 	args = []string{
@@ -99,7 +102,11 @@ func (s *IntegrationTestSuite) TestMT() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
-	mtID = gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
+
+	s.network.WaitForNextBlock()
+
+	txResult = simapp.QueryTx(s.T(), val.ClientCtx, txResp.TxHash)
+	mtID = gjson.Get(txResult.Log, "0.events.1.attributes.0.value").String()
 
 	//Denom
 	respType = proto.Message(&mttypes.QueryDenomResponse{})

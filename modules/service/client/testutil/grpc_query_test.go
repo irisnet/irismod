@@ -118,6 +118,8 @@ func (s *IntegrationTestSuite) TestService() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	//------test GetCmdQueryServiceDefinition()-------------
 	url := fmt.Sprintf("%s/irismod/service/definitions/%s", baseURL, serviceName)
 	resp, err := testutil.GetRequest(url)
@@ -147,6 +149,8 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	//------test GetCmdQueryServiceBinding()-------------
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
@@ -181,6 +185,8 @@ func (s *IntegrationTestSuite) TestService() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
 	resp, err = testutil.GetRequest(url)
 	respType = proto.Message(&servicetypes.QueryBindingResponse{})
@@ -202,6 +208,8 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
 	resp, err = testutil.GetRequest(url)
@@ -226,6 +234,8 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	url = fmt.Sprintf("%s/irismod/service/bindings/%s/%s", baseURL, serviceName, provider.String())
 	resp, err = testutil.GetRequest(url)
@@ -253,6 +263,8 @@ func (s *IntegrationTestSuite) TestService() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	//------test GetCmdCallService()-------------
 	args = []string{
 		fmt.Sprintf("--%s=%s", servicecli.FlagServiceName, serviceName),
@@ -272,8 +284,12 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
-	requestContextId := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
-	requestHeight := txResp.Height
+
+	s.network.WaitForNextBlock()
+
+	txResult, height := simapp.QueryTxWithHeight(s.T(), clientCtx, txResp.TxHash)
+	requestContextId := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
+	requestHeight := height
 
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
@@ -331,6 +347,8 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	//------test GetCmdQueryEarnedFees()-------------
 	url = fmt.Sprintf("%s/irismod/service/fees/%s", baseURL, provider.String())

@@ -89,7 +89,11 @@ func (s *IntegrationTestSuite) TestToken() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
-	tokenSymbol := gjson.Get(txResp.RawLog, "0.events.4.attributes.0.value").String()
+
+	s.network.WaitForNextBlock()
+
+	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+	tokenSymbol := gjson.Get(txResult.Log, "0.events.4.attributes.0.value").String()
 
 	//------test GetCmdQueryTokens()-------------
 	tokens := &[]tokentypes.TokenI{}
@@ -157,6 +161,8 @@ func (s *IntegrationTestSuite) TestToken() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	out, err = simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), coinType))
@@ -182,6 +188,8 @@ func (s *IntegrationTestSuite) TestToken() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	out, err = simapp.QueryBalanceExec(clientCtx, from.String(), symbol)
 	s.Require().NoError(err)
@@ -213,6 +221,8 @@ func (s *IntegrationTestSuite) TestToken() {
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	var token2 tokentypes.TokenI
 	respType = proto.Message(&types.Any{})
 	bz, err = tokentestutil.QueryTokenExec(clientCtx, tokenSymbol)
@@ -241,6 +251,8 @@ func (s *IntegrationTestSuite) TestToken() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	var token3 tokentypes.TokenI
 	respType = proto.Message(&types.Any{})

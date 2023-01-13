@@ -108,6 +108,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
+	s.network.WaitForNextBlock()
+
 	//------test GetCmdBindService()-------------
 	args = []string{
 		fmt.Sprintf("--%s=%s", servicecli.FlagServiceName, serviceName),
@@ -128,6 +130,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	//------test GetCmdCreateFeed()-------------
 	args = []string{
@@ -158,6 +162,8 @@ func (s *IntegrationTestSuite) TestOracle() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+
+	s.network.WaitForNextBlock()
 
 	// ------test GetCmdQueryFeed()-------------
 	url := fmt.Sprintf("%s/irismod/oracle/feeds/%s", baseURL, feedName)

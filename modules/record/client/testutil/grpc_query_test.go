@@ -81,7 +81,10 @@ func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
 	txResp := respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
-	recordID := gjson.Get(txResp.RawLog, "0.events.0.attributes.1.value").String()
+	s.network.WaitForNextBlock()
+	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+
+	recordID := gjson.Get(txResult.Log, "0.events.0.attributes.1.value").String()
 
 	// ---------------------------------------------------------------------------
 
