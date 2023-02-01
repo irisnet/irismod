@@ -210,9 +210,13 @@ func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, er
 		}
 	}
 
-	data, err := json.Marshal(dataMap)
-	if err != nil {
-		return nft.Class{}, err
+	var data = ""
+	if len(dataMap) > 0 {
+		dataBz, err := json.Marshal(dataMap)
+		if err != nil {
+			return nft.Class{}, err
+		}
+		data = string(dataBz)
 	}
 
 	any, err := codectypes.NewAnyWithValue(&DenomMetadata{
@@ -220,7 +224,7 @@ func (cb ClassBuilder) Build(classID, classURI, classData string) (nft.Class, er
 		Schema:           schema,
 		MintRestricted:   mintRestricted,
 		UpdateRestricted: updateRestricted,
-		Data:             string(data),
+		Data:             data,
 	})
 	if err != nil {
 		return nft.Class{}, err
@@ -317,14 +321,18 @@ func (tb TokenBuilder) Build(classId, tokenId, tokenURI, tokenData string) (nft.
 		}
 	}
 
-	data, err := json.Marshal(dataMap)
-	if err != nil {
-		return nft.NFT{}, err
+	var data = ""
+	if len(dataMap) > 0 {
+		dataBz, err := json.Marshal(dataMap)
+		if err != nil {
+			return nft.NFT{}, err
+		}
+		data = string(dataBz)
 	}
 
 	metadata, err := codectypes.NewAnyWithValue(&NFTMetadata{
 		Name: name,
-		Data: string(data),
+		Data: data,
 	})
 	if err != nil {
 		return nft.NFT{}, err
@@ -337,8 +345,4 @@ func (tb TokenBuilder) Build(classId, tokenId, tokenURI, tokenData string) (nft.
 		UriHash: uriHash,
 		Data:    metadata,
 	}, nil
-}
-
-func PopIfExist() {
-
 }
