@@ -72,6 +72,10 @@ func (cb ClassBuilder) BuildMetadata(class nft.Class) (string, error) {
 			//when classData is not a legal json, there is no need to parse the data
 			return base64.RawStdEncoding.EncodeToString([]byte(metadata.Data)), nil
 		}
+		//note: if metadata.Data is null, it may cause map to be redefined as nil
+		if kvals == nil {
+			kvals = make(map[string]interface{})
+		}
 	}
 	creator, err := sdk.AccAddressFromBech32(metadata.Creator)
 	if err != nil {
@@ -264,6 +268,10 @@ func (tb TokenBuilder) BuildMetadata(token nft.NFT) (string, error) {
 		if err != nil && IsIBCDenom(token.ClassId) {
 			//when nftMetadata is not a legal json, there is no need to parse the data
 			return base64.RawStdEncoding.EncodeToString([]byte(nftMetadata.Data)), nil
+		}
+		//note: if nftMetadata.Data is null, it may cause map to be redefined as nil
+		if kvals == nil {
+			kvals = make(map[string]interface{})
 		}
 	}
 	kvals[TokenKeyName] = MediaField{Value: nftMetadata.Name}
