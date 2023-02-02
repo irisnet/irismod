@@ -8,11 +8,8 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 
-	"github.com/tendermint/tendermint/crypto"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
@@ -24,24 +21,13 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg     network.Config
-	network *network.Network
+	network simapp.Network
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := simapp.NewConfig()
-	cfg.NumValidators = 2
-
-	s.cfg = cfg
-
-	var err error
-	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
-	s.Require().NoError(err)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
+	s.network = simapp.SetupNetwork(s.T())
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -55,7 +41,7 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) TestNft() {
 	val := s.network.Validators[0]
-	recipient := sdk.AccAddress(crypto.AddressHash([]byte("dgsbl")))
+	clientCtx := val.ClientCtx
 	// ---------------------------------------------------------------------------
 
 	from := val.Address
@@ -88,26 +74,21 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := nfttestutil.IssueDenomExec(val.ClientCtx, from.String(), denom, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp := respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-	txResult := simapp.QueryTx(s.T(), val.ClientCtx, txResp.TxHash)
+	txResult := nfttestutil.IssueDenomExec(s.T(),
+		s.network,
+		clientCtx, from.String(), denom, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 	denomID := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
 
 	//------test GetCmdQueryDenom()-------------
 	url := fmt.Sprintf("%s/irismod/nft/denoms/%s", baseURL, denomID)
 	resp, err := testutil.GetRequest(url)
-	respType = proto.Message(&nfttypes.QueryDenomResponse{})
+	respType := proto.Message(&nfttypes.QueryDenomResponse{})
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
 	denomItem := respType.(*nfttypes.QueryDenomResponse)
@@ -141,18 +122,13 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
-
-	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
+	txResult = nfttestutil.MintNFTExec(s.T(),
+		s.network,
+		clientCtx, from.String(), denomID, tokenID, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdQuerySupply()-------------
 	url = fmt.Sprintf("%s/irismod/nft/collections/%s/supply", baseURL, denomID)
@@ -196,33 +172,4 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
 	collectionResp := respType.(*nfttypes.QueryCollectionResponse)
 	s.Require().Equal(1, len(collectionResp.Collection.NFTs))
-
-	//------test GetCmdTransferDenom()-------------
-	args = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	}
-
-	respType = proto.Message(&sdk.TxResponse{})
-
-	bz, err = nfttestutil.TransferDenomExec(val.ClientCtx, from.String(), recipient.String(), denomID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-
-	respType = proto.Message(&nfttypes.Denom{})
-	bz, err = nfttestutil.QueryDenomExec(val.ClientCtx, denomID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	denomItem2 := respType.(*nfttypes.Denom)
-	s.Require().Equal(recipient.String(), denomItem2.Creator)
-	s.Require().Equal(denomName, denomItem2.Name)
-	s.Require().Equal(schema, denomItem2.Schema)
-	s.Require().Equal(symbol, denomItem2.Symbol)
-	s.Require().Equal(mintRestricted, denomItem2.MintRestricted)
-	s.Require().Equal(updateRestricted, denomItem2.UpdateRestricted)
 }

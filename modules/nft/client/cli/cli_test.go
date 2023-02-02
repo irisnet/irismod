@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 
 	"github.com/tendermint/tendermint/crypto"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
@@ -23,24 +21,13 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg     network.Config
-	network *network.Network
+	network simapp.Network
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := simapp.NewConfig()
-	cfg.NumValidators = 2
-
-	s.cfg = cfg
-
-	var err error
-	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
-	s.Require().NoError(err)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
+	s.network = simapp.SetupNetwork(s.T())
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -55,6 +42,8 @@ func TestIntegrationTestSuite(t *testing.T) {
 func (s *IntegrationTestSuite) TestNft() {
 	val := s.network.Validators[0]
 	val2 := s.network.Validators[1]
+	clientCtx := val.ClientCtx
+	expectedCode := uint32(0)
 
 	// ---------------------------------------------------------------------------
 
@@ -87,47 +76,33 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType := proto.Message(&sdk.TxResponse{})
-	expectedCode := uint32(0)
-
-	//TODO
-	bz, err := nfttestutil.IssueDenomExec(val.ClientCtx, from.String(), denom, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp := respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-	txResult := simapp.QueryTx(s.T(), val.ClientCtx, txResp.TxHash)
+	txResult := nfttestutil.IssueDenomExec(s.T(),
+		s.network,
+		clientCtx, from.String(), denom, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 	denomID := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
 
 	//------test GetCmdQueryDenom()-------------
-	respType = proto.Message(&nfttypes.Denom{})
-	bz, err = nfttestutil.QueryDenomExec(val.ClientCtx, denomID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	denomItem := respType.(*nfttypes.Denom)
-	s.Require().Equal(denomName, denomItem.Name)
-	s.Require().Equal(schema, denomItem.Schema)
-	s.Require().Equal(symbol, denomItem.Symbol)
-	s.Require().Equal(uri, denomItem.Uri)
-	s.Require().Equal(uriHash, denomItem.UriHash)
-	s.Require().Equal(description, denomItem.Description)
-	s.Require().Equal(data, denomItem.Data)
-	s.Require().Equal(mintRestricted, denomItem.MintRestricted)
-	s.Require().Equal(updateRestricted, denomItem.UpdateRestricted)
+	queryDenomResponse := &nfttypes.Denom{}
+	nfttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID, queryDenomResponse)
+	s.Require().Equal(denomName, queryDenomResponse.Name)
+	s.Require().Equal(schema, queryDenomResponse.Schema)
+	s.Require().Equal(symbol, queryDenomResponse.Symbol)
+	s.Require().Equal(uri, queryDenomResponse.Uri)
+	s.Require().Equal(uriHash, queryDenomResponse.UriHash)
+	s.Require().Equal(description, queryDenomResponse.Description)
+	s.Require().Equal(data, queryDenomResponse.Data)
+	s.Require().Equal(mintRestricted, queryDenomResponse.MintRestricted)
+	s.Require().Equal(updateRestricted, queryDenomResponse.UpdateRestricted)
 
 	//------test GetCmdQueryDenoms()-------------
-	respType = proto.Message(&nfttypes.QueryDenomsResponse{})
-	bz, err = nfttestutil.QueryDenomsExec(val.ClientCtx)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	denomsResp := respType.(*nfttypes.QueryDenomsResponse)
-	s.Require().Equal(1, len(denomsResp.Denoms))
-	s.Require().Equal(denomID, denomsResp.Denoms[0].Id)
+	queryDenomsResponse := &nfttypes.QueryDenomsResponse{}
+	nfttestutil.QueryDenomsExec(s.T(), s.network, clientCtx, queryDenomsResponse)
+	s.Require().Equal(1, len(queryDenomsResponse.Denoms))
+	s.Require().Equal(denomID, queryDenomsResponse.Denoms[0].Id)
 
 	//------test GetCmdMintNFT()-------------
 	args = []string{
@@ -139,57 +114,40 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
-
-	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
+	txResult = nfttestutil.MintNFTExec(s.T(),
+		s.network,
+		clientCtx, from.String(), denomID, tokenID, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdQuerySupply()-------------
-	respType = proto.Message(&nfttypes.QuerySupplyResponse{})
-	bz, err = nfttestutil.QuerySupplyExec(val.ClientCtx, denomID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	supplyResp := respType.(*nfttypes.QuerySupplyResponse)
-	s.Require().Equal(uint64(1), supplyResp.Amount)
+	querySupplyResponse := &nfttypes.QuerySupplyResponse{}
+	nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID, querySupplyResponse)
+	s.Require().Equal(uint64(1), querySupplyResponse.Amount)
 
 	//------test GetCmdQueryNFT()-------------
-	respType = proto.Message(&nfttypes.BaseNFT{})
-	bz, err = nfttestutil.QueryNFTExec(val.ClientCtx, denomID, tokenID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	nftItem := respType.(*nfttypes.BaseNFT)
-	s.Require().Equal(tokenID, nftItem.Id)
-	s.Require().Equal(tokenName, nftItem.Name)
-	s.Require().Equal(uri, nftItem.URI)
-	s.Require().Equal(uriHash, nftItem.UriHash)
-	s.Require().Equal(data, nftItem.Data)
-	s.Require().Equal(from.String(), nftItem.Owner)
+	queryNFTResponse := &nfttypes.BaseNFT{}
+	nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID, queryNFTResponse)
+	s.Require().Equal(tokenID, queryNFTResponse.Id)
+	s.Require().Equal(tokenName, queryNFTResponse.Name)
+	s.Require().Equal(uri, queryNFTResponse.URI)
+	s.Require().Equal(uriHash, queryNFTResponse.UriHash)
+	s.Require().Equal(data, queryNFTResponse.Data)
+	s.Require().Equal(from.String(), queryNFTResponse.Owner)
 
 	//------test GetCmdQueryOwner()-------------
-	respType = proto.Message(&nfttypes.QueryNFTsOfOwnerResponse{})
-	bz, err = nfttestutil.QueryOwnerExec(val.ClientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	ownerResp := respType.(*nfttypes.QueryNFTsOfOwnerResponse)
-	s.Require().Equal(from.String(), ownerResp.Owner.Address)
-	s.Require().Equal(denom, ownerResp.Owner.IDCollections[0].DenomId)
-	s.Require().Equal(tokenID, ownerResp.Owner.IDCollections[0].TokenIds[0])
+	queryNFTsOfOwnerResponse := &nfttypes.QueryNFTsOfOwnerResponse{}
+	nfttestutil.QueryOwnerExec(s.T(), s.network, clientCtx, from.String(), queryNFTsOfOwnerResponse)
+	s.Require().Equal(from.String(), queryNFTsOfOwnerResponse.Owner.Address)
+	s.Require().Equal(denom, queryNFTsOfOwnerResponse.Owner.IDCollections[0].DenomId)
+	s.Require().Equal(tokenID, queryNFTsOfOwnerResponse.Owner.IDCollections[0].TokenIds[0])
 
 	//------test GetCmdQueryCollection()-------------
-	respType = proto.Message(&nfttypes.QueryCollectionResponse{})
-	bz, err = nfttestutil.QueryCollectionExec(val.ClientCtx, denomID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	collectionItem := respType.(*nfttypes.QueryCollectionResponse)
-	s.Require().Equal(1, len(collectionItem.Collection.NFTs))
+	queryCollectionResponse := &nfttypes.QueryCollectionResponse{}
+	nfttestutil.QueryCollectionExec(s.T(), s.network, clientCtx, denomID, queryCollectionResponse)
+	s.Require().Equal(1, len(queryCollectionResponse.Collection.NFTs))
 
 	//------test GetCmdEditNFT()-------------
 	newTokenData := "{\"key1\":\"value1\",\"key2\":\"value2\"}"
@@ -204,28 +162,20 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
+	txResult = nfttestutil.EditNFTExec(s.T(),
+		s.network,
+		clientCtx, from.String(), denomID, tokenID, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	bz, err = nfttestutil.EditNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-
-	respType = proto.Message(&nfttypes.BaseNFT{})
-	bz, err = nfttestutil.QueryNFTExec(val.ClientCtx, denomID, tokenID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	newNftItem := respType.(*nfttypes.BaseNFT)
-	s.Require().Equal(newTokenName, newNftItem.Name)
-	s.Require().Equal(newTokenURI, newNftItem.URI)
-	s.Require().Equal(newTokenURIHash, newNftItem.UriHash)
-	s.Require().Equal(newTokenData, newNftItem.Data)
+	queryNFTResponse = &nfttypes.BaseNFT{}
+	nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID, queryNFTResponse)
+	s.Require().Equal(newTokenName, queryNFTResponse.Name)
+	s.Require().Equal(newTokenURI, queryNFTResponse.URI)
+	s.Require().Equal(newTokenURIHash, queryNFTResponse.UriHash)
+	s.Require().Equal(newTokenData, queryNFTResponse.Data)
 
 	//------test GetCmdTransferNFT()-------------
 	recipient := sdk.AccAddress(crypto.AddressHash([]byte("dgsbl")))
@@ -238,30 +188,22 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
+	txResult = nfttestutil.TransferNFTExec(s.T(),
+		s.network,
+		clientCtx, from.String(), recipient.String(), denomID, tokenID, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	bz, err = nfttestutil.TransferNFTExec(val.ClientCtx, from.String(), recipient.String(), denomID, tokenID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-
-	respType = proto.Message(&nfttypes.BaseNFT{})
-	bz, err = nfttestutil.QueryNFTExec(val.ClientCtx, denomID, tokenID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	nftItem = respType.(*nfttypes.BaseNFT)
-	s.Require().Equal(tokenID, nftItem.Id)
-	s.Require().Equal(tokenName, nftItem.Name)
-	s.Require().Equal(uri, nftItem.URI)
-	s.Require().Equal(uriHash, nftItem.UriHash)
-	s.Require().Equal(data, nftItem.Data)
-	s.Require().Equal(recipient.String(), nftItem.Owner)
+	queryNFTResponse = &nfttypes.BaseNFT{}
+	nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID, queryNFTResponse)
+	s.Require().Equal(tokenID, queryNFTResponse.Id)
+	s.Require().Equal(tokenName, queryNFTResponse.Name)
+	s.Require().Equal(uri, queryNFTResponse.URI)
+	s.Require().Equal(uriHash, queryNFTResponse.UriHash)
+	s.Require().Equal(data, queryNFTResponse.Data)
+	s.Require().Equal(recipient.String(), queryNFTResponse.Owner)
 
 	//------test GetCmdBurnNFT()-------------
 	newTokenID := "dgsbl"
@@ -273,73 +215,51 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
+	txResult = nfttestutil.MintNFTExec(s.T(),
+		s.network,
+		clientCtx, from.String(), denomID, newTokenID, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, newTokenID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-
-	respType = proto.Message(&nfttypes.QuerySupplyResponse{})
-	bz, err = nfttestutil.QuerySupplyExec(val.ClientCtx, denomID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	supplyResp = respType.(*nfttypes.QuerySupplyResponse)
-	s.Require().Equal(uint64(2), supplyResp.Amount)
+	querySupplyResponse = &nfttypes.QuerySupplyResponse{}
+	nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID, querySupplyResponse)
+	s.Require().Equal(uint64(2), querySupplyResponse.Amount)
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	bz, err = nfttestutil.BurnNFTExec(val.ClientCtx, from.String(), denomID, newTokenID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val2.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
+	txResult = nfttestutil.BurnNFTExec(s.T(),
+		s.network,
+		clientCtx, from.String(), denomID, newTokenID, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	s.network.WaitForNextBlock()
-
-	respType = proto.Message(&nfttypes.QuerySupplyResponse{})
-	bz, err = nfttestutil.QuerySupplyExec(val.ClientCtx, denomID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	supplyResp = respType.(*nfttypes.QuerySupplyResponse)
-	s.Require().Equal(uint64(1), supplyResp.Amount)
+	querySupplyResponse = &nfttypes.QuerySupplyResponse{}
+	nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID, querySupplyResponse)
+	s.Require().Equal(uint64(1), querySupplyResponse.Amount)
 
 	//------test GetCmdTransferDenom()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
+	txResult = nfttestutil.TransferDenomExec(s.T(),
+		s.network,
+		clientCtx, from.String(), val2.Address.String(), denomID, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	bz, err = nfttestutil.TransferDenomExec(val.ClientCtx, from.String(), val2.Address.String(), denomID, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
+	queryDenomResponse = &nfttypes.Denom{}
+	nfttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID, queryDenomResponse)
 
-	s.network.WaitForNextBlock()
-
-	respType = proto.Message(&nfttypes.Denom{})
-	bz, err = nfttestutil.QueryDenomExec(val.ClientCtx, denomID)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	denomItem2 := respType.(*nfttypes.Denom)
-	s.Require().Equal(val2.Address.String(), denomItem2.Creator)
-	s.Require().Equal(denomName, denomItem2.Name)
-	s.Require().Equal(schema, denomItem2.Schema)
-	s.Require().Equal(symbol, denomItem2.Symbol)
-	s.Require().Equal(mintRestricted, denomItem2.MintRestricted)
-	s.Require().Equal(updateRestricted, denomItem2.UpdateRestricted)
+	s.Require().Equal(val2.Address.String(), queryDenomResponse.Creator)
+	s.Require().Equal(denomName, queryDenomResponse.Name)
+	s.Require().Equal(schema, queryDenomResponse.Schema)
+	s.Require().Equal(symbol, queryDenomResponse.Symbol)
+	s.Require().Equal(mintRestricted, queryDenomResponse.MintRestricted)
+	s.Require().Equal(updateRestricted, queryDenomResponse.UpdateRestricted)
 }
