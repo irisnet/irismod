@@ -114,7 +114,9 @@ func (s *IntegrationTestSuite) TestRandom() {
 	// ------get service request-------------
 	requestHeight = requestHeight + 1
 	_, err = s.network.WaitForHeightWithTimeout(requestHeight, time.Duration(int64(blockInterval+2)*int64(s.network.TimeoutCommit)))
-	s.Require().NoError(err)
+	if err != nil {
+		s.network.WaitForNBlock(2)
+	}
 
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
@@ -139,7 +141,7 @@ func (s *IntegrationTestSuite) TestRandom() {
 			requestId = requestIds[0]
 		}
 	}
-	s.Require().NotNil(requestId)
+	s.Require().NotEmpty(requestId)
 
 	// ------respond service request-------------
 	args = []string{

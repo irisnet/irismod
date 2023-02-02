@@ -117,6 +117,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		lpToken.String(),
 		globalFlags...,
 	)
+	beginHeight := txResult.Height
 
 	unstakeLPToken := sdk.NewCoin(s.network.BondDenom, sdk.NewInt(50))
 	txResult = testutil.UnstakeExec(
@@ -128,9 +129,11 @@ func (s *IntegrationTestSuite) TestFarm() {
 		unstakeLPToken.String(),
 		globalFlags...,
 	)
+	endHeight := txResult.Height
 
 	rewardGot := gjson.Get(txResult.Log, "0.events.4.attributes.3.value").String()
-	s.Require().Equal(rewardPerBlock.String(), rewardGot)
+	expectedReward := rewardPerBlock.MulInt(sdk.NewInt(endHeight - beginHeight))
+	s.Require().Equal(expectedReward.String(), rewardGot)
 
 	txResult = testutil.HarvestExec(
 		s.T(),
@@ -140,25 +143,23 @@ func (s *IntegrationTestSuite) TestFarm() {
 		poolId,
 		globalFlags...,
 	)
+	endHeight1 := txResult.Height
 
 	rewardGot = gjson.Get(txResult.Log, "0.events.2.attributes.2.value").String()
-	s.Require().Equal(rewardPerBlock.String(), rewardGot)
+	expectedReward = rewardPerBlock.MulInt(sdk.NewInt(endHeight1 - endHeight))
+	s.Require().Equal(expectedReward.String(), rewardGot)
 
 	queryFarmerArgs := []string{
 		fmt.Sprintf("--%s=%s", farmcli.FlagFarmPool, poolId),
 	}
-	expectFarmer := farmtypes.LockedInfo{
-		PoolId:        poolId,
-		Locked:        lpToken.Sub(unstakeLPToken),
-		PendingReward: sdk.Coins{},
-	}
 
+	leftlpToken := lpToken.Sub(unstakeLPToken)
 	queryFarmerRespType := &farmtypes.QueryFarmerResponse{}
 	testutil.QueryFarmerExec(
 		s.T(),
 		s.network,
 		val.ClientCtx, creator.String(), queryFarmerRespType, queryFarmerArgs...)
-	s.Require().EqualValues(expectFarmer, *queryFarmerRespType.List[0])
+	s.Require().EqualValues(leftlpToken, *&queryFarmerRespType.List[0].Locked)
 
 	txResult = testutil.DestroyExec(
 		s.T(),

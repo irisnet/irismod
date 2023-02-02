@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -140,7 +140,7 @@ func QueryRequestByTxQuery(
 		return request, err
 	}
 
-	rpcClient, ok := node.(*rpchttp.HTTP)
+	rpcClient, ok := node.(rpcclient.Client)
 	if !ok {
 		return request, fmt.Errorf("unsupport client")
 	}

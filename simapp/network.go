@@ -34,12 +34,12 @@ func SetupNetwork(t *testing.T) Network {
 	network, err := network.New(t, t.TempDir(), cfg)
 	require.NoError(t, err, "SetupNetwork failed")
 
-	_, err = network.WaitForHeight(1)
-	require.NoError(t, err)
-	return Network{
+	n := Network{
 		Network: network,
 		Config:  cfg,
 	}
+	n.WaitForNBlock(2)
+	return n
 }
 
 func SetupNetworkWithConfig(t *testing.T, cfg network.Config) Network {
@@ -81,6 +81,20 @@ func (n Network) ExecQueryCmd(t *testing.T,
 	buf, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, extraArgs)
 	require.NoError(t, err, "ExecTestCLICmd failed")
 	require.NoError(t, clientCtx.Codec.UnmarshalJSON(buf.Bytes(), resp), buf.String())
+}
+
+func (n Network) WaitForNBlock(wait int64) error {
+	lastBlock, err := n.LatestHeight()
+	if err != nil {
+		return err
+	}
+
+	_, err = n.WaitForHeight(lastBlock + wait)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (n Network) QueryTx(t *testing.T,

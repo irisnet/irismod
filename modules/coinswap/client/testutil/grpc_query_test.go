@@ -133,7 +133,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
-	s.network.WaitForNextBlock()
+	s.network.WaitForNBlock(2)
 
 	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
 	s.Require().Equal("99999000", balances.AmountOf(symbol).String())
@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(res, &result)
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
-	s.network.WaitForNextBlock()
+	s.network.WaitForNBlock(2)
 
 	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
 	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
