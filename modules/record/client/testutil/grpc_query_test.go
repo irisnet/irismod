@@ -10,7 +10,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	recordcli "github.com/irisnet/irismod/modules/record/client/cli"
@@ -22,24 +21,13 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg     network.Config
-	network *network.Network
+	network simapp.Network
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := simapp.NewConfig()
-	cfg.NumValidators = 1
-
-	s.cfg = cfg
-
-	var err error
-	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
-	s.Require().NoError(err)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
+	s.network = simapp.SetupNetwork(s.T())
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -69,20 +57,15 @@ func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := recordtestutil.MsgCreateRecordExec(clientCtx, from.String(), digest, digestAlgo, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp := respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
-	txResult := simapp.QueryTx(s.T(), clientCtx, txResp.TxHash)
+	txResult := recordtestutil.CreateRecordExec(s.T(),
+		s.network,
+		clientCtx, from.String(), digest, digestAlgo, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	recordID := gjson.Get(txResult.Log, "0.events.0.attributes.1.value").String()
 
@@ -91,7 +74,7 @@ func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
 	baseURL := val.APIAddress
 	url := fmt.Sprintf("%s/irismod/record/records/%s", baseURL, recordID)
 
-	respType = proto.Message(&recordtypes.QueryRecordResponse{})
+	respType := proto.Message(&recordtypes.QueryRecordResponse{})
 	expectedContents := []recordtypes.Content{{
 		Digest:     digest,
 		DigestAlgo: digestAlgo,
