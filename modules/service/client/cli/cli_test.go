@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 
@@ -16,11 +15,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	servicecli "github.com/irisnet/irismod/modules/service/client/cli"
 	servicetestutil "github.com/irisnet/irismod/modules/service/client/testutil"
@@ -32,8 +28,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg     network.Config
-	network *network.Network
+	network simapp.Network
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -49,12 +44,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	serviceGenesisState.Params.ComplaintRetrospect = time.Duration(time.Second)
 	cfg.GenesisState[servicetypes.ModuleName] = cfg.Codec.MustMarshalJSON(&serviceGenesisState)
 
-	var err error
-	s.cfg = cfg
-	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
+	s.network = simapp.SetupNetworkWithConfig(s.T(), cfg)
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -69,6 +59,7 @@ func TestIntegrationTestSuite(t *testing.T) {
 func (s *IntegrationTestSuite) TestService() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
+	expectedCode := uint32(0)
 	// ---------------------------------------------------------------------------
 
 	serviceName := "test-service"
@@ -112,24 +103,14 @@ func (s *IntegrationTestSuite) TestService() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType := proto.Message(&sdk.TxResponse{})
-	expectedCode := uint32(0)
-	bz, err := servicetestutil.DefineServiceExec(clientCtx, author.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp := respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult := servicetestutil.DefineServiceExec(s.T(), s.network, clientCtx, author.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdQueryServiceDefinition()-------------
-	respType = proto.Message(&servicetypes.ServiceDefinition{})
-	bz, err = servicetestutil.QueryServiceDefinitionExec(val.ClientCtx, serviceName)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	serviceDefinition := respType.(*servicetypes.ServiceDefinition)
+	serviceDefinition := servicetestutil.QueryServiceDefinitionExec(s.T(), s.network, clientCtx, serviceName)
 	s.Require().Equal(serviceName, serviceDefinition.Name)
 
 	//------test GetCmdBindService()-------------
@@ -143,79 +124,45 @@ func (s *IntegrationTestSuite) TestService() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.BindServiceExec(clientCtx, provider.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.BindServiceExec(s.T(), s.network, clientCtx, provider.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdQueryServiceBinding()-------------
-	respType = proto.Message(&servicetypes.ServiceBinding{})
-	bz, err = servicetestutil.QueryServiceBindingExec(val.ClientCtx, serviceName, provider.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	serviceBinding := respType.(*servicetypes.ServiceBinding)
+	serviceBinding := servicetestutil.QueryServiceBindingExec(s.T(), s.network, clientCtx, serviceName, provider.String())
 	s.Require().Equal(serviceName, serviceBinding.ServiceName)
 	s.Require().Equal(provider.String(), serviceBinding.Provider)
 
 	//------test GetCmdQueryServiceBindings()-------------
-	respType = proto.Message(&servicetypes.QueryBindingsResponse{})
-	bz, err = servicetestutil.QueryServiceBindingsExec(val.ClientCtx, serviceName)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	serviceBindings := respType.(*servicetypes.QueryBindingsResponse)
+	serviceBindings := servicetestutil.QueryServiceBindingsExec(s.T(), s.network, clientCtx, serviceName)
 	s.Require().Len(serviceBindings.ServiceBindings, 1)
 
 	//------test GetCmdDisableServiceBinding()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.DisableServiceExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.DisableServiceExec(s.T(), s.network, clientCtx, serviceName, provider.String(), provider.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	respType = proto.Message(&servicetypes.ServiceBinding{})
-	bz, err = servicetestutil.QueryServiceBindingExec(val.ClientCtx, serviceName, provider.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	serviceBinding = respType.(*servicetypes.ServiceBinding)
+	serviceBinding = servicetestutil.QueryServiceBindingExec(s.T(), s.network, clientCtx, serviceName, provider.String())
 	s.Require().False(serviceBinding.Available)
 
 	//------test GetCmdRefundServiceDeposit()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.RefundDepositExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.RefundDepositExec(s.T(), s.network, clientCtx, serviceName, provider.String(), provider.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	respType = proto.Message(&servicetypes.ServiceBinding{})
-	bz, err = servicetestutil.QueryServiceBindingExec(val.ClientCtx, serviceName, provider.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	serviceBinding = respType.(*servicetypes.ServiceBinding)
+	serviceBinding = servicetestutil.QueryServiceBindingExec(s.T(), s.network, clientCtx, serviceName, provider.String())
 	s.Require().True(serviceBinding.Deposit.IsZero())
 
 	//------test GetCmdEnableServiceBinding()-------------
@@ -224,23 +171,13 @@ func (s *IntegrationTestSuite) TestService() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.EnableServiceExec(clientCtx, serviceName, provider.String(), provider.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.EnableServiceExec(s.T(), s.network, clientCtx, serviceName, provider.String(), provider.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	respType = proto.Message(&servicetypes.ServiceBinding{})
-	bz, err = servicetestutil.QueryServiceBindingExec(val.ClientCtx, serviceName, provider.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	serviceBinding = respType.(*servicetypes.ServiceBinding)
+	serviceBinding = servicetestutil.QueryServiceBindingExec(s.T(), s.network, clientCtx, serviceName, provider.String())
 	s.Require().Equal(serviceDeposit, serviceBinding.Deposit.String())
 
 	//------send token to consumer------------------------
@@ -250,18 +187,11 @@ func (s *IntegrationTestSuite) TestService() {
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = clitestutil.MsgSendExec(clientCtx, provider, consumer, amount, args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
-
-	s.network.WaitForNextBlock()
+	txResult = simapp.MsgSendExec(s.T(), s.network, clientCtx, provider, consumer, amount, args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdCallService()-------------
 	args = []string{
@@ -273,21 +203,14 @@ func (s *IntegrationTestSuite) TestService() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.CallServiceExec(clientCtx, consumer.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.CallServiceExec(s.T(), s.network, clientCtx, consumer.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	txResult, height := simapp.QueryTxWithHeight(s.T(), clientCtx, txResp.TxHash)
 	requestContextId := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
-	requestHeight := height
+	requestHeight := txResult.Height
 
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
@@ -318,25 +241,23 @@ func (s *IntegrationTestSuite) TestService() {
 	s.Require().Equal(requestContextId, compactRequest.RequestContextId)
 
 	//------test GetCmdQueryServiceRequests()-------------
-	respType = proto.Message(&servicetypes.QueryRequestsResponse{})
-	bz, err = servicetestutil.QueryServiceRequestsExec(val.ClientCtx, serviceName, provider.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	requests := respType.(*servicetypes.QueryRequestsResponse).Requests
-	s.Require().Len(requests, 1)
-	s.Require().Equal(requestContextId, requests[0].RequestContextId)
+	queryRequestsResponse := servicetestutil.QueryServiceRequestsExec(s.T(), s.network, clientCtx, serviceName, provider.String())
+	s.Require().Len(queryRequestsResponse.Requests, 1)
+	s.Require().Equal(requestContextId, queryRequestsResponse.Requests[0].RequestContextId)
 
 	//------test GetCmdQueryServiceRequests()-------------
-	respType = proto.Message(&servicetypes.QueryRequestsResponse{})
-	bz, err = servicetestutil.QueryServiceRequestsByReqCtx(val.ClientCtx, requests[0].RequestContextId, fmt.Sprint(requests[0].RequestContextBatchCounter))
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	requests = respType.(*servicetypes.QueryRequestsResponse).Requests
-	s.Require().Len(requests, 1)
-	s.Require().Equal(requestContextId, requests[0].RequestContextId)
+	queryRequestsResponse = servicetestutil.QueryServiceRequestsByReqCtx(
+		s.T(),
+		s.network,
+		clientCtx,
+		queryRequestsResponse.Requests[0].RequestContextId,
+		fmt.Sprint(queryRequestsResponse.Requests[0].RequestContextBatchCounter),
+	)
+	s.Require().Len(queryRequestsResponse.Requests, 1)
+	s.Require().Equal(requestContextId, queryRequestsResponse.Requests[0].RequestContextId)
 
 	//------test GetCmdRespondService()-------------
-	request := requests[0]
+	request := queryRequestsResponse.Requests[0]
 	args = []string{
 		fmt.Sprintf("--%s=%s", servicecli.FlagRequestID, request.Id),
 		fmt.Sprintf("--%s=%s", servicecli.FlagResult, respResult),
@@ -344,97 +265,55 @@ func (s *IntegrationTestSuite) TestService() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.RespondServiceExec(clientCtx, provider.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.RespondServiceExec(s.T(), s.network, clientCtx, provider.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdQueryEarnedFees()-------------
-	respType = proto.Message(&servicetypes.QueryEarnedFeesResponse{})
-	bz, err = servicetestutil.QueryEarnedFeesExec(val.ClientCtx, provider.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	earnedFees := respType.(*servicetypes.QueryEarnedFeesResponse).Fees
-	s.Require().Equal(expectedEarnedFees, earnedFees.String())
+	queryEarnedFeesResponse := servicetestutil.QueryEarnedFeesExec(s.T(), s.network, clientCtx, provider.String())
+	s.Require().Equal(expectedEarnedFees, queryEarnedFeesResponse.Fees.String())
 
 	//------GetCmdSetWithdrawAddr()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.SetWithdrawAddrExec(clientCtx, withdrawalAddress.String(), provider.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.SetWithdrawAddrExec(s.T(), s.network, clientCtx, withdrawalAddress.String(), provider.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------GetCmdWithdrawEarnedFees()-------------
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(10))).String()),
 	}
-	respType = proto.Message(&sdk.TxResponse{})
-	expectedCode = uint32(0)
-	bz, err = servicetestutil.WithdrawEarnedFeesExec(clientCtx, provider.String(), provider.String(), args...)
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
-	txResp = respType.(*sdk.TxResponse)
-	s.Require().Equal(expectedCode, txResp.Code)
 
-	s.network.WaitForNextBlock()
+	txResult = servicetestutil.WithdrawEarnedFeesExec(s.T(), s.network, clientCtx, provider.String(), provider.String(), args...)
+	s.Require().Equal(expectedCode, txResult.Code)
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	bz, err = clitestutil.QueryBalancesExec(val.ClientCtx, withdrawalAddress)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	withdrawalFees := respType.(*banktypes.QueryAllBalancesResponse).Balances
+	withdrawalFees := simapp.QueryBalancesExec(s.T(), s.network, clientCtx, withdrawalAddress.String())
 	s.Require().Equal(expectedEarnedFees, withdrawalFees.String())
 
 	//------check service tax-------------
-	bz, err = clitestutil.QueryBalancesExec(val.ClientCtx, authtypes.NewModuleAddress(servicetypes.FeeCollectorName))
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	taxFees := respType.(*banktypes.QueryAllBalancesResponse).Balances
+	taxFees := simapp.QueryBalancesExec(s.T(), s.network, clientCtx, authtypes.NewModuleAddress(servicetypes.FeeCollectorName).String())
 	s.Require().Equal(expectedTaxFees, taxFees.String())
 
 	//------GetCmdQueryRequestContext()-------------
 	contextId := request.RequestContextId
-	respType = proto.Message(&servicetypes.RequestContext{})
-	bz, err = servicetestutil.QueryRequestContextExec(val.ClientCtx, contextId)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	contextResp := respType.(*servicetypes.RequestContext)
+	contextResp := servicetestutil.QueryRequestContextExec(s.T(), s.network, clientCtx, contextId)
 	s.Require().False(contextResp.Empty())
 
 	//------GetCmdQueryServiceRequest()-------------
 	requestId := request.Id
-	respType = proto.Message(&servicetypes.Request{})
-	bz, err = servicetestutil.QueryServiceRequestExec(val.ClientCtx, requestId)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	requestResp := respType.(*servicetypes.Request)
+	requestResp := servicetestutil.QueryServiceRequestExec(s.T(), s.network, clientCtx, requestId)
 	s.Require().False(requestResp.Empty())
 	s.Require().Equal(requestId, requestResp.Id)
 
 	//------GetCmdQueryServiceResponse()-------------
-	respType = proto.Message(&servicetypes.Response{})
-	bz, err = servicetestutil.QueryServiceResponseExec(val.ClientCtx, requestId)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
-	responseResp := respType.(*servicetypes.Response)
+	responseResp := servicetestutil.QueryServiceResponseExec(s.T(), s.network, clientCtx, requestId)
 	s.Require().False(responseResp.Empty())
-
 }

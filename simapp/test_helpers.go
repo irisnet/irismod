@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"cosmossdk.io/simapp"
+	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -23,6 +24,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectype "github.com/cosmos/cosmos-sdk/codec/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -30,7 +32,6 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/testutil"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
@@ -585,14 +586,16 @@ func FundModuleAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, recipientM
 	return bankKeeper.SendCoinsFromModuleToModule(ctx, minttypes.ModuleName, recipientMod, amounts)
 }
 
-func QueryBalancesExec(clientCtx client.Context, address string, extraArgs ...string) (testutil.BufferWriter, error) {
+func QueryBalancesExec(t *testing.T, network Network, clientCtx client.Context, address string, extraArgs ...string) sdk.Coins {
 	args := []string{
 		address,
 		fmt.Sprintf("--%s=json", "output"),
 	}
 	args = append(args, extraArgs...)
 
-	return clitestutil.ExecTestCLICmd(clientCtx, bankcli.GetBalancesCmd(), args)
+	result := &banktypes.QueryAllBalancesResponse{}
+	network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
+	return result.Balances
 }
 
 func QueryBalanceExec(t *testing.T, network Network, clientCtx client.Context, address string, denom string, extraArgs ...string) *sdk.Coin {
@@ -608,14 +611,23 @@ func QueryBalanceExec(t *testing.T, network Network, clientCtx client.Context, a
 	return result
 }
 
-func QueryAccountExec(clientCtx client.Context, address string, extraArgs ...string) (testutil.BufferWriter, error) {
+func QueryAccountExec(t *testing.T, network Network, clientCtx client.Context, address string, extraArgs ...string) authtypes.AccountI {
 	args := []string{
 		address,
 		fmt.Sprintf("--%s=json", "output"),
 	}
 	args = append(args, extraArgs...)
+	out, err := clitestutil.ExecTestCLICmd(clientCtx, authcli.GetAccountCmd(), args)
+	require.NoError(t, err, "QueryAccountExec  failed")
 
-	return clitestutil.ExecTestCLICmd(clientCtx, authcli.GetAccountCmd(), args)
+	respType := proto.Message(&codectype.Any{})
+	require.NoError(t, clientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
+
+	var account authtypes.AccountI
+	err = clientCtx.InterfaceRegistry.UnpackAny(respType.(*codectype.Any), &account)
+	require.NoError(t, err, "UnpackAccount failed")
+
+	return account
 }
 
 func MsgSendExec(t *testing.T, network Network, clientCtx client.Context, from, to, amount fmt.Stringer, extraArgs ...string) *ResponseTx {

@@ -11,14 +11,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clienttx "github.com/cosmos/cosmos-sdk/client/tx"
-	codectype "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
@@ -82,21 +79,11 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 
 	_ = tokentestutil.IssueTokenExec(s.T(), s.network, clientCtx, from.String(), args...)
 
-	respType := proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err := simapp.QueryBalancesExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-	balances := respType.(*banktypes.QueryAllBalancesResponse)
-	s.Require().Equal("100000000", balances.Balances.AmountOf(symbol).String())
-	s.Require().Equal("399986975", balances.Balances.AmountOf(sdk.DefaultBondDenom).String())
+	balances := simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
+	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
+	s.Require().Equal("399986975", balances.AmountOf(sdk.DefaultBondDenom).String())
 
-	var account authtypes.AccountI
-	respType = proto.Message(&codectype.Any{})
-	out, err = simapp.QueryAccountExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-	err = clientCtx.InterfaceRegistry.UnpackAny(respType.(*codectype.Any), &account)
-	s.Require().NoError(err)
+	account := simapp.QueryAccountExec(s.T(), s.network, clientCtx, from.String())
 
 	// test add liquidity (poor not exist)
 	status, err := clientCtx.Client.Status(context.Background())
@@ -148,17 +135,10 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 	s.network.WaitForNextBlock()
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-
-	balances = respType.(*banktypes.QueryAllBalancesResponse)
-	coins := balances.Balances
-	fmt.Println(coins)
-	s.Require().Equal("99999000", coins.AmountOf(symbol).String())
-	s.Require().Equal("399980965", coins.AmountOf(sdk.DefaultBondDenom).String())
-	s.Require().Equal("1000", coins.AmountOf(lptDenom).String())
+	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
+	s.Require().Equal("99999000", balances.AmountOf(symbol).String())
+	s.Require().Equal("399980965", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
 
 	queryPoolResponse := proto.Message(&coinswaptypes.QueryLiquidityPoolResponse{})
 	url := fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
@@ -220,17 +200,10 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 	s.network.WaitForNextBlock()
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-
-	balances = respType.(*banktypes.QueryAllBalancesResponse)
-	coins = balances.Balances
-	fmt.Println(coins)
-	s.Require().Equal("99996999", coins.AmountOf(symbol).String())
-	s.Require().Equal("399978955", coins.AmountOf(sdk.DefaultBondDenom).String())
-	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
+	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
+	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
+	s.Require().Equal("399978955", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
 	resp, err = testutil.GetRequest(url)
@@ -291,17 +264,10 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 	s.network.WaitForNextBlock()
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-
-	balances = respType.(*banktypes.QueryAllBalancesResponse)
-	coins = balances.Balances
-	fmt.Println(coins)
-	s.Require().Equal("99995999", coins.AmountOf(symbol).String())
-	s.Require().Equal("399979693", coins.AmountOf(sdk.DefaultBondDenom).String())
-	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
+	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
+	s.Require().Equal("99995999", balances.AmountOf(symbol).String())
+	s.Require().Equal("399979693", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
 	resp, err = testutil.GetRequest(url)
@@ -362,17 +328,10 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 	s.network.WaitForNextBlock()
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-
-	balances = respType.(*banktypes.QueryAllBalancesResponse)
-	coins = balances.Balances
-	fmt.Println(coins)
-	s.Require().Equal("99996999", coins.AmountOf(symbol).String())
-	s.Require().Equal("399978930", coins.AmountOf(sdk.DefaultBondDenom).String())
-	s.Require().Equal("3000", coins.AmountOf(lptDenom).String())
+	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
+	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
+	s.Require().Equal("399978930", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
 	resp, err = testutil.GetRequest(url)
@@ -428,17 +387,10 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 	s.network.WaitForNextBlock()
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-
-	balances = respType.(*banktypes.QueryAllBalancesResponse)
-	coins = balances.Balances
-	fmt.Println(coins)
-	s.Require().Equal("99998999", coins.AmountOf(symbol).String())
-	s.Require().Equal("399980923", coins.AmountOf(sdk.DefaultBondDenom).String())
-	s.Require().Equal("1000", coins.AmountOf(lptDenom).String())
+	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
+	s.Require().Equal("99998999", balances.AmountOf(symbol).String())
+	s.Require().Equal("399980923", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
 	resp, err = testutil.GetRequest(url)
@@ -494,17 +446,10 @@ func (s *IntegrationTestSuite) TestCoinswap() {
 	s.Require().Equal(uint32(0), result.TxResponse.Code, "rawlog", result.TxResponse.RawLog)
 	s.network.WaitForNextBlock()
 
-	respType = proto.Message(&banktypes.QueryAllBalancesResponse{})
-	out, err = simapp.QueryBalancesExec(clientCtx, from.String())
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
-
-	balances = respType.(*banktypes.QueryAllBalancesResponse)
-	coins = balances.Balances
-	fmt.Println(coins)
-	s.Require().Equal("100000000", coins.AmountOf(symbol).String())
-	s.Require().Equal("399981915", coins.AmountOf(sdk.DefaultBondDenom).String())
-	s.Require().Equal("0", coins.AmountOf(lptDenom).String())
+	balances = simapp.QueryBalancesExec(s.T(), s.network, clientCtx, from.String())
+	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
+	s.Require().Equal("399981915", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("0", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
 	resp, err = testutil.GetRequest(url)
