@@ -6,7 +6,6 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -67,8 +66,7 @@ func (s *IntegrationTestSuite) TestQueryRecordGRPC() {
 		clientCtx, from.String(), digest, digestAlgo, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	recordID := gjson.Get(txResult.Log, "0.events.0.attributes.1.value").String()
-
+	recordID := s.network.GetAttribute(recordtypes.EventTypeCreateRecord, recordtypes.AttributeKeyRecordID, txResult.Events)
 	// ---------------------------------------------------------------------------
 
 	baseURL := val.APIAddress

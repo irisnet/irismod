@@ -7,7 +7,6 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -72,7 +71,7 @@ func (s *IntegrationTestSuite) TestToken() {
 	respType := proto.Message(&sdk.TxResponse{})
 	txResult := tokentestutil.IssueTokenExec(s.T(), s.network, clientCtx, from.String(), args...)
 
-	tokenSymbol := gjson.Get(txResult.Log, "0.events.4.attributes.0.value").String()
+	tokenSymbol := s.network.GetAttribute(tokentypes.EventTypeIssueToken, tokentypes.AttributeKeySymbol, txResult.Events)
 
 	//------test GetCmdQueryTokens()-------------
 	url := fmt.Sprintf("%s/irismod/token/tokens", baseURL)

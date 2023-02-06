@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/tendermint/tendermint/crypto"
 
@@ -71,7 +70,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		from.String(),
 		args...,
 	)
-	denomID := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
+	denomID := s.network.GetAttribute(mttypes.EventTypeIssueDenom, mttypes.AttributeKeyDenomID, txResult.Events)
 
 	//------test GetCmdQueryDenom()-------------
 	queryDenomRespType := &mttypes.Denom{}
@@ -100,12 +99,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		clientCtx, from.String(), denomID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryMTsResponse := &mttypes.QueryMTsResponse{}
-	mttestutil.QueryMTsExec(s.T(), s.network, clientCtx, denomID, queryMTsResponse)
-	s.Require().Equal(1, len(queryMTsResponse.Mts))
-
-	mtID := queryMTsResponse.Mts[0].Id
-
+	mtID := s.network.GetAttribute(mttypes.EventTypeMintMT, mttypes.AttributeKeyMTID, txResult.Events)
 	//------test GetCmdQueryMT()-------------
 	queryMTResponse := &mttypes.MT{}
 	mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID, queryMTResponse)

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -65,7 +64,7 @@ func (s *IntegrationTestSuite) TestRecord() {
 		clientCtx, from.String(), digest, digestAlgo, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	recordID := gjson.Get(txResult.Log, "0.events.0.attributes.1.value").String()
+	recordID := s.network.GetAttribute(recordtypes.EventTypeCreateRecord, recordtypes.AttributeKeyRecordID, txResult.Events)
 
 	// ---------------------------------------------------------------------------
 

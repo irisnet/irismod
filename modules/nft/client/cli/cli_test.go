@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/tendermint/tendermint/crypto"
 
@@ -56,7 +55,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	tokenID := "kitty"
 	//owner     := "owner"
 	denomName := "name"
-	denom := "denom"
+	denomID := "denom"
 	schema := "schema"
 	symbol := "symbol"
 	mintRestricted := true
@@ -81,9 +80,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	txResult := nfttestutil.IssueDenomExec(s.T(),
 		s.network,
-		clientCtx, from.String(), denom, args...)
+		clientCtx, from.String(), denomID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
-	denomID := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
 
 	//------test GetCmdQueryDenom()-------------
 	queryDenomResponse := &nfttypes.Denom{}
@@ -141,7 +139,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	queryNFTsOfOwnerResponse := &nfttypes.QueryNFTsOfOwnerResponse{}
 	nfttestutil.QueryOwnerExec(s.T(), s.network, clientCtx, from.String(), queryNFTsOfOwnerResponse)
 	s.Require().Equal(from.String(), queryNFTsOfOwnerResponse.Owner.Address)
-	s.Require().Equal(denom, queryNFTsOfOwnerResponse.Owner.IDCollections[0].DenomId)
+	s.Require().Equal(denomID, queryNFTsOfOwnerResponse.Owner.IDCollections[0].DenomId)
 	s.Require().Equal(tokenID, queryNFTsOfOwnerResponse.Owner.IDCollections[0].TokenIds[0])
 
 	//------test GetCmdQueryCollection()-------------

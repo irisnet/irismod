@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/tendermint/tendermint/crypto"
 
@@ -209,7 +208,7 @@ func (s *IntegrationTestSuite) TestService() {
 	txResult = servicetestutil.CallServiceExec(s.T(), s.network, clientCtx, consumer.String(), args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	requestContextId := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
+	requestContextId := s.network.GetAttribute(servicetypes.EventTypeCreateContext, servicetypes.AttributeKeyRequestContextID, txResult.Events)
 	requestHeight := txResult.Height
 
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)

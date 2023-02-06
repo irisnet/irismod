@@ -6,7 +6,6 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -53,7 +52,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	tokenID := "kitty"
 	//owner     := "owner"
 	denomName := "name"
-	denom := "denom"
+	denomID := "denom"
 	schema := "schema"
 	symbol := "symbol"
 	mintRestricted := true
@@ -81,9 +80,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	txResult := nfttestutil.IssueDenomExec(s.T(),
 		s.network,
-		clientCtx, from.String(), denom, args...)
+		clientCtx, from.String(), denomID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
-	denomID := gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
 
 	//------test GetCmdQueryDenom()-------------
 	url := fmt.Sprintf("%s/irismod/nft/denoms/%s", baseURL, denomID)
@@ -161,7 +159,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, respType))
 	ownerResp := respType.(*nfttypes.QueryNFTsOfOwnerResponse)
 	s.Require().Equal(from.String(), ownerResp.Owner.Address)
-	s.Require().Equal(denom, ownerResp.Owner.IDCollections[0].DenomId)
+	s.Require().Equal(denomID, ownerResp.Owner.IDCollections[0].DenomId)
 	s.Require().Equal(tokenID, ownerResp.Owner.IDCollections[0].TokenIds[0])
 
 	//------test GetCmdQueryCollection()-------------

@@ -7,13 +7,13 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"github.com/tendermint/tendermint/crypto"
-	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	tokencli "github.com/irisnet/irismod/modules/token/client/cli"
 	tokentestutil "github.com/irisnet/irismod/modules/token/client/testutil"
+	tokentypes "github.com/irisnet/irismod/modules/token/types"
 	"github.com/irisnet/irismod/simapp"
 )
 
@@ -70,7 +70,7 @@ func (s *IntegrationTestSuite) TestToken() {
 	txResult := tokentestutil.IssueTokenExec(s.T(), s.network, clientCtx, from.String(), args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	tokenSymbol := gjson.Get(txResult.Log, "0.events.4.attributes.0.value").String()
+	tokenSymbol := s.network.GetAttribute(tokentypes.EventTypeIssueToken, tokentypes.AttributeKeySymbol, txResult.Events)
 
 	//------test GetCmdQueryTokens()-------------
 	tokens := tokentestutil.QueryTokensExec(s.T(), s.network, clientCtx, from.String())

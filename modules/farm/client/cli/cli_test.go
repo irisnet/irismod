@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -74,7 +73,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		args...,
 	)
 
-	poolId := gjson.Get(txResult.Log, "0.events.3.attributes.1.value").String()
+	poolId := s.network.GetAttribute(farmtypes.EventTypeCreatePool, farmtypes.AttributeValuePoolId, txResult.Events)
 	expectedContents := &farmtypes.FarmPoolEntry{
 		Id:              poolId,
 		Creator:         creator.String(),
@@ -131,7 +130,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 	)
 	endHeight := txResult.Height
 
-	rewardGot := gjson.Get(txResult.Log, "0.events.4.attributes.3.value").String()
+	rewardGot := s.network.GetAttribute(farmtypes.EventTypeUnstake, farmtypes.AttributeValueReward, txResult.Events)
 	expectedReward := rewardPerBlock.MulInt(sdk.NewInt(endHeight - beginHeight))
 	s.Require().Equal(expectedReward.String(), rewardGot)
 
@@ -145,7 +144,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 	)
 	endHeight1 := txResult.Height
 
-	rewardGot = gjson.Get(txResult.Log, "0.events.2.attributes.2.value").String()
+	rewardGot = s.network.GetAttribute(farmtypes.EventTypeHarvest, farmtypes.AttributeValueReward, txResult.Events)
 	expectedReward = rewardPerBlock.MulInt(sdk.NewInt(endHeight1 - endHeight))
 	s.Require().Equal(expectedReward.String(), rewardGot)
 

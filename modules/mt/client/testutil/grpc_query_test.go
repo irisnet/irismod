@@ -11,7 +11,6 @@ import (
 	mtcli "github.com/irisnet/irismod/modules/mt/client/cli"
 	mttestutil "github.com/irisnet/irismod/modules/mt/client/testutil"
 	mttypes "github.com/irisnet/irismod/modules/mt/types"
-	"github.com/tidwall/gjson"
 
 	"github.com/irisnet/irismod/simapp"
 	"github.com/stretchr/testify/suite"
@@ -69,7 +68,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		args...,
 	)
 	s.Require().Equal(expectedCode, txResult.Code)
-	denomID = gjson.Get(txResult.Log, "0.events.0.attributes.0.value").String()
+	denomID = s.network.GetAttribute(mttypes.EventTypeIssueDenom, mttypes.AttributeKeyDenomID, txResult.Events)
 
 	// Mint
 	args = []string{
@@ -86,7 +85,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		clientCtx, from.String(), denomID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	mtID = gjson.Get(txResult.Log, "0.events.1.attributes.0.value").String()
+	mtID = s.network.GetAttribute(mttypes.EventTypeMintMT, mttypes.AttributeKeyMTID, txResult.Events)
 
 	//Denom
 	respType := proto.Message(&mttypes.QueryDenomResponse{})

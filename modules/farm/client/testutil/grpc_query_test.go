@@ -6,7 +6,6 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -78,7 +77,7 @@ func (s *IntegrationTestSuite) TestRest() {
 		args...,
 	)
 
-	poolId := gjson.Get(txResult.Log, "0.events.3.attributes.1.value").String()
+	poolId := s.network.GetAttribute(farmtypes.EventTypeCreatePool, farmtypes.AttributeValuePoolId, txResult.Events)
 	expectedContents := farmtypes.FarmPoolEntry{
 		Id:              poolId,
 		Description:     description,

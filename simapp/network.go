@@ -121,3 +121,16 @@ reTry:
 	require.NoError(t, err, "query tx failed")
 	return &ResponseTx{result.TxResult, result.Height}
 }
+
+func (n Network) GetAttribute(typ, key string, events []abci.Event) string {
+	for _, event := range events {
+		if event.Type == typ {
+			for _, attribute := range event.Attributes {
+				if attribute.Key == key {
+					return attribute.Value
+				}
+			}
+		}
+	}
+	return ""
+}
