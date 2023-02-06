@@ -88,8 +88,7 @@ func (s *IntegrationTestSuite) TestFarm() {
 		RewardPerBlock:  rewardPerBlock,
 	}
 
-	respType := &farmtypes.QueryFarmPoolResponse{}
-	testutil.QueryFarmPoolExec(s.T(), s.network, val.ClientCtx, poolId, respType)
+	respType := testutil.QueryFarmPoolExec(s.T(), s.network, val.ClientCtx, poolId)
 	s.Require().EqualValues(expectedContents, respType.Pool)
 
 	reward := sdk.NewCoins(sdk.NewCoin(s.network.BondDenom, sdk.NewInt(1000)))
@@ -153,12 +152,11 @@ func (s *IntegrationTestSuite) TestFarm() {
 	}
 
 	leftlpToken := lpToken.Sub(unstakeLPToken)
-	queryFarmerRespType := &farmtypes.QueryFarmerResponse{}
-	testutil.QueryFarmerExec(
+	response := testutil.QueryFarmerExec(
 		s.T(),
 		s.network,
-		val.ClientCtx, creator.String(), queryFarmerRespType, queryFarmerArgs...)
-	s.Require().EqualValues(leftlpToken, *&queryFarmerRespType.List[0].Locked)
+		val.ClientCtx, creator.String(), queryFarmerArgs...)
+	s.Require().EqualValues(leftlpToken, response.List[0].Locked)
 
 	txResult = testutil.DestroyExec(
 		s.T(),

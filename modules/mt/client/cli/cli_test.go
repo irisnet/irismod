@@ -73,14 +73,12 @@ func (s *IntegrationTestSuite) TestMT() {
 	denomID := s.network.GetAttribute(mttypes.EventTypeIssueDenom, mttypes.AttributeKeyDenomID, txResult.Events)
 
 	//------test GetCmdQueryDenom()-------------
-	queryDenomRespType := &mttypes.Denom{}
-	mttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID, queryDenomRespType)
+	queryDenomRespType := mttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(denomName, queryDenomRespType.Name)
 	s.Require().Equal([]byte(data), queryDenomRespType.Data)
 
 	//------test GetCmdQueryDenoms()-------------
-	queryDenomsRespType := &mttypes.QueryDenomsResponse{}
-	mttestutil.QueryDenomsExec(s.T(), s.network, clientCtx, queryDenomsRespType)
+	queryDenomsRespType := mttestutil.QueryDenomsExec(s.T(), s.network, clientCtx)
 	s.Require().Equal(1, len(queryDenomsRespType.Denoms))
 	s.Require().Equal(denomID, queryDenomsRespType.Denoms[0].Id)
 
@@ -101,13 +99,11 @@ func (s *IntegrationTestSuite) TestMT() {
 
 	mtID := s.network.GetAttribute(mttypes.EventTypeMintMT, mttypes.AttributeKeyMTID, txResult.Events)
 	//------test GetCmdQueryMT()-------------
-	queryMTResponse := &mttypes.MT{}
-	mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID, queryMTResponse)
+	queryMTResponse := mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID)
 	s.Require().Equal(mtID, queryMTResponse.Id)
 
 	//-------test GetCmdQueryBalances()----------
-	queryBalancesResponse := &mttypes.QueryBalancesResponse{}
-	mttestutil.QueryBlancesExec(s.T(), s.network, clientCtx, from.String(), denomID, queryBalancesResponse)
+	queryBalancesResponse := mttestutil.QueryBlancesExec(s.T(), s.network, clientCtx, from.String(), denomID)
 	s.Require().Equal(1, len(queryBalancesResponse.Balance))
 	s.Require().Equal(uint64(10), queryBalancesResponse.Balance[0].Amount)
 
@@ -126,8 +122,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		clientCtx, from.String(), denomID, mtID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryMTResponse = &mttypes.MT{}
-	mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID, queryMTResponse)
+	queryMTResponse = mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID)
 	s.Require().Equal([]byte(newTokenDate), queryMTResponse.Data)
 
 	//------test GetCmdTransferMT()-------------
@@ -144,8 +139,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		clientCtx, from.String(), recipient.String(), denomID, mtID, transferAmt, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryMTResponse = &mttypes.MT{}
-	mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID, queryMTResponse)
+	queryMTResponse = mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID)
 	s.Require().Equal(mtID, queryMTResponse.Id)
 	s.Require().Equal([]byte(newTokenDate), queryMTResponse.Data)
 
@@ -161,8 +155,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		clientCtx, from.String(), denomID, mtID, burnAmt, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryMTResponse = &mttypes.MT{}
-	mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID, queryMTResponse)
+	queryMTResponse = mttestutil.QueryMTExec(s.T(), s.network, clientCtx, denomID, mtID)
 	s.Require().Equal(mtID, queryMTResponse.Id)
 	s.Require().Equal([]byte(newTokenDate), queryMTResponse.Data)
 	s.Require().Equal(uint64(5), queryMTResponse.Supply)
@@ -179,8 +172,7 @@ func (s *IntegrationTestSuite) TestMT() {
 		clientCtx, from.String(), val2.Address.String(), denomID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryDenomResponse := &mttypes.Denom{}
-	mttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID, queryDenomResponse)
+	queryDenomResponse := mttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(val2.Address.String(), queryDenomResponse.Owner)
 	s.Require().Equal(denomName, queryDenomResponse.Name)
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	mtcli "github.com/irisnet/irismod/modules/mt/client/cli"
+	mttypes "github.com/irisnet/irismod/modules/mt/types"
 	"github.com/irisnet/irismod/simapp"
 )
 
@@ -110,30 +111,30 @@ func QueryDenomExec(t *testing.T,
 	network simapp.Network,
 	clientCtx client.Context,
 	denomID string,
-	resp proto.Message,
-	extraArgs ...string,
-) {
+	extraArgs ...string) *mttypes.Denom {
 	args := []string{
 		denomID,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryDenom(), args, resp)
+	response := &mttypes.Denom{}
+	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryDenom(), args, response)
+	return response
 }
 
 func QueryDenomsExec(t *testing.T,
 	network simapp.Network,
 	clientCtx client.Context,
-	resp proto.Message,
-	extraArgs ...string,
-) {
+	extraArgs ...string) *mttypes.QueryDenomsResponse {
 	args := []string{
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryDenoms(), args, resp)
+	response := &mttypes.QueryDenomsResponse{}
+	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryDenoms(), args, response)
+	return response
 }
 
 func QueryMTsExec(t *testing.T,
@@ -157,17 +158,16 @@ func QueryMTExec(t *testing.T,
 	clientCtx client.Context,
 	denomID string,
 	mtID string,
-	resp proto.Message,
-	extraArgs ...string,
-) {
+	extraArgs ...string) *mttypes.MT {
 	args := []string{
 		denomID,
 		mtID,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
-
-	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryMT(), args, resp)
+	response := &mttypes.MT{}
+	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryMT(), args, response)
+	return response
 }
 
 func QueryBlancesExec(t *testing.T,
@@ -175,9 +175,7 @@ func QueryBlancesExec(t *testing.T,
 	clientCtx client.Context,
 	from string,
 	denomID string,
-	resp proto.Message,
-	extraArgs ...string,
-) {
+	extraArgs ...string) *mttypes.QueryBalancesResponse {
 	args := []string{
 		from,
 		denomID,
@@ -185,7 +183,9 @@ func QueryBlancesExec(t *testing.T,
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryBalances(), args, resp)
+	response := &mttypes.QueryBalancesResponse{}
+	network.ExecQueryCmd(t, clientCtx, mtcli.GetCmdQueryBalances(), args, response)
+	return response
 }
 
 func TransferDenomExec(t *testing.T,

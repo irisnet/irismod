@@ -213,13 +213,11 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		Transfer:             testCases[0].args.transfer,
 		Direction:            testCases[0].args.direction,
 	}
-	respType := &htlctypes.HTLC{}
-	htlctestutil.QueryHTLCExec(
+	respType := htlctestutil.QueryHTLCExec(
 		s.T(),
 		s.network,
 		ctx,
 		expectedhtlc.Id,
-		respType,
 	)
 	s.Require().Equal(expectedhtlc.String(), respType.String())
 
@@ -241,13 +239,11 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		args...,
 	)
 
-	respType = &htlctypes.HTLC{}
-	htlctestutil.QueryHTLCExec(
+	respType = htlctestutil.QueryHTLCExec(
 		s.T(),
 		s.network,
 		ctx,
 		expectedhtlc.Id,
-		respType,
 	)
 	s.Require().Equal(htlctypes.Completed.String(), respType.State.String())
 
@@ -304,13 +300,11 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		Transfer:             testCases[1].args.transfer,
 		Direction:            testCases[1].args.direction,
 	}
-	respType = &htlctypes.HTLC{}
-	htlctestutil.QueryHTLCExec(
+	respType = htlctestutil.QueryHTLCExec(
 		s.T(),
 		s.network,
 		ctx,
 		expectedhtlt.Id,
-		respType,
 	)
 	s.Require().Equal(expectedhtlt.String(), respType.String())
 
@@ -332,13 +326,11 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		args...,
 	)
 
-	respType = &htlctypes.HTLC{}
-	htlctestutil.QueryHTLCExec(
+	respType = htlctestutil.QueryHTLCExec(
 		s.T(),
 		s.network,
 		ctx,
 		expectedhtlc.Id,
-		respType,
 	)
 	s.Require().Equal(htlctypes.Completed.String(), respType.State.String())
 
@@ -388,13 +380,11 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		Direction:            testCases[2].args.direction,
 	}
 
-	respType = &htlctypes.HTLC{}
-	htlctestutil.QueryHTLCExec(
+	respType = htlctestutil.QueryHTLCExec(
 		s.T(),
 		s.network,
 		ctx,
 		expectedhtlc.Id,
-		respType,
 	)
 	s.Require().Equal(htlctypes.Completed.String(), respType.State.String())
 
@@ -416,13 +406,11 @@ func (s *IntegrationTestSuite) TestHTLC() {
 		args...,
 	)
 
-	respType = &htlctypes.HTLC{}
-	htlctestutil.QueryHTLCExec(
+	respType = htlctestutil.QueryHTLCExec(
 		s.T(),
 		s.network,
 		ctx,
 		expectedhtlc.Id,
-		respType,
 	)
 	s.Require().Equal(htlctypes.Completed.String(), respType.State.String())
 

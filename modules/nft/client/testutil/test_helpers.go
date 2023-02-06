@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
+	nfttypes "github.com/irisnet/irismod/modules/nft/types"
 	"github.com/irisnet/irismod/simapp"
 )
 
@@ -127,75 +127,78 @@ func QueryDenomExec(t *testing.T,
 	network simapp.Network,
 	clientCtx client.Context,
 	denomID string,
-	resp proto.Message,
-	extraArgs ...string,
-) {
+	extraArgs ...string) *nfttypes.Denom {
 	args := []string{
 		denomID,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryDenom(), args, resp)
+	response := &nfttypes.Denom{}
+	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryDenom(), args, response)
+	return response
 }
 
 func QueryCollectionExec(t *testing.T,
 	network simapp.Network,
 	clientCtx client.Context,
 	denomID string,
-	resp proto.Message,
-	extraArgs ...string,
-) {
+	extraArgs ...string) *nfttypes.QueryCollectionResponse {
 	args := []string{
 		denomID,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryCollection(), args, resp)
+	response := &nfttypes.QueryCollectionResponse{}
+	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryCollection(), args, response)
+	return response
 }
 
 func QueryDenomsExec(t *testing.T,
 	network simapp.Network,
 	clientCtx client.Context,
-	resp proto.Message,
-	extraArgs ...string) {
+	extraArgs ...string) *nfttypes.QueryDenomsResponse {
 	args := []string{
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryDenoms(), args, resp)
+	response := &nfttypes.QueryDenomsResponse{}
+	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryDenoms(), args, response)
+	return response
 }
 
 func QuerySupplyExec(t *testing.T,
 	network simapp.Network,
 	clientCtx client.Context,
 	denom string,
-	resp proto.Message,
-	extraArgs ...string) {
+	extraArgs ...string) *nfttypes.QuerySupplyResponse {
 	args := []string{
 		denom,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQuerySupply(), args, resp)
+	response := &nfttypes.QuerySupplyResponse{}
+	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQuerySupply(), args, response)
+	return response
 }
 
 func QueryOwnerExec(t *testing.T,
 	network simapp.Network,
 	clientCtx client.Context,
 	address string,
-	resp proto.Message,
-	extraArgs ...string) {
+	extraArgs ...string) *nfttypes.QueryNFTsOfOwnerResponse {
 	args := []string{
 		address,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryOwner(), args, resp)
+	response := &nfttypes.QueryNFTsOfOwnerResponse{}
+	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryOwner(), args, response)
+	return response
 }
 
 func QueryNFTExec(t *testing.T,
@@ -203,8 +206,7 @@ func QueryNFTExec(t *testing.T,
 	clientCtx client.Context,
 	denomID string,
 	tokenID string,
-	resp proto.Message,
-	extraArgs ...string) {
+	extraArgs ...string) *nfttypes.BaseNFT {
 	args := []string{
 		denomID,
 		tokenID,
@@ -212,5 +214,7 @@ func QueryNFTExec(t *testing.T,
 	}
 	args = append(args, extraArgs...)
 
-	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryNFT(), args, resp)
+	response := &nfttypes.BaseNFT{}
+	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryNFT(), args, response)
+	return response
 }

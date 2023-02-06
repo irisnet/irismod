@@ -13,7 +13,6 @@ import (
 
 	nftcli "github.com/irisnet/irismod/modules/nft/client/cli"
 	nfttestutil "github.com/irisnet/irismod/modules/nft/client/testutil"
-	nfttypes "github.com/irisnet/irismod/modules/nft/types"
 	"github.com/irisnet/irismod/simapp"
 )
 
@@ -84,8 +83,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdQueryDenom()-------------
-	queryDenomResponse := &nfttypes.Denom{}
-	nfttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID, queryDenomResponse)
+	queryDenomResponse := nfttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(denomName, queryDenomResponse.Name)
 	s.Require().Equal(schema, queryDenomResponse.Schema)
 	s.Require().Equal(symbol, queryDenomResponse.Symbol)
@@ -97,8 +95,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(updateRestricted, queryDenomResponse.UpdateRestricted)
 
 	//------test GetCmdQueryDenoms()-------------
-	queryDenomsResponse := &nfttypes.QueryDenomsResponse{}
-	nfttestutil.QueryDenomsExec(s.T(), s.network, clientCtx, queryDenomsResponse)
+	queryDenomsResponse := nfttestutil.QueryDenomsExec(s.T(), s.network, clientCtx)
 	s.Require().Equal(1, len(queryDenomsResponse.Denoms))
 	s.Require().Equal(denomID, queryDenomsResponse.Denoms[0].Id)
 
@@ -121,13 +118,11 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(expectedCode, txResult.Code)
 
 	//------test GetCmdQuerySupply()-------------
-	querySupplyResponse := &nfttypes.QuerySupplyResponse{}
-	nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID, querySupplyResponse)
+	querySupplyResponse := nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(uint64(1), querySupplyResponse.Amount)
 
 	//------test GetCmdQueryNFT()-------------
-	queryNFTResponse := &nfttypes.BaseNFT{}
-	nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID, queryNFTResponse)
+	queryNFTResponse := nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID)
 	s.Require().Equal(tokenID, queryNFTResponse.Id)
 	s.Require().Equal(tokenName, queryNFTResponse.Name)
 	s.Require().Equal(uri, queryNFTResponse.URI)
@@ -136,15 +131,13 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(from.String(), queryNFTResponse.Owner)
 
 	//------test GetCmdQueryOwner()-------------
-	queryNFTsOfOwnerResponse := &nfttypes.QueryNFTsOfOwnerResponse{}
-	nfttestutil.QueryOwnerExec(s.T(), s.network, clientCtx, from.String(), queryNFTsOfOwnerResponse)
+	queryNFTsOfOwnerResponse := nfttestutil.QueryOwnerExec(s.T(), s.network, clientCtx, from.String())
 	s.Require().Equal(from.String(), queryNFTsOfOwnerResponse.Owner.Address)
 	s.Require().Equal(denomID, queryNFTsOfOwnerResponse.Owner.IDCollections[0].DenomId)
 	s.Require().Equal(tokenID, queryNFTsOfOwnerResponse.Owner.IDCollections[0].TokenIds[0])
 
 	//------test GetCmdQueryCollection()-------------
-	queryCollectionResponse := &nfttypes.QueryCollectionResponse{}
-	nfttestutil.QueryCollectionExec(s.T(), s.network, clientCtx, denomID, queryCollectionResponse)
+	queryCollectionResponse := nfttestutil.QueryCollectionExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(1, len(queryCollectionResponse.Collection.NFTs))
 
 	//------test GetCmdEditNFT()-------------
@@ -168,8 +161,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		clientCtx, from.String(), denomID, tokenID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryNFTResponse = &nfttypes.BaseNFT{}
-	nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID, queryNFTResponse)
+	queryNFTResponse = nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID)
 	s.Require().Equal(newTokenName, queryNFTResponse.Name)
 	s.Require().Equal(newTokenURI, queryNFTResponse.URI)
 	s.Require().Equal(newTokenURIHash, queryNFTResponse.UriHash)
@@ -194,8 +186,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		clientCtx, from.String(), recipient.String(), denomID, tokenID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryNFTResponse = &nfttypes.BaseNFT{}
-	nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID, queryNFTResponse)
+	queryNFTResponse = nfttestutil.QueryNFTExec(s.T(), s.network, clientCtx, denomID, tokenID)
 	s.Require().Equal(tokenID, queryNFTResponse.Id)
 	s.Require().Equal(tokenName, queryNFTResponse.Name)
 	s.Require().Equal(uri, queryNFTResponse.URI)
@@ -221,8 +212,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		clientCtx, from.String(), denomID, newTokenID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	querySupplyResponse = &nfttypes.QuerySupplyResponse{}
-	nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID, querySupplyResponse)
+	querySupplyResponse = nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(uint64(2), querySupplyResponse.Amount)
 
 	args = []string{
@@ -235,8 +225,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		clientCtx, from.String(), denomID, newTokenID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	querySupplyResponse = &nfttypes.QuerySupplyResponse{}
-	nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID, querySupplyResponse)
+	querySupplyResponse = nfttestutil.QuerySupplyExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(uint64(1), querySupplyResponse.Amount)
 
 	//------test GetCmdTransferDenom()-------------
@@ -251,9 +240,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		clientCtx, from.String(), val2.Address.String(), denomID, args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	queryDenomResponse = &nfttypes.Denom{}
-	nfttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID, queryDenomResponse)
-
+	queryDenomResponse = nfttestutil.QueryDenomExec(s.T(), s.network, clientCtx, denomID)
 	s.Require().Equal(val2.Address.String(), queryDenomResponse.Creator)
 	s.Require().Equal(denomName, queryDenomResponse.Name)
 	s.Require().Equal(schema, queryDenomResponse.Schema)

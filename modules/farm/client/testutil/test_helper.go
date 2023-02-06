@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	farmcli "github.com/irisnet/irismod/modules/farm/client/cli"
+	farmtypes "github.com/irisnet/irismod/modules/farm/types"
 	"github.com/irisnet/irismod/simapp"
 )
 
@@ -25,21 +25,26 @@ func CreateFarmPoolExec(t *testing.T, network simapp.Network, clientCtx client.C
 	return network.ExecTxCmdWithResult(t, clientCtx, farmcli.GetCmdCreateFarmPool(), args)
 }
 
-func QueryFarmPoolsExec(t *testing.T, network simapp.Network, clientCtx client.Context, resp proto.Message, extraArgs ...string) {
+func QueryFarmPoolsExec(t *testing.T, network simapp.Network, clientCtx client.Context, extraArgs ...string) *farmtypes.QueryFarmPoolsResponse {
 	args := []string{
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
-	network.ExecQueryCmd(t, clientCtx, farmcli.GetCmdQueryFarmPools(), args, resp)
+
+	response := &farmtypes.QueryFarmPoolsResponse{}
+	network.ExecQueryCmd(t, clientCtx, farmcli.GetCmdQueryFarmPools(), args, response)
+	return response
 }
 
-func QueryFarmPoolExec(t *testing.T, network simapp.Network, clientCtx client.Context, poolId string, resp proto.Message, extraArgs ...string) {
+func QueryFarmPoolExec(t *testing.T, network simapp.Network, clientCtx client.Context, poolId string, extraArgs ...string) *farmtypes.QueryFarmPoolResponse {
 	args := []string{
 		poolId,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
-	network.ExecQueryCmd(t, clientCtx, farmcli.GetCmdQueryFarmPool(), args, resp)
+	response := &farmtypes.QueryFarmPoolResponse{}
+	network.ExecQueryCmd(t, clientCtx, farmcli.GetCmdQueryFarmPool(), args, response)
+	return response
 }
 
 // AppendRewardExec creates a redelegate message.
@@ -114,12 +119,13 @@ func DestroyExec(t *testing.T, network simapp.Network, clientCtx client.Context,
 // QueryFarmerExec creates a redelegate message.
 func QueryFarmerExec(t *testing.T, network simapp.Network, clientCtx client.Context,
 	creator string,
-	resp proto.Message,
-	extraArgs ...string) {
+	extraArgs ...string) *farmtypes.QueryFarmerResponse {
 	args := []string{
 		creator,
 		fmt.Sprintf("--%s=json", cli.OutputFlag),
 	}
 	args = append(args, extraArgs...)
-	network.ExecQueryCmd(t, clientCtx, farmcli.GetCmdQueryFarmer(), args, resp)
+	response := &farmtypes.QueryFarmerResponse{}
+	network.ExecQueryCmd(t, clientCtx, farmcli.GetCmdQueryFarmer(), args, response)
+	return response
 }
