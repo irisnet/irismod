@@ -379,7 +379,7 @@ func GetCmdTransferTokenOwner() *cobra.Command {
 // GetCmdSwapFeeToken implements the swap token command
 func GetCmdSwapFeeToken() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "swap [fee_paid]",
+		Use:  "swap-fee [fee_paid]",
 		Long: "Use the input token to exchange for a specified number of other tokens. Note: the exchanged token pair must be registered by the system",
 		Example: fmt.Sprintf(
 			"$ %s tx token swap <fee_paid> "+
