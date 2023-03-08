@@ -401,8 +401,10 @@ func GetCmdSwapFeeToken() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if _, err := sdk.AccAddressFromBech32(toAddr); err != nil {
-				return err
+			if toAddr != "" {
+				if _, err := sdk.AccAddressFromBech32(toAddr); err != nil {
+					return err
+				}
 			}
 
 			feePaid, err := sdk.ParseCoinNormalized(args[0])

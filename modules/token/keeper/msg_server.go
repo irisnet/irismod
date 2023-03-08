@@ -207,18 +207,21 @@ func (m msgServer) TransferTokenOwner(goCtx context.Context, msg *types.MsgTrans
 }
 
 func (m msgServer) SwapFeeToken(goCtx context.Context, msg *types.MsgSwapFeeToken) (*types.MsgSwapFeeTokenResponse, error) {
-	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
-	if err != nil {
-		return nil, err
-	}
-
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
 	}
 
-	if m.Keeper.blockedAddrs[recipient.String()] {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is a module account", recipient)
+	var recipient sdk.AccAddress
+	if len(msg.Recipient) > 0 {
+		recipient, err = sdk.AccAddressFromBech32(msg.Recipient)
+		if err != nil {
+			return nil, err
+		}
+
+		if m.Keeper.blockedAddrs[msg.Recipient] {
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is a module account", recipient)
+		}
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
