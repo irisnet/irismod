@@ -31,6 +31,7 @@ func NewTxCmd() *cobra.Command {
 		GetCmdMintToken(),
 		GetCmdBurnToken(),
 		GetCmdTransferTokenOwner(),
+		GetCmdSwapFeeToken(),
 	)
 
 	return txCmd
