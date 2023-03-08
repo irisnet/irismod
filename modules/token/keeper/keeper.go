@@ -248,10 +248,10 @@ func (k Keeper) BurnToken(
 func (k Keeper) SwapFeeToken(
 	ctx sdk.Context,
 	feePaid sdk.Coin,
-	recipient sdk.AccAddress,
 	sender sdk.AccAddress,
+	recipient sdk.AccAddress,
 ) (sdk.Coin, error) {
-	burnedCoin, mintedCoin, err := k.computeFeeTokenMinted(ctx, feePaid)
+	burnedCoin, mintedCoin, err := k.calcFeeTokenMinted(ctx, feePaid)
 	if err != nil {
 		return sdk.Coin{}, err
 	}
@@ -282,7 +282,7 @@ func (k Keeper) WithSwapRegistry(registry types.SwapRegistry) Keeper {
 	return k
 }
 
-func (k Keeper) computeFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (burned sdk.Coin, minted sdk.Coin, err error) {
+func (k Keeper) calcFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (burned sdk.Coin, minted sdk.Coin, err error) {
 	tokenBurned, err := k.GetToken(ctx, feePaid.Denom)
 	if err != nil {
 		return burned, minted, err
@@ -303,7 +303,14 @@ func (k Keeper) computeFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (burned
 		return burned, minted, err
 	}
 
-	deltaScale := sdkmath.NewIntWithDecimal(1, int(tokenMinted.GetScale()-tokenBurned.GetScale()))
-	amountMinted := swapParams.Ratio.MulInt(deltaScale.Mul(coinBurned.Amount)).TruncateInt()
+	var multiple sdk.Dec
+
+	if tokenMinted.GetScale() >= tokenBurned.GetScale() {
+		multiple = sdk.NewDecFromInt(sdkmath.NewIntWithDecimal(1, int(tokenMinted.GetScale()-tokenBurned.GetScale())))
+	} else {
+		multiple = sdk.NewDecWithPrec(1, int64(tokenBurned.GetScale()-tokenMinted.GetScale()))
+	}
+
+	amountMinted := multiple.MulInt(coinBurned.Amount).Mul(swapParams.Ratio).TruncateInt()
 	return coinBurned, sdk.NewCoin(swapParams.MinUnit, amountMinted), nil
 }
