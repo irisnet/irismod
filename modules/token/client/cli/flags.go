@@ -17,7 +17,6 @@ const (
 	FlagMaxSupply     = "max-supply"
 	FlagMintable      = "mintable"
 	FlagTo            = "to"
-	FlagAmount        = "amount"
 )
 
 var (

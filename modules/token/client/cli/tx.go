@@ -268,7 +268,6 @@ func GetCmdMintToken() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(FsMintToken)
-	_ = cmd.MarkFlagRequired(FlagAmount)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
