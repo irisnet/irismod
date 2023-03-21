@@ -2,7 +2,6 @@ package simulation
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 	"strings"
 
@@ -332,7 +331,7 @@ func SimulateBurnToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBurnToken, "Insufficient funds"), nil, nil
 		}
 
-		amount2 := simtypes.RandomAmount(r, sdk.NewIntFromUint64(math.MaxUint64))
+		amount2 := simtypes.RandomAmount(r, amount)
 
 		spendable, hasNeg := spendable.SafeSub(sdk.Coins{sdk.NewCoin(token.GetMinUnit(), amount2)}...)
 		if hasNeg {
@@ -342,7 +341,7 @@ func SimulateBurnToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		msg := &types.MsgBurnToken{
 			Coin: sdk.Coin{
 				Denom:  token.GetMinUnit(),
-				Amount: sdkmath.NewIntWithDecimal(amount2.Int64(), int(token.GetScale())),
+				Amount: amount2,
 			},
 			Sender: token.GetOwner().String(),
 		}
