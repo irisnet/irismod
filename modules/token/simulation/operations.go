@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
@@ -210,7 +211,14 @@ func SimulateMintToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgMintToken, "skip mint token"), nil, nil
 		}
 		simToAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := types.NewMsgMintToken(token.GetMinUnit(), token.GetOwner().String(), simToAccount.Address.String(), 100)
+		msg := &types.MsgMintToken{
+			Coin: sdk.Coin{
+				Denom:  token.GetMinUnit(),
+				Amount: sdkmath.NewIntWithDecimal(100, int(token.GetScale())),
+			},
+			To:    simToAccount.Address.String(),
+			Owner: token.GetOwner().String(),
+		}
 
 		ownerAccount, found := simtypes.FindAccount(accs, token.GetOwner())
 		if !found {
@@ -331,7 +339,13 @@ func SimulateBurnToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBurnToken, "Insufficient funds"), nil, nil
 		}
 
-		msg := types.NewMsgBurnToken(token.GetMinUnit(), token.GetOwner().String(), amount2.Uint64())
+		msg := &types.MsgBurnToken{
+			Coin: sdk.Coin{
+				Denom:  token.GetMinUnit(),
+				Amount: sdkmath.NewIntWithDecimal(amount2.Int64(), int(token.GetScale())),
+			},
+			Sender: token.GetOwner().String(),
+		}
 
 		ownerAccount, found := simtypes.FindAccount(accs, token.GetOwner())
 		if !found {

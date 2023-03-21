@@ -228,7 +228,7 @@ func GetCmdMintToken() *cobra.Command {
 				}
 			}
 
-			coin, err := parseCoin(clientCtx, args[0])
+			coin, token, err := parseCoin(clientCtx, args[0])
 			if err != nil {
 				return err
 			}
@@ -251,7 +251,7 @@ func GetCmdMintToken() *cobra.Command {
 			}
 			if !generateOnly {
 				// query fee
-				fee, err1 := queryTokenFees(clientCtx, args[0])
+				fee, err1 := queryTokenFees(clientCtx, token.GetSymbol())
 				if err1 != nil {
 					return fmt.Errorf("failed to query token minting fee: %s", err1.Error())
 				}
@@ -292,7 +292,7 @@ func GetCmdBurnToken() *cobra.Command {
 				return err
 			}
 
-			coin, err := parseCoin(clientCtx, args[0])
+			coin, _, err := parseCoin(clientCtx, args[0])
 			if err != nil {
 				return err
 			}
@@ -392,7 +392,7 @@ func GetCmdSwapFeeToken() *cobra.Command {
 				}
 			}
 
-			coin, err := parseCoin(clientCtx, args[0])
+			coin, _, err := parseCoin(clientCtx, args[0])
 			if err != nil {
 				return err
 			}

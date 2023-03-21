@@ -41,20 +41,20 @@ func queryToken(cliCtx client.Context, denom string) (types.TokenI, error) {
 	return evi, err
 }
 
-func parseCoin(cliCtx client.Context, denom string) (sdk.Coin, error) {
+func parseCoin(cliCtx client.Context, denom string) (sdk.Coin, types.TokenI, error) {
 	decCoin, err := sdk.ParseDecCoin(denom)
 	if err != nil {
-		return sdk.Coin{}, err
+		return sdk.Coin{}, nil, err
 	}
 
 	token, err := queryToken(cliCtx, decCoin.Denom)
 	if err != nil {
-		return sdk.Coin{}, err
+		return sdk.Coin{}, nil, err
 	}
 
 	coin, err := token.ToMinCoin(decCoin)
 	if err != nil {
-		return sdk.Coin{}, err
+		return sdk.Coin{}, nil, err
 	}
-	return coin, err
+	return coin, token, err
 }

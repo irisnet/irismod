@@ -114,7 +114,13 @@ func (suite *HandlerSuite) TestMintToken() {
 
 	h := tokenmodule.NewHandler(suite.keeper)
 
-	msgMintToken := types.NewMsgMintToken(token.MinUnit, token.Owner, "", 1000)
+	msgMintToken := &types.MsgMintToken{
+		Coin: sdk.Coin{
+			Denom:  token.MinUnit,
+			Amount: sdkmath.NewInt(1000),
+		},
+		Owner: token.Owner,
+	}
 	_, err := h(suite.ctx, msgMintToken)
 	suite.NoError(err)
 
@@ -139,7 +145,13 @@ func (suite *HandlerSuite) TestBurnToken() {
 
 	h := tokenmodule.NewHandler(suite.keeper)
 
-	msgBurnToken := types.NewMsgBurnToken(token.MinUnit, token.Owner, 200)
+	msgBurnToken := &types.MsgBurnToken{
+		Coin: sdk.Coin{
+			Denom:  token.MinUnit,
+			Amount: sdkmath.NewInt(1000),
+		},
+		Sender: token.Owner,
+	}
 	_, err := h(suite.ctx, msgBurnToken)
 	suite.NoError(err)
 

@@ -1,7 +1,6 @@
 package types
 
 import (
-	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -201,15 +200,6 @@ func (msg MsgEditToken) ValidateBasic() error {
 	return ValidateSymbol(msg.Symbol)
 }
 
-// NewMsgMintToken creates a MsgMintToken
-func NewMsgMintToken(minUint, owner, to string, amount uint64) *MsgMintToken {
-	return &MsgMintToken{
-		Coin:  sdk.NewCoin(minUint, sdkmath.NewIntFromUint64(amount)),
-		Owner: owner,
-		To:    to,
-	}
-}
-
 // Route implements Msg
 func (msg MsgMintToken) Route() string { return MsgRoute }
 
@@ -249,14 +239,6 @@ func (msg MsgMintToken) ValidateBasic() error {
 	}
 
 	return ValidateCoin(msg.Coin)
-}
-
-// NewMsgBurnToken creates a MsgMintToken
-func NewMsgBurnToken(minUint string, owner string, amount uint64) *MsgBurnToken {
-	return &MsgBurnToken{
-		Coin:   sdk.NewCoin(minUint, sdkmath.NewIntFromUint64(amount)),
-		Sender: owner,
-	}
 }
 
 // Route implements Msg
