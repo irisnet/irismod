@@ -210,7 +210,7 @@ func SimulateMintToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgMintToken, "skip mint token"), nil, nil
 		}
 		simToAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := types.NewMsgMintToken(token.GetSymbol(), token.GetOwner().String(), simToAccount.Address.String(), 100)
+		msg := types.NewMsgMintToken(token.GetMinUnit(), token.GetOwner().String(), simToAccount.Address.String(), 100)
 
 		ownerAccount, found := simtypes.FindAccount(accs, token.GetOwner())
 		if !found {
@@ -319,19 +319,19 @@ func SimulateBurnToken(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKee
 		owner, _ := sdk.AccAddressFromBech32(token.GetOwner().String())
 		account := ak.GetAccount(ctx, owner)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
-		amount := spendable.AmountOf(token.GetSymbol())
+		amount := spendable.AmountOf(token.GetMinUnit())
 		if !amount.IsPositive() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBurnToken, "Insufficient funds"), nil, nil
 		}
 
 		amount2 := simtypes.RandomAmount(r, sdk.NewIntFromUint64(math.MaxUint64))
 
-		spendable, hasNeg := spendable.SafeSub(sdk.Coins{sdk.NewCoin(token.GetSymbol(), amount2)}...)
+		spendable, hasNeg := spendable.SafeSub(sdk.Coins{sdk.NewCoin(token.GetMinUnit(), amount2)}...)
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgBurnToken, "Insufficient funds"), nil, nil
 		}
 
-		msg := types.NewMsgBurnToken(token.GetSymbol(), token.GetOwner().String(), amount2.Uint64())
+		msg := types.NewMsgBurnToken(token.GetMinUnit(), token.GetOwner().String(), amount2.Uint64())
 
 		ownerAccount, found := simtypes.FindAccount(accs, token.GetOwner())
 		if !found {

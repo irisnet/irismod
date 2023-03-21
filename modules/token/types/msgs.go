@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -201,12 +202,11 @@ func (msg MsgEditToken) ValidateBasic() error {
 }
 
 // NewMsgMintToken creates a MsgMintToken
-func NewMsgMintToken(symbol, owner, to string, amount uint64) *MsgMintToken {
+func NewMsgMintToken(minUint, owner, to string, amount uint64) *MsgMintToken {
 	return &MsgMintToken{
-		Symbol: symbol,
-		Owner:  owner,
-		To:     to,
-		Amount: amount,
+		Coin:  sdk.NewCoin(minUint, sdkmath.NewIntFromUint64(amount)),
+		Owner: owner,
+		To:    to,
 	}
 }
 
@@ -248,18 +248,13 @@ func (msg MsgMintToken) ValidateBasic() error {
 		}
 	}
 
-	if err := ValidateAmount(msg.Amount); err != nil {
-		return err
-	}
-
-	return ValidateSymbol(msg.Symbol)
+	return ValidateCoin(msg.Coin)
 }
 
 // NewMsgBurnToken creates a MsgMintToken
-func NewMsgBurnToken(symbol string, owner string, amount uint64) *MsgBurnToken {
+func NewMsgBurnToken(minUint string, owner string, amount uint64) *MsgBurnToken {
 	return &MsgBurnToken{
-		Symbol: symbol,
-		Amount: amount,
+		Coin:   sdk.NewCoin(minUint, sdkmath.NewIntFromUint64(amount)),
 		Sender: owner,
 	}
 }
@@ -295,11 +290,7 @@ func (msg MsgBurnToken) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 
-	if err := ValidateAmount(msg.Amount); err != nil {
-		return err
-	}
-
-	return ValidateSymbol(msg.Symbol)
+	return ValidateCoin(msg.Coin)
 }
 
 // GetSigners implements Msg
@@ -333,9 +324,5 @@ func (msg MsgSwapFeeToken) ValidateBasic() error {
 		}
 	}
 
-	if !(msg.FeePaid.IsValid() && msg.FeePaid.IsPositive()) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid feePaid (%s)", msg.FeePaid.String())
-	}
-
-	return nil
+	return ValidateCoin(msg.FeePaid)
 }

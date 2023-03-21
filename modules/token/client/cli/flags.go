@@ -42,9 +42,6 @@ func init() {
 	FsEditToken.String(FlagMintable, "", "Whether the token can be minted, default to false")
 
 	FsTransferTokenOwner.String(FlagTo, "", "The new owner")
-
 	FsMintToken.String(FlagTo, "", "Address to which the token is to be minted")
-	FsMintToken.Uint64(FlagAmount, 0, "Amount of the token to be minted")
-
 	FsSwapFeeToken.String(FlagTo, "", "Address to which the token is to be receiver")
 }

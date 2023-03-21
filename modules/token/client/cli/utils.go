@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/irisnet/irismod/modules/token/types"
 )
@@ -38,4 +39,22 @@ func queryToken(cliCtx client.Context, denom string) (types.TokenI, error) {
 	}
 
 	return evi, err
+}
+
+func parseCoin(cliCtx client.Context, denom string) (sdk.Coin, error) {
+	decCoin, err := sdk.ParseDecCoin(denom)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	token, err := queryToken(cliCtx, decCoin.Denom)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	coin, err := token.ToMinCoin(decCoin)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+	return coin, err
 }
