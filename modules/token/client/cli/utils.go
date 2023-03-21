@@ -19,3 +19,23 @@ func queryTokenFees(cliCtx client.Context, symbol string) (types.QueryFeesRespon
 
 	return *resp, err
 }
+
+// queryToken query token information
+func queryToken(cliCtx client.Context, denom string) (types.TokenI, error) {
+	queryClient := types.NewQueryClient(cliCtx)
+
+	resp, err := queryClient.Token(context.Background(), &types.QueryTokenRequest{
+		Denom: denom,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var evi types.TokenI
+	err = cliCtx.InterfaceRegistry.UnpackAny(resp.Token, &evi)
+	if err != nil {
+		return nil, err
+	}
+
+	return evi, err
+}

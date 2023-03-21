@@ -382,7 +382,7 @@ func GetCmdSwapFeeToken() *cobra.Command {
 		Use:  "swap-fee [fee_paid]",
 		Long: "Use the input token to exchange for a specified number of other tokens. Note: the exchanged token pair must be registered by the system",
 		Example: fmt.Sprintf(
-			"$ %s tx token swap <fee_paid> "+
+			"$ %s tx token swap-fee <fee_paid> "+
 				"--to=<to> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+
@@ -407,7 +407,17 @@ func GetCmdSwapFeeToken() *cobra.Command {
 				}
 			}
 
-			feePaid, err := sdk.ParseCoinNormalized(args[0])
+			decCoin, err := sdk.ParseDecCoin(args[0])
+			if err != nil {
+				return err
+			}
+
+			token, err := queryToken(clientCtx, decCoin.Denom)
+			if err != nil {
+				return err
+			}
+
+			feePaid, err := token.ToMinCoin(decCoin)
 			if err != nil {
 				return err
 			}
