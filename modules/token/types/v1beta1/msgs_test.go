@@ -1,4 +1,4 @@
-package v1
+package v1beta1
 
 import (
 	"testing"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/tendermint/tendermint/crypto/tmhash"
 
-	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tokentypes "github.com/irisnet/irismod/modules/token/types"
 )
@@ -102,21 +101,21 @@ func TestMsgEditTokenGetSignBytes(t *testing.T) {
 
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"irismod/token/v1/MsgEditToken","value":{"max_supply":"21000000","mintable":"false","name":"BTC TOKEN","owner":"cosmos1fsgzj6t7udv8zhf6zj32mkqhcjcpv52ygswxa5","symbol":"btc"}}`
+	expected := `{"type":"irismod/token/MsgEditToken","value":{"max_supply":"21000000","mintable":"false","name":"BTC TOKEN","owner":"cosmos1fsgzj6t7udv8zhf6zj32mkqhcjcpv52ygswxa5","symbol":"btc"}}`
 	require.Equal(t, expected, string(res))
 }
 
 func TestMsgMintTokenValidateBasic(t *testing.T) {
 	testData := []struct {
 		msg        string
-		minUnit    string
+		symbol     string
 		owner      string
 		to         string
 		amount     uint64
 		expectPass bool
 	}{
-		{"empty minUnit", "", addr1, addr2, 1000, false},
-		{"wrong minUnit", "bt", addr1, addr2, 1000, false},
+		{"empty symbol", "", addr1, addr2, 1000, false},
+		{"wrong symbol", "bt", addr1, addr2, 1000, false},
 		{"empty owner", "btc", emptyAddr, addr2, 1000, false},
 		{"empty to", "btc", addr1, emptyAddr, 1000, true},
 		{"not empty to", "btc", addr1, addr2, 1000, true},
@@ -125,14 +124,7 @@ func TestMsgMintTokenValidateBasic(t *testing.T) {
 	}
 
 	for _, td := range testData {
-		msg := &MsgMintToken{
-			Coin: sdk.Coin{
-				Denom:  td.minUnit,
-				Amount: sdkmath.NewIntFromUint64(td.amount),
-			},
-			To:    td.to,
-			Owner: td.owner,
-		}
+		msg := NewMsgMintToken(td.symbol, td.owner, td.to, td.amount)
 		if td.expectPass {
 			require.Nil(t, msg.ValidateBasic(), "test: %v", td.msg)
 		} else {
@@ -144,26 +136,20 @@ func TestMsgMintTokenValidateBasic(t *testing.T) {
 func TestMsgBurnTokenValidateBasic(t *testing.T) {
 	testData := []struct {
 		msg        string
-		minUnit    string
+		symbol     string
 		sender     string
 		amount     uint64
 		expectPass bool
 	}{
 		{"basic good", "btc", addr1, 1000, true},
-		{"empty minUnit", "", addr1, 1000, false},
-		{"wrong minUnit", "bt", addr1, 1000, false},
+		{"empty symbol", "", addr1, 1000, false},
+		{"wrong symbol", "bt", addr1, 1000, false},
 		{"empty sender", "btc", emptyAddr, 1000, false},
 		{"invalid amount", "btc", addr1, 0, false},
 	}
 
 	for _, td := range testData {
-		msg := MsgBurnToken{
-			Coin: sdk.Coin{
-				Denom:  td.minUnit,
-				Amount: sdkmath.NewIntFromUint64(td.amount),
-			},
-			Sender: td.sender,
-		}
+		msg := NewMsgBurnToken(td.symbol, td.sender, td.amount)
 		if td.expectPass {
 			require.Nil(t, msg.ValidateBasic(), "test: %v", td.msg)
 		} else {

@@ -24,6 +24,7 @@ import (
 	"github.com/irisnet/irismod/modules/token/simulation"
 	"github.com/irisnet/irismod/modules/token/types"
 	v1 "github.com/irisnet/irismod/modules/token/types/v1"
+	"github.com/irisnet/irismod/modules/token/types/v1beta1"
 )
 
 var (
@@ -43,6 +44,7 @@ func (AppModuleBasic) Name() string { return types.ModuleName }
 // RegisterLegacyAminoCodec registers the token module's types on the LegacyAmino codec.
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	v1.RegisterLegacyAminoCodec(cdc)
+	v1beta1.RegisterLegacyAminoCodec(cdc)
 }
 
 // DefaultGenesis returns default genesis state as raw bytes for the token module.
@@ -61,13 +63,12 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 }
 
 // RegisterRESTRoutes registers the REST routes for the token module.
-func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-	//rest.RegisterHandlers(clientCtx, rtr)
-}
+func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {}
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the token module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	_ = v1.RegisterQueryHandlerClient(context.Background(), mux, v1.NewQueryClient(clientCtx))
+	_ = v1beta1.RegisterQueryHandlerClient(context.Background(), mux, v1beta1.NewQueryClient(clientCtx))
 }
 
 // GetTxCmd returns the root tx command for the token module.
@@ -83,6 +84,7 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 // RegisterInterfaces registers interfaces and implementations of the token module.
 func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	v1.RegisterInterfaces(registry)
+	v1beta1.RegisterInterfaces(registry)
 }
 
 // ____________________________________________________________________________
@@ -111,8 +113,13 @@ func (AppModule) Name() string { return types.ModuleName }
 
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	v1.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
+	v1MsgServer := keeper.NewMsgServerImpl(am.keeper)
+	v1.RegisterMsgServer(cfg.MsgServer(), v1MsgServer)
 	v1.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	v1beta1.RegisterMsgServer(cfg.MsgServer(), keeper.NewLeagcyMsgServerImpl(v1MsgServer, am.keeper))
+	v1beta1.RegisterQueryServer(cfg.QueryServer(), keeper.NewLeagcyQueryServer(am.keeper))
+
 }
 
 // RegisterInvariants registers the token module invariants.
