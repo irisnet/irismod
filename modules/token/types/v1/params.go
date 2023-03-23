@@ -1,9 +1,7 @@
-package types
+package v1
 
 import (
 	"fmt"
-
-	"gopkg.in/yaml.v2"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -50,12 +48,6 @@ func DefaultParams() Params {
 		IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.NewInt(60000)),
 		MintTokenFeeRatio: sdk.NewDecWithPrec(1, 1), // 0.1 (10%)
 	}
-}
-
-// String returns a human readable string representation of the parameters.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
 }
 
 // ValidateParams validates the given params

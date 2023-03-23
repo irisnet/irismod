@@ -1,4 +1,4 @@
-package types
+package v1
 
 import (
 	"testing"
@@ -9,6 +9,7 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	tokentypes "github.com/irisnet/irismod/modules/token/types"
 )
 
 var (
@@ -53,7 +54,7 @@ func TestMsgIssueAsset(t *testing.T) {
 // test ValidateBasic for MsgIssueToken
 func TestMsgEditToken(t *testing.T) {
 	owner := sdk.AccAddress(tmhash.SumTruncated([]byte("owner"))).String()
-	mintable := False
+	mintable := tokentypes.False
 
 	tests := []struct {
 		testCase string
@@ -76,7 +77,7 @@ func TestMsgEditToken(t *testing.T) {
 
 func TestMsgEditTokenRoute(t *testing.T) {
 	symbol := "btc"
-	mintable := False
+	mintable := tokentypes.False
 
 	// build a MsgEditToken
 	msg := MsgEditToken{
@@ -89,7 +90,7 @@ func TestMsgEditTokenRoute(t *testing.T) {
 }
 
 func TestMsgEditTokenGetSignBytes(t *testing.T) {
-	mintable := False
+	mintable := tokentypes.False
 
 	var msg = MsgEditToken{
 		Name:      "BTC TOKEN",
