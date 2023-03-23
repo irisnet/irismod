@@ -13,9 +13,9 @@ type legacyQueryServer struct {
 	server v1.QueryServer
 }
 
-// NewLeagcyQueryServer returns an implementation of the token QueryServer interface
+// NewLegacyQueryServer returns an implementation of the token QueryServer interface
 // for the provided Keeper.
-func NewLeagcyQueryServer(server v1.QueryServer) v1beta1.QueryServer {
+func NewLegacyQueryServer(server v1.QueryServer) v1beta1.QueryServer {
 	return &legacyQueryServer{
 		server: server,
 	}

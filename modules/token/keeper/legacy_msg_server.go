@@ -17,9 +17,9 @@ type legacyMsgServer struct {
 
 var _ v1beta1.MsgServer = legacyMsgServer{}
 
-// NewLeagcyMsgServerImpl returns an implementation of the token MsgServer interface
+// NewLegacyMsgServerImpl returns an implementation of the token MsgServer interface
 // for the provided Keeper.
-func NewLeagcyMsgServerImpl(server v1.MsgServer, k Keeper) v1beta1.MsgServer {
+func NewLegacyMsgServerImpl(server v1.MsgServer, k Keeper) v1beta1.MsgServer {
 	return &legacyMsgServer{
 		server: server,
 		k:      k,
