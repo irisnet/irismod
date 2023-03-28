@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/hex"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -66,12 +65,12 @@ func ValidateGenesis(data GenesisState) error {
 		if err := requestContext.Validate(); err != nil {
 			return err
 		}
-		if requestContext.State != PAUSED {
-			return fmt.Errorf("invalid request context state, ID:%s, State:%s", requestContextID, requestContext.State)
-		}
-		if requestContext.BatchState != BATCHCOMPLETED {
-			return fmt.Errorf("invalid request context batch state, ID:%s, BatchState:%s", requestContextID, requestContext.BatchState)
-		}
+		// if requestContext.State != PAUSED {
+		// 	return fmt.Errorf("invalid request context state, ID:%s, State:%s", requestContextID, requestContext.State)
+		// }
+		// if requestContext.BatchState != BATCHCOMPLETED {
+		// 	return fmt.Errorf("invalid request context batch state, ID:%s, BatchState:%s", requestContextID, requestContext.BatchState)
+		// }
 	}
 
 	return nil

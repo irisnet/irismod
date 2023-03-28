@@ -40,6 +40,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	for _, reqContextIDStr := range getSortedKeys(data.RequestContexts) {
 		requestContextID, _ := hex.DecodeString(reqContextIDStr)
 		k.SetRequestContext(ctx, requestContextID, *data.RequestContexts[reqContextIDStr])
+
+		requestContext := data.RequestContexts[reqContextIDStr]
+		if requestContext.State == types.RUNNING {
+			k.AddNewRequestBatch(ctx, requestContextID, ctx.BlockHeight())
+		}
 	}
 }
 
