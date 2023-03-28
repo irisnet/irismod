@@ -40,11 +40,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 	for _, reqContextIDStr := range getSortedKeys(data.RequestContexts) {
 		requestContextID, _ := hex.DecodeString(reqContextIDStr)
 		k.SetRequestContext(ctx, requestContextID, *data.RequestContexts[reqContextIDStr])
-
-		requestContext := data.RequestContexts[reqContextIDStr]
-		if requestContext.State == types.RUNNING {
-			k.AddNewRequestBatch(ctx, requestContextID, ctx.BlockHeight())
-		}
 	}
 }
 
@@ -54,6 +49,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	var bindings []types.ServiceBinding
 	withdrawAddresses := make(map[string]string)
 	requestContexts := make(map[string]*types.RequestContext)
+
+	// The requestContext in the running state is not supported, so when exporting genesis,
+	// 	the requestContext in the running state must be processed
+	PrepForZeroHeightGenesis(ctx, k)
 
 	k.IterateServiceDefinitions(
 		ctx,
