@@ -25,12 +25,12 @@ func TestConvert(t *testing.T) {
 		{
 			name: "1",
 			args: args{
-				a:      Int("100000000000000001"),
+				a:      Int("1000000000000000001"),
 				ratio:  sdk.OneDec(),
 				aScale: 18,
 				bScale: 6,
 			},
-			want:    Int("10000000000000000"),
+			want:    Int("1000000000000000000"),
 			want1:   Int("1000000"),
 			wantErr: false,
 		},

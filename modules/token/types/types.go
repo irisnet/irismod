@@ -85,10 +85,10 @@ func Convert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int,
 		}
 
 		//If there are decimal places, the decimal places need to be subtracted from a
-		bFrac := bDec.Clone().Sub(bInt).TruncateInt()
+		bFrac := bDec.Clone().Sub(bInt)
 		scaleMultipler2 := sdkmath.NewIntWithDecimal(1, int(scaleFactor))
-		aFrac := bFrac.Mul(scaleMultipler2)
-		return a.Sub(aFrac), bInt.TruncateInt(), nil
+		aFrac := bFrac.MulInt(scaleMultipler2)
+		return sdk.NewDecFromInt(a).Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
 	}
 
 	// When a large unit wants to convert a small unit, there is no case of discarding decimal places
