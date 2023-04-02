@@ -34,6 +34,30 @@ func TestConvert(t *testing.T) {
 			want1:   Int("1000000"),
 			wantErr: false,
 		},
+		{
+			name: "1",
+			args: args{
+				a:      Int("1000000000000000001"),
+				ratio:  sdk.OneDec(),
+				aScale: 18,
+				bScale: 18,
+			},
+			want:    Int("1000000000000000001"),
+			want1:   Int("1000000000000000001"),
+			wantErr: false,
+		},
+		{
+			name: "1",
+			args: args{
+				a:      Int("1000001"),
+				ratio:  sdk.OneDec(),
+				aScale: 6,
+				bScale: 18,
+			},
+			want:    Int("1000001"),
+			want1:   Int("1000000000000000001"),
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

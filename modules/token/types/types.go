@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 
 	sdkmath "cosmossdk.io/math"
@@ -71,11 +72,7 @@ func ParseBool(v string) (Bool, error) {
 
 func Convert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int, error) {
 	aDec := sdk.NewDecFromInt(a)
-	if aScale == bScale {
-		return a, aDec.Mul(ratio).TruncateInt(), nil
-	}
-
-	if aScale > bScale {
+	if aScale >= bScale {
 		scaleFactor := aScale - bScale
 		scaleMultipler := sdk.NewDecWithPrec(1, int64(scaleFactor))
 		bDec := scaleMultipler.Clone().Mul(aDec).Mul(ratio)
@@ -92,9 +89,18 @@ func Convert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int,
 	}
 
 	// When a large unit wants to convert a small unit, there is no case of discarding decimal places
-	diff := bScale - aScale
-	multiple := sdkmath.NewIntWithDecimal(1, int(diff))
-	bInt := sdk.NewDecFromInt(a).Mul(sdk.NewDecFromInt(multiple)).Mul(ratio).TruncateInt()
+	scaleFactor := bScale - aScale
+	scaleMultipler := sdkmath.NewIntWithDecimal(1, int(scaleFactor))
+	bDec := aDec.Clone().Mul(sdk.NewDecFromInt(scaleMultipler)).Mul(ratio)
+	fmt.Println("bDec=", bDec.String())
+	bInt := bDec.Clone().TruncateDec()
+	if bDec.Equal(bInt) {
+		return a, bInt.TruncateInt(), nil
+	}
 
-	return a, bInt, nil
+	//If there are decimal places, the decimal places need to be subtracted from a
+	bFrac := bDec.Clone().Sub(bInt)
+	scaleMultipler2 := sdk.NewDecWithPrec(1, int64(scaleFactor))
+	aFrac := bFrac.Mul(scaleMultipler2)
+	return sdk.NewDecFromInt(a).Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
 }
