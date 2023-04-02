@@ -245,12 +245,12 @@ func (k Keeper) SwapFeeToken(
 	sender sdk.AccAddress,
 	recipient sdk.AccAddress,
 ) (sdk.Coin, error) {
-	mintedCoin, err := k.calcFeeTokenMinted(ctx, feePaid)
+	burnedCoin, mintedCoin, err := k.calcFeeTokenMinted(ctx, feePaid)
 	if err != nil {
 		return sdk.Coin{}, err
 	}
 
-	burnedCoins := sdk.NewCoins(feePaid)
+	burnedCoins := sdk.NewCoins(burnedCoin)
 	// burn coins
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, burnedCoins); err != nil {
 		return sdk.Coin{}, err
@@ -276,20 +276,20 @@ func (k Keeper) WithSwapRegistry(registry v1.SwapRegistry) Keeper {
 	return k
 }
 
-func (k Keeper) calcFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (minted sdk.Coin, err error) {
+func (k Keeper) calcFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (burnt, minted sdk.Coin, err error) {
 	tokenBurned, err := k.getTokenByMinUnit(ctx, feePaid.Denom)
 	if err != nil {
-		return minted, err
+		return burnt, minted, err
 	}
 
 	swapParams, ok := k.registry[tokenBurned.GetMinUnit()]
 	if !ok {
-		return minted, types.ErrInvalidSwap
+		return burnt, minted, types.ErrInvalidSwap
 	}
 
 	tokenMinted, err := k.GetToken(ctx, swapParams.MinUnit)
 	if err != nil {
-		return minted, err
+		return burnt, minted, err
 	}
 
 	var multiple sdk.Dec
@@ -299,9 +299,18 @@ func (k Keeper) calcFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (minted sd
 		multiple = sdk.NewDecWithPrec(1, int64(tokenBurned.GetScale()-tokenMinted.GetScale()))
 	}
 
-	amountMinted := multiple.MulInt(feePaid.Amount).Mul(swapParams.Ratio).TruncateInt()
-	if amountMinted.LT(sdkmath.OneInt()) {
-		return minted, types.ErrInsufficientFee
+	amountMinted := multiple.MulInt(feePaid.Amount).Mul(swapParams.Ratio)
+	amountTruncate := amountMinted.Clone().TruncateInt()
+	if amountTruncate.LT(sdkmath.OneInt()) {
+		return burnt, minted, types.ErrInsufficientFee
 	}
-	return sdk.NewCoin(swapParams.MinUnit, amountMinted), nil
+
+	minted = sdk.NewCoin(swapParams.MinUnit, amountTruncate)
+	if amountMinted.Equal(sdk.NewDecFromInt(amountTruncate)) {
+		return feePaid, minted, nil
+	}
+
+	// decimal := amountMinted.Sub(sdk.NewDecFromInt(amountTruncate))
+
+	return burnt, minted, nil
 }

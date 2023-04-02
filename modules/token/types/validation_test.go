@@ -1,6 +1,13 @@
 package types
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+
+	sdkmath "cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+)
 
 func TestValidateSymbol(t *testing.T) {
 	type args struct {
@@ -83,4 +90,29 @@ func TestValidateKeywords(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestTruncateInt(t *testing.T) {
+	str1 := "100000000000000001"
+	str1Scale := 18
+	str2Scale := 6
+	dec1, err := sdk.NewDecFromStr(str1)
+	require.NoError(t, err, "NewDecFromStr error")
+
+	diff := str1Scale - str2Scale
+	multiple := sdk.NewDecWithPrec(1, int64(diff))
+	res1 := multiple.Clone().Mul(dec1)
+	res2 := res1.Clone().TruncateInt()
+	fmt.Println(dec1.String())
+	fmt.Println(res1.String())
+	fmt.Println(res2.String())
+
+	dig := res1.Clone().Sub(sdk.NewDecFromInt(res2))
+	fmt.Println(dig.String())
+
+	multiple2 := sdkmath.NewIntWithDecimal(1, int(diff))
+	digB := dig.Mul(sdk.NewDecFromInt(multiple2))
+	fmt.Println(digB.String())
+	fmt.Println(dec1.Clone().Sub(digB).String())
+
 }
