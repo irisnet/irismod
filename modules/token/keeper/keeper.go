@@ -292,25 +292,6 @@ func (k Keeper) calcFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (burnt, mi
 		return burnt, minted, err
 	}
 
-	var multiple sdk.Dec
-	if tokenMinted.GetScale() >= tokenBurned.GetScale() {
-		multiple = sdk.NewDecFromInt(sdkmath.NewIntWithDecimal(1, int(tokenMinted.GetScale()-tokenBurned.GetScale())))
-	} else {
-		multiple = sdk.NewDecWithPrec(1, int64(tokenBurned.GetScale()-tokenMinted.GetScale()))
-	}
-
-	amountMinted := multiple.MulInt(feePaid.Amount).Mul(swapParams.Ratio)
-	amountTruncate := amountMinted.Clone().TruncateInt()
-	if amountTruncate.LT(sdkmath.OneInt()) {
-		return burnt, minted, types.ErrInsufficientFee
-	}
-
-	minted = sdk.NewCoin(swapParams.MinUnit, amountTruncate)
-	if amountMinted.Equal(sdk.NewDecFromInt(amountTruncate)) {
-		return feePaid, minted, nil
-	}
-
-	// decimal := amountMinted.Sub(sdk.NewDecFromInt(amountTruncate))
-
-	return burnt, minted, nil
+	burntAmt, mintAmt := types.LossLessConvert(feePaid.Amount, swapParams.Ratio, tokenBurned.GetScale(), tokenMinted.GetScale())
+	return sdk.NewCoin(tokenBurned.MinUnit, burntAmt), sdk.NewCoin(swapParams.MinUnit, mintAmt), nil
 }

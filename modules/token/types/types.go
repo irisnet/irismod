@@ -69,36 +69,36 @@ func ParseBool(v string) (Bool, error) {
 	return False, nil
 }
 
-func LossLessConvert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int, error) {
-	aDec := sdk.NewDecFromInt(a)
-	if aScale >= bScale {
-		scaleFactor := aScale - bScale
+func LossLessConvert(input sdk.Int, ratio sdk.Dec, inputScale, outputScale uint32) (sdk.Int, sdk.Int) {
+	inputDec := sdk.NewDecFromInt(input)
+	if inputScale >= outputScale {
+		scaleFactor := inputScale - outputScale
 		scaleMultipler := sdk.NewDecWithPrec(1, int64(scaleFactor))
-		bDec := scaleMultipler.Clone().Mul(aDec).Mul(ratio)
-		bInt := bDec.Clone().TruncateDec()
-		if bDec.Equal(bInt) {
-			return a, bInt.TruncateInt(), nil
+		outputDec := scaleMultipler.Clone().Mul(inputDec).Mul(ratio)
+		outputInt := outputDec.Clone().TruncateDec()
+		if outputDec.Equal(outputInt) {
+			return input, outputInt.TruncateInt()
 		}
 
-		//If there are decimal places, the decimal places need to be subtracted from a
-		bFrac := bDec.Clone().Sub(bInt)
-		scaleMultipler2 := sdkmath.NewIntWithDecimal(1, int(scaleFactor))
-		aFrac := bFrac.MulInt(scaleMultipler2)
-		return aDec.Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
+		//If there are decimal places, the decimal places need to be subtracted from input
+		outputFrac := outputDec.Clone().Sub(outputInt)
+		scaleReverseMultipler := sdkmath.NewIntWithDecimal(1, int(scaleFactor))
+		inputFrac := outputFrac.MulInt(scaleReverseMultipler)
+		return inputDec.Sub(inputFrac).TruncateInt(), outputInt.TruncateInt()
 	}
 
 	// When a large unit wants to convert a small unit, there is no case of discarding decimal places
-	scaleFactor := bScale - aScale
+	scaleFactor := outputScale - inputScale
 	scaleMultipler := sdkmath.NewIntWithDecimal(1, int(scaleFactor))
-	bDec := aDec.Clone().Mul(sdk.NewDecFromInt(scaleMultipler)).Mul(ratio)
-	bInt := bDec.Clone().TruncateDec()
-	if bDec.Equal(bInt) {
-		return a, bInt.TruncateInt(), nil
+	outputDec := inputDec.Clone().Mul(sdk.NewDecFromInt(scaleMultipler)).Mul(ratio)
+	outputInt := outputDec.Clone().TruncateDec()
+	if outputDec.Equal(outputInt) {
+		return input, outputInt.TruncateInt()
 	}
 
-	//If there are decimal places, the decimal places need to be subtracted from a
-	bFrac := bDec.Clone().Sub(bInt)
-	scaleMultipler2 := sdk.NewDecWithPrec(1, int64(scaleFactor))
-	aFrac := bFrac.Mul(scaleMultipler2)
-	return aDec.Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
+	//If there are decimal places, the decimal places need to be subtracted from input
+	outputFrac := outputDec.Clone().Sub(outputInt)
+	scaleReverseMultipler := sdk.NewDecWithPrec(1, int64(scaleFactor))
+	inputFrac := outputFrac.Mul(scaleReverseMultipler)
+	return inputDec.Sub(inputFrac).TruncateInt(), outputInt.TruncateInt()
 }
