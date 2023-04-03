@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func TestConvert(t *testing.T) {
+func TestLossLessConvert(t *testing.T) {
 	type args struct {
 		a      sdk.Int
 		ratio  sdk.Dec
@@ -21,9 +21,8 @@ func TestConvert(t *testing.T) {
 		want1   sdk.Int
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
-			name: "1",
+			name: "partial conversion(refund)",
 			args: args{
 				a:      Int("1000000000000000001"),
 				ratio:  sdk.OneDec(),
@@ -35,7 +34,7 @@ func TestConvert(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "1",
+			name: "fully conversion",
 			args: args{
 				a:      Int("1000000000000000001"),
 				ratio:  sdk.OneDec(),
@@ -47,7 +46,19 @@ func TestConvert(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "1",
+			name: "partial conversion(refund,non-equivalent ratio)",
+			args: args{
+				a:      Int("1000000000000000001"),
+				ratio:  sdk.NewDecWithPrec(5, 1),
+				aScale: 18,
+				bScale: 6,
+			},
+			want:    Int("1000000000000000000"),
+			want1:   Int("500000"),
+			wantErr: false,
+		},
+		{
+			name: "fully conversion",
 			args: args{
 				a:      Int("1000001"),
 				ratio:  sdk.OneDec(),
@@ -55,13 +66,24 @@ func TestConvert(t *testing.T) {
 				bScale: 18,
 			},
 			want:    Int("1000001"),
-			want1:   Int("1000000000000000001"),
+			want1:   Int("1000001000000000000"),
+			wantErr: false,
+		}, {
+			name: "fully conversion(non-equivalent ratio)",
+			args: args{
+				a:      Int("1000000"),
+				ratio:  sdk.NewDecWithPrec(5, 1),
+				aScale: 6,
+				bScale: 18,
+			},
+			want:    Int("1000000"),
+			want1:   Int("500000000000000000"),
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := Convert(tt.args.a, tt.args.ratio, tt.args.aScale, tt.args.bScale)
+			got, got1, err := LossLessConvert(tt.args.a, tt.args.ratio, tt.args.aScale, tt.args.bScale)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Convert() error = %v, wantErr %v", err, tt.wantErr)
 				return

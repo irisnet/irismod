@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	sdkmath "cosmossdk.io/math"
@@ -70,7 +69,7 @@ func ParseBool(v string) (Bool, error) {
 	return False, nil
 }
 
-func Convert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int, error) {
+func LossLessConvert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int, error) {
 	aDec := sdk.NewDecFromInt(a)
 	if aScale >= bScale {
 		scaleFactor := aScale - bScale
@@ -85,14 +84,13 @@ func Convert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int,
 		bFrac := bDec.Clone().Sub(bInt)
 		scaleMultipler2 := sdkmath.NewIntWithDecimal(1, int(scaleFactor))
 		aFrac := bFrac.MulInt(scaleMultipler2)
-		return sdk.NewDecFromInt(a).Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
+		return aDec.Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
 	}
 
 	// When a large unit wants to convert a small unit, there is no case of discarding decimal places
 	scaleFactor := bScale - aScale
 	scaleMultipler := sdkmath.NewIntWithDecimal(1, int(scaleFactor))
 	bDec := aDec.Clone().Mul(sdk.NewDecFromInt(scaleMultipler)).Mul(ratio)
-	fmt.Println("bDec=", bDec.String())
 	bInt := bDec.Clone().TruncateDec()
 	if bDec.Equal(bInt) {
 		return a, bInt.TruncateInt(), nil
@@ -102,5 +100,5 @@ func Convert(a sdk.Int, ratio sdk.Dec, aScale, bScale uint32) (sdk.Int, sdk.Int,
 	bFrac := bDec.Clone().Sub(bInt)
 	scaleMultipler2 := sdk.NewDecWithPrec(1, int64(scaleFactor))
 	aFrac := bFrac.Mul(scaleMultipler2)
-	return sdk.NewDecFromInt(a).Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
+	return aDec.Sub(aFrac).TruncateInt(), bInt.TruncateInt(), nil
 }
