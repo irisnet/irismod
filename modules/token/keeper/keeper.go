@@ -244,31 +244,31 @@ func (k Keeper) SwapFeeToken(
 	feePaid sdk.Coin,
 	sender sdk.AccAddress,
 	recipient sdk.AccAddress,
-) (sdk.Coin, error) {
+) (sdk.Coin, sdk.Coin, error) {
 	burnedCoin, mintedCoin, err := k.calcFeeTokenMinted(ctx, feePaid)
 	if err != nil {
-		return sdk.Coin{}, err
+		return sdk.Coin{}, sdk.Coin{}, err
 	}
 
 	burnedCoins := sdk.NewCoins(burnedCoin)
 	// burn coins
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, burnedCoins); err != nil {
-		return sdk.Coin{}, err
+		return sdk.Coin{}, sdk.Coin{}, err
 	}
 	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, burnedCoins); err != nil {
-		return sdk.Coin{}, err
+		return sdk.Coin{}, sdk.Coin{}, err
 	}
 
 	// mint coins
 	mintedCoins := sdk.NewCoins(mintedCoin)
 	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, mintedCoins); err != nil {
-		return sdk.Coin{}, err
+		return sdk.Coin{}, sdk.Coin{}, err
 	}
 
 	if recipient == nil {
 		recipient = sender
 	}
-	return mintedCoin, k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipient, mintedCoins)
+	return burnedCoin, mintedCoin, k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipient, mintedCoins)
 }
 
 func (k Keeper) WithSwapRegistry(registry v1.SwapRegistry) Keeper {
