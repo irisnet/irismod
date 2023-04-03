@@ -69,7 +69,7 @@ func ParseBool(v string) (Bool, error) {
 	return False, nil
 }
 
-func LossLessConvert(input sdk.Int, ratio sdk.Dec, inputScale, outputScale uint32) (sdk.Int, sdk.Int) {
+func LossLessSwap(input sdk.Int, ratio sdk.Dec, inputScale, outputScale uint32) (sdk.Int, sdk.Int) {
 	inputDec := sdk.NewDecFromInt(input)
 	if inputScale >= outputScale {
 		scaleFactor := inputScale - outputScale

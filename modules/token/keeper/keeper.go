@@ -292,6 +292,6 @@ func (k Keeper) calcFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (burnt, mi
 		return burnt, minted, err
 	}
 
-	burntAmt, mintAmt := types.LossLessConvert(feePaid.Amount, swapParams.Ratio, tokenBurned.GetScale(), tokenMinted.GetScale())
+	burntAmt, mintAmt := types.LossLessSwap(feePaid.Amount, swapParams.Ratio, tokenBurned.GetScale(), tokenMinted.GetScale())
 	return sdk.NewCoin(tokenBurned.MinUnit, burntAmt), sdk.NewCoin(swapParams.MinUnit, mintAmt), nil
 }
