@@ -297,7 +297,6 @@ func (k Keeper) calcFeeTokenMinted(ctx sdk.Context, feePaid sdk.Coin) (burnt, mi
 	return sdk.NewCoin(tokenBurned.MinUnit, burntAmt), sdk.NewCoin(swapParams.MinUnit, mintAmt), nil
 }
 
-// TransferTokenOwner transfers the owner of the specified token to a new one
 func (k Keeper) changeTokenOwner(ctx sdk.Context, srcToken v1.Token, dstOwner sdk.AccAddress) error {
 	srcOwner, err := sdk.AccAddressFromBech32(srcToken.Owner)
 	if err != nil {
