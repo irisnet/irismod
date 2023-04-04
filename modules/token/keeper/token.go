@@ -100,21 +100,6 @@ func (k Keeper) AddToken(ctx sdk.Context, token v1.Token) error {
 	return nil
 }
 
-// UnsafeTransferTokenOwner transfer the token owner without authorization
-// NOTE: this method should be used with caution
-func (k Keeper) UnsafeTransferTokenOwner(ctx sdk.Context, symbol string, to string) error {
-	toAddr, err := sdk.AccAddressFromBech32(to)
-	if err != nil {
-		return err
-	}
-
-	srcOwner, err := k.GetOwner(ctx, symbol)
-	if err != nil {
-		return err
-	}
-	return k.TransferTokenOwner(ctx, symbol, srcOwner, toAddr)
-}
-
 // HasSymbol asserts a token exists by symbol
 func (k Keeper) HasSymbol(ctx sdk.Context, symbol string) bool {
 	store := ctx.KVStore(k.storeKey)
