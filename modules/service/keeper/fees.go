@@ -179,7 +179,8 @@ func (k Keeper) RefundEarnedFees(ctx sdk.Context) error {
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		provider := iterator.Key()[1:types.AddrLen]
+		key := iterator.Key()
+		provider := key[1 : types.AddrLen+1]
 
 		var earnedFee sdk.Coin
 		k.cdc.MustUnmarshal(iterator.Value(), &earnedFee)
