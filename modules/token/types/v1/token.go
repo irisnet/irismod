@@ -112,7 +112,7 @@ func (t Token) GetOwner() sdk.AccAddress {
 // ToMainCoin returns the main denom coin from args
 func (t Token) ToMainCoin(coin sdk.Coin) (sdk.DecCoin, error) {
 	if t.MinUnit != coin.Denom {
-		return sdk.NewDecCoinFromDec(coin.Denom, sdk.ZeroDec()), sdkerrors.Wrapf(tokentypes.ErrTokenNotExists, "not eth token min_unit")
+		return sdk.NewDecCoinFromDec(coin.Denom, sdk.ZeroDec()), sdkerrors.Wrapf(tokentypes.ErrTokenNotExists, "not the token min_unit")
 	}
 
 	precision := new(big.Int).Exp(tenInt, big.NewInt(int64(t.Scale)), nil)
@@ -124,7 +124,7 @@ func (t Token) ToMainCoin(coin sdk.Coin) (sdk.DecCoin, error) {
 // ToMinCoin returns the min denom coin from args
 func (t Token) ToMinCoin(coin sdk.DecCoin) (newCoin sdk.Coin, err error) {
 	if t.Symbol != coin.Denom {
-		return sdk.NewCoin(coin.Denom, sdk.ZeroInt()), sdkerrors.Wrapf(tokentypes.ErrTokenNotExists, "not eth token symbol")
+		return sdk.NewCoin(coin.Denom, sdk.ZeroInt()), sdkerrors.Wrapf(tokentypes.ErrTokenNotExists, "not the token symbol")
 	}
 
 	precision := new(big.Int).Exp(tenInt, big.NewInt(int64(t.Scale)), nil)
