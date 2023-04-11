@@ -25,6 +25,7 @@ type legacyQueryServer struct {
 func NewLegacyQueryServer(server v1.QueryServer, cdc codec.Codec) v1beta1.QueryServer {
 	return &legacyQueryServer{
 		server: server,
+		cdc:    cdc,
 	}
 }
 
