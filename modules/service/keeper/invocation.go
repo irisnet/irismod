@@ -1182,7 +1182,7 @@ func TxHash(ctx sdk.Context) []byte {
 	return tmhash.Sum(ctx.TxBytes())
 }
 
-//  GetInternalIndex sets the internal index
+// GetInternalIndex sets the internal index
 func (k Keeper) SetInternalIndex(ctx sdk.Context, index int64) {
 	store := ctx.KVStore(k.storeKey)
 

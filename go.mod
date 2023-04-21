@@ -5,6 +5,8 @@ module github.com/irisnet/irismod
 require (
 	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.9
+	github.com/ethereum/go-ethereum v1.10.26
+	github.com/evmos/ethermint v0.20.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0

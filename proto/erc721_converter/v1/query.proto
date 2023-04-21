@@ -1,0 +1,55 @@
+syntax = "proto3";
+package irismod.erc721_converter.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+import "erc721_converter/v1/erc721.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/erc721-converter/types";
+
+// Query defines the gRPC querier service for MT module
+service Query {
+  // TokenPairs retrieves registered token pairs
+  rpc TokenPairs(QueryTokenPairsRequest) returns (QueryTokenPairsResponse) {
+    option (google.api.http).get = "/evmos/ERC721/v1/token_pairs";
+  }
+
+  // TokenPair retrieves a registered token pair
+  rpc TokenPair(QueryTokenPairRequest) returns (QueryTokenPairResponse) {
+    option (google.api.http).get = "/evmos/ERC721/v1/token_pairs/{token}";
+  }
+}
+
+// QueryTokenPairsRequest is the request type for the Query/TokenPairs RPC
+// method.
+message QueryTokenPairsRequest {
+    // pagination defines an optional pagination for the request.
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+  
+// QueryTokenPairsResponse is the response type for the Query/TokenPairs RPC
+// method.
+message QueryTokenPairsResponse {
+    // token_pairs is a slice of registered token pairs for the ERC721 module
+    repeated TokenPair token_pairs = 1 [(gogoproto.nullable) = false];
+    // pagination defines the pagination in the response.
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryTokenPairRequest is the request type for the Query/TokenPair RPC method.
+message QueryTokenPairRequest {
+    // token identifier can be either the hex contract address of the ERC721 or the
+    // Cosmos base denomination
+    string token = 1;
+}
+  
+// QueryTokenPairResponse is the response type for the Query/TokenPair RPC
+// method.
+message QueryTokenPairResponse {
+    // token_pairs returns the info about a registered token pair for the ERC721 module
+    TokenPair token_pair = 1 [(gogoproto.nullable) = false];
+}
+
+

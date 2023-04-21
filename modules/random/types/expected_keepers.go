@@ -20,7 +20,7 @@ type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }
 
-//expected Service keeper
+// expected Service keeper
 type ServiceKeeper interface {
 	RegisterResponseCallback(
 		moduleName string, respCallback service.ResponseCallback,

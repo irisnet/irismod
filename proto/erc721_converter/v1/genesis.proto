@@ -1,0 +1,13 @@
+syntax = "proto3";
+package irismod.erc721_converter.v1;
+
+import "erc721_converter/v1/erc721.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/erc721-converter/types";
+
+// GenesisState defines the module's genesis state.
+message GenesisState {
+  // token_pairs is a slice of the registered token pairs at genesis
+  repeated TokenPair token_pairs = 1 [(gogoproto.nullable) = false];
+}

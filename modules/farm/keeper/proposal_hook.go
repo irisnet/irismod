@@ -16,7 +16,7 @@ func NewGovHook(k Keeper) GovHook {
 	return GovHook{k}
 }
 
-//AfterProposalFailedMinDeposit callback when the proposal is deleted due to insufficient collateral
+// AfterProposalFailedMinDeposit callback when the proposal is deleted due to insufficient collateral
 func (h GovHook) AfterProposalFailedMinDeposit(ctx sdk.Context, proposalID uint64) {
 	info, has := h.k.GetEscrowInfo(ctx, proposalID)
 	if !has {
@@ -26,7 +26,7 @@ func (h GovHook) AfterProposalFailedMinDeposit(ctx sdk.Context, proposalID uint6
 	h.k.refundEscrow(ctx, info)
 }
 
-//AfterProposalVotingPeriodEnded callback when proposal voting is complete
+// AfterProposalVotingPeriodEnded callback when proposal voting is complete
 func (h GovHook) AfterProposalVotingPeriodEnded(ctx sdk.Context, proposalID uint64) {
 	info, has := h.k.GetEscrowInfo(ctx, proposalID)
 	if !has {

@@ -1,0 +1,32 @@
+syntax = "proto3";
+package irismod.erc721_converter.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/erc721-converter/types";
+
+
+// Owner enumerates the ownership of a ERC721 contract.
+enum Owner {
+  option (gogoproto.goproto_enum_prefix) = false;
+  // OWNER_UNSPECIFIED defines an invalid/undefined owner.
+  OWNER_UNSPECIFIED = 0;
+  // OWNER_MODULE - ERC721 is owned by the ERC721 module account.
+  OWNER_MODULE = 1;
+  // OWNER_EXTERNAL - ERC721 is owned by an external account.
+  OWNER_EXTERNAL = 2;
+}
+
+// TokenPair defines an instance that records a pairing consisting of a native
+//  Cosmos Coin and an ERC721 token address.
+message TokenPair {
+  option (gogoproto.equal) = true;
+  // erc721_address is the hex address of ERC721 contract token
+  string erc721_address = 1;
+  // denom defines the cosmos base denomination to be mapped to
+  string denom = 2;
+  // enabled defines the token mapping enable status
+  bool enabled = 3;
+  // contract_owner is the an ENUM specifying the type of ERC721 owner (0 invalid, 1 ModuleAccount, 2 external address)
+  Owner contract_owner = 4;
+}
