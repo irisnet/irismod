@@ -24,3 +24,13 @@ message Record {
     repeated Content contents = 2 [ (gogoproto.nullable) = false ];
     string creator = 3;
 }
+
+message GrantRecord {
+    option (gogoproto.equal) = true;
+
+    string tx_hash = 1 [ (gogoproto.moretags) = "yaml:\"tx_hash\"" ];
+    string id = 2;
+    string pubkey = 3;
+    string key = 4;
+    string creator = 5;
+}

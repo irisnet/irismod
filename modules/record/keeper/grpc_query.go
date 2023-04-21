@@ -23,3 +23,13 @@ func (k Keeper) Record(c context.Context, req *types.QueryRecordRequest) (*types
 	record, _ := k.GetRecord(ctx, recordId)
 	return &types.QueryRecordResponse{Record: &record}, nil
 }
+
+func (k Keeper) GrantRecord(c context.Context, req *types.QueryGrantRecordRequest) (*types.QueryGrantRecordResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	GrantRecordId, err := hex.DecodeString(req.GrantRecordId)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid record ID %s", req.GrantRecordId)
+	}
+	grantRecord, _ := k.GetGrantRecord(ctx, GrantRecordId)
+	return &types.QueryGrantRecordResponse{GrantRecord: &grantRecord}, nil
+}

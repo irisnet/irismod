@@ -8,4 +8,7 @@ const (
 
 	AttributeKeyRecordID = "record_id"
 	AttributeKeyCreator  = "creator"
+
+	EventTypeGrantRecord      = "grant_record"
+	AttributeKeyGrantRecordID = "grant_record_id"
 )

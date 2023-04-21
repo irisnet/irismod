@@ -16,6 +16,8 @@ const (
 
 	// Query endpoints supported by the record querier
 	QueryRecord = "record"
+
+	QueryGrantRecord = "grantRecord"
 )
 
 var (

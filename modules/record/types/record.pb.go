@@ -104,36 +104,82 @@ func (m *Record) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Record proto.InternalMessageInfo
 
+type GrantRecord struct {
+	TxHash  string `protobuf:"bytes,1,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty" yaml:"tx_hash"`
+	Id      string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	Pubkey  string `protobuf:"bytes,3,opt,name=pubkey,proto3" json:"pubkey,omitempty"`
+	Key     string `protobuf:"bytes,4,opt,name=key,proto3" json:"key,omitempty"`
+	Creator string `protobuf:"bytes,5,opt,name=creator,proto3" json:"creator,omitempty"`
+}
+
+func (m *GrantRecord) Reset()         { *m = GrantRecord{} }
+func (m *GrantRecord) String() string { return proto.CompactTextString(m) }
+func (*GrantRecord) ProtoMessage()    {}
+func (*GrantRecord) Descriptor() ([]byte, []int) {
+	return fileDescriptor_197cabccbeb2a7b7, []int{2}
+}
+func (m *GrantRecord) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GrantRecord) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GrantRecord.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GrantRecord) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GrantRecord.Merge(m, src)
+}
+func (m *GrantRecord) XXX_Size() int {
+	return m.Size()
+}
+func (m *GrantRecord) XXX_DiscardUnknown() {
+	xxx_messageInfo_GrantRecord.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GrantRecord proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*Content)(nil), "irismod.record.Content")
 	proto.RegisterType((*Record)(nil), "irismod.record.Record")
+	proto.RegisterType((*GrantRecord)(nil), "irismod.record.GrantRecord")
 }
 
 func init() { proto.RegisterFile("record/record.proto", fileDescriptor_197cabccbeb2a7b7) }
 
 var fileDescriptor_197cabccbeb2a7b7 = []byte{
-	// 333 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x51, 0xb1, 0x4e, 0xc3, 0x30,
-	0x10, 0x8d, 0x9b, 0x28, 0x01, 0x57, 0xea, 0x60, 0x50, 0x09, 0x0c, 0x4e, 0x95, 0xa9, 0x12, 0x52,
-	0x2c, 0xc1, 0x80, 0xe8, 0x46, 0x58, 0x60, 0x60, 0xb1, 0xc4, 0xc2, 0x52, 0xa5, 0x89, 0x95, 0x44,
-	0x4a, 0xea, 0xca, 0x76, 0xa5, 0xf6, 0x2b, 0xe8, 0x27, 0xf0, 0x39, 0x1d, 0x3b, 0x32, 0x45, 0x90,
-	0x2e, 0xcc, 0xfd, 0x02, 0x94, 0x38, 0x20, 0x98, 0xfc, 0xde, 0xbd, 0xb3, 0xde, 0xbb, 0x3b, 0x78,
-	0x22, 0x58, 0xcc, 0x45, 0x42, 0xf4, 0x13, 0x2c, 0x04, 0x57, 0x1c, 0x0d, 0x72, 0x91, 0xcb, 0x92,
-	0x27, 0x81, 0xae, 0x5e, 0x9c, 0xa6, 0x3c, 0xe5, 0xad, 0x44, 0x1a, 0xa4, 0xbb, 0xfc, 0x57, 0x00,
-	0x9d, 0x7b, 0x3e, 0x57, 0x6c, 0xae, 0xd0, 0x10, 0xda, 0x49, 0x9e, 0x32, 0xa9, 0x5c, 0x30, 0x02,
-	0xe3, 0x63, 0xda, 0x31, 0x74, 0x03, 0xfb, 0x1a, 0x4d, 0xa3, 0x22, 0xe5, 0x6e, 0xaf, 0x11, 0xc3,
-	0xe1, 0xa1, 0xf2, 0xd0, 0x3a, 0x2a, 0x8b, 0x89, 0xff, 0x47, 0xf4, 0x29, 0xd4, 0xec, 0xae, 0x48,
-	0x39, 0x3a, 0x87, 0xe6, 0x52, 0xe4, 0xae, 0xd9, 0x7e, 0x70, 0xea, 0xca, 0x33, 0x9f, 0xe9, 0x23,
-	0x6d, 0x6a, 0x08, 0x41, 0xab, 0x64, 0x2a, 0x72, 0xad, 0xd6, 0xa9, 0xc5, 0x13, 0xeb, 0xeb, 0xcd,
-	0x03, 0xfe, 0x06, 0x40, 0x9b, 0xb6, 0x91, 0xd1, 0x25, 0x74, 0xd4, 0x6a, 0x9a, 0x45, 0x32, 0xd3,
-	0x89, 0x42, 0x74, 0xa8, 0xbc, 0x81, 0x36, 0xed, 0x04, 0x9f, 0xda, 0x6a, 0xf5, 0x10, 0xc9, 0x0c,
-	0xdd, 0xc2, 0xa3, 0x58, 0x0f, 0x22, 0xdd, 0xde, 0xc8, 0x1c, 0xf7, 0xaf, 0xce, 0x82, 0xff, 0x2b,
-	0x08, 0xba, 0x41, 0x43, 0x6b, 0x5b, 0x79, 0x06, 0xfd, 0x6d, 0x47, 0x2e, 0x74, 0x62, 0xc1, 0x22,
-	0xc5, 0x85, 0xce, 0x4a, 0x7f, 0xa8, 0x8e, 0x14, 0x3e, 0x6d, 0x3f, 0xb1, 0xb1, 0xad, 0x31, 0xd8,
-	0xd5, 0x18, 0x7c, 0xd4, 0x18, 0x6c, 0xf6, 0xd8, 0xd8, 0xed, 0xb1, 0xf1, 0xbe, 0xc7, 0xc6, 0x0b,
-	0x49, 0x73, 0x95, 0x2d, 0x67, 0x41, 0xcc, 0x4b, 0xd2, 0x18, 0xce, 0x99, 0x22, 0x9d, 0x31, 0x29,
-	0x79, 0xb2, 0x2c, 0x98, 0xec, 0x2e, 0x43, 0xd4, 0x7a, 0xc1, 0xe4, 0xcc, 0x6e, 0x57, 0x7f, 0xfd,
-	0x1d, 0x00, 0x00, 0xff, 0xff, 0x73, 0x0e, 0xd5, 0x3b, 0xb7, 0x01, 0x00, 0x00,
+	// 386 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x52, 0xb1, 0x6e, 0xa3, 0x40,
+	0x10, 0x65, 0x81, 0x83, 0xbb, 0xb5, 0x64, 0x9d, 0xf6, 0x4e, 0x3e, 0xee, 0x0a, 0xb0, 0xa8, 0x2c,
+	0x9d, 0x04, 0xd2, 0x5d, 0x11, 0xc5, 0x5d, 0x48, 0x91, 0xa4, 0x48, 0xb3, 0x52, 0x9a, 0x34, 0x16,
+	0x86, 0x15, 0xa0, 0x00, 0x6b, 0x2d, 0x8b, 0x64, 0x7f, 0x45, 0x5c, 0xe4, 0x03, 0xf2, 0x39, 0x2e,
+	0x5d, 0xa6, 0x42, 0x09, 0x6e, 0x52, 0xfb, 0x0b, 0x22, 0xd8, 0x4d, 0xe4, 0x48, 0xa9, 0x52, 0xed,
+	0x7b, 0xf3, 0x66, 0x35, 0x6f, 0x9e, 0x06, 0xfe, 0x60, 0x24, 0xa2, 0x2c, 0xf6, 0xc5, 0xe3, 0x2d,
+	0x18, 0xe5, 0x14, 0x0d, 0x33, 0x96, 0x55, 0x05, 0x8d, 0x3d, 0x51, 0xfd, 0xf3, 0x33, 0xa1, 0x09,
+	0xed, 0x25, 0xbf, 0x43, 0xa2, 0xcb, 0xbd, 0x05, 0xd0, 0x3c, 0xa5, 0x25, 0x27, 0x25, 0x47, 0x23,
+	0x68, 0xc4, 0x59, 0x42, 0x2a, 0x6e, 0x81, 0x31, 0x98, 0x7c, 0xc3, 0x92, 0xa1, 0x23, 0x38, 0x10,
+	0x68, 0x16, 0xe6, 0x09, 0xb5, 0xd4, 0x4e, 0x0c, 0x46, 0xfb, 0xc6, 0x41, 0xab, 0xb0, 0xc8, 0xa7,
+	0xee, 0x81, 0xe8, 0x62, 0x28, 0xd8, 0x49, 0x9e, 0x50, 0xf4, 0x1b, 0x6a, 0x35, 0xcb, 0x2c, 0xad,
+	0xff, 0x60, 0xb6, 0x8d, 0xa3, 0x5d, 0xe1, 0x0b, 0xdc, 0xd5, 0x10, 0x82, 0x7a, 0x41, 0x78, 0x68,
+	0xe9, 0xfd, 0xa4, 0x1e, 0x4f, 0xf5, 0xe7, 0x7b, 0x07, 0xb8, 0x6b, 0x00, 0x0d, 0xdc, 0x5b, 0x46,
+	0x7f, 0xa1, 0xc9, 0x97, 0xb3, 0x34, 0xac, 0x52, 0xe1, 0x28, 0x40, 0xfb, 0xc6, 0x19, 0x8a, 0xa1,
+	0x52, 0x70, 0xb1, 0xc1, 0x97, 0xe7, 0x61, 0x95, 0xa2, 0x63, 0xf8, 0x35, 0x12, 0x8b, 0x54, 0x96,
+	0x3a, 0xd6, 0x26, 0x83, 0x7f, 0xbf, 0xbc, 0xf7, 0x11, 0x78, 0x72, 0xd1, 0x40, 0xdf, 0x34, 0x8e,
+	0x82, 0xdf, 0xda, 0x91, 0x05, 0xcd, 0x88, 0x91, 0x90, 0x53, 0x26, 0xbc, 0xe2, 0x57, 0x2a, 0x2d,
+	0xdd, 0x01, 0x38, 0x38, 0x63, 0x61, 0xc9, 0x3f, 0xe3, 0x6b, 0x08, 0xd5, 0x2c, 0x16, 0xa1, 0x61,
+	0x35, 0x8b, 0xbb, 0x94, 0x17, 0xf5, 0xfc, 0x86, 0xac, 0xe4, 0x2c, 0xc9, 0xd0, 0x77, 0xa8, 0x75,
+	0x45, 0x11, 0x48, 0x07, 0x0f, 0x6d, 0x7d, 0xf9, 0xc0, 0x56, 0x70, 0xb9, 0x79, 0xb2, 0x95, 0x4d,
+	0x6b, 0x83, 0x6d, 0x6b, 0x83, 0xc7, 0xd6, 0x06, 0xeb, 0x9d, 0xad, 0x6c, 0x77, 0xb6, 0xf2, 0xb0,
+	0xb3, 0x95, 0x6b, 0x3f, 0xc9, 0x78, 0x5a, 0xcf, 0xbd, 0x88, 0x16, 0x7e, 0x97, 0x43, 0x49, 0xb8,
+	0x2f, 0xf3, 0xf0, 0x0b, 0x1a, 0xd7, 0x39, 0xa9, 0xe4, 0xc1, 0xf8, 0x7c, 0xb5, 0x20, 0xd5, 0xdc,
+	0xe8, 0x2f, 0xe2, 0xff, 0x4b, 0x00, 0x00, 0x00, 0xff, 0xff, 0xad, 0xfb, 0x28, 0x2e, 0x4e, 0x02,
+	0x00, 0x00,
 }
 
 func (this *Content) Equal(that interface{}) bool {
@@ -198,6 +244,42 @@ func (this *Record) Equal(that interface{}) bool {
 		if !this.Contents[i].Equal(&that1.Contents[i]) {
 			return false
 		}
+	}
+	if this.Creator != that1.Creator {
+		return false
+	}
+	return true
+}
+func (this *GrantRecord) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GrantRecord)
+	if !ok {
+		that2, ok := that.(GrantRecord)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.TxHash != that1.TxHash {
+		return false
+	}
+	if this.Id != that1.Id {
+		return false
+	}
+	if this.Pubkey != that1.Pubkey {
+		return false
+	}
+	if this.Key != that1.Key {
+		return false
 	}
 	if this.Creator != that1.Creator {
 		return false
@@ -306,6 +388,64 @@ func (m *Record) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *GrantRecord) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GrantRecord) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GrantRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintRecord(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Key) > 0 {
+		i -= len(m.Key)
+		copy(dAtA[i:], m.Key)
+		i = encodeVarintRecord(dAtA, i, uint64(len(m.Key)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Pubkey) > 0 {
+		i -= len(m.Pubkey)
+		copy(dAtA[i:], m.Pubkey)
+		i = encodeVarintRecord(dAtA, i, uint64(len(m.Pubkey)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintRecord(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.TxHash) > 0 {
+		i -= len(m.TxHash)
+		copy(dAtA[i:], m.TxHash)
+		i = encodeVarintRecord(dAtA, i, uint64(len(m.TxHash)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintRecord(dAtA []byte, offset int, v uint64) int {
 	offset -= sovRecord(v)
 	base := offset
@@ -357,6 +497,35 @@ func (m *Record) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovRecord(uint64(l))
 		}
+	}
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovRecord(uint64(l))
+	}
+	return n
+}
+
+func (m *GrantRecord) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.TxHash)
+	if l > 0 {
+		n += 1 + l + sovRecord(uint64(l))
+	}
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovRecord(uint64(l))
+	}
+	l = len(m.Pubkey)
+	if l > 0 {
+		n += 1 + l + sovRecord(uint64(l))
+	}
+	l = len(m.Key)
+	if l > 0 {
+		n += 1 + l + sovRecord(uint64(l))
 	}
 	l = len(m.Creator)
 	if l > 0 {
@@ -534,10 +703,7 @@ func (m *Content) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRecord
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRecord
 			}
 			if (iNdEx + skippy) > l {
@@ -685,10 +851,217 @@ func (m *Record) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRecord
 			}
-			if (iNdEx + skippy) < 0 {
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GrantRecord) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRecord
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GrantRecord: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GrantRecord: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TxHash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRecord
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRecord
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRecord
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TxHash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRecord
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRecord
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRecord
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pubkey", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRecord
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRecord
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRecord
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Pubkey = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRecord
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRecord
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRecord
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Key = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRecord
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRecord
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRecord
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRecord(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRecord
 			}
 			if (iNdEx + skippy) > l {

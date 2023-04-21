@@ -12,6 +12,9 @@ service Query {
     rpc Record(QueryRecordRequest) returns (QueryRecordResponse) {
         option (google.api.http).get = "/irismod/record/records/{record_id}";
     }
+    rpc GrantRecord(QueryGrantRecordRequest) returns (QueryGrantRecordResponse) {
+        option (google.api.http).get = "/irismod/record/records/{grant_record_id}";
+    }
 }
 
 // QueryRecordRequest is the request type for the Query/Record RPC method
@@ -22,4 +25,14 @@ message QueryRecordRequest {
 // QueryRecordResponse is the response type for the Query/Record RPC method
 message QueryRecordResponse {
     record.Record record = 1;
+}
+
+// QueryRecordRequest is the request type for the Query/Record RPC method
+message QueryGrantRecordRequest {
+    string grant_record_id = 1;
+}
+
+// QueryRecordResponse is the response type for the Query/Record RPC method
+message QueryGrantRecordResponse {
+    record.GrantRecord grant_record = 1;
 }

@@ -7,6 +7,7 @@ import (
 
 const (
 	TypeMsgCreateRecord = "create_record" // type for MsgCreateRecord
+	TypeMsgGrantRecord  = "grant_record"  // type for MsgGrantRecord
 )
 
 var _ sdk.Msg = &MsgCreateRecord{}
@@ -49,6 +50,48 @@ func (msg MsgCreateRecord) ValidateBasic() error {
 
 // GetSigners implements Msg.
 func (msg MsgCreateRecord) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
+}
+
+var _ sdk.Msg = &MsgGrantRecord{}
+
+// NewMsgCreateRecord constructs a new MsgCreateRecord instance
+func NewMsgGrantRecord(id, pubkey, key, from string) *MsgGrantRecord {
+	return &MsgGrantRecord{
+		Id:      id,
+		Pubkey:  pubkey,
+		Key:     key,
+		Creator: from,
+	}
+}
+
+// Route implements Msg.
+func (msg MsgGrantRecord) Route() string { return RouterKey }
+
+// Type implements Msg.
+func (msg MsgGrantRecord) Type() string { return TypeMsgGrantRecord }
+
+// GetSignBytes implements Msg.
+func (msg MsgGrantRecord) GetSignBytes() []byte {
+	b, err := ModuleCdc.MarshalJSON(&msg)
+	if err != nil {
+		panic(err)
+	}
+	return sdk.MustSortJSON(b)
+}
+
+// ValidateBasic implements Msg.
+func (msg MsgGrantRecord) ValidateBasic() error {
+
+	return nil
+}
+
+// GetSigners implements Msg.
+func (msg MsgGrantRecord) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)

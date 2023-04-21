@@ -3,7 +3,6 @@ package keeper
 import (
 	"encoding/binary"
 	"fmt"
-
 	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -94,4 +93,28 @@ func (k Keeper) SetIntraTxCounter(ctx sdk.Context, counter uint32) {
 
 func getRecordID(bz []byte) []byte {
 	return tmhash.Sum(bz)
+}
+
+// AddGrantRecord adds a grantRecord
+func (k Keeper) AddGrantRecord(ctx sdk.Context, record types.GrantRecord) []byte {
+	store := ctx.KVStore(k.storeKey)
+
+	grantRecordBz := k.cdc.MustMarshal(&record)
+	intraTxCounter := k.GetIntraTxCounter(ctx)
+
+	recordID := []byte(record.Id + record.Pubkey)
+	store.Set(types.GetRecordKey(recordID), grantRecordBz)
+
+	// update intraTxCounter + 1
+	k.SetIntraTxCounter(ctx, intraTxCounter+1)
+	return recordID
+}
+
+func (k Keeper) GetGrantRecord(ctx sdk.Context, GrantRecordId []byte) (record types.GrantRecord, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	if bz := store.Get(types.GetRecordKey(GrantRecordId)); bz != nil {
+		k.cdc.MustUnmarshal(bz, &record)
+		return record, true
+	}
+	return record, false
 }

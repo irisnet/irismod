@@ -51,3 +51,26 @@ func (m msgServer) CreateRecord(goCtx context.Context, msg *types.MsgCreateRecor
 		Id: hexID,
 	}, nil
 }
+
+func (m msgServer) GrantRecord(goCtx context.Context, msg *types.MsgGrantRecord) (*types.MsgGrantRecordResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	grantRecord := types.NewGrantRecord(tmhash.Sum(ctx.TxBytes()), msg.Id, msg.Key, msg.Pubkey, msg.Creator)
+	grantRecordId := m.Keeper.AddGrantRecord(ctx, grantRecord)
+
+	hexID := hex.EncodeToString(grantRecordId)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeGrantRecord,
+
+			sdk.NewAttribute(types.AttributeKeyGrantRecordID, hexID),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+		),
+	})
+
+	return &types.MsgGrantRecordResponse{
+		Id: hexID,
+	}, nil
+}

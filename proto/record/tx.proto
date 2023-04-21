@@ -9,19 +9,31 @@ option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the oracle Msg service
 service Msg {
-    // CreateRecord defines a method for creating a new record
-    rpc CreateRecord(MsgCreateRecord) returns (MsgCreateRecordResponse);
+  // CreateRecord defines a method for creating a new record
+  rpc CreateRecord(MsgCreateRecord) returns (MsgCreateRecordResponse);
+  rpc GrantRecord(MsgGrantRecord) returns (MsgGrantRecordResponse);
 }
 
 // MsgCreateRecord defines an SDK message for creating a new record
 message MsgCreateRecord {
-    option (gogoproto.equal) = true;
+  option (gogoproto.equal) = true;
 
-    repeated Content contents = 1 [ (gogoproto.nullable) = false ];
-    string creator = 2;
+  repeated Content contents = 1 [(gogoproto.nullable) = false];
+  string creator = 2;
 }
 
 // MsgCreateRecordResponse defines the Msg/CreateRecord response type
-message MsgCreateRecordResponse {
-    string id = 1;
+message MsgCreateRecordResponse {string id = 1;}
+
+// MsgCreateRecord defines an SDK message for creating a new record
+message MsgGrantRecord {
+  option (gogoproto.equal) = true;
+
+  string id = 1;
+  string pubkey = 2;
+  string key = 3;
+  string creator = 4;
 }
+
+// MsgCreateRecordResponse defines the Msg/CreateRecord response type
+message MsgGrantRecordResponse {string id = 1;}
