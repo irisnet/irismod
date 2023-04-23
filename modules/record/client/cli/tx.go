@@ -31,6 +31,7 @@ func NewTxCmd() *cobra.Command {
 	txCmd.AddCommand(
 		GetCmdCreateRecord(),
 		GetCmdGrantRecord(),
+		GetCmdVerifyRecord(),
 	)
 	return txCmd
 }
@@ -96,7 +97,7 @@ func GetCmdCreateRecord() *cobra.Command {
 	return cmd
 }
 
-// GetCmdCreateRecord implements the create record command.
+// GetCmdGrantRecord implements the create record command.
 func GetCmdGrantRecord() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "grant [record-id] [pubKey]",
@@ -161,6 +162,43 @@ func GetCmdGrantRecord() *cobra.Command {
 			}
 			keyStr := hex.EncodeToString(keyData)
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), types.NewMsgGrantRecord(args[0], args[1], keyStr, from))
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdVerifyRecord implements the create record command.
+func GetCmdVerifyRecord() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "verify [record-id] [fake-hash]",
+		Short: "verify record hash",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			recordID, err := hex.DecodeString(args[0])
+			if err != nil {
+				return errors.New("invalid record id, must be hex encoded string")
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.Record(
+				context.Background(),
+				&types.QueryRecordRequest{RecordId: tmbytes.HexBytes(recordID).String()},
+			)
+			if err != nil {
+				return err
+			}
+
+			if res.Record.Contents[0].Digest != args[1] {
+				return errors.New("illegal record hash")
+			}
+
+			return clientCtx.PrintProto(res.Record)
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
