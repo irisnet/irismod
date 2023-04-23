@@ -36,7 +36,7 @@ func (k Keeper) IterateTokenPairs(ctx sdk.Context, cb func(tokenPair types.Token
 }
 
 // GetTokenPairID returns the pair id from either of the registered tokens.
-// Hex address or Denom can be used as token argument.
+// Hex address or ClassId can be used as token argument.
 func (k Keeper) GetTokenPairID(ctx sdk.Context, token string) []byte {
 	if common.IsHexAddress(token) {
 		addr := common.HexToAddress(token)
@@ -75,7 +75,7 @@ func (k Keeper) DeleteTokenPair(ctx sdk.Context, tokenPair types.TokenPair) {
 	id := tokenPair.GetID()
 	k.deleteTokenPair(ctx, id)
 	k.deleteERC721Map(ctx, tokenPair.GetERC721Contract())
-	k.deleteDenomMap(ctx, tokenPair.Denom)
+	k.deleteClassMap(ctx, tokenPair.ClassId)
 }
 
 // deleteTokenPair deletes the token pair for the given id
@@ -92,7 +92,7 @@ func (k Keeper) GetERC721Map(ctx sdk.Context, erc721 common.Address) []byte {
 
 // GetDenomMap returns the token pair id for the given denomination
 func (k Keeper) GetDenomMap(ctx sdk.Context, denom string) []byte {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByDenom)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByClass)
 	return store.Get([]byte(denom))
 }
 
@@ -108,16 +108,16 @@ func (k Keeper) deleteERC721Map(ctx sdk.Context, erc721 common.Address) {
 	store.Delete(erc721.Bytes())
 }
 
-// SetDenomMap sets the token pair id for the denomination
-func (k Keeper) SetDenomMap(ctx sdk.Context, denom string, id []byte) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByDenom)
-	store.Set([]byte(denom), id)
+// SetClassMap sets the token pair id for the given class
+func (k Keeper) SetClassMap(ctx sdk.Context, classId string, id []byte) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByClass)
+	store.Set([]byte(classId), id)
 }
 
-// deleteDenomMap deletes the token pair id for the given denom
-func (k Keeper) deleteDenomMap(ctx sdk.Context, denom string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByDenom)
-	store.Delete([]byte(denom))
+// deleteClassMap deletes the token pair id for the given class
+func (k Keeper) deleteClassMap(ctx sdk.Context, classId string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByClass)
+	store.Delete([]byte(classId))
 }
 
 // IsTokenPairRegistered - check if registered token tokenPair is registered
@@ -132,8 +132,8 @@ func (k Keeper) IsERC721Registered(ctx sdk.Context, erc721 common.Address) bool 
 	return store.Has(erc721.Bytes())
 }
 
-// IsDenomRegistered check if registered coin denom is registered
-func (k Keeper) IsDenomRegistered(ctx sdk.Context, denom string) bool {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByDenom)
-	return store.Has([]byte(denom))
+// IsClassRegistered check if registered cosmos x/nft Class
+func (k Keeper) IsClassRegistered(ctx sdk.Context, classId string) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByClass)
+	return store.Has([]byte(classId))
 }

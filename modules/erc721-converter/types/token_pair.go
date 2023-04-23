@@ -6,10 +6,10 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
-func NewTokenPair(erc721Address common.Address, denom string, contractOwner Owner) TokenPair {
+func NewTokenPair(erc721Address common.Address, classId string, contractOwner Owner) TokenPair {
 	return TokenPair{
 		Erc721Address: erc721Address.String(),
-		Denom:         denom,
+		ClassId:       classId,
 		Enabled:       true,
 		ContractOwner: contractOwner,
 	}
@@ -17,7 +17,7 @@ func NewTokenPair(erc721Address common.Address, denom string, contractOwner Owne
 
 // GetID returns the SHA256 hash of the ERC721 address and denomination
 func (tp TokenPair) GetID() []byte {
-	id := tp.Erc721Address + "|" + tp.Denom
+	id := tp.Erc721Address + "|" + tp.ClassId
 	return tmhash.Sum([]byte(id))
 }
 

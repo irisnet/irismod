@@ -23,8 +23,8 @@ message TokenPair {
   option (gogoproto.equal) = true;
   // erc721_address is the hex address of ERC721 contract token
   string erc721_address = 1;
-  // denom defines the cosmos base denomination to be mapped to
-  string denom = 2;
+  // classId is the class of Cosmos x/nft Class ID
+  string class_id = 2;
   // enabled defines the token mapping enable status
   bool enabled = 3;
   // contract_owner is the an ENUM specifying the type of ERC721 owner (0 invalid, 1 ModuleAccount, 2 external address)

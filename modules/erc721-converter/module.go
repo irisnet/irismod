@@ -12,12 +12,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	"github.com/irisnet/irismod/modules/erc721-converter/client/cli"
 	"github.com/irisnet/irismod/modules/erc721-converter/keeper"
 	"github.com/irisnet/irismod/modules/erc721-converter/types"
-	"github.com/spf13/cobra"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 

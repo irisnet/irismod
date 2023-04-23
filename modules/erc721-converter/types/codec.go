@@ -24,7 +24,7 @@ var (
 const (
 	// Amino names
 	registerERC721Name = "irismod/erc721-converter/MsgRegisterERC721"
-	registerDenomName  = "irismod/erc721-converter/MsgRegisterDenom"
+	registerClassName  = "irismod/erc721-converter/MsgRegisterClass"
 	convertERC721Name  = "irismod/erc721-converter/MsgConvertERC721"
 	convertNativeName  = "irismod/erc721-converter/MsgConvertNFT"
 )
@@ -40,7 +40,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgRegisterERC721{},
-		&MsgRegisterDenom{},
+		&MsgRegisterClass{},
 		&MsgConvertERC721{},
 		&MsgConvertNFT{},
 	)
@@ -53,7 +53,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 // Amino JSON serialization and EIP-712 compatibility.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRegisterERC721{}, registerERC721Name, nil)
-	cdc.RegisterConcrete(&MsgRegisterDenom{}, registerDenomName, nil)
+	cdc.RegisterConcrete(&MsgRegisterClass{}, registerClassName, nil)
 	cdc.RegisterConcrete(&MsgConvertERC721{}, convertERC721Name, nil)
 	cdc.RegisterConcrete(&MsgConvertNFT{}, convertNativeName, nil)
 }

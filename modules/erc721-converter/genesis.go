@@ -24,7 +24,7 @@ func InitGenesis(
 	for _, pair := range data.TokenPairs {
 		id := pair.GetID()
 		k.SetTokenPair(ctx, pair)
-		k.SetDenomMap(ctx, pair.Denom, id)
+		k.SetClassMap(ctx, pair.ClassId, id)
 		k.SetERC721Map(ctx, pair.GetERC721Contract(), id)
 	}
 }

@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 
-	errorsmod "cosmossdk.io/errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 
@@ -12,27 +10,6 @@ import (
 )
 
 var _ types.MsgServer = &Keeper{}
-
-// RegisterDenom registers a native Cosmos token to an ERC721 token
-func (k Keeper) RegisterDenom(goCtx context.Context, msg *types.MsgRegisterDenom) (*types.MsgRegisterDenomResponse, error) {
-	//ctx := sdk.UnwrapSDKContext(goCtx)
-	//// Error checked during msg validation
-	//sender := sdk.MustAccAddressFromBech32(msg.Sender)
-	//
-	//// Check if denomination is already registered
-	//if k.IsDenomRegistered(ctx, msg.DenomId) {
-	//	return nil, errorsmod.Wrapf(
-	//		types.ErrTokenPairAlreadyExists, "coin denomination already registered: %s", msg.DenomId,
-	//	)
-	//}
-
-	return &types.MsgRegisterDenomResponse{}, nil
-}
-
-// RegisterERC721 registers an ERC721 token to an native Cosmos token
-func (k Keeper) RegisterERC721(goCtx context.Context, msg *types.MsgRegisterERC721) (*types.MsgRegisterERC721Response, error) {
-	return &types.MsgRegisterERC721Response{}, nil
-}
 
 // ConvertNFT converts a native Cosmos token to an ERC721 token
 func (k Keeper) ConvertNFT(goCtx context.Context, msg *types.MsgConvertNFT) (*types.MsgConvertNFTResponse, error) {
@@ -42,32 +19,41 @@ func (k Keeper) ConvertNFT(goCtx context.Context, msg *types.MsgConvertNFT) (*ty
 	receiver := common.HexToAddress(msg.Receiver)
 	sender := sdk.MustAccAddressFromBech32(msg.Sender)
 
-	id := k.GetTokenPairID(ctx, msg.DenomId)
-	if len(id) == 0 {
-		return nil, errorsmod.Wrapf(
-			types.ErrTokenPairNotFound, "denom '%s' not registered by id", msg.DenomId,
-		)
-	}
-	pair, found := k.GetTokenPair(ctx, id)
-	if !found {
-		return nil, errorsmod.Wrapf(
-			types.ErrTokenPairNotFound, "denom '%s' not registered", msg.DenomId,
-		)
+	// Check if the token pair not exists
+	if !k.IsClassRegistered(ctx, msg.ClassId) {
+		// Register the token pair
+		_, err := k.SaveRegisteredClass(ctx, msg.ClassId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	if !pair.Enabled {
-		return nil, errorsmod.Wrapf(
-			types.ErrERC721TokenPairDisabled, "minting token '%s' is not enabled by governance", msg.DenomId,
-		)
-	}
-
-	if !sender.Equals(sdk.AccAddress(receiver.Bytes())) {
-		return nil, errorsmod.Wrapf(
-			types.ErrERC721TokenPairDisabled, "minting token '%s' is not enabled by governance", msg.DenomId,
-		)
-	}
-	if err := k.SaveRegisteredDenom(ctx, msg.DenomId); err != nil {
+	pair, err := k.ConvertNFTValidator(ctx, sender, receiver.Bytes(), msg.ClassId, msg.TokenId)
+	if err != nil {
 		return nil, err
+	}
+
+	erc721 := common.HexToAddress(pair.Erc721Address)
+	acc := k.evmKeeper.GetAccountWithoutBalance(ctx, erc721)
+
+	if acc == nil || !acc.IsContract() {
+		k.DeleteTokenPair(ctx, pair)
+		k.Logger(ctx).Debug(
+			"deleting selfdestructed token pair from state",
+			"contract", pair.Erc721Address,
+		)
+		// NOTE: return nil error to persist the changes from the deletion
+		return nil, nil
+	}
+	// Check ownership and execute conversion
+	switch {
+	case pair.IsNativeNFT():
+		// Convert NFT to ERC721
+
+	case pair.IsNativeERC721():
+
+	default:
+		return nil, types.ErrUndefinedOwner
 	}
 
 	return &types.MsgConvertNFTResponse{}, nil

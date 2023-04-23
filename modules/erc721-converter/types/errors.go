@@ -1,6 +1,8 @@
 package types
 
-import errorsmod "cosmossdk.io/errors"
+import (
+	errorsmod "cosmossdk.io/errors"
+)
 
 // errors
 var (
@@ -16,4 +18,6 @@ var (
 	ErrEVMDenom                = errorsmod.Register(ModuleName, 11, "EVM denomination registration")
 	ErrEVMCall                 = errorsmod.Register(ModuleName, 12, "EVM call unexpected error")
 	ErrERC721TokenPairDisabled = errorsmod.Register(ModuleName, 13, "erc721 token pair is disabled")
+	ErrUnauthorized            = errorsmod.Register(ModuleName, 14, "unauthorized address")
+	ErrClassNotFound           = errorsmod.Register(ModuleName, 15, "class not found")
 )

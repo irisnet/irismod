@@ -16,8 +16,10 @@ type Keeper struct {
 	storeKey storetypes.StoreKey
 	cdc      codec.BinaryCodec
 
-	accountKeeper types.AccountKeeper
-	evmKeeper     types.EVMKeeper
+	accountKeeper    types.AccountKeeper
+	evmKeeper        types.EVMKeeper
+	nftKeeper        types.NFTKeeper
+	irisModNFTKeeper types.IRISModNFTKeeper
 }
 
 func NewKeeper(
@@ -25,13 +27,17 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	ak types.AccountKeeper,
 	evmKeeper types.EVMKeeper,
+	nftKeeper types.NFTKeeper,
+	irisModNFTKeeper types.IRISModNFTKeeper,
 ) Keeper {
 
 	return Keeper{
-		storeKey:      storeKey,
-		cdc:           cdc,
-		accountKeeper: ak,
-		evmKeeper:     evmKeeper,
+		storeKey:         storeKey,
+		cdc:              cdc,
+		accountKeeper:    ak,
+		evmKeeper:        evmKeeper,
+		nftKeeper:        nftKeeper,
+		irisModNFTKeeper: irisModNFTKeeper,
 	}
 }
 

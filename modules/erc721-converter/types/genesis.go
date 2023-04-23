@@ -18,14 +18,14 @@ func DefaultGenesisState() *GenesisState {
 // failure.
 func (gs GenesisState) Validate() error {
 	seenErc721 := make(map[string]bool)
-	seenDenom := make(map[string]bool)
+	seenClass := make(map[string]bool)
 
 	for _, b := range gs.TokenPairs {
 		if seenErc721[b.Erc721Address] {
 			return fmt.Errorf("token ERC721 contract duplicated on genesis '%s'", b.Erc721Address)
 		}
-		if seenDenom[b.Denom] {
-			return fmt.Errorf("denomination duplicated on genesis: '%s'", b.Denom)
+		if seenClass[b.ClassId] {
+			return fmt.Errorf("class duplicated on genesis: '%s'", b.ClassId)
 		}
 
 		if err := b.Validate(); err != nil {
@@ -33,7 +33,7 @@ func (gs GenesisState) Validate() error {
 		}
 
 		seenErc721[b.Erc721Address] = true
-		seenDenom[b.Denom] = true
+		seenClass[b.ClassId] = true
 	}
 
 	return nil

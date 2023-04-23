@@ -27,7 +27,7 @@ func init() {
 const (
 	prefixTokenPair = iota + 1
 	prefixTokenPairByERC721
-	prefixTokenPairByDenom
+	prefixTokenPairByClass
 	prefixERC721TokenIDByNativeTokenID
 	prefixNativeTokenIDByERC721TokenID
 )
@@ -36,7 +36,7 @@ const (
 var (
 	KeyPrefixTokenPair                    = []byte{prefixTokenPair}
 	KeyPrefixTokenPairByERC721            = []byte{prefixTokenPairByERC721}
-	KeyPrefixTokenPairByDenom             = []byte{prefixTokenPairByDenom}
+	KeyPrefixTokenPairByClass             = []byte{prefixTokenPairByClass}
 	KeyPrefixERC721TokenIDByNativeTokenID = []byte{prefixERC721TokenIDByNativeTokenID}
 	KeyPrefixNativeTokenIDByERC721TokenID = []byte{prefixNativeTokenIDByERC721TokenID}
 )

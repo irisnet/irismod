@@ -6,8 +6,13 @@ type ERC721Data struct {
 	Symbol string
 }
 
+// ERC721StringResponse defines the string value from the call response
+type ERC721StringResponse struct {
+	Value string
+}
+
 // NewERC721Data creates a new ERC20Data instance
-func NewERC721Data(name, symbol string, decimals uint8) ERC721Data {
+func NewERC721Data(name, symbol string) ERC721Data {
 	return ERC721Data{
 		Name:   name,
 		Symbol: symbol,

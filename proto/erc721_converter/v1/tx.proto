@@ -10,66 +10,27 @@ option go_package = "github.com/irisnet/irismod/modules/erc721-converter/types";
 // Msg defines the ERC721 Msg service.
 service Msg {
 
-    // RegisterDenom defines a method to register a token pair for a native Cosmos NFT.
-    rpc RegisterDenom(MsgRegisterDenom) returns (MsgRegisterDenomResponse) {
-      option (google.api.http).post = "/irismod/erc721-converter/register-denom";
-    };
-
-    // RegisterERC721 defines a method to register a token pair for a ERC721 token contract.
-    rpc RegisterERC721(MsgRegisterERC721) returns (MsgRegisterERC721Response) {
-      option (google.api.http).post = "/irismod/erc721-converter/register-erc721";
-    };
-
-    // ConvertNFT mints a ERC721 representation of the native Cosmos NFT denom
+    // ConvertNFT mints a ERC721 representation of the native Cosmos Class
     // that is registered on the token mapping.
     rpc ConvertNFT(MsgConvertNFT) returns (MsgConvertNFTResponse) {
       option (google.api.http).post = "/irismod/erc721-converter/convert-nft";
     };
-    // ConvertERC721 mints a native Cosmos NFT representation of the ERC721 token
+    // ConvertERC721 mints a native Cosmos Class representation of the x/nft token
     // contract that is registered on the token mapping.
     rpc ConvertERC721(MsgConvertERC721) returns (MsgConvertERC721Response) {
       option (google.api.http).post = "/irismod/erc721-converter/convert-erc721";
     };
 }
 
-// MsgRegisterDenom is a gov Content type to register a token pair for a
-// native Cosmos NFT.
-message MsgRegisterDenom {
-    option (gogoproto.equal) = false;
-
-    // denom_id of the native Cosmos coin to register
-    string denom_id = 1;
-    // sender is the cosmos bech32 address from the owner of the given Cosmos NFT
-    string sender = 2;
-}
-
-// MsgRegisterDenomResponse returns no fields
-message MsgRegisterDenomResponse {}
-
-// MsgRegisterERC721 is a gov Content type to register a token pair for a
-// ERC721 token contract.
-message MsgRegisterERC721 {
-    option (gogoproto.equal) = false;
-
-    // contract_address of an ERC721 token contract
-    string contract_address = 1;
-
-    // sender is the cosmos bech32 address from the owner of the given Cosmos NFT
-    string sender = 2;
-}
-
-// MsgRegisterERC721Response returns no fields
-message MsgRegisterERC721Response {}
-
 // MsgConvertNFT defines a Msg to convert a native Cosmos coin to a ERC721 token
 message MsgConvertNFT {
-    // denom_id of the native Cosmos NFT to convert
-    string denom_id = 1;
-    // token_id of the native Cosmos NFT to convert
+    // class_id of the native Cosmos Class to convert
+    string class_id = 1;
+    // token_id of the native Cosmos Class to convert
     string token_id = 2;
     // receiver is the hex address to receive ERC721 token
     string receiver = 3;
-    // sender is the cosmos bech32 address from the owner of the given Cosmos NFT
+    // sender is the cosmos bech32 address from the owner of the given Cosmos Class
     string sender = 4;
 }
   
@@ -83,7 +44,7 @@ message MsgConvertERC721 {
     string contract_address = 1;
     // token_id of the ERC721 token to convert
     string token_id = 2;
-    // receiver is the bech32 address to receive native Cosmos NFT
+    // receiver is the bech32 address to receive native Cosmos Class
     string receiver = 3;
     // sender is the hex address from the owner of the given ERC721 tokens
     string sender = 4;

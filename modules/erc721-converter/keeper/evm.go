@@ -4,6 +4,12 @@ import (
 	"encoding/json"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/crypto"
+
+	"github.com/irisnet/irismod/modules/erc721-converter/contracts"
+
+	nfttypes "github.com/cosmos/cosmos-sdk/x/nft"
+
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
@@ -16,27 +22,120 @@ import (
 	"github.com/irisnet/irismod/modules/erc721-converter/types"
 )
 
-func (k Keeper) DeployERC721Contract(ctx sdk.Context, denom string) (common.Address, error) {
-	return common.Address{}, nil
+func (k Keeper) DeployERC721Contract(ctx sdk.Context, class nfttypes.Class) (common.Address, error) {
+	contractArgs, err := contracts.ERC721PresetMinterPauserAutoIdContract.ABI.Pack(
+		"",
+		class.Name,
+		class.Symbol,
+		class.Uri,
+	)
+	if err != nil {
+		return common.Address{}, errorsmod.Wrapf(types.ErrABIPack, "class metadata is invalid %s: %s", class.Name, err.Error())
+	}
+	data := make([]byte, len(contracts.ERC721PresetMinterPauserAutoIdContract.Bin)+len(contractArgs))
+	copy(data[:len(contracts.ERC721PresetMinterPauserAutoIdContract.Bin)], contracts.ERC721PresetMinterPauserAutoIdContract.Bin)
+	copy(data[len(contracts.ERC721PresetMinterPauserAutoIdContract.Bin):], contractArgs)
+
+	nonce, err := k.accountKeeper.GetSequence(ctx, types.ModuleAddress.Bytes())
+	if err != nil {
+		return common.Address{}, err
+	}
+	contractAddr := crypto.CreateAddress(types.ModuleAddress, nonce)
+	_, err = k.CallEVMWithData(ctx, types.ModuleAddress, nil, data, true)
+	if err != nil {
+		return common.Address{}, errorsmod.Wrapf(err, "failed to deploy contract for %s", class.Name)
+	}
+
+	return contractAddr, nil
 }
 
 // QueryERC721 queries an ERC721 contract
 func (k Keeper) QueryERC721(
 	ctx sdk.Context,
 	contract common.Address,
-) (*types.ERC721Data, error) {
-	// todo
-	return nil, nil
+) (types.ERC721Data, error) {
+
+	var (
+		nameRes   types.ERC721StringResponse
+		symbolRes types.ERC721StringResponse
+	)
+
+	erc721 := contracts.ERC721PresetMinterPauserAutoIdContract.ABI
+	// Name
+	res, err := k.CallEVM(ctx, erc721, types.ModuleAddress, contract, false, "name")
+	if err != nil {
+		return types.ERC721Data{}, err
+	}
+
+	if err := erc721.UnpackIntoInterface(&nameRes, "name", res.Ret); err != nil {
+		return types.ERC721Data{}, errorsmod.Wrapf(
+			types.ErrABIUnpack, "failed to unpack name: %s", err.Error(),
+		)
+	}
+
+	// Symbol
+	res, err = k.CallEVM(ctx, erc721, types.ModuleAddress, contract, false, "symbol")
+	if err != nil {
+		return types.ERC721Data{}, err
+	}
+
+	if err := erc721.UnpackIntoInterface(&symbolRes, "symbol", res.Ret); err != nil {
+		return types.ERC721Data{}, errorsmod.Wrapf(
+			types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
+		)
+	}
+
+	return types.NewERC721Data(nameRes.Value, symbolRes.Value), nil
 }
 
-// BalanceOf queries an account's balance for a given ERC20 contract
+// BalanceOf queries an account's balance for a given ERC721 contract
 func (k Keeper) BalanceOf(
 	ctx sdk.Context,
 	abi abi.ABI,
 	contract, account common.Address,
 ) *big.Int {
-	// todo
-	return nil
+	res, err := k.CallEVM(ctx, abi, types.ModuleAddress, contract, false, "balanceOf", account)
+	if err != nil {
+		return nil
+	}
+
+	unpacked, err := abi.Unpack("balanceOf", res.Ret)
+
+	if err != nil || len(unpacked) == 0 {
+		return nil
+	}
+
+	balance, ok := unpacked[0].(*big.Int)
+	if !ok {
+		return nil
+	}
+
+	return balance
+}
+
+// OwnerOf queries an account's owner for a given ERC721 contract
+func (k Keeper) OwnerOf(
+	ctx sdk.Context,
+	abi abi.ABI,
+	contract common.Address,
+	tokenID *big.Int,
+) (common.Address, error) {
+	res, err := k.CallEVM(ctx, abi, types.ModuleAddress, contract, false, "ownerOf", tokenID)
+	if err != nil {
+		return common.Address{}, err
+	}
+
+	unpacked, err := abi.Unpack("ownerOf", res.Ret)
+	if err != nil || len(unpacked) == 0 {
+		return common.Address{}, err
+	}
+
+	owner, ok := unpacked[0].(common.Address)
+	if !ok {
+		return common.Address{}, err
+	}
+
+	return owner, nil
 }
 
 // CallEVM performs a smart contract method call using given args

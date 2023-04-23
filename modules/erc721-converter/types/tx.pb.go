@@ -29,201 +29,15 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgRegisterDenom is a gov Content type to register a token pair for a
-// native Cosmos NFT.
-type MsgRegisterDenom struct {
-	// denom_id of the native Cosmos coin to register
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty"`
-	// sender is the cosmos bech32 address from the owner of the given Cosmos NFT
-	Sender string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
-}
-
-func (m *MsgRegisterDenom) Reset()         { *m = MsgRegisterDenom{} }
-func (m *MsgRegisterDenom) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterDenom) ProtoMessage()    {}
-func (*MsgRegisterDenom) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{0}
-}
-func (m *MsgRegisterDenom) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgRegisterDenom) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgRegisterDenom.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgRegisterDenom) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterDenom.Merge(m, src)
-}
-func (m *MsgRegisterDenom) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgRegisterDenom) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterDenom.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgRegisterDenom proto.InternalMessageInfo
-
-func (m *MsgRegisterDenom) GetDenomId() string {
-	if m != nil {
-		return m.DenomId
-	}
-	return ""
-}
-
-func (m *MsgRegisterDenom) GetSender() string {
-	if m != nil {
-		return m.Sender
-	}
-	return ""
-}
-
-// MsgRegisterDenomResponse returns no fields
-type MsgRegisterDenomResponse struct {
-}
-
-func (m *MsgRegisterDenomResponse) Reset()         { *m = MsgRegisterDenomResponse{} }
-func (m *MsgRegisterDenomResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterDenomResponse) ProtoMessage()    {}
-func (*MsgRegisterDenomResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{1}
-}
-func (m *MsgRegisterDenomResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgRegisterDenomResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgRegisterDenomResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgRegisterDenomResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterDenomResponse.Merge(m, src)
-}
-func (m *MsgRegisterDenomResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgRegisterDenomResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterDenomResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgRegisterDenomResponse proto.InternalMessageInfo
-
-// MsgRegisterERC721 is a gov Content type to register a token pair for a
-// ERC721 token contract.
-type MsgRegisterERC721 struct {
-	// contract_address of an ERC721 token contract
-	ContractAddress string `protobuf:"bytes,1,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
-	// sender is the cosmos bech32 address from the owner of the given Cosmos NFT
-	Sender string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
-}
-
-func (m *MsgRegisterERC721) Reset()         { *m = MsgRegisterERC721{} }
-func (m *MsgRegisterERC721) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterERC721) ProtoMessage()    {}
-func (*MsgRegisterERC721) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{2}
-}
-func (m *MsgRegisterERC721) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgRegisterERC721) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgRegisterERC721.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgRegisterERC721) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterERC721.Merge(m, src)
-}
-func (m *MsgRegisterERC721) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgRegisterERC721) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterERC721.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgRegisterERC721 proto.InternalMessageInfo
-
-func (m *MsgRegisterERC721) GetContractAddress() string {
-	if m != nil {
-		return m.ContractAddress
-	}
-	return ""
-}
-
-func (m *MsgRegisterERC721) GetSender() string {
-	if m != nil {
-		return m.Sender
-	}
-	return ""
-}
-
-// MsgRegisterERC721Response returns no fields
-type MsgRegisterERC721Response struct {
-}
-
-func (m *MsgRegisterERC721Response) Reset()         { *m = MsgRegisterERC721Response{} }
-func (m *MsgRegisterERC721Response) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterERC721Response) ProtoMessage()    {}
-func (*MsgRegisterERC721Response) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{3}
-}
-func (m *MsgRegisterERC721Response) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgRegisterERC721Response) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgRegisterERC721Response.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgRegisterERC721Response) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterERC721Response.Merge(m, src)
-}
-func (m *MsgRegisterERC721Response) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgRegisterERC721Response) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterERC721Response.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgRegisterERC721Response proto.InternalMessageInfo
-
 // MsgConvertNFT defines a Msg to convert a native Cosmos coin to a ERC721 token
 type MsgConvertNFT struct {
-	// denom_id of the native Cosmos NFT to convert
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty"`
-	// token_id of the native Cosmos NFT to convert
+	// class_id of the native Cosmos Class to convert
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// token_id of the native Cosmos Class to convert
 	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
 	// receiver is the hex address to receive ERC721 token
 	Receiver string `protobuf:"bytes,3,opt,name=receiver,proto3" json:"receiver,omitempty"`
-	// sender is the cosmos bech32 address from the owner of the given Cosmos NFT
+	// sender is the cosmos bech32 address from the owner of the given Cosmos Class
 	Sender string `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
 }
 
@@ -231,7 +45,7 @@ func (m *MsgConvertNFT) Reset()         { *m = MsgConvertNFT{} }
 func (m *MsgConvertNFT) String() string { return proto.CompactTextString(m) }
 func (*MsgConvertNFT) ProtoMessage()    {}
 func (*MsgConvertNFT) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{4}
+	return fileDescriptor_44552c28cce3d8a7, []int{0}
 }
 func (m *MsgConvertNFT) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -260,9 +74,9 @@ func (m *MsgConvertNFT) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgConvertNFT proto.InternalMessageInfo
 
-func (m *MsgConvertNFT) GetDenomId() string {
+func (m *MsgConvertNFT) GetClassId() string {
 	if m != nil {
-		return m.DenomId
+		return m.ClassId
 	}
 	return ""
 }
@@ -296,7 +110,7 @@ func (m *MsgConvertNFTResponse) Reset()         { *m = MsgConvertNFTResponse{} }
 func (m *MsgConvertNFTResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgConvertNFTResponse) ProtoMessage()    {}
 func (*MsgConvertNFTResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{5}
+	return fileDescriptor_44552c28cce3d8a7, []int{1}
 }
 func (m *MsgConvertNFTResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -332,7 +146,7 @@ type MsgConvertERC721 struct {
 	ContractAddress string `protobuf:"bytes,1,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
 	// token_id of the ERC721 token to convert
 	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
-	// receiver is the bech32 address to receive native Cosmos NFT
+	// receiver is the bech32 address to receive native Cosmos Class
 	Receiver string `protobuf:"bytes,3,opt,name=receiver,proto3" json:"receiver,omitempty"`
 	// sender is the hex address from the owner of the given ERC721 tokens
 	Sender string `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
@@ -342,7 +156,7 @@ func (m *MsgConvertERC721) Reset()         { *m = MsgConvertERC721{} }
 func (m *MsgConvertERC721) String() string { return proto.CompactTextString(m) }
 func (*MsgConvertERC721) ProtoMessage()    {}
 func (*MsgConvertERC721) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{6}
+	return fileDescriptor_44552c28cce3d8a7, []int{2}
 }
 func (m *MsgConvertERC721) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -407,7 +221,7 @@ func (m *MsgConvertERC721Response) Reset()         { *m = MsgConvertERC721Respon
 func (m *MsgConvertERC721Response) String() string { return proto.CompactTextString(m) }
 func (*MsgConvertERC721Response) ProtoMessage()    {}
 func (*MsgConvertERC721Response) Descriptor() ([]byte, []int) {
-	return fileDescriptor_44552c28cce3d8a7, []int{7}
+	return fileDescriptor_44552c28cce3d8a7, []int{3}
 }
 func (m *MsgConvertERC721Response) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -437,10 +251,6 @@ func (m *MsgConvertERC721Response) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgConvertERC721Response proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgRegisterDenom)(nil), "irismod.erc721_converter.v1.MsgRegisterDenom")
-	proto.RegisterType((*MsgRegisterDenomResponse)(nil), "irismod.erc721_converter.v1.MsgRegisterDenomResponse")
-	proto.RegisterType((*MsgRegisterERC721)(nil), "irismod.erc721_converter.v1.MsgRegisterERC721")
-	proto.RegisterType((*MsgRegisterERC721Response)(nil), "irismod.erc721_converter.v1.MsgRegisterERC721Response")
 	proto.RegisterType((*MsgConvertNFT)(nil), "irismod.erc721_converter.v1.MsgConvertNFT")
 	proto.RegisterType((*MsgConvertNFTResponse)(nil), "irismod.erc721_converter.v1.MsgConvertNFTResponse")
 	proto.RegisterType((*MsgConvertERC721)(nil), "irismod.erc721_converter.v1.MsgConvertERC721")
@@ -450,40 +260,33 @@ func init() {
 func init() { proto.RegisterFile("erc721_converter/v1/tx.proto", fileDescriptor_44552c28cce3d8a7) }
 
 var fileDescriptor_44552c28cce3d8a7 = []byte{
-	// 524 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0xcf, 0x6b, 0x13, 0x41,
-	0x14, 0xce, 0xb4, 0xb5, 0x8d, 0x03, 0xd5, 0x3a, 0xf8, 0x23, 0xd9, 0x96, 0x55, 0xd7, 0xfa, 0xa3,
-	0x62, 0x76, 0x49, 0xa4, 0x16, 0xbd, 0x69, 0x55, 0x28, 0x12, 0x0f, 0xd1, 0x93, 0x08, 0xcb, 0x76,
-	0xe7, 0x39, 0x2e, 0x36, 0x33, 0x61, 0x66, 0x1a, 0xec, 0xd5, 0xb3, 0x07, 0x41, 0xc4, 0xab, 0xe0,
-	0xc1, 0x7f, 0xc5, 0x63, 0xc1, 0x8b, 0x47, 0x49, 0x3c, 0xf8, 0x67, 0x48, 0x66, 0xb6, 0x9b, 0x64,
-	0x95, 0x24, 0x0b, 0xbd, 0xed, 0x7b, 0xef, 0x7b, 0xef, 0xfb, 0xf2, 0xde, 0x97, 0xc1, 0x6b, 0x20,
-	0xe3, 0xad, 0x46, 0x3d, 0x8c, 0x05, 0xef, 0x82, 0xd4, 0x20, 0x83, 0x6e, 0x3d, 0xd0, 0x6f, 0xfd,
-	0x8e, 0x14, 0x5a, 0x90, 0xd5, 0x44, 0x26, 0xaa, 0x2d, 0xa8, 0x9f, 0x47, 0xf9, 0xdd, 0xba, 0x73,
-	0x96, 0x09, 0x26, 0x0c, 0x2e, 0x18, 0x7c, 0xd9, 0x16, 0x67, 0x8d, 0x09, 0xc1, 0xf6, 0x20, 0x88,
-	0x3a, 0x49, 0x10, 0x71, 0x2e, 0x74, 0xa4, 0x13, 0xc1, 0x95, 0xad, 0x7a, 0x4f, 0xf0, 0x4a, 0x53,
-	0xb1, 0x16, 0xb0, 0x44, 0x69, 0x90, 0x0f, 0x81, 0x8b, 0x36, 0xa9, 0xe2, 0x32, 0x1d, 0x7c, 0x84,
-	0x09, 0xad, 0xa0, 0x4b, 0xe8, 0xc6, 0xc9, 0xd6, 0x92, 0x89, 0x77, 0x28, 0x39, 0x8f, 0x17, 0x15,
-	0x70, 0x0a, 0xb2, 0x32, 0x67, 0x0a, 0x69, 0x74, 0x6f, 0xe1, 0xcf, 0x97, 0x8b, 0x25, 0xcf, 0xc1,
-	0x95, 0xfc, 0xb0, 0x16, 0xa8, 0x8e, 0xe0, 0x0a, 0xbc, 0x97, 0xf8, 0xcc, 0x48, 0xed, 0x51, 0x6b,
-	0x7b, 0xab, 0x51, 0x27, 0x1b, 0x78, 0x25, 0x16, 0x5c, 0xcb, 0x28, 0xd6, 0x61, 0x44, 0xa9, 0x04,
-	0xa5, 0x52, 0xc6, 0xd3, 0x47, 0xf9, 0xfb, 0x36, 0x3d, 0x85, 0x79, 0x15, 0x57, 0xff, 0x99, 0x9e,
-	0x51, 0x1f, 0xe0, 0xe5, 0xa6, 0x62, 0xdb, 0x76, 0x55, 0x4f, 0x1f, 0x3f, 0x9f, 0xf4, 0x03, 0xab,
-	0xb8, 0xac, 0xc5, 0x1b, 0xe0, 0x83, 0x92, 0x25, 0x5a, 0x32, 0xf1, 0x0e, 0x25, 0x0e, 0x2e, 0x4b,
-	0x88, 0x21, 0xe9, 0x82, 0xac, 0xcc, 0x9b, 0x52, 0x16, 0x8f, 0xa8, 0x5b, 0x18, 0x55, 0xe7, 0x5d,
-	0xc0, 0xe7, 0xc6, 0xa8, 0x33, 0x4d, 0xef, 0x91, 0x59, 0x7c, 0x5a, 0x29, 0xbe, 0x8e, 0x63, 0xd6,
-	0x69, 0x2f, 0x37, 0xa6, 0xe6, 0x48, 0x6a, 0xe3, 0xd3, 0x09, 0x3c, 0xdf, 0x54, 0x8c, 0x7c, 0x45,
-	0x78, 0x79, 0xdc, 0x28, 0x35, 0x7f, 0x82, 0x1d, 0xfd, 0xbc, 0x15, 0x9c, 0xcd, 0x42, 0xf0, 0x6c,
-	0x55, 0xb7, 0xde, 0xfd, 0xf8, 0xfd, 0x71, 0xee, 0x9a, 0xb7, 0x1e, 0xa4, 0xed, 0x81, 0x6d, 0xb7,
-	0x7f, 0x8c, 0x40, 0xa6, 0x4d, 0xa1, 0x39, 0x21, 0xf9, 0x86, 0xf0, 0xa9, 0x9c, 0xcb, 0xfc, 0x59,
-	0x79, 0x2d, 0xde, 0xb9, 0x53, 0x0c, 0x9f, 0x09, 0xad, 0x19, 0xa1, 0xd7, 0xbd, 0xab, 0x53, 0x84,
-	0xda, 0x2c, 0xf9, 0x8c, 0x30, 0x1e, 0x31, 0xe5, 0xcd, 0x69, 0xac, 0x43, 0xac, 0xd3, 0x98, 0x1d,
-	0x9b, 0xa9, 0xdb, 0x30, 0xea, 0xae, 0x90, 0xcb, 0xff, 0x57, 0x97, 0x4e, 0x08, 0xf9, 0x2b, 0x6d,
-	0x2e, 0x3d, 0xee, 0xcc, 0xda, 0x8c, 0x84, 0xe9, 0x06, 0x37, 0x0b, 0xc1, 0xf3, 0x97, 0x26, 0xeb,
-	0x93, 0x25, 0xda, 0xe4, 0x83, 0x67, 0xdf, 0x7b, 0x2e, 0x3a, 0xec, 0xb9, 0xe8, 0x57, 0xcf, 0x45,
-	0x1f, 0xfa, 0x6e, 0xe9, 0xb0, 0xef, 0x96, 0x7e, 0xf6, 0xdd, 0xd2, 0x8b, 0xbb, 0x2c, 0xd1, 0xaf,
-	0xf7, 0x77, 0xfd, 0x58, 0xb4, 0xcd, 0x24, 0x0e, 0x3a, 0x9b, 0xd8, 0x16, 0x74, 0x7f, 0x0f, 0x54,
-	0x3a, 0xb9, 0x36, 0x7c, 0x66, 0xf5, 0x41, 0x07, 0xd4, 0xee, 0xa2, 0x79, 0x16, 0x6f, 0xff, 0x0d,
-	0x00, 0x00, 0xff, 0xff, 0xfc, 0xd9, 0x64, 0x0a, 0x87, 0x05, 0x00, 0x00,
+	// 410 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x92, 0xcf, 0xaa, 0xd3, 0x40,
+	0x14, 0xc6, 0x3b, 0xad, 0xd4, 0x3a, 0x50, 0x2c, 0xc1, 0x3f, 0x31, 0x96, 0x20, 0x01, 0xb1, 0x16,
+	0x92, 0x98, 0x88, 0x14, 0x97, 0x5a, 0x14, 0xba, 0xa8, 0x8b, 0xea, 0xca, 0x4d, 0x49, 0x33, 0xc7,
+	0x18, 0x6c, 0x67, 0xc2, 0xcc, 0x34, 0xd8, 0xad, 0x6b, 0x17, 0x82, 0x4b, 0x1f, 0xc0, 0x57, 0x71,
+	0x23, 0x14, 0xdc, 0xb8, 0x94, 0xd6, 0x07, 0xb9, 0x74, 0x26, 0x4d, 0x6f, 0x7b, 0xe1, 0xde, 0x5e,
+	0xb8, 0xbb, 0x39, 0xf3, 0xfb, 0xce, 0x37, 0x5f, 0x4e, 0x0e, 0x6e, 0x03, 0x8f, 0x7b, 0x61, 0x30,
+	0x8e, 0x19, 0xcd, 0x81, 0x4b, 0xe0, 0x7e, 0x1e, 0xf8, 0xf2, 0xb3, 0x97, 0x71, 0x26, 0x99, 0x71,
+	0x3f, 0xe5, 0xa9, 0x98, 0x31, 0xe2, 0x1d, 0xaa, 0xbc, 0x3c, 0xb0, 0x6e, 0x25, 0x2c, 0x61, 0x4a,
+	0xe7, 0x6f, 0x4e, 0xba, 0xc5, 0x6a, 0x27, 0x8c, 0x25, 0x53, 0xf0, 0xa3, 0x2c, 0xf5, 0x23, 0x4a,
+	0x99, 0x8c, 0x64, 0xca, 0xa8, 0xd0, 0xd4, 0x59, 0xe0, 0xe6, 0x50, 0x24, 0x7d, 0x6d, 0xf3, 0xe6,
+	0xf5, 0x3b, 0xe3, 0x1e, 0x6e, 0xc4, 0xd3, 0x48, 0x88, 0x71, 0x4a, 0x4c, 0xf4, 0x00, 0x75, 0x6e,
+	0x8c, 0xae, 0xab, 0x7a, 0x40, 0x36, 0x48, 0xb2, 0x4f, 0x40, 0x37, 0xa8, 0xaa, 0x91, 0xaa, 0x07,
+	0xc4, 0xb0, 0x70, 0x83, 0x43, 0x0c, 0x69, 0x0e, 0xdc, 0xac, 0x29, 0x54, 0xd6, 0xc6, 0x1d, 0x5c,
+	0x17, 0x40, 0x09, 0x70, 0xf3, 0x9a, 0x22, 0x45, 0xe5, 0xdc, 0xc5, 0xb7, 0xf7, 0x9e, 0x1e, 0x81,
+	0xc8, 0x18, 0x15, 0xe0, 0x7c, 0x45, 0xb8, 0xb5, 0x23, 0xaf, 0x46, 0xfd, 0x5e, 0x18, 0x18, 0x8f,
+	0x71, 0x2b, 0x66, 0x54, 0xf2, 0x28, 0x96, 0xe3, 0x88, 0x10, 0x0e, 0x42, 0x14, 0xf9, 0x6e, 0x6e,
+	0xef, 0x5f, 0xe8, 0xeb, 0xab, 0xce, 0x69, 0x61, 0xf3, 0x30, 0xcd, 0x36, 0x6a, 0xf8, 0xbb, 0x8a,
+	0x6b, 0x43, 0x91, 0x18, 0x3f, 0x10, 0xc6, 0xa7, 0x86, 0xd8, 0xf5, 0xce, 0xf9, 0x4f, 0xde, 0xde,
+	0x57, 0x5b, 0xe1, 0xf1, 0xda, 0x72, 0x42, 0xee, 0x97, 0x3f, 0xff, 0xbf, 0x57, 0x1f, 0x39, 0x0f,
+	0xfd, 0xa2, 0xd7, 0xd7, 0xbd, 0xee, 0x6e, 0x6b, 0x8a, 0x93, 0x4b, 0x3f, 0x48, 0xe3, 0x27, 0xc2,
+	0xcd, 0xfd, 0x69, 0xba, 0x47, 0x3e, 0xaa, 0xe5, 0xd6, 0xb3, 0x4b, 0xc9, 0xcb, 0x98, 0x4f, 0x54,
+	0xcc, 0xae, 0xd3, 0xb9, 0x38, 0xa6, 0x06, 0x2f, 0xdf, 0xfe, 0x5a, 0xd9, 0x68, 0xb9, 0xb2, 0xd1,
+	0xbf, 0x95, 0x8d, 0xbe, 0xad, 0xed, 0xca, 0x72, 0x6d, 0x57, 0xfe, 0xae, 0xed, 0xca, 0xfb, 0xe7,
+	0x49, 0x2a, 0x3f, 0xce, 0x27, 0x5e, 0xcc, 0x66, 0xca, 0x8d, 0x82, 0x2c, 0x5d, 0x67, 0x8c, 0xcc,
+	0xa7, 0x20, 0xce, 0xba, 0xcb, 0x45, 0x06, 0x62, 0x52, 0x57, 0xab, 0xfe, 0xf4, 0x24, 0x00, 0x00,
+	0xff, 0xff, 0x71, 0x17, 0xf2, 0x8f, 0x5b, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -498,14 +301,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// RegisterDenom defines a method to register a token pair for a native Cosmos NFT.
-	RegisterDenom(ctx context.Context, in *MsgRegisterDenom, opts ...grpc.CallOption) (*MsgRegisterDenomResponse, error)
-	// RegisterERC721 defines a method to register a token pair for a ERC721 token contract.
-	RegisterERC721(ctx context.Context, in *MsgRegisterERC721, opts ...grpc.CallOption) (*MsgRegisterERC721Response, error)
-	// ConvertNFT mints a ERC721 representation of the native Cosmos NFT denom
+	// ConvertNFT mints a ERC721 representation of the native Cosmos Class
 	// that is registered on the token mapping.
 	ConvertNFT(ctx context.Context, in *MsgConvertNFT, opts ...grpc.CallOption) (*MsgConvertNFTResponse, error)
-	// ConvertERC721 mints a native Cosmos NFT representation of the ERC721 token
+	// ConvertERC721 mints a native Cosmos Class representation of the x/nft token
 	// contract that is registered on the token mapping.
 	ConvertERC721(ctx context.Context, in *MsgConvertERC721, opts ...grpc.CallOption) (*MsgConvertERC721Response, error)
 }
@@ -516,24 +315,6 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
-}
-
-func (c *msgClient) RegisterDenom(ctx context.Context, in *MsgRegisterDenom, opts ...grpc.CallOption) (*MsgRegisterDenomResponse, error) {
-	out := new(MsgRegisterDenomResponse)
-	err := c.cc.Invoke(ctx, "/irismod.erc721_converter.v1.Msg/RegisterDenom", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) RegisterERC721(ctx context.Context, in *MsgRegisterERC721, opts ...grpc.CallOption) (*MsgRegisterERC721Response, error) {
-	out := new(MsgRegisterERC721Response)
-	err := c.cc.Invoke(ctx, "/irismod.erc721_converter.v1.Msg/RegisterERC721", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *msgClient) ConvertNFT(ctx context.Context, in *MsgConvertNFT, opts ...grpc.CallOption) (*MsgConvertNFTResponse, error) {
@@ -556,14 +337,10 @@ func (c *msgClient) ConvertERC721(ctx context.Context, in *MsgConvertERC721, opt
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// RegisterDenom defines a method to register a token pair for a native Cosmos NFT.
-	RegisterDenom(context.Context, *MsgRegisterDenom) (*MsgRegisterDenomResponse, error)
-	// RegisterERC721 defines a method to register a token pair for a ERC721 token contract.
-	RegisterERC721(context.Context, *MsgRegisterERC721) (*MsgRegisterERC721Response, error)
-	// ConvertNFT mints a ERC721 representation of the native Cosmos NFT denom
+	// ConvertNFT mints a ERC721 representation of the native Cosmos Class
 	// that is registered on the token mapping.
 	ConvertNFT(context.Context, *MsgConvertNFT) (*MsgConvertNFTResponse, error)
-	// ConvertERC721 mints a native Cosmos NFT representation of the ERC721 token
+	// ConvertERC721 mints a native Cosmos Class representation of the x/nft token
 	// contract that is registered on the token mapping.
 	ConvertERC721(context.Context, *MsgConvertERC721) (*MsgConvertERC721Response, error)
 }
@@ -572,12 +349,6 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) RegisterDenom(ctx context.Context, req *MsgRegisterDenom) (*MsgRegisterDenomResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterDenom not implemented")
-}
-func (*UnimplementedMsgServer) RegisterERC721(ctx context.Context, req *MsgRegisterERC721) (*MsgRegisterERC721Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterERC721 not implemented")
-}
 func (*UnimplementedMsgServer) ConvertNFT(ctx context.Context, req *MsgConvertNFT) (*MsgConvertNFTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConvertNFT not implemented")
 }
@@ -587,42 +358,6 @@ func (*UnimplementedMsgServer) ConvertERC721(ctx context.Context, req *MsgConver
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_RegisterDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRegisterDenom)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).RegisterDenom(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/irismod.erc721_converter.v1.Msg/RegisterDenom",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RegisterDenom(ctx, req.(*MsgRegisterDenom))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_RegisterERC721_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRegisterERC721)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).RegisterERC721(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/irismod.erc721_converter.v1.Msg/RegisterERC721",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RegisterERC721(ctx, req.(*MsgRegisterERC721))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_ConvertNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -666,14 +401,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RegisterDenom",
-			Handler:    _Msg_RegisterDenom_Handler,
-		},
-		{
-			MethodName: "RegisterERC721",
-			Handler:    _Msg_RegisterERC721_Handler,
-		},
-		{
 			MethodName: "ConvertNFT",
 			Handler:    _Msg_ConvertNFT_Handler,
 		},
@@ -684,126 +411,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "erc721_converter/v1/tx.proto",
-}
-
-func (m *MsgRegisterDenom) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgRegisterDenom) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgRegisterDenom) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Sender) > 0 {
-		i -= len(m.Sender)
-		copy(dAtA[i:], m.Sender)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Sender)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.DenomId)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgRegisterDenomResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgRegisterDenomResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgRegisterDenomResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgRegisterERC721) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgRegisterERC721) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgRegisterERC721) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Sender) > 0 {
-		i -= len(m.Sender)
-		copy(dAtA[i:], m.Sender)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Sender)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.ContractAddress) > 0 {
-		i -= len(m.ContractAddress)
-		copy(dAtA[i:], m.ContractAddress)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddress)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgRegisterERC721Response) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgRegisterERC721Response) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgRegisterERC721Response) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
 }
 
 func (m *MsgConvertNFT) Marshal() (dAtA []byte, err error) {
@@ -847,10 +454,10 @@ func (m *MsgConvertNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ClassId)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -965,65 +572,13 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgRegisterDenom) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.DenomId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Sender)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgRegisterDenomResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgRegisterERC721) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.ContractAddress)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Sender)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgRegisterERC721Response) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
 func (m *MsgConvertNFT) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.ClassId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1091,334 +646,6 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgRegisterDenom) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterDenom: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterDenom: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Sender", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Sender = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgRegisterDenomResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterDenomResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterDenomResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgRegisterERC721) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterERC721: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterERC721: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddress", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ContractAddress = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Sender", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Sender = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgRegisterERC721Response) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterERC721Response: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterERC721Response: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *MsgConvertNFT) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1450,7 +677,7 @@ func (m *MsgConvertNFT) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1478,7 +705,7 @@ func (m *MsgConvertNFT) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.ClassId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
