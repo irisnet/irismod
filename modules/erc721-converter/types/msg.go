@@ -58,7 +58,7 @@ func (msg MsgConvertNFT) GetSigners() []sdk.AccAddress {
 }
 
 // NewConvertERC721Msg creates a new instance of MsgConvertERC721
-func NewConvertERC721Msg(contractAddress string, tokenId string, receiver, sender sdk.AccAddress) *MsgConvertERC721 {
+func NewConvertERC721Msg(contractAddress string, tokenId sdk.Int, receiver, sender sdk.AccAddress) *MsgConvertERC721 {
 	return &MsgConvertERC721{
 		ContractAddress: contractAddress,
 		TokenId:         tokenId,

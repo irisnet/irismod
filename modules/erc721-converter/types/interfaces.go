@@ -7,7 +7,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	nfttypes "github.com/cosmos/cosmos-sdk/x/nft"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -32,21 +31,8 @@ type EVMKeeper interface {
 	ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*evmtypes.MsgEthereumTxResponse, error)
 }
 
-// NFTKeeper defines the expected interface needed to retrieve the NFT denom.
-type NFTKeeper interface {
-	GetClass(ctx sdk.Context, classID string) (class nfttypes.Class, found bool)
-	SaveClass(ctx sdk.Context, class nfttypes.Class) error
-	HasClass(ctx sdk.Context, classID string) bool
-	Mint(ctx sdk.Context, token nfttypes.NFT, receiver sdk.AccAddress) error
-	Burn(ctx sdk.Context, classID string, nftID string) error
-	Transfer(ctx sdk.Context, classID string, nftID string, receiver sdk.AccAddress) error
-	GetNFT(ctx sdk.Context, classID string, nftID string) (nft nfttypes.NFT, found bool)
-	HasNFT(ctx sdk.Context, classID string, nftID string) bool
-	GetOwner(ctx sdk.Context, classID string, nftID string) sdk.AccAddress
-}
-
 // IRISModNFTKeeper defines the expected interface needed to retrieve the IRSMod NFT denom.
-type IRISModNFTKeeper interface {
+type NFTKeeper interface {
 	SaveDenom(ctx sdk.Context, id, name, schema, symbol string, creator sdk.AccAddress, mintRestricted, updateRestricted bool, description, uri, uriHash, data string) error
 	HasDenom(ctx sdk.Context, denomID string) bool
 	GetDenomInfo(ctx sdk.Context, denomID string) (*irsmodnfttypes.Denom, error)

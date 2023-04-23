@@ -43,7 +43,7 @@ message MsgConvertERC721 {
     // contract_address of an ERC721 token contract, that is registered in a token pair
     string contract_address = 1;
     // token_id of the ERC721 token to convert
-    string token_id = 2;
+    string token_id = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
     // receiver is the bech32 address to receive native Cosmos Class
     string receiver = 3;
     // sender is the hex address from the owner of the given ERC721 tokens

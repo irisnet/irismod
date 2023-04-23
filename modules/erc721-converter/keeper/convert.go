@@ -17,7 +17,7 @@ func (k Keeper) ConvertNFTMint(
 ) (*types.MsgConvertNFTResponse, error) {
 
 	// Escrow native token on module account
-	err := k.irisModNFTKeeper.TransferOwnership(
+	err := k.nftKeeper.TransferOwnership(
 		ctx,
 		msg.ClassId,
 		msg.TokenId,
@@ -50,7 +50,8 @@ func (k Keeper) ConvertNFTMint(
 func (k Keeper) ConvertNFTBurn() {}
 
 // ConvertERC721Mint converts a erc721 token to an native Cosmos token
-func (k Keeper) ConvertERC721Mint() {}
+func (k Keeper) ConvertERC721Mint() {
+}
 
 // ConvertERC721Burn converts a erc721 token to an native Cosmos token
 func (k Keeper) ConvertERC721Burn() {}

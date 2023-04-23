@@ -1,6 +1,15 @@
 package cli
 
 import (
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/common"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	etherminttypes "github.com/evmos/ethermint/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/irisnet/irismod/modules/erc721-converter/types"
 	"github.com/spf13/cobra"
@@ -19,8 +28,6 @@ func NewTxCmd() *cobra.Command {
 	txCmd.AddCommand(
 		NewConvertNft(),
 		NewConvertERC721Cmd(),
-		RegisterDenom(),
-		RegisterERC721(),
 	)
 
 	return txCmd
@@ -34,52 +41,75 @@ func NewConvertNft() *cobra.Command {
 		Long:  "Converts an NFT to an ERC721 token",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			cliCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			sender := cliCtx.GetFromAddress()
+
+			receiver := cliCtx.GetFromAddress()
+			if len(args) == 3 {
+				receiver, err = sdk.AccAddressFromBech32(args[2])
+				if err != nil {
+					return err
+				}
+			}
+
+			msg := types.NewConvertNFTMsg(args[0], args[1], sender, receiver)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), msg)
 		},
 	}
-
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
 // NewConvertERC721Cmd returns a CLI command handler for creating a MsgConvertERC721 transaction
 func NewConvertERC721Cmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "convert-erc721 [denom-id] [token-id] [recipient]",
+		Use:   "convert-erc721 [contract_address] [token-id] [recipient]",
 		Short: "Converts an ERC721 token to an NFT",
 		Long:  "Converts an ERC721 token to an NFT",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
-	}
+			cliCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
-	return cmd
-}
+			contract := args[0]
+			if err := etherminttypes.ValidateAddress(contract); err != nil {
+				return fmt.Errorf("invalid ERC721 contract address %w", err)
+			}
 
-// RegisterDenom returns a CLI command handler for creating a MsgRegisterDenom transaction
-func RegisterDenom() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "register-denom [denom-id] [base-uri] [base-token-uri]",
-		Short: "Registers a new denom",
-		Long:  "Registers a new denom",
-		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
-	}
+			tokenId, ok := sdk.NewIntFromString(args[1])
+			if !ok {
+				return fmt.Errorf("invalid amount %s", args[1])
+			}
 
-	return cmd
-}
+			from := common.BytesToAddress(cliCtx.GetFromAddress().Bytes())
+			receiver := cliCtx.GetFromAddress()
+			if len(args) == 3 {
+				receiver, err = sdk.AccAddressFromBech32(args[2])
+				if err != nil {
+					return err
+				}
+			}
 
-// RegisterERC721 returns a CLI command handler for creating a MsgRegisterERC721 token transaction
-func RegisterERC721() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "register-erc721 [denom-id] [contract-address] [base-token-uri]",
-		Short: "Registers a new ERC721 token",
-		Long:  "Registers a new ERC721 token",
-		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			msg := &types.MsgConvertERC721{
+				ContractAddress: contract,
+				TokenId:         tokenId,
+				Sender:          from.Hex(),
+				Receiver:        receiver.String(),
+			}
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), msg)
 		},
 	}
 

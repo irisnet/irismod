@@ -11,7 +11,7 @@ import (
 // SaveRegisteredClass saves the registered denom to the store
 func (k Keeper) SaveRegisteredClass(ctx sdk.Context, classId string) (common.Address, error) {
 
-	denomInfo, err := k.irisModNFTKeeper.GetDenomInfo(ctx, classId)
+	denomInfo, err := k.nftKeeper.GetDenomInfo(ctx, classId)
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -46,7 +46,7 @@ func (k Keeper) SaveRegisteredClass(ctx sdk.Context, classId string) (common.Add
 // SaveRegisteredERC721 saves the registered ERC721 to the store
 func (k Keeper) SaveRegisteredERC721(ctx sdk.Context, contract common.Address) (string, error) {
 	classId := types.CreateClass(contract.String())
-	if _, found := k.nftKeeper.GetClass(ctx, classId); found {
+	if k.nftKeeper.HasDenom(ctx, classId) {
 		return "", errorsmod.Wrap(
 			types.ErrInternalTokenPair,
 			"denom metadata already registered",
@@ -64,7 +64,7 @@ func (k Keeper) SaveRegisteredERC721(ctx sdk.Context, contract common.Address) (
 		return "", err
 	}
 
-	if err := k.irisModNFTKeeper.SaveDenom(
+	if err := k.nftKeeper.SaveDenom(
 		ctx,
 		classId,
 		erc721Data.Name,

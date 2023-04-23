@@ -34,7 +34,8 @@ func (k Keeper) ConvertNFTValidator(
 	}
 
 	// Check if the sender has the token
-	if k.nftKeeper.GetOwner(ctx, classId, nftId).Equals(sender) {
+
+	if k.nftKeeper.Authorize(ctx, classId, nftId, sender) != nil {
 		return types.TokenPair{}, errorsmod.Wrapf(
 			types.ErrUnauthorized, "sender '%s' does not own token '%s'", sender, nftId,
 		)

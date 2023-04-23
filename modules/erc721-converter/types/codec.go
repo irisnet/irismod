@@ -23,10 +23,8 @@ var (
 
 const (
 	// Amino names
-	registerERC721Name = "irismod/erc721-converter/MsgRegisterERC721"
-	registerClassName  = "irismod/erc721-converter/MsgRegisterClass"
-	convertERC721Name  = "irismod/erc721-converter/MsgConvertERC721"
-	convertNativeName  = "irismod/erc721-converter/MsgConvertNFT"
+	convertERC721Name = "irismod/erc721-converter/MsgConvertERC721"
+	convertNativeName = "irismod/erc721-converter/MsgConvertNFT"
 )
 
 // NOTE: This is required for the GetSignBytes function
@@ -39,8 +37,6 @@ func init() {
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgRegisterERC721{},
-		&MsgRegisterClass{},
 		&MsgConvertERC721{},
 		&MsgConvertNFT{},
 	)
@@ -52,8 +48,6 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 // concrete types on the provided LegacyAmino codec. These types are used for
 // Amino JSON serialization and EIP-712 compatibility.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgRegisterERC721{}, registerERC721Name, nil)
-	cdc.RegisterConcrete(&MsgRegisterClass{}, registerClassName, nil)
 	cdc.RegisterConcrete(&MsgConvertERC721{}, convertERC721Name, nil)
 	cdc.RegisterConcrete(&MsgConvertNFT{}, convertNativeName, nil)
 }
