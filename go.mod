@@ -19,6 +19,7 @@ require (
 	github.com/tendermint/tm-db v0.6.6
 	github.com/tendermint/tmlibs v0.9.0
 	github.com/tidwall/gjson v1.14.0
+	github.com/tjfoc/gmsm v1.4.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb
 	google.golang.org/grpc v1.44.0
@@ -111,7 +112,6 @@ require (
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
-	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/zondax/hid v0.9.0 // indirect

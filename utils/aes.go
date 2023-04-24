@@ -6,6 +6,8 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"errors"
+	"github.com/tjfoc/gmsm/sm2"
+	"math/big"
 	"math/rand"
 	"time"
 )
@@ -91,4 +93,24 @@ func pkcs7UnPadding(data []byte) ([]byte, error) {
 	//获取填充的个数
 	unPadding := int(data[length-1])
 	return data[:(length - unPadding)], nil
+}
+
+func GetPrivateFromHex(str string) (*sm2.PrivateKey, error) {
+	c := sm2.P256Sm2()
+	d, err := hex.DecodeString(str)
+	if err != nil {
+		return &sm2.PrivateKey{}, err
+	}
+	k := new(big.Int).SetBytes(d)
+	params := c.Params()
+	one := new(big.Int).SetInt64(1)
+	n := new(big.Int).Sub(params.N, one)
+	if k.Cmp(n) >= 0 {
+		return &sm2.PrivateKey{}, errors.New("privateKey's D is overflow.")
+	}
+	privateKey := new(sm2.PrivateKey)
+	privateKey.PublicKey.Curve = c
+	privateKey.D = k
+	privateKey.PublicKey.X, privateKey.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
+	return privateKey, nil
 }

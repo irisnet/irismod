@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/irisnet/irismod/utils"
 	"github.com/tjfoc/gmsm/sm2"
-	"github.com/tjfoc/gmsm/x509"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -78,7 +77,7 @@ func GetCmdQueryRecord() *cobra.Command {
 				ks := keyring.NewUnsafe(clientCtx.Keyring)
 				priv, err := ks.UnsafeExportPrivKeyHex(from)
 
-				privateKey, err := x509.ReadPrivateKeyFromHex(priv)
+				privateKey, err := utils.GetPrivateFromHex(priv)
 				if err != nil {
 					return err
 				}
@@ -91,7 +90,7 @@ func GetCmdQueryRecord() *cobra.Command {
 					if err != nil {
 						return err
 					}
-					key, err = sm2.Decrypt(privateKey, sm2AesKey, 0)
+					key, err = sm2.Decrypt(privateKey, sm2AesKey)
 					if err != nil {
 						return err
 					}
@@ -113,7 +112,7 @@ func GetCmdQueryRecord() *cobra.Command {
 						return err
 					}
 
-					key, err = sm2.Decrypt(privateKey, sm2AesKey, 0)
+					key, err = sm2.Decrypt(privateKey, sm2AesKey)
 					if err != nil {
 						return err
 					}

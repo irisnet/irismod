@@ -7,7 +7,6 @@ import (
 	"errors"
 	"github.com/irisnet/irismod/utils"
 	"github.com/spf13/cobra"
-	"github.com/tjfoc/gmsm/x509"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -73,7 +72,7 @@ func GetCmdCreateRecord() *cobra.Command {
 					return err
 				}
 
-				keyData, err := sm2.Encrypt(sm2.Decompress(fromInfo.GetPubKey().Bytes()), key, rand.Reader, 0)
+				keyData, err := sm2.Encrypt(sm2.Decompress(fromInfo.GetPubKey().Bytes()), key, rand.Reader)
 				if err != nil {
 					return err
 				}
@@ -134,8 +133,11 @@ func GetCmdGrantRecord() *cobra.Command {
 
 			ks := keyring.NewUnsafe(clientCtx.Keyring)
 			priv, err := ks.UnsafeExportPrivKeyHex(clientCtx.GetFromName())
+			if err != nil {
+				return err
+			}
 
-			privateKey, err := x509.ReadPrivateKeyFromHex(priv)
+			privateKey, err := utils.GetPrivateFromHex(priv)
 			if err != nil {
 				return err
 			}
@@ -144,7 +146,7 @@ func GetCmdGrantRecord() *cobra.Command {
 				return err
 			}
 
-			aesKey, err := sm2.Decrypt(privateKey, []byte(sm2AesKey), 0)
+			aesKey, err := sm2.Decrypt(privateKey, []byte(sm2AesKey))
 			if err != nil {
 				return err
 			}
@@ -156,7 +158,7 @@ func GetCmdGrantRecord() *cobra.Command {
 
 			pubkey := sm2.Decompress(pubkeyHex)
 
-			keyData, err := sm2.Encrypt(pubkey, aesKey, rand.Reader, 0)
+			keyData, err := sm2.Encrypt(pubkey, aesKey, rand.Reader)
 			if err != nil {
 				return err
 			}
