@@ -24,6 +24,7 @@ func init() {
 	FsCreateRecord.String(FlagURI, "", "Source URI of the record, such as an IPFS link")
 	FsCreateRecord.String(FlagMeta, "", "Metadata of the record")
 	FsCreateRecord.Bool(Encrypt, false, "Encrypt of the record")
+	FsCreateRecord.String(Encryption, "", "encryption")
 	FsQureyRecord.Bool(Decrypt, false, "Decrypt of the record")
 	FsQureyRecord.String(From, "", "From")
 	FsQureyRecord.String(Encryption, "", "encryption")
