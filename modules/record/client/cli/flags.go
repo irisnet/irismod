@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	FlagURI  = "uri"
-	FlagMeta = "meta"
-	Encrypt  = "encrypt"
-	Decrypt  = "decrypt"
-	From     = "from"
+	FlagURI    = "uri"
+	FlagMeta   = "meta"
+	Encrypt    = "encrypt"
+	Decrypt    = "decrypt"
+	From       = "from"
+	Encryption = "encryption"
 )
 
 // common flag sets to add to various functions
@@ -25,5 +26,5 @@ func init() {
 	FsCreateRecord.Bool(Encrypt, false, "Encrypt of the record")
 	FsQureyRecord.Bool(Decrypt, false, "Decrypt of the record")
 	FsQureyRecord.String(From, "", "From")
-
+	FsQureyRecord.String(Encryption, "", "encryption")
 }

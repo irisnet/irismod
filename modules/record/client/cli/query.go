@@ -64,6 +64,10 @@ func GetCmdQueryRecord() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			encryption, err := cmd.Flags().GetString(Encryption)
+			if err != nil {
+				return err
+			}
 			if decrypt {
 				datas := strings.Split(res.Record.Contents[0].Meta, ",")
 				if len(datas) != 2 {
@@ -123,7 +127,7 @@ func GetCmdQueryRecord() *cobra.Command {
 					if len(datas) != 2 {
 						return errors.New("failed to decrypt")
 					}
-					str, err := utils.DecryptByAes([]byte(datas[1]), key)
+					str, err := utils.SymmetricDecrypt(datas[1], key, encryption)
 					if err != nil {
 						return err
 					}

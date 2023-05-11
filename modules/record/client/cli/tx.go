@@ -60,9 +60,14 @@ func GetCmdCreateRecord() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			encryption, err := cmd.Flags().GetString(Encryption)
+			if err != nil {
+				return err
+			}
 			if encrypt {
 				key := utils.RandStr(16)
-				data, err := utils.AesEncrypt([]byte(meta), key)
+
+				data, err := utils.SymmetricEncrypt([]byte(meta), key, encryption)
 				if err != nil {
 					return err
 				}
@@ -141,6 +146,7 @@ func GetCmdGrantRecord() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			sm2AesKey, err := hex.DecodeString(datas[0])
 			if err != nil {
 				return err

@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/tjfoc/gmsm/sm2"
+	"github.com/tjfoc/gmsm/sm4"
 	"math/big"
 	"math/rand"
 	"time"
@@ -23,10 +24,18 @@ func RandStr(length int) []byte {
 	return result
 }
 
-// AesEncrypt 加密
-func AesEncrypt(data []byte, key []byte) (string, error) {
+// SymmetricEncrypt 加密
+func SymmetricEncrypt(data, key []byte, encryption string) (string, error) {
 	//创建加密实例
-	block, err := aes.NewCipher(key)
+	var block cipher.Block
+	var err error
+
+	if encryption == "aes" {
+		block, err = aes.NewCipher(key)
+	} else {
+		block, err = sm4.NewCipher(key)
+	}
+
 	if err != nil {
 		return "", err
 	}
@@ -52,19 +61,26 @@ func pkcs7Padding(data []byte, blockSize int) []byte {
 	return append(data, padText...)
 }
 
-// DecryptByAes Aes 解密
-func DecryptByAes(data, key []byte) ([]byte, error) {
-	dataByte, err := hex.DecodeString(string(data))
+// SymmetricDecrypt 解密
+func SymmetricDecrypt(data string, key []byte, encryption string) ([]byte, error) {
+	dataByte, err := hex.DecodeString(data)
 	if err != nil {
 		return nil, err
 	}
-	return aesDecrypt(dataByte, key)
+	return aesDecrypt(dataByte, key, encryption)
 }
 
 // AesDecrypt 解密
-func aesDecrypt(data []byte, key []byte) ([]byte, error) {
-	//创建实例
-	block, err := aes.NewCipher(key)
+func aesDecrypt(data, key []byte, encryption string) ([]byte, error) {
+	//创建加密实例
+	var block cipher.Block
+	var err error
+
+	if encryption == "aes" {
+		block, err = aes.NewCipher(key)
+	} else {
+		block, err = sm4.NewCipher(key)
+	}
 	if err != nil {
 		return nil, err
 	}
