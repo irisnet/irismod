@@ -29,6 +29,9 @@ var (
 	// IsBeginWithAlpha only begin with [a-z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-z].*`).MatchString
 
+	tokenIdString = `[a-z0-9]{1,128}`
+	regexpTokenID = regexp.MustCompile(fmt.Sprintf(`^%s$`, tokenIdString)).MatchString
+
 	keywords          = strings.Join([]string{ReservedPeg, ReservedIBC, ReservedHTLT, ReservedTIBC}, "|")
 	regexpKeywordsFmt = fmt.Sprintf("^(%s).*", keywords)
 	regexpKeyword     = regexp.MustCompile(regexpKeywordsFmt).MatchString
@@ -36,9 +39,6 @@ var (
 
 // ValidateDenomID verifies whether the  parameters are legal
 func ValidateDenomID(denomID string) error {
-	if len(denomID) < MinDenomLen || len(denomID) > MaxDenomLen {
-		return sdkerrors.Wrapf(ErrInvalidDenom, "the length of denom(%s) only accepts value [%d, %d]", denomID, MinDenomLen, MaxDenomLen)
-	}
 	boolPrifix := strings.HasPrefix(denomID, "tibc-")
 	if !IsBeginWithAlpha(denomID) || !IsAlphaNumeric(denomID) && !boolPrifix {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "the denom(%s) only accepts alphanumeric characters, and begin with an english letter", denomID)
@@ -48,11 +48,8 @@ func ValidateDenomID(denomID string) error {
 
 // ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
-	if len(tokenID) < MinDenomLen || len(tokenID) > MaxDenomLen {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "the length of nft id(%s) only accepts value [%d, %d]", tokenID, MinDenomLen, MaxDenomLen)
-	}
-	if !IsBeginWithAlpha(tokenID) || !IsAlphaNumeric(tokenID) {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "nft id(%s) only accepts alphanumeric characters, and begin with an english letter", tokenID)
+	if !regexpTokenID(tokenID) {
+		return sdkerrors.Wrapf(ErrInvalidTokenID, "tokenID can only accept characters that match the regular expression: (%s),but got (%s)", tokenIdString, tokenID)
 	}
 	return nil
 }
