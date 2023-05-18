@@ -2,6 +2,8 @@ go 1.18
 
 module github.com/irisnet/irismod
 
+require github.com/irisnet/irismod/nft v0.0.0-20230518034755-053ce7213e54
+
 require (
 	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.9
@@ -17,7 +19,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.26
 	github.com/tendermint/tm-db v0.6.7
-	github.com/tidwall/gjson v1.14.0
+	github.com/tidwall/gjson v1.14.4
 	google.golang.org/genproto v0.0.0-20221014213838-99cd37c6964a
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
@@ -169,3 +171,5 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 // use informal system fork of tendermint
 replace github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.26
+
+replace github.com/irisnet/irismod/nft => ./modules/nft
