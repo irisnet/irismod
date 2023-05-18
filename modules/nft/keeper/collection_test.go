@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
-	"github.com/irisnet/irismod/modules/nft/keeper"
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/keeper"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 func (suite *KeeperSuite) TestSetCollection() {
@@ -35,7 +35,16 @@ func (suite *KeeperSuite) TestSetCollection() {
 func (suite *KeeperSuite) TestGetCollections() {
 
 	// SaveNFT shouldn't fail when collection does not exist
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	msg, fail := keeper.SupplyInvariant(suite.keeper)(suite.ctx)
@@ -44,15 +53,42 @@ func (suite *KeeperSuite) TestGetCollections() {
 
 func (suite *KeeperSuite) TestGetSupply() {
 	// SaveNFT shouldn't fail when collection does not exist
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	// SaveNFT shouldn't fail when collection does not exist
-	err = suite.keeper.SaveNFT(suite.ctx, denomID, tokenID2, tokenNm2, tokenURI, tokenURIHash, tokenData, address2)
+	err = suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID2,
+		tokenNm2,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address2,
+	)
 	suite.NoError(err)
 
 	// SaveNFT shouldn't fail when collection does not exist
-	err = suite.keeper.SaveNFT(suite.ctx, denomID2, tokenID, tokenNm2, tokenURI, tokenURIHash, tokenData, address2)
+	err = suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID2,
+		tokenID,
+		tokenNm2,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address2,
+	)
 	suite.NoError(err)
 
 	supply := suite.keeper.GetTotalSupply(suite.ctx, denomID)

@@ -5,17 +5,20 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/irisnet/irismod/modules/nft/keeper"
-	"github.com/irisnet/irismod/modules/nft/types"
-	"github.com/irisnet/irismod/simapp"
+	"github.com/irisnet/irismod/nft/keeper"
+	"github.com/irisnet/irismod/nft/mocks"
+	"github.com/irisnet/irismod/nft/module"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 var (
@@ -61,32 +64,77 @@ type KeeperSuite struct {
 	legacyAmino *codec.LegacyAmino
 	ctx         sdk.Context
 	keeper      keeper.Keeper
-	app         *simapp.SimApp
 
 	queryClient types.QueryClient
+	encCfg      TestEncodingConfig
 }
 
 func (suite *KeeperSuite) SetupTest() {
 
-	app := simapp.Setup(suite.T(), isCheckTx)
+	key := sdk.NewKVStoreKey(types.StoreKey)
+	testCtx := DefaultContextWithDB(suite.T(), key, sdk.NewTransientStoreKey("transient_test"))
+	suite.ctx = testCtx.Ctx.WithBlockHeader(tmproto.Header{Time: tmtime.Now()})
+	suite.encCfg = MakeTestEncodingConfig(module.AppModuleBasic{})
 
-	suite.app = app
-	suite.legacyAmino = app.LegacyAmino()
-	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
-	suite.keeper = app.NFTKeeper
+	// gomock initializations
+	ctrl := gomock.NewController(suite.T())
+	accountKeeper := mocks.NewMockAccountKeeper(ctrl)
+	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 
-	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, app.InterfaceRegistry())
-	types.RegisterQueryServer(queryHelper, app.NFTKeeper)
+	accountKeeper.EXPECT().GetModuleAddress("nft").Return(address).AnyTimes()
+	suite.keeper = keeper.NewKeeper(suite.encCfg.Codec, key, accountKeeper, bankKeeper)
+
+	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, suite.encCfg.InterfaceRegistry)
+	types.RegisterQueryServer(queryHelper, suite.keeper)
 	suite.queryClient = types.NewQueryClient(queryHelper)
 
-	err := suite.keeper.SaveDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address, false, false, denomDescription, denomUri, denomUriHash, denomData)
+	err := suite.keeper.SaveDenom(
+		suite.ctx,
+		denomID,
+		denomNm,
+		schema,
+		denomSymbol,
+		address,
+		false,
+		false,
+		denomDescription,
+		denomUri,
+		denomUriHash,
+		denomData,
+	)
 	suite.NoError(err)
 
 	// SaveNFT shouldn't fail when collection does not exist
-	err = suite.keeper.SaveDenom(suite.ctx, denomID2, denomNm2, schema, denomSymbol2, address, false, false, denomDescription, denomUri, denomUriHash, denomData)
+	err = suite.keeper.SaveDenom(
+		suite.ctx,
+		denomID2,
+		denomNm2,
+		schema,
+		denomSymbol2,
+		address,
+		false,
+		false,
+		denomDescription,
+		denomUri,
+		denomUriHash,
+		denomData,
+	)
 	suite.NoError(err)
 
-	err = suite.keeper.SaveDenom(suite.ctx, denomID3, denomNm3, schema, denomSymbol3, address3, true, true, denomDescription, denomUri, denomUriHash, denomData)
+	err = suite.keeper.SaveDenom(
+		suite.ctx,
+		denomID3,
+		denomNm3,
+		schema,
+		denomSymbol3,
+		address3,
+		true,
+		true,
+		denomDescription,
+		denomUri,
+		denomUriHash,
+		denomData,
+	)
 	suite.NoError(err)
 
 	// collections should equal 3
@@ -102,34 +150,97 @@ func TestKeeperSuite(t *testing.T) {
 
 func (suite *KeeperSuite) TestMintNFT() {
 	// SaveNFT shouldn't fail when collection does not exist
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	// SaveNFT shouldn't fail when collection exists
-	err = suite.keeper.SaveNFT(suite.ctx, denomID, tokenID2, tokenNm2, tokenURI, tokenURIHash, tokenData, address)
+	err = suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID2,
+		tokenNm2,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 }
 
 func (suite *KeeperSuite) TestUpdateNFT() {
 	// UpdateNFT should fail when NFT doesn't exists
-	err := suite.keeper.UpdateNFT(suite.ctx, denomID, tokenID, tokenNm3, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.UpdateNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm3,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.Error(err)
 
 	// SaveNFT shouldn't fail when collection does not exist
-	err = suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err = suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	// UpdateNFT should fail when NFT doesn't exists
-	err = suite.keeper.UpdateNFT(suite.ctx, denomID, tokenID2, tokenNm2, tokenURI, tokenURIHash, tokenData, address)
+	err = suite.keeper.UpdateNFT(
+		suite.ctx,
+		denomID,
+		tokenID2,
+		tokenNm2,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.Error(err)
 
 	// UpdateNFT shouldn't fail when NFT exists
-	err = suite.keeper.UpdateNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI2, tokenURIHash2, tokenData, address)
+	err = suite.keeper.UpdateNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI2,
+		tokenURIHash2,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	// UpdateNFT should fail when NFT failed to authorize
-	err = suite.keeper.UpdateNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI2, tokenURIHash2, tokenData, address2)
+	err = suite.keeper.UpdateNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI2,
+		tokenURIHash2,
+		tokenData,
+		address2,
+	)
 	suite.Error(err)
 
 	// GetNFT should get the NFT with new tokenURI
@@ -138,29 +249,85 @@ func (suite *KeeperSuite) TestUpdateNFT() {
 	suite.Equal(receivedNFT.GetURI(), tokenURI2)
 
 	// UpdateNFT shouldn't fail when NFT exists
-	err = suite.keeper.UpdateNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI2, tokenURIHash2, tokenData, address2)
+	err = suite.keeper.UpdateNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI2,
+		tokenURIHash2,
+		tokenData,
+		address2,
+	)
 	suite.Error(err)
 
-	err = suite.keeper.SaveNFT(suite.ctx, denomID3, denomID3, tokenID3, tokenURI, tokenURIHash, tokenData, address3)
+	err = suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID3,
+		denomID3,
+		tokenID3,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address3,
+	)
 	suite.NoError(err)
 
 	// UpdateNFT should fail if updateRestricted equal to true, nobody can update the NFT under this denom
-	err = suite.keeper.UpdateNFT(suite.ctx, denomID3, denomID3, tokenID3, tokenURI, tokenURIHash, tokenData, address3)
+	err = suite.keeper.UpdateNFT(
+		suite.ctx,
+		denomID3,
+		denomID3,
+		tokenID3,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address3,
+	)
 	suite.Error(err)
 }
 
 func (suite *KeeperSuite) TestTransferOwnership() {
 
 	// SaveNFT shouldn't fail when collection does not exist
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	// invalid owner
-	err = suite.keeper.TransferOwnership(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address2, address3)
+	err = suite.keeper.TransferOwnership(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address2,
+		address3,
+	)
 	suite.Error(err)
 
 	// right
-	err = suite.keeper.TransferOwnership(suite.ctx, denomID, tokenID, tokenNm2, tokenURI2, tokenURIHash2, tokenData, address, address2)
+	err = suite.keeper.TransferOwnership(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm2,
+		tokenURI2,
+		tokenURIHash2,
+		tokenData,
+		address,
+		address2,
+	)
 	suite.NoError(err)
 
 	nft, err := suite.keeper.GetNFT(suite.ctx, denomID, tokenID)
@@ -186,7 +353,16 @@ func (suite *KeeperSuite) TestTransferDenom() {
 
 func (suite *KeeperSuite) TestBurnNFT() {
 	// SaveNFT should not fail when collection does not exist
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	// RemoveNFT should fail when NFT doesn't exist but collection does exist

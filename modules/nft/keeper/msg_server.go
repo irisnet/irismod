@@ -6,13 +6,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 var _ types.MsgServer = Keeper{}
 
 // IssueDenom issue a new denom.
-func (k Keeper) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (*types.MsgIssueDenomResponse, error) {
+func (k Keeper) IssueDenom(
+	goCtx context.Context,
+	msg *types.MsgIssueDenom,
+) (*types.MsgIssueDenomResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -51,7 +54,10 @@ func (k Keeper) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (*ty
 	return &types.MsgIssueDenomResponse{}, nil
 }
 
-func (k Keeper) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types.MsgMintNFTResponse, error) {
+func (k Keeper) MintNFT(
+	goCtx context.Context,
+	msg *types.MsgMintNFT,
+) (*types.MsgMintNFTResponse, error) {
 	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
 	if err != nil {
 		return nil, err
@@ -71,7 +77,11 @@ func (k Keeper) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types.Ms
 
 	if denom.MintRestricted && denom.Creator != sender.String() {
 		return nil, sdkerrors.Wrapf(
-			sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", sender, msg.DenomId)
+			sdkerrors.ErrUnauthorized,
+			"%s is not allowed to mint NFT of denom %s",
+			sender,
+			msg.DenomId,
+		)
 	}
 
 	if err := k.SaveNFT(ctx, msg.DenomId,
@@ -103,7 +113,10 @@ func (k Keeper) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types.Ms
 	return &types.MsgMintNFTResponse{}, nil
 }
 
-func (k Keeper) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types.MsgEditNFTResponse, error) {
+func (k Keeper) EditNFT(
+	goCtx context.Context,
+	msg *types.MsgEditNFT,
+) (*types.MsgEditNFTResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -182,7 +195,10 @@ func (k Keeper) TransferNFT(goCtx context.Context,
 	return &types.MsgTransferNFTResponse{}, nil
 }
 
-func (k Keeper) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types.MsgBurnNFTResponse, error) {
+func (k Keeper) BurnNFT(
+	goCtx context.Context,
+	msg *types.MsgBurnNFT,
+) (*types.MsgBurnNFTResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -210,7 +226,10 @@ func (k Keeper) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types.Ms
 	return &types.MsgBurnNFTResponse{}, nil
 }
 
-func (k Keeper) TransferDenom(goCtx context.Context, msg *types.MsgTransferDenom) (*types.MsgTransferDenomResponse, error) {
+func (k Keeper) TransferDenom(
+	goCtx context.Context,
+	msg *types.MsgTransferDenom,
+) (*types.MsgTransferDenomResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err

@@ -10,13 +10,16 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/nft"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 var _ types.QueryServer = Keeper{}
 
 // Supply queries the total supply of a given denom or owner
-func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*types.QuerySupplyResponse, error) {
+func (k Keeper) Supply(
+	c context.Context,
+	request *types.QuerySupplyRequest,
+) (*types.QuerySupplyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	var supply uint64
@@ -26,7 +29,11 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 	default:
 		owner, err := sdk.AccAddressFromBech32(request.Owner)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid owner address %s", request.Owner)
+			return nil, status.Errorf(
+				codes.InvalidArgument,
+				"invalid owner address %s",
+				request.Owner,
+			)
 		}
 		supply = k.GetBalance(ctx, request.DenomId, owner)
 	}
@@ -34,7 +41,10 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 }
 
 // NFTsOfOwner queries the NFTs of the specified owner
-func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRequest) (*types.QueryNFTsOfOwnerResponse, error) {
+func (k Keeper) NFTsOfOwner(
+	c context.Context,
+	request *types.QueryNFTsOfOwnerRequest,
+) (*types.QueryNFTsOfOwnerResponse, error) {
 	r := &nft.QueryNFTsRequest{
 		ClassId:    request.DenomId,
 		Owner:      request.Owner,
@@ -76,7 +86,10 @@ func (k Keeper) NFTsOfOwner(c context.Context, request *types.QueryNFTsOfOwnerRe
 }
 
 // Collection queries the NFTs of the specified denom
-func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequest) (*types.QueryCollectionResponse, error) {
+func (k Keeper) Collection(
+	c context.Context,
+	request *types.QueryCollectionRequest,
+) (*types.QueryCollectionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	denom, err := k.GetDenomInfo(ctx, request.DenomId)
 	if err != nil {
@@ -126,7 +139,10 @@ func (k Keeper) Collection(c context.Context, request *types.QueryCollectionRequ
 }
 
 // Denom queries the definition of a given denom
-func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*types.QueryDenomResponse, error) {
+func (k Keeper) Denom(
+	c context.Context,
+	request *types.QueryDenomRequest,
+) (*types.QueryDenomResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	denom, err := k.GetDenomInfo(ctx, request.DenomId)
 	if err != nil {
@@ -136,7 +152,10 @@ func (k Keeper) Denom(c context.Context, request *types.QueryDenomRequest) (*typ
 }
 
 // Denoms queries all the denoms
-func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types.QueryDenomsResponse, error) {
+func (k Keeper) Denoms(
+	c context.Context,
+	req *types.QueryDenomsRequest,
+) (*types.QueryDenomsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	result, err := k.nk.Classes(c, &nft.QueryClassesRequest{
@@ -162,17 +181,30 @@ func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types
 }
 
 // NFT queries the NFT for the given denom and token ID
-func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.QueryNFTResponse, error) {
+func (k Keeper) NFT(
+	c context.Context,
+	request *types.QueryNFTRequest,
+) (*types.QueryNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	nft, err := k.GetNFT(ctx, request.DenomId, request.TokenId)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, sdkerrors.Wrapf(
+			types.ErrUnknownNFT,
+			"invalid NFT %s from collection %s",
+			request.TokenId,
+			request.DenomId,
+		)
 	}
 
 	baseNFT, ok := nft.(types.BaseNFT)
 	if !ok {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid type NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, sdkerrors.Wrapf(
+			types.ErrUnknownNFT,
+			"invalid type NFT %s from collection %s",
+			request.TokenId,
+			request.DenomId,
+		)
 	}
 
 	return &types.QueryNFTResponse{NFT: &baseNFT}, nil

@@ -6,7 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/nft"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 // SaveDenom issues a denom according to the given params
@@ -58,7 +58,12 @@ func (k Keeper) TransferDenomOwner(
 
 	// authorize
 	if srcOwner.String() != denom.Creator {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to transfer denom %s", srcOwner.String(), denomID)
+		return sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"%s is not allowed to transfer denom %s",
+			srcOwner.String(),
+			denomID,
+		)
 	}
 
 	denomMetadata := &types.DenomMetadata{

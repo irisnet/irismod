@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -80,10 +80,13 @@ func GetCmdQuerySupply() *cobra.Command {
 // GetCmdQueryOwner queries all the NFTs owned by an account
 func GetCmdQueryOwner() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "owner [address]",
-		Long:    "Get the NFTs owned by an account address.",
-		Example: fmt.Sprintf("$ %s query nft owner <address> --denom-id=<denom-id>", version.AppName),
-		Args:    cobra.ExactArgs(1),
+		Use:  "owner [address]",
+		Long: "Get the NFTs owned by an account address.",
+		Example: fmt.Sprintf(
+			"$ %s query nft owner <address> --denom-id=<denom-id>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -102,11 +105,14 @@ func GetCmdQueryOwner() *cobra.Command {
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.NFTsOfOwner(context.Background(), &types.QueryNFTsOfOwnerRequest{
-				DenomId:    denomID,
-				Owner:      args[0],
-				Pagination: pageReq,
-			})
+			resp, err := queryClient.NFTsOfOwner(
+				context.Background(),
+				&types.QueryNFTsOfOwnerRequest{
+					DenomId:    denomID,
+					Owner:      args[0],
+					Pagination: pageReq,
+				},
+			)
 			if err != nil {
 				return err
 			}
@@ -174,7 +180,10 @@ func GetCmdQueryDenoms() *cobra.Command {
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.Denoms(context.Background(), &types.QueryDenomsRequest{Pagination: pageReq})
+			resp, err := queryClient.Denoms(
+				context.Background(),
+				&types.QueryDenomsRequest{Pagination: pageReq},
+			)
 			if err != nil {
 				return err
 			}

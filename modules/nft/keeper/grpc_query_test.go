@@ -3,11 +3,20 @@ package keeper_test
 import (
 	gocontext "context"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 func (suite *KeeperSuite) TestSupply() {
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Supply(gocontext.Background(), &types.QuerySupplyRequest{
@@ -20,13 +29,25 @@ func (suite *KeeperSuite) TestSupply() {
 }
 
 func (suite *KeeperSuite) TestOwner() {
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
-	response, err := suite.queryClient.NFTsOfOwner(gocontext.Background(), &types.QueryNFTsOfOwnerRequest{
-		DenomId: denomID,
-		Owner:   address.String(),
-	})
+	response, err := suite.queryClient.NFTsOfOwner(
+		gocontext.Background(),
+		&types.QueryNFTsOfOwnerRequest{
+			DenomId: denomID,
+			Owner:   address.String(),
+		},
+	)
 
 	suite.NoError(err)
 	suite.NotNil(response.Owner)
@@ -34,12 +55,24 @@ func (suite *KeeperSuite) TestOwner() {
 }
 
 func (suite *KeeperSuite) TestCollection() {
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
-	response, err := suite.queryClient.Collection(gocontext.Background(), &types.QueryCollectionRequest{
-		DenomId: denomID,
-	})
+	response, err := suite.queryClient.Collection(
+		gocontext.Background(),
+		&types.QueryCollectionRequest{
+			DenomId: denomID,
+		},
+	)
 
 	suite.NoError(err)
 	suite.NotNil(response.Collection)
@@ -48,7 +81,16 @@ func (suite *KeeperSuite) TestCollection() {
 }
 
 func (suite *KeeperSuite) TestDenom() {
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Denom(gocontext.Background(), &types.QueryDenomRequest{
@@ -61,7 +103,16 @@ func (suite *KeeperSuite) TestDenom() {
 }
 
 func (suite *KeeperSuite) TestDenoms() {
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Denoms(gocontext.Background(), &types.QueryDenomsRequest{})
@@ -72,7 +123,16 @@ func (suite *KeeperSuite) TestDenoms() {
 }
 
 func (suite *KeeperSuite) TestNFT() {
-	err := suite.keeper.SaveNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData, address)
+	err := suite.keeper.SaveNFT(
+		suite.ctx,
+		denomID,
+		tokenID,
+		tokenNm,
+		tokenURI,
+		tokenURIHash,
+		tokenData,
+		address,
+	)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.NFT(gocontext.Background(), &types.QueryNFTRequest{

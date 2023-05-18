@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/irisnet/irismod/modules/nft/exported"
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/exported"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 type LegacyKeeper struct {
@@ -85,11 +85,18 @@ func (n LegacyKeeper) TransferOwner(
 	)
 }
 
-func (n LegacyKeeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error {
+func (n LegacyKeeper) BurnNFT(
+	ctx sdk.Context,
+	denomID, tokenID string,
+	owner sdk.AccAddress,
+) error {
 	return n.nk.RemoveNFT(ctx, denomID, tokenID, owner)
 }
 
-func (n LegacyKeeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.NFT, err error) {
+func (n LegacyKeeper) GetNFT(
+	ctx sdk.Context,
+	denomID, tokenID string,
+) (nft exported.NFT, err error) {
 	return n.nk.GetNFT(ctx, denomID, tokenID)
 }
 

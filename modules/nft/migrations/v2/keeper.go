@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/nft"
 	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
 
-	"github.com/irisnet/irismod/modules/nft/types"
+	"github.com/irisnet/irismod/nft/types"
 )
 
 type keeper struct {
@@ -83,7 +83,11 @@ func (k keeper) updateTotalSupply(ctx sdk.Context, classID string, supply uint64
 	store.Set(supplyKey, sdk.Uint64ToBigEndian(supply))
 }
 
-func (k keeper) getClassStoreByOwner(ctx sdk.Context, owner sdk.AccAddress, classID string) prefix.Store {
+func (k keeper) getClassStoreByOwner(
+	ctx sdk.Context,
+	owner sdk.AccAddress,
+	classID string,
+) prefix.Store {
 	store := ctx.KVStore(k.storeKey)
 	key := nftOfClassByOwnerStoreKey(owner, classID)
 	return prefix.NewStore(store, key)
@@ -119,7 +123,10 @@ func ownerStoreKey(classID, nftID string) []byte {
 	classIDBz := UnsafeStrToBytes(classID)
 	nftIDBz := UnsafeStrToBytes(nftID)
 
-	key := make([]byte, len(nftkeeper.OwnerKey)+len(classIDBz)+len(nftkeeper.Delimiter)+len(nftIDBz))
+	key := make(
+		[]byte,
+		len(nftkeeper.OwnerKey)+len(classIDBz)+len(nftkeeper.Delimiter)+len(nftIDBz),
+	)
 	copy(key, nftkeeper.OwnerKey)
 	copy(key[len(nftkeeper.OwnerKey):], classIDBz)
 	copy(key[len(nftkeeper.OwnerKey)+len(classIDBz):], nftkeeper.Delimiter)
@@ -134,12 +141,28 @@ func nftOfClassByOwnerStoreKey(owner sdk.AccAddress, classID string) []byte {
 	owner = address.MustLengthPrefix(owner)
 	classIDBz := UnsafeStrToBytes(classID)
 
-	key := make([]byte, len(nftkeeper.NFTOfClassByOwnerKey)+len(owner)+len(nftkeeper.Delimiter)+len(classIDBz)+len(nftkeeper.Delimiter))
+	key := make(
+		[]byte,
+		len(
+			nftkeeper.NFTOfClassByOwnerKey,
+		)+len(
+			owner,
+		)+len(
+			nftkeeper.Delimiter,
+		)+len(
+			classIDBz,
+		)+len(
+			nftkeeper.Delimiter,
+		),
+	)
 	copy(key, nftkeeper.NFTOfClassByOwnerKey)
 	copy(key[len(nftkeeper.NFTOfClassByOwnerKey):], owner)
 	copy(key[len(nftkeeper.NFTOfClassByOwnerKey)+len(owner):], nftkeeper.Delimiter)
 	copy(key[len(nftkeeper.NFTOfClassByOwnerKey)+len(owner)+len(nftkeeper.Delimiter):], classIDBz)
-	copy(key[len(nftkeeper.NFTOfClassByOwnerKey)+len(owner)+len(nftkeeper.Delimiter)+len(classIDBz):], nftkeeper.Delimiter)
+	copy(
+		key[len(nftkeeper.NFTOfClassByOwnerKey)+len(owner)+len(nftkeeper.Delimiter)+len(classIDBz):],
+		nftkeeper.Delimiter,
+	)
 	return key
 }
 
