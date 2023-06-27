@@ -434,7 +434,6 @@ func NewSimApp(
 		appCodec,
 		keys[tokentypes.StoreKey],
 		app.BankKeeper,
-		app.ModuleAccountAddrs(),
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -457,7 +456,6 @@ func NewSimApp(
 		keys[htlctypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.ModuleAccountAddrs(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -475,13 +473,12 @@ func NewSimApp(
 		keys[servicetypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.ModuleAccountAddrs(),
 		servicetypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.OracleKeeper = oracleKeeper.NewKeeper(
-		appCodec, keys[oracletypes.StoreKey], app.GetSubspace(oracletypes.ModuleName),
+		appCodec, keys[oracletypes.StoreKey],
 		app.ServiceKeeper,
 	)
 
