@@ -491,7 +491,7 @@ func NewSimApp(
 		app.AccountKeeper,
 		app.DistrKeeper,
 		app.GovKeeper,
-		func(ctx sdk.Context, lpTokenDenom string) error { return nil },
+		app.CoinswapKeeper,
 		authtypes.FeeCollectorName,
 		distrtypes.ModuleName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
