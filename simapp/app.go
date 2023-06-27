@@ -466,7 +466,6 @@ func NewSimApp(
 		keys[coinswaptypes.StoreKey],
 		app.BankKeeper,
 		app.AccountKeeper,
-		app.ModuleAccountAddrs(),
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
