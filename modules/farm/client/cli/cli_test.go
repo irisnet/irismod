@@ -29,6 +29,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
 	s.network = simapp.SetupNetwork(s.T())
+	sdk.SetCoinDenomRegex(func() string {
+		return `[a-zA-Z][a-zA-Z0-9/\-]{2,127}`
+	})
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

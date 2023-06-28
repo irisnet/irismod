@@ -258,7 +258,7 @@ modules:
   - name: service
     config:
       "@type": irismod.service.module.v1.Module
-      fee_collector_name: "fee_collector"
+      fee_collector_name: "service_fee_collector"
 
   - name: token
     config:
