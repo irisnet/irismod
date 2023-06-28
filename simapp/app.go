@@ -1,3 +1,5 @@
+//go:build app_v1
+
 package simapp
 
 import (
@@ -245,7 +247,7 @@ type SimApp struct {
 	FarmKeeper     farmkeeper.Keeper
 
 	// the module manager
-	mm *module.Manager
+	ModuleManager *module.Manager
 
 	// simulation manager
 	sm *module.SimulationManager

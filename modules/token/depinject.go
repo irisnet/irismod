@@ -12,6 +12,7 @@ import (
 	modulev1 "github.com/irisnet/irismod/api/irismod/token/module/v1"
 	"github.com/irisnet/irismod/modules/token/keeper"
 	"github.com/irisnet/irismod/modules/token/types"
+	v1 "github.com/irisnet/irismod/modules/token/types/v1"
 	"github.com/irisnet/irismod/types/exported"
 )
 
@@ -19,8 +20,12 @@ import (
 
 func init() {
 	appmodule.Register(&modulev1.Module{},
-		appmodule.Provide(ProvideModule),
+		appmodule.Provide(ProvideModule, ProvideKeyTable),
 	)
+}
+
+func ProvideKeyTable() exported.KeyTable {
+	return v1.ParamKeyTable() //nolint:staticcheck
 }
 
 var _ appmodule.AppModule = AppModule{}

@@ -18,8 +18,12 @@ import (
 // App Wiring Setup
 func init() {
 	appmodule.Register(&modulev1.Module{},
-		appmodule.Provide(ProvideModule),
+		appmodule.Provide(ProvideModule, ProvideKeyTable),
 	)
+}
+
+func ProvideKeyTable() exported.KeyTable {
+	return types.ParamKeyTable() //nolint:staticcheck
 }
 
 var _ appmodule.AppModule = AppModule{}
