@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"cosmossdk.io/core/appmodule"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -121,14 +120,6 @@ func NewAppModule(
 		legacySubspace: legacySubspace,
 	}
 }
-
-var _ appmodule.AppModule = AppModule{}
-
-// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
-func (am AppModule) IsOnePerModuleType() {}
-
-// IsAppModule implements the appmodule.AppModule interface.
-func (am AppModule) IsAppModule() {}
 
 // Name returns the farm module's name.
 func (AppModule) Name() string { return types.ModuleName }

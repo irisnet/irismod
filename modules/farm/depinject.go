@@ -27,6 +27,14 @@ func ProvideKeyTable() exported.KeyTable {
 	return types.ParamKeyTable() //nolint:staticcheck
 }
 
+var _ appmodule.AppModule = AppModule{}
+
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (am AppModule) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (am AppModule) IsAppModule() {}
+
 type FarmInputs struct {
 	depinject.In
 
