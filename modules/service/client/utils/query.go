@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"strconv"
 
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
+	tmbytes "github.com/cometbft/cometbft/libs/bytes"
+	rpcclient "github.com/cometbft/cometbft/rpc/client"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -43,7 +44,11 @@ func QueryRequestContext(
 }
 
 // QueryRequestContextByTxQuery will query for a single request context via a direct txs tags query.
-func QueryRequestContextByTxQuery(cliCtx client.Context, queryRoute string, params types.QueryRequestContextRequest) (
+func QueryRequestContextByTxQuery(
+	cliCtx client.Context,
+	queryRoute string,
+	params types.QueryRequestContextRequest,
+) (
 	requestContext types.RequestContext, err error) {
 	requestContextId, err := hex.DecodeString(params.RequestContextId)
 	if err != nil {
@@ -133,13 +138,17 @@ func QueryRequestByTxQuery(
 		return request, err
 	}
 
-	// query batch request by requestHeight
 	node, err := cliCtx.GetNode()
 	if err != nil {
 		return request, err
 	}
 
-	blockResult, err := node.BlockResults(context.Background(), &requestHeight)
+	rpcClient, ok := node.(rpcclient.Client)
+	if !ok {
+		return request, fmt.Errorf("unsupport client")
+	}
+
+	blockResult, err := rpcClient.BlockResults(context.Background(), &requestHeight)
 	if err != nil {
 		return request, err
 	}
@@ -151,7 +160,7 @@ func QueryRequestByTxQuery(
 			var requestsBz []byte
 			for _, attribute := range event.Attributes {
 				if string(attribute.Key) == types.AttributeKeyRequests {
-					requestsBz = attribute.GetValue()
+					requestsBz = []byte(attribute.GetValue())
 				}
 				if string(attribute.Key) == types.AttributeKeyRequestContextID &&
 					string(attribute.GetValue()) == contextID.String() {
@@ -205,7 +214,12 @@ func QueryResponseByTxQuery(
 ) {
 
 	events := []string{
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRespondService, types.AttributeKeyRequestID, []byte(fmt.Sprintf("%d", requestID))),
+		fmt.Sprintf(
+			"%s.%s='%s'",
+			types.EventTypeRespondService,
+			types.AttributeKeyRequestID,
+			[]byte(fmt.Sprintf("%d", requestID)),
+		),
 	}
 
 	// NOTE: SearchTxs is used to facilitate the txs query which does not currently

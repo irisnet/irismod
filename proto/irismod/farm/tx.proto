@@ -1,0 +1,138 @@
+syntax = "proto3";
+package irismod.farm;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "irismod/farm/farm.proto";
+
+option go_package = "github.com/irisnet/irismod/modules/farm/types";
+option (gogoproto.goproto_getters_all) = false;
+
+// Msg defines the farm Msg service.
+service Msg {
+  // CreatePool defines a method for creating a new farm pool
+  rpc CreatePool(MsgCreatePool) returns (MsgCreatePoolResponse);
+
+  // CreatePoolWithCommunityPool defines a method for creating a new farm pool
+  rpc CreatePoolWithCommunityPool(MsgCreatePoolWithCommunityPool) returns (MsgCreatePoolWithCommunityPoolResponse);
+
+  // DestroyPool defines a method for destroying a existed farm pool
+  rpc DestroyPool(MsgDestroyPool) returns (MsgDestroyPoolResponse);
+
+  // AdjustPool defines a method for adjusting the farm pool params
+  rpc AdjustPool(MsgAdjustPool) returns (MsgAdjustPoolResponse);
+
+  // Stake defines a method for staking some lp token to a farm pool
+  rpc Stake(MsgStake) returns (MsgStakeResponse);
+
+  // Unstake defines a method for unstaking some lp token from a farm pool and
+  // withdraw some reward
+  rpc Unstake(MsgUnstake) returns (MsgUnstakeResponse);
+
+  // Harvest defines a method withdraw some reward from a farm pool
+  rpc Harvest(MsgHarvest) returns (MsgHarvestResponse);
+}
+
+message MsgCreatePool {
+  option (gogoproto.equal) = true;
+
+  string description = 1;
+  string lpt_denom = 2;
+  int64 start_height = 3;
+  repeated cosmos.base.v1beta1.Coin reward_per_block = 4 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin total_reward = 5 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  bool editable = 6;
+  string creator = 7;
+}
+
+message MsgCreatePoolWithCommunityPool {
+  option (gogoproto.equal) = true;
+
+  CommunityPoolCreateFarmProposal content = 1 [(gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.Coin initial_deposit = 2 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags)     = "yaml:\"initial_deposit\""
+  ];
+  string proposer = 3;
+}
+
+message MsgDestroyPool {
+  option (gogoproto.equal) = true;
+
+  string pool_id = 1;
+  string creator = 2;
+}
+
+message MsgAdjustPool {
+  option (gogoproto.equal) = true;
+
+  string pool_id = 1;
+  repeated cosmos.base.v1beta1.Coin additional_reward = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin reward_per_block = 3 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  string creator = 4;
+}
+
+message MsgStake {
+  option (gogoproto.equal) = true;
+
+  string pool_id = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  string sender = 3;
+}
+
+message MsgUnstake {
+  option (gogoproto.equal) = true;
+
+  string pool_id = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  string sender = 3;
+}
+
+message MsgHarvest {
+  option (gogoproto.equal) = true;
+
+  string pool_id = 1;
+  string sender = 2;
+}
+
+message MsgCreatePoolResponse {}
+message MsgCreatePoolWithCommunityPoolResponse {}
+message MsgDestroyPoolResponse {}
+message MsgAdjustPoolResponse {}
+message MsgStakeResponse {
+  repeated cosmos.base.v1beta1.Coin reward = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgUnstakeResponse {
+  repeated cosmos.base.v1beta1.Coin reward = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+}
+message MsgHarvestResponse {
+  repeated cosmos.base.v1beta1.Coin reward = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+}

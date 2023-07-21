@@ -5,14 +5,23 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	v040 "github.com/cosmos/cosmos-sdk/x/auth/legacy/v040"
+	v1 "github.com/cosmos/cosmos-sdk/x/auth/migrations/v1"
 
 	"github.com/irisnet/irismod/modules/service/types"
 )
 
 // RefundServiceFee refunds the service fee to the specified consumer
-func (k Keeper) RefundServiceFee(ctx sdk.Context, consumer sdk.AccAddress, serviceFee sdk.Coins) error {
-	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.RequestAccName, consumer, serviceFee)
+func (k Keeper) RefundServiceFee(
+	ctx sdk.Context,
+	consumer sdk.AccAddress,
+	serviceFee sdk.Coins,
+) error {
+	return k.bankKeeper.SendCoinsFromModuleToAccount(
+		ctx,
+		types.RequestAccName,
+		consumer,
+		serviceFee,
+	)
 }
 
 // AddEarnedFee adds the earned fee for the given provider
@@ -29,7 +38,7 @@ func (k Keeper) AddEarnedFee(ctx sdk.Context, provider sdk.AccAddress, fee sdk.C
 		return err
 	}
 
-	earnedFee, hasNeg := fee.SafeSub(taxCoins)
+	earnedFee, hasNeg := fee.SafeSub(taxCoins...)
 	if hasNeg {
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s is less than %s", fee, taxCoins)
 	}
@@ -57,7 +66,10 @@ func (k Keeper) SetEarnedFees(ctx sdk.Context, provider sdk.AccAddress, fees sdk
 }
 
 // GetEarnedFees retrieves the earned fees of the specified provider
-func (k Keeper) GetEarnedFees(ctx sdk.Context, provider sdk.AccAddress) (fees sdk.Coins, found bool) {
+func (k Keeper) GetEarnedFees(
+	ctx sdk.Context,
+	provider sdk.AccAddress,
+) (fees sdk.Coins, found bool) {
 	store := ctx.KVStore(k.storeKey)
 
 	iterator := sdk.KVStorePrefixIterator(store, types.GetEarnedFeesSubspace(provider))
@@ -93,7 +105,10 @@ func (k Keeper) SetOwnerEarnedFees(ctx sdk.Context, owner sdk.AccAddress, fees s
 }
 
 // GetOwnerEarnedFees retrieves the earned fees of the specified owner
-func (k Keeper) GetOwnerEarnedFees(ctx sdk.Context, owner sdk.AccAddress) (fees sdk.Coins, found bool) {
+func (k Keeper) GetOwnerEarnedFees(
+	ctx sdk.Context,
+	owner sdk.AccAddress,
+) (fees sdk.Coins, found bool) {
 	store := ctx.KVStore(k.storeKey)
 
 	iterator := sdk.KVStorePrefixIterator(store, types.GetOwnerEarnedFeesSubspace(owner))
@@ -145,7 +160,7 @@ func (k Keeper) WithdrawEarnedFees(ctx sdk.Context, owner, provider sdk.AccAddre
 		if earnedFees.IsEqual(ownerEarnedFees) {
 			k.DeleteOwnerEarnedFees(ctx, owner)
 		} else {
-			k.SetOwnerEarnedFees(ctx, owner, ownerEarnedFees.Sub(earnedFees))
+			k.SetOwnerEarnedFees(ctx, owner, ownerEarnedFees.Sub(earnedFees...))
 		}
 
 		withdrawFees = earnedFees
@@ -154,7 +169,7 @@ func (k Keeper) WithdrawEarnedFees(ctx sdk.Context, owner, provider sdk.AccAddre
 		defer iterator.Close()
 
 		for ; iterator.Valid(); iterator.Next() {
-			provider := sdk.AccAddress(iterator.Key()[v040.AddrLen+1:])
+			provider := sdk.AccAddress(iterator.Key()[v1.AddrLen+1:])
 			k.DeleteEarnedFees(ctx, provider)
 		}
 
@@ -164,7 +179,12 @@ func (k Keeper) WithdrawEarnedFees(ctx sdk.Context, owner, provider sdk.AccAddre
 
 	withdrawAddr := k.GetWithdrawAddress(ctx, owner)
 
-	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.RequestAccName, withdrawAddr, withdrawFees)
+	return k.bankKeeper.SendCoinsFromModuleToAccount(
+		ctx,
+		types.RequestAccName,
+		withdrawAddr,
+		withdrawFees,
+	)
 }
 
 // AllEarnedFeesIterator returns an iterator for all the earned fees
@@ -207,7 +227,11 @@ func (k Keeper) RefundServiceFees(ctx sdk.Context) error {
 
 		consumer, err := sdk.AccAddressFromBech32(request.Consumer)
 		if err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid consumer address (%s)", err)
+			return sdkerrors.Wrapf(
+				sdkerrors.ErrInvalidAddress,
+				"invalid consumer address (%s)",
+				err,
+			)
 		}
 
 		if err := k.bankKeeper.SendCoinsFromModuleToAccount(

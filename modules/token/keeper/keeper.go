@@ -3,9 +3,12 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
+
+	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -14,7 +17,7 @@ import (
 )
 
 type Keeper struct {
-	storeKey         sdk.StoreKey
+	storeKey         storetypes.StoreKey
 	cdc              codec.Codec
 	bankKeeper       types.BankKeeper
 	paramSpace       paramstypes.Subspace
@@ -24,7 +27,7 @@ type Keeper struct {
 
 func NewKeeper(
 	cdc codec.Codec,
-	key sdk.StoreKey,
+	key storetypes.StoreKey,
 	paramSpace paramstypes.Subspace,
 	bankKeeper types.BankKeeper,
 	blockedAddrs map[string]bool,
@@ -71,7 +74,7 @@ func (k Keeper) IssueToken(
 		return err
 	}
 
-	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
+	precision := sdkmath.NewIntWithDecimal(1, int(token.Scale))
 	initialCoin := sdk.NewCoin(
 		token.MinUnit,
 		sdk.NewIntFromUint64(token.InitialSupply).Mul(precision),
@@ -104,15 +107,24 @@ func (k Keeper) EditToken(
 	}
 
 	if owner.String() != token.Owner {
-		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", owner, symbol)
+		return sdkerrors.Wrapf(
+			types.ErrInvalidOwner,
+			"the address %s is not the owner of the token %s",
+			owner,
+			symbol,
+		)
 	}
 
 	if maxSupply > 0 {
 		issuedAmt := k.getTokenSupply(ctx, token.MinUnit)
-		issuedMainUnitAmt := issuedAmt.Quo(sdk.NewIntWithDecimal(1, int(token.Scale)))
+		issuedMainUnitAmt := issuedAmt.Quo(sdkmath.NewIntWithDecimal(1, int(token.Scale)))
 
 		if sdk.NewIntFromUint64(maxSupply).LT(issuedMainUnitAmt) {
-			return sdkerrors.Wrapf(types.ErrInvalidMaxSupply, "max supply must not be less than %s", issuedMainUnitAmt)
+			return sdkerrors.Wrapf(
+				types.ErrInvalidMaxSupply,
+				"max supply must not be less than %s",
+				issuedMainUnitAmt,
+			)
 		}
 
 		token.MaxSupply = maxSupply
@@ -149,7 +161,12 @@ func (k Keeper) TransferTokenOwner(
 	}
 
 	if srcOwner.String() != token.Owner {
-		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", srcOwner, symbol)
+		return sdkerrors.Wrapf(
+			types.ErrInvalidOwner,
+			"the address %s is not the owner of the token %s",
+			srcOwner,
+			symbol,
+		)
 	}
 
 	token.Owner = dstOwner.String()
@@ -178,7 +195,12 @@ func (k Keeper) MintToken(
 	}
 
 	if owner.String() != token.Owner {
-		return sdkerrors.Wrapf(types.ErrInvalidOwner, "the address %s is not the owner of the token %s", owner, symbol)
+		return sdkerrors.Wrapf(
+			types.ErrInvalidOwner,
+			"the address %s is not the owner of the token %s",
+			owner,
+			symbol,
+		)
 	}
 
 	if !token.Mintable {
@@ -186,7 +208,7 @@ func (k Keeper) MintToken(
 	}
 
 	supply := k.getTokenSupply(ctx, token.MinUnit)
-	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
+	precision := sdkmath.NewIntWithDecimal(1, int(token.Scale))
 	mintableAmt := sdk.NewIntFromUint64(token.MaxSupply).Mul(precision).Sub(supply)
 	mintableMainAmt := mintableAmt.Quo(precision).Uint64()
 
@@ -226,7 +248,7 @@ func (k Keeper) BurnToken(
 		return err
 	}
 
-	precision := sdk.NewIntWithDecimal(1, int(token.Scale))
+	precision := sdkmath.NewIntWithDecimal(1, int(token.Scale))
 	burnCoin := sdk.NewCoin(token.GetMinUnit(), sdk.NewIntFromUint64(amount).Mul(precision))
 	burnCoins := sdk.NewCoins(burnCoin)
 

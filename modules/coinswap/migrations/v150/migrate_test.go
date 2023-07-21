@@ -3,9 +3,11 @@ package v150_test
 import (
 	"testing"
 
+	"github.com/cometbft/cometbft/crypto/tmhash"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/assert"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
+	sdkmath "cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -17,18 +19,18 @@ import (
 )
 
 const (
-	denomStandard = sdk.DefaultBondDenom
-	denomBTC      = "btc"
-	denomETH      = "eth"
-	denomLptBTC   = "swapbtc"
-	denomLptETH   = "swapeth"
+	denomBTC    = "btc"
+	denomETH    = "eth"
+	denomLptBTC = "swapbtc"
+	denomLptETH = "swapeth"
 )
 
 var (
-	addrSender1 = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender1")))
-	addrSender2 = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender2")))
-	poolAddrBTC = v150.GetReservePoolAddr(denomLptBTC)
-	poolAddrETH = v150.GetReservePoolAddr(denomLptETH)
+	denomStandard = sdk.DefaultBondDenom
+	addrSender1   = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender1")))
+	addrSender2   = sdk.AccAddress(tmhash.SumTruncated([]byte("addrSender2")))
+	poolAddrBTC   = v150.GetReservePoolAddr(denomLptBTC)
+	poolAddrETH   = v150.GetReservePoolAddr(denomLptETH)
 )
 
 type (
@@ -51,11 +53,11 @@ func TestMigrate(t *testing.T) {
 }
 
 func setupWithGenesisAccounts() (*simapp.SimApp, verifyFunc) {
-	standardCoin := sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 18))
-	ethCoin := sdk.NewCoin(denomETH, sdk.NewIntWithDecimal(1, 18))
-	btcCoin := sdk.NewCoin(denomBTC, sdk.NewIntWithDecimal(1, 18))
-	lptBTCCoin := sdk.NewCoin(denomLptBTC, sdk.NewIntWithDecimal(1, 18))
-	lptETHCoin := sdk.NewCoin(denomLptETH, sdk.NewIntWithDecimal(1, 18))
+	standardCoin := sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 18))
+	ethCoin := sdk.NewCoin(denomETH, sdkmath.NewIntWithDecimal(1, 18))
+	btcCoin := sdk.NewCoin(denomBTC, sdkmath.NewIntWithDecimal(1, 18))
+	lptBTCCoin := sdk.NewCoin(denomLptBTC, sdkmath.NewIntWithDecimal(1, 18))
+	lptETHCoin := sdk.NewCoin(denomLptETH, sdkmath.NewIntWithDecimal(1, 18))
 
 	sender1Balances := banktypes.Balance{
 		Address: addrSender1.String(),
@@ -106,7 +108,13 @@ func setupWithGenesisAccounts() (*simapp.SimApp, verifyFunc) {
 	}
 
 	genAccs := []authtypes.GenesisAccount{senderAcc1, senderAcc2, poolBTCAcc, poolETHAcc}
-	app := simapp.SetupWithGenesisAccounts(genAccs, sender1Balances, sender2Balances, poolBTCBalances, poolETHBalances)
+	app := simapp.SetupWithGenesisAccounts(
+		genAccs,
+		sender1Balances,
+		sender2Balances,
+		poolBTCBalances,
+		poolETHBalances,
+	)
 
 	verify := func(ctx sdk.Context, t *testing.T) {
 		ethPoolId := coinswaptypes.GetPoolId(denomETH)

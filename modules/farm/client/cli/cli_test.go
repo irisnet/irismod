@@ -31,10 +31,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg := simapp.NewConfig()
 	cfg.NumValidators = 1
 
-	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	network, err := network.New(s.T(), s.T().TempDir(), cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	s.cfg = cfg
+	s.network = network
+
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -63,8 +66,12 @@ func (s *IntegrationTestSuite) TestFarm() {
 
 	globalFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf(
+			"--%s=%s",
+			flags.FlagFees,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+		),
 	}
 
 	args := []string{

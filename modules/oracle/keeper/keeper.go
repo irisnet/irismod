@@ -8,9 +8,10 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
+	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -22,7 +23,7 @@ import (
 // Keeper defines a struct for the oracle keeper
 type Keeper struct {
 	cdc        codec.Codec
-	storeKey   sdk.StoreKey
+	storeKey   storetypes.StoreKey
 	sk         types.ServiceKeeper
 	paramSpace paramtypes.Subspace
 }
@@ -30,7 +31,7 @@ type Keeper struct {
 // NewKeeper returns an instance of the oracle Keeper
 func NewKeeper(
 	cdc codec.Codec,
-	storeKey sdk.StoreKey,
+	storeKey storetypes.StoreKey,
 	paramSpace paramtypes.Subspace,
 	sk types.ServiceKeeper,
 ) Keeper {
@@ -322,7 +323,10 @@ func (k Keeper) HandlerStateChanged(ctx sdk.Context, requestContextID tmbytes.He
 	k.dequeueAndEnqueue(ctx, feed.FeedName, oldState, reqCtx.State)
 }
 
-func (k Keeper) GetRequestContext(ctx sdk.Context, requestContextID tmbytes.HexBytes) (serviceexported.RequestContext, bool) {
+func (k Keeper) GetRequestContext(
+	ctx sdk.Context,
+	requestContextID tmbytes.HexBytes,
+) (serviceexported.RequestContext, bool) {
 	return k.sk.GetRequestContext(ctx, requestContextID)
 }
 

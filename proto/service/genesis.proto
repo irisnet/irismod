@@ -2,7 +2,7 @@ syntax = "proto3";
 package irismod.service;
 
 import "gogoproto/gogo.proto";
-import "service/service.proto";
+import "irismod/service/service.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/service/types";
 

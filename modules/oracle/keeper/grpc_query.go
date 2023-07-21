@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"encoding/hex"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,7 +19,10 @@ import (
 var _ types.QueryServer = Keeper{}
 
 // Feed queries a feed by the feed name
-func (k Keeper) Feed(c context.Context, req *types.QueryFeedRequest) (*types.QueryFeedResponse, error) {
+func (k Keeper) Feed(
+	c context.Context,
+	req *types.QueryFeedRequest,
+) (*types.QueryFeedResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -32,7 +36,10 @@ func (k Keeper) Feed(c context.Context, req *types.QueryFeedRequest) (*types.Que
 	return &types.QueryFeedResponse{Feed: feedCtx}, nil
 }
 
-func (k Keeper) Feeds(c context.Context, req *types.QueryFeedsRequest) (*types.QueryFeedsResponse, error) {
+func (k Keeper) Feeds(
+	c context.Context,
+	req *types.QueryFeedsRequest,
+) (*types.QueryFeedsResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -44,12 +51,16 @@ func (k Keeper) Feeds(c context.Context, req *types.QueryFeedsRequest) (*types.Q
 	store := ctx.KVStore(k.storeKey)
 	if len(req.State) == 0 {
 		feedStore := prefix.NewStore(store, types.GetFeedPrefixKey())
-		pageRes, err = query.Paginate(feedStore, shapePageRequest(req.Pagination), func(key []byte, value []byte) error {
-			var feed types.Feed
-			k.cdc.MustUnmarshal(value, &feed)
-			result = append(result, BuildFeedContext(ctx, k, feed))
-			return nil
-		})
+		pageRes, err = query.Paginate(
+			feedStore,
+			shapePageRequest(req.Pagination),
+			func(key []byte, value []byte) error {
+				var feed types.Feed
+				k.cdc.MustUnmarshal(value, &feed)
+				result = append(result, BuildFeedContext(ctx, k, feed))
+				return nil
+			},
+		)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 		}
@@ -75,7 +86,10 @@ func (k Keeper) Feeds(c context.Context, req *types.QueryFeedsRequest) (*types.Q
 	return &types.QueryFeedsResponse{Feeds: result, Pagination: pageRes}, nil
 }
 
-func (k Keeper) FeedValue(c context.Context, req *types.QueryFeedValueRequest) (*types.QueryFeedValueResponse, error) {
+func (k Keeper) FeedValue(
+	c context.Context,
+	req *types.QueryFeedValueRequest,
+) (*types.QueryFeedValueResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -83,4 +97,21 @@ func (k Keeper) FeedValue(c context.Context, req *types.QueryFeedValueRequest) (
 
 	result := k.GetFeedValues(ctx, req.FeedName)
 	return &types.QueryFeedValueResponse{FeedValues: result}, nil
+}
+
+func BuildFeedContext(ctx sdk.Context, k Keeper, feed types.Feed) (feedCtx types.FeedContext) {
+	requestContextID, _ := hex.DecodeString(feed.RequestContextID)
+	reqCtx, found := k.sk.GetRequestContext(ctx, requestContextID)
+	if found {
+		feedCtx.Providers = reqCtx.Providers
+		feedCtx.ResponseThreshold = reqCtx.ResponseThreshold
+		feedCtx.ServiceName = reqCtx.ServiceName
+		feedCtx.Input = reqCtx.Input
+		feedCtx.RepeatedFrequency = reqCtx.RepeatedFrequency
+		feedCtx.ServiceFeeCap = reqCtx.ServiceFeeCap
+		feedCtx.Timeout = reqCtx.Timeout
+		feedCtx.State = reqCtx.State
+	}
+	feedCtx.Feed = &feed
+	return feedCtx
 }

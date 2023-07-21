@@ -135,7 +135,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * [\#83](https://github.com/irisnet/irismod/pull/83) Bump cosmos-sdk version to [v0.40.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.1).
-* [\#83](https://github.com/irisnet/irismod/pull/83) Bump tendermint verion to [v0.34.3](https://github.com/tendermint/tendermint/releases/tag/v0.34.3).
+* [\#83](https://github.com/irisnet/irismod/pull/83) Bump tendermint verion to [v0.34.3](https://github.com/cometbft/cometbft/releases/tag/v0.34.3).
 * (modules/service)[\#96](https://github.com/irisnet/irismod/pull/96) Change the event key `response_service` to `respond_service`.
 * [\#92](https://github.com/irisnet/irismod/issues/92) Normalize msg and genesis validation.
 * (modules/service)[\#86](https://github.com/irisnet/irismod/pull/86) Update service default params.
@@ -158,7 +158,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * [\#66](https://github.com/irisnet/irismod/pull/66) Bump cosmos-sdk version to [v0.40.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.0).
-* [\#66](https://github.com/irisnet/irismod/pull/66) Bump tendermint verion to [v0.34.1](https://github.com/tendermint/tendermint/releases/tag/v0.34.1).
+* [\#66](https://github.com/irisnet/irismod/pull/66) Bump tendermint verion to [v0.34.1](https://github.com/cometbft/cometbft/releases/tag/v0.34.1).
 * (modules/coinswap)[\#68](https://github.com/irisnet/irismod/pull/68) Remove standard denom from params and replace prefix `uni:` with `swap/`
 * (modules/token)[\#67](https://github.com/irisnet/irismod/pull/67) Add token burn.
 * [\#64](https://github.com/irisnet/irismod/pull/64) Add preprocessing before exporting the app state.

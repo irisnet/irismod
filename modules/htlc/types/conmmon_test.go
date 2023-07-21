@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	time "time"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto/secp256k1"
+	tmtime "github.com/cometbft/cometbft/types/time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 

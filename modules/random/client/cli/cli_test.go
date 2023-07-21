@@ -38,10 +38,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg := simapp.NewConfig()
 	cfg.NumValidators = 1
 
-	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	network, err := network.New(s.T(), s.T().TempDir(), cfg)
+	s.Require().NoError(err)
 
-	_, err := s.network.WaitForHeight(1)
+	s.cfg = cfg
+	s.network = network
+
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -84,8 +87,12 @@ func (s *IntegrationTestSuite) TestRandom() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagProvider, provider),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf(
+			"--%s=%s",
+			flags.FlagFees,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+		),
 	}
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
@@ -102,8 +109,12 @@ func (s *IntegrationTestSuite) TestRandom() {
 		fmt.Sprintf("--%s=%d", randomcli.FlagBlockInterval, blockInterval),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf(
+			"--%s=%s",
+			flags.FlagFees,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+		),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -119,7 +130,10 @@ func (s *IntegrationTestSuite) TestRandom() {
 
 	// ------test GetCmdQueryRandomRequestQueue()-------------
 	respType = proto.Message(&randomtypes.QueryRandomRequestQueueResponse{})
-	bz, err = randomtestutil.QueryRandomRequestQueueExec(clientCtx, fmt.Sprintf("%d", requestHeight))
+	bz, err = randomtestutil.QueryRandomRequestQueueExec(
+		clientCtx,
+		fmt.Sprintf("%d", requestHeight),
+	)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	qrrResp := respType.(*randomtypes.QueryRandomRequestQueueResponse)
@@ -128,10 +142,13 @@ func (s *IntegrationTestSuite) TestRandom() {
 
 	// ------get service request-------------
 	requestHeight = requestHeight + 1
-	_, err = s.network.WaitForHeightWithTimeout(requestHeight, time.Duration(int64(blockInterval+2)*int64(s.cfg.TimeoutCommit)))
+	_, err = s.network.WaitForHeightWithTimeout(
+		requestHeight,
+		time.Duration(int64(blockInterval+2)*int64(s.cfg.TimeoutCommit)),
+	)
 	s.Require().NoError(err)
 
-	blockResult, err := clientCtx.Client.BlockResults(context.Background(), &requestHeight)
+	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var requestId string
 	for _, event := range blockResult.EndBlockEvents {
@@ -141,7 +158,7 @@ func (s *IntegrationTestSuite) TestRandom() {
 			var requestsBz []byte
 			for _, attribute := range event.Attributes {
 				if string(attribute.Key) == servicetypes.AttributeKeyRequests {
-					requestsBz = attribute.GetValue()
+					requestsBz = []byte(attribute.GetValue())
 					found = true
 				}
 			}
@@ -163,8 +180,12 @@ func (s *IntegrationTestSuite) TestRandom() {
 		fmt.Sprintf("--%s=%s", servicecli.FlagData, respOutput),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf(
+			"--%s=%s",
+			flags.FlagFees,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+		),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	expectedCode = uint32(0)
@@ -188,6 +209,8 @@ func (s *IntegrationTestSuite) TestRandom() {
 	s.Require().NoError(err)
 	seed, err := hex.DecodeString(seedStr)
 	s.Require().NoError(err)
-	random := randomtypes.MakePRNG(generateBLock.Block.LastBlockID.Hash, generateBLock.Block.Header.Time.Unix(), from, seed, true).GetRand().FloatString(randomtypes.RandPrec)
+	random := randomtypes.MakePRNG(generateBLock.Block.LastBlockID.Hash, generateBLock.Block.Header.Time.Unix(), from, seed, true).
+		GetRand().
+		FloatString(randomtypes.RandPrec)
 	s.Require().Equal(random, randomResp.Value)
 }

@@ -4,8 +4,8 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	"github.com/irisnet/irismod/modules/htlc/keeper"
 	"github.com/irisnet/irismod/modules/htlc/types"

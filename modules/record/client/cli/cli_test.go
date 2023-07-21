@@ -30,11 +30,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	cfg := simapp.NewConfig()
 	cfg.NumValidators = 1
+	network, err := network.New(s.T(), s.T().TempDir(), cfg)
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	s.network = network
 
-	_, err := s.network.WaitForHeight(1)
+	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
 
@@ -64,14 +65,23 @@ func (s *IntegrationTestSuite) TestRecord() {
 		fmt.Sprintf("--%s=%s", recordcli.FlagMeta, meta),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf(
+			"--%s=%s",
+			flags.FlagFees,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+		),
 	}
 
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
 
-	bz, err := recordtestutil.MsgCreateRecordExec(clientCtx, from.String(), digest, digestAlgo, args...)
+	bz, err := recordtestutil.MsgCreateRecordExec(
+		clientCtx,
+		from.String(),
+		digest,
+		digestAlgo,
+		args...)
 	s.Require().NoError(err)
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp := respType.(*sdk.TxResponse)

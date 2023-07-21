@@ -5,8 +5,10 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/cometbft/cometbft/crypto/tmhash"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,7 +26,7 @@ const (
 var (
 	denom    = types.GetNativeToken().Symbol
 	owner    = sdk.AccAddress(tmhash.SumTruncated([]byte("tokenTest")))
-	initAmt  = sdk.NewIntWithDecimal(100000000, int(6))
+	initAmt  = sdkmath.NewIntWithDecimal(100000000, int(6))
 	initCoin = sdk.Coins{sdk.NewCoin(denom, initAmt)}
 )
 
@@ -72,7 +74,7 @@ func (suite *KeeperTestSuite) issueToken(token types.Token) {
 	mintCoins := sdk.NewCoins(
 		sdk.NewCoin(
 			token.MinUnit,
-			sdk.NewIntWithDecimal(int64(token.InitialSupply), int(token.Scale)),
+			sdkmath.NewIntWithDecimal(int64(token.InitialSupply), int(token.Scale)),
 		),
 	)
 
@@ -84,7 +86,16 @@ func (suite *KeeperTestSuite) issueToken(token types.Token) {
 }
 
 func (suite *KeeperTestSuite) TestIssueToken() {
-	token := types.NewToken("btc", "Bitcoin Network", "satoshi", 18, 21000000, 21000000, false, owner)
+	token := types.NewToken(
+		"btc",
+		"Bitcoin Network",
+		"satoshi",
+		18,
+		21000000,
+		21000000,
+		false,
+		owner,
+	)
 
 	err := suite.keeper.IssueToken(
 		suite.ctx, token.Symbol, token.Name,
@@ -105,7 +116,16 @@ func (suite *KeeperTestSuite) TestIssueToken() {
 }
 
 func (suite *KeeperTestSuite) TestEditToken() {
-	token := types.NewToken("btc", "Bitcoin Network", "satoshi", 18, 21000000, 21000000, false, owner)
+	token := types.NewToken(
+		"btc",
+		"Bitcoin Network",
+		"satoshi",
+		18,
+		21000000,
+		21000000,
+		false,
+		owner,
+	)
 	suite.setToken(token)
 
 	symbol := "btc"
@@ -119,7 +139,16 @@ func (suite *KeeperTestSuite) TestEditToken() {
 	newToken, err := suite.keeper.GetToken(suite.ctx, symbol)
 	suite.NoError(err)
 
-	expToken := types.NewToken("btc", "Bitcoin Token", "satoshi", 18, 21000000, 22000000, mintable.ToBool(), owner)
+	expToken := types.NewToken(
+		"btc",
+		"Bitcoin Token",
+		"satoshi",
+		18,
+		21000000,
+		22000000,
+		mintable.ToBool(),
+		owner,
+	)
 
 	suite.EqualValues(newToken.(*types.Token), &expToken)
 }
@@ -169,7 +198,16 @@ func (suite *KeeperTestSuite) TestBurnToken() {
 }
 
 func (suite *KeeperTestSuite) TestTransferToken() {
-	token := types.NewToken("btc", "Bitcoin Network", "satoshi", 18, 21000000, 21000000, false, owner)
+	token := types.NewToken(
+		"btc",
+		"Bitcoin Network",
+		"satoshi",
+		18,
+		21000000,
+		21000000,
+		false,
+		owner,
+	)
 	suite.setToken(token)
 
 	dstOwner := sdk.AccAddress(tmhash.SumTruncated([]byte("TokenDstOwner")))

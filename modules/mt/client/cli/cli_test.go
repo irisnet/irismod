@@ -8,7 +8,7 @@ package cli_test
 // 	"github.com/stretchr/testify/suite"
 // 	"github.com/tidwall/gjson"
 
-// 	"github.com/tendermint/tendermint/crypto"
+// 	"github.com/cometbft/cometbft/crypto"
 
 // 	"github.com/cosmos/cosmos-sdk/client/flags"
 // 	"github.com/cosmos/cosmos-sdk/testutil/network"
