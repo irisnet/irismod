@@ -41,7 +41,7 @@ type TestSuite struct {
 }
 
 func (suite *TestSuite) SetupTest() {
-	app := setupWithGenesisAccounts()
+	app := setupWithGenesisAccounts(suite.T())
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
@@ -75,7 +75,7 @@ func (suite *TestSuite) TestParams() {
 	}
 }
 
-func setupWithGenesisAccounts() *simapp.SimApp {
+func setupWithGenesisAccounts(t *testing.T) *simapp.SimApp {
 	amountInitStandard, _ := sdk.NewIntFromString("30000000000000000000")
 	amountInitBTC, _ := sdk.NewIntFromString("3000000000")
 
@@ -105,7 +105,7 @@ func setupWithGenesisAccounts() *simapp.SimApp {
 	}
 
 	genAccs := []authtypes.GenesisAccount{acc1, acc2}
-	app := simapp.SetupWithGenesisAccounts(genAccs, acc1Balances, acc2Balances)
+	app := simapp.SetupWithGenesisAccounts(t, genAccs, acc1Balances, acc2Balances)
 	return app
 }
 

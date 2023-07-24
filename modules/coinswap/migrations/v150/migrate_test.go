@@ -41,7 +41,7 @@ func TestMigrate(t *testing.T) {
 	sdk.SetCoinDenomRegex(func() string {
 		return `[a-zA-Z][a-zA-Z0-9/\-]{2,127}`
 	})
-	app, verify := setupWithGenesisAccounts()
+	app, verify := setupWithGenesisAccounts(t)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	err := v150.Migrate(ctx, app.CoinswapKeeper, app.BankKeeper, app.AccountKeeper)
 	assert.NoError(t, err)
@@ -52,7 +52,7 @@ func TestMigrate(t *testing.T) {
 	app.CrisisKeeper.AssertInvariants(ctx)
 }
 
-func setupWithGenesisAccounts() (*simapp.SimApp, verifyFunc) {
+func setupWithGenesisAccounts(t *testing.T) (*simapp.SimApp, verifyFunc) {
 	standardCoin := sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 18))
 	ethCoin := sdk.NewCoin(denomETH, sdkmath.NewIntWithDecimal(1, 18))
 	btcCoin := sdk.NewCoin(denomBTC, sdkmath.NewIntWithDecimal(1, 18))
@@ -109,6 +109,7 @@ func setupWithGenesisAccounts() (*simapp.SimApp, verifyFunc) {
 
 	genAccs := []authtypes.GenesisAccount{senderAcc1, senderAcc2, poolBTCAcc, poolETHAcc}
 	app := simapp.SetupWithGenesisAccounts(
+		t,
 		genAccs,
 		sender1Balances,
 		sender2Balances,

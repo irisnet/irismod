@@ -11,6 +11,7 @@ import (
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmtypes "github.com/cometbft/cometbft/types"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,7 +19,14 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+)
+
+// Simulation parameter constants
+const (
+	StakePerAccount           = "stake_per_account"
+	InitiallyBondedValidators = "initially_bonded_validators"
 )
 
 // AppStateFn returns the initial application state using a genesis or the simulation parameters.
@@ -31,10 +39,10 @@ func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simty
 		appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time,
 	) {
 
-		if simtestutil.FlagGenesisTimeValue == 0 {
+		if simcli.FlagGenesisTimeValue == 0 {
 			genesisTimestamp = simtypes.RandTimestamp(r)
 		} else {
-			genesisTimestamp = time.Unix(simtestutil.FlagGenesisTimeValue, 0)
+			genesisTimestamp = time.Unix(simcli.FlagGenesisTimeValue, 0)
 		}
 
 		chainID = config.ChainID
@@ -46,7 +54,7 @@ func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simty
 			// override the default chain-id from simapp to set it later to the config
 			genesisDoc, accounts := AppStateFromGenesisFileFn(r, cdc, config.GenesisFile)
 
-			if simtestutil.FlagGenesisTimeValue == 0 {
+			if simcli.FlagGenesisTimeValue == 0 {
 				// use genesis timestamp if no custom timestamp is provided (i.e no random timestamp)
 				genesisTimestamp = genesisDoc.GenesisTime
 			}
@@ -163,13 +171,16 @@ func AppStateRandomizedFn(
 
 	// generate a random amount of initial stake coins and a random initial
 	// number of bonded accounts
-	var initialStake, numInitiallyBonded int64
-	appParams.GetOrGenerate(
-		cdc, simtestutil.StakePerAccount, &initialStake, r,
-		func(r *rand.Rand) { initialStake = r.Int63n(1e12) },
+	var (
+		numInitiallyBonded int64
+		initialStake       sdkmath.Int
 	)
 	appParams.GetOrGenerate(
-		cdc, simtestutil.InitiallyBondedValidators, &numInitiallyBonded, r,
+		cdc, StakePerAccount, &initialStake, r,
+		func(r *rand.Rand) { initialStake = sdkmath.NewInt(r.Int63n(1e12)) },
+	)
+	appParams.GetOrGenerate(
+		cdc, InitiallyBondedValidators, &numInitiallyBonded, r,
 		func(r *rand.Rand) { numInitiallyBonded = int64(r.Intn(300)) },
 	)
 
