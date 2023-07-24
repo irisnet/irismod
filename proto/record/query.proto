@@ -1,7 +1,7 @@
 syntax = "proto3";
 package irismod.record;
 
-import "record/record.proto";
+import "irismod/record/record.proto";
 import "google/api/annotations.proto";
 
 option go_package = "github.com/irisnet/irismod/modules/record/types";

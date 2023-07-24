@@ -6,8 +6,10 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/cometbft/cometbft/crypto/tmhash"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,14 +21,14 @@ import (
 )
 
 const (
-	denomStandard = sdk.DefaultBondDenom
-	denomBTC      = "btc"
-	denomETH      = "eth"
+	denomBTC = "btc"
+	denomETH = "eth"
 )
 
 var (
-	addrSender1 sdk.AccAddress
-	addrSender2 sdk.AccAddress
+	denomStandard = sdk.DefaultBondDenom
+	addrSender1   sdk.AccAddress
+	addrSender2   sdk.AccAddress
 )
 
 // test that the params can be properly set and retrieved
@@ -39,7 +41,7 @@ type TestSuite struct {
 }
 
 func (suite *TestSuite) SetupTest() {
-	app := setupWithGenesisAccounts()
+	app := setupWithGenesisAccounts(suite.T())
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
@@ -73,7 +75,7 @@ func (suite *TestSuite) TestParams() {
 	}
 }
 
-func setupWithGenesisAccounts() *simapp.SimApp {
+func setupWithGenesisAccounts(t *testing.T) *simapp.SimApp {
 	amountInitStandard, _ := sdk.NewIntFromString("30000000000000000000")
 	amountInitBTC, _ := sdk.NewIntFromString("3000000000")
 
@@ -103,7 +105,7 @@ func setupWithGenesisAccounts() *simapp.SimApp {
 	}
 
 	genAccs := []authtypes.GenesisAccount{acc1, acc2}
-	app := simapp.SetupWithGenesisAccounts(genAccs, acc1Balances, acc2Balances)
+	app := simapp.SetupWithGenesisAccounts(t, genAccs, acc1Balances, acc2Balances)
 	return app
 }
 
@@ -114,7 +116,13 @@ func (suite *TestSuite) TestLiquidity() {
 	minReward := sdk.NewInt(1)
 	deadline := time.Now().Add(1 * time.Minute)
 
-	msg := types.NewMsgAddLiquidity(depositCoin, standardAmt, minReward, deadline.Unix(), addrSender1.String())
+	msg := types.NewMsgAddLiquidity(
+		depositCoin,
+		standardAmt,
+		minReward,
+		deadline.Unix(),
+		addrSender1.String(),
+	)
 	_, err := suite.app.CoinswapKeeper.AddLiquidity(suite.ctx, msg)
 	suite.NoError(err)
 
@@ -129,23 +137,33 @@ func (suite *TestSuite) TestLiquidity() {
 
 	reservePoolBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, poolAddr)
 	sender1Balances := suite.app.BankKeeper.GetAllBalances(suite.ctx, addrSender1)
-	suite.Equal("10000000000000000000", suite.app.BankKeeper.GetSupply(suite.ctx, lptDenom).Amount.String())
+	suite.Equal(
+		"10000000000000000000",
+		suite.app.BankKeeper.GetSupply(suite.ctx, lptDenom).Amount.String(),
+	)
 
 	expCoins := sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 100),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 2999999900),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000))),
-		sdk.NewCoin(lptDenom, sdk.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(
+			denomStandard,
+			sdkmath.NewIntWithDecimal(2, 19).Sub(sdkmath.NewIntFromUint64(5000)),
+		),
+		sdk.NewCoin(lptDenom, sdkmath.NewIntWithDecimal(1, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
 	// test add liquidity (pool exists)
-	expLptDenom, _ := suite.app.CoinswapKeeper.GetLptDenomFromDenoms(suite.ctx, denomBTC, denomStandard)
+	expLptDenom, _ := suite.app.CoinswapKeeper.GetLptDenomFromDenoms(
+		suite.ctx,
+		denomBTC,
+		denomStandard,
+	)
 	suite.Require().Equal(expLptDenom, lptDenom)
 	btcAmt, _ = sdk.NewIntFromString("201")
 	standardAmt, _ = sdk.NewIntFromString("20000000000000000000")
@@ -153,24 +171,33 @@ func (suite *TestSuite) TestLiquidity() {
 	minReward = sdk.NewInt(1)
 	deadline = time.Now().Add(1 * time.Minute)
 
-	msg = types.NewMsgAddLiquidity(depositCoin, standardAmt, minReward, deadline.Unix(), addrSender2.String())
+	msg = types.NewMsgAddLiquidity(
+		depositCoin,
+		standardAmt,
+		minReward,
+		deadline.Unix(),
+		addrSender2.String(),
+	)
 	_, err = suite.app.CoinswapKeeper.AddLiquidity(suite.ctx, msg)
 	suite.NoError(err)
 
 	reservePoolBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, poolAddr)
 	sender2Balances := suite.app.BankKeeper.GetAllBalances(suite.ctx, addrSender2)
-	suite.Equal("30000000000000000000", suite.app.BankKeeper.GetSupply(suite.ctx, lptDenom).Amount.String())
+	suite.Equal(
+		"30000000000000000000",
+		suite.app.BankKeeper.GetSupply(suite.ctx, lptDenom).Amount.String(),
+	)
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 301),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(3, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(3, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.Sort().String())
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 2999999799),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(1, 19)),
-		sdk.NewCoin(lptDenom, sdk.NewIntWithDecimal(2, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(1, 19)),
+		sdk.NewCoin(lptDenom, sdkmath.NewIntWithDecimal(2, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), sender2Balances.Sort().String())
 
@@ -189,17 +216,23 @@ func (suite *TestSuite) TestLiquidity() {
 
 	reservePoolBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, poolAddr)
 	sender1Balances = suite.app.BankKeeper.GetAllBalances(suite.ctx, addrSender1)
-	suite.Equal("20000000000000000000", suite.app.BankKeeper.GetSupply(suite.ctx, lptDenom).Amount.String())
+	suite.Equal(
+		"20000000000000000000",
+		suite.app.BankKeeper.GetSupply(suite.ctx, lptDenom).Amount.String(),
+	)
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 3000000000),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000))),
+		sdk.NewCoin(
+			denomStandard,
+			sdkmath.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000)),
+		),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 201),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(2, 19)),
+		sdk.NewCoin(denomStandard, sdkmath.NewIntWithDecimal(2, 19)),
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBalances.String())
 
@@ -222,7 +255,10 @@ func (suite *TestSuite) TestLiquidity() {
 
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomBTC, 3000000000),
-		sdk.NewCoin(denomStandard, sdk.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000))),
+		sdk.NewCoin(
+			denomStandard,
+			sdkmath.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000)),
+		),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 	suite.Equal("", reservePoolBalances.String())

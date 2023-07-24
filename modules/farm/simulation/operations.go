@@ -5,14 +5,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/irisnet/irismod/modules/farm/keeper"
 	"github.com/irisnet/irismod/modules/farm/types"
+	simappparams "github.com/irisnet/irismod/simapp/params"
 )
 
 // Simulation operation weights constants
@@ -103,7 +103,11 @@ func WeightedOperations(
 	}
 }
 
-func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgCreatePool(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -114,13 +118,21 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		if spendable.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "spendable is zero"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgCreatePool,
+				"spendable is zero",
+			), nil, nil
 		}
 
-		_, hasNeg := spendable.SafeSub(sdk.NewCoins(k.CreatePoolFee(ctx)))
+		_, hasNeg := spendable.SafeSub(sdk.NewCoins(k.CreatePoolFee(ctx))...)
 
 		if hasNeg {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "Insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgCreatePool,
+				"Insufficient funds",
+			), nil, nil
 		}
 
 		totalReward := GenTotalReward(r, spendable)
@@ -130,17 +142,29 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 		rewardPerBlock := GenRewardPerBlock(r, totalReward)
 
 		if rewardPerBlock.Amount.LT(sdk.ZeroInt()) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "rewardPerBlock less than zeroInt"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgCreatePool,
+				"rewardPerBlock less than zeroInt",
+			), nil, nil
 		}
 
 		if totalReward.Amount.LT(rewardPerBlock.Amount) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "totalReward less than rewardPerBlock"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgCreatePool,
+				"totalReward less than rewardPerBlock",
+			), nil, nil
 		}
 
-		balance, hasNeg := spendable.SafeSub(sdk.NewCoins(totalReward))
+		balance, hasNeg := spendable.SafeSub(sdk.NewCoins(totalReward)...)
 
 		if hasNeg {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "Insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgCreatePool,
+				"Insufficient funds",
+			), nil, nil
 		}
 
 		msg := &types.MsgCreatePool{
@@ -155,25 +179,34 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		fees, err := simtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeCreatePool, err.Error()), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.EventTypeCreatePool,
+				err.Error(),
+			), nil, err
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
 			simAccount.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				msg.Type(),
+				"unable to generate mock tx",
+			), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 		keeper.RewardInvariant(k)
@@ -182,7 +215,11 @@ func SimulateMsgCreatePool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	}
 }
 
-func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgAdjustPool(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -190,52 +227,92 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	) {
 		farmPool, exist := genRandomFarmPool(ctx, k, r)
 		if !exist {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "farm pool is not exist"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"farm pool is not exist",
+			), nil, nil
 		}
 
 		if k.Expired(ctx, farmPool) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "farmPool has expired"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"farmPool has expired",
+			), nil, nil
 		}
 
 		if !farmPool.Editable {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "farmPool is not editable"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"farmPool is not editable",
+			), nil, nil
 		}
 
 		creator, err := sdk.AccAddressFromBech32(farmPool.Creator)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "invalid address"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"invalid address",
+			), nil, err
 		}
 
 		simAccount, found := simtypes.FindAccount(accs, creator)
 		if !found {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "unable to find account"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"unable to find account",
+			), nil, nil
 		}
 
 		account := ak.GetAccount(ctx, simAccount.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		if spendable.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"insufficient funds",
+			), nil, nil
 		}
 
 		rules := k.GetRewardRules(ctx, farmPool.Id)
 		rewardPerBlock := GenRewardPerBlock(r, spendable[r.Intn(len(spendable))])
 		if rewardPerBlock.Amount.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"insufficient funds",
+			), nil, nil
 		}
 
 		if rewardPerBlock.Denom != GenRewardRule(r, rules).Reward {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "invalid reward"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"invalid reward",
+			), nil, nil
 		}
 
 		amount := GenAppendReward(r, rules, spendable)
 		if amount.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"insufficient funds",
+			), nil, nil
 		}
 
 		// Need to subtract the appendReward balance
-		balance, hasNeg := spendable.SafeSub(amount)
+		balance, hasNeg := spendable.SafeSub(amount...)
 		if hasNeg {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"insufficient funds",
+			), nil, nil
 		}
 
 		msg := &types.MsgAdjustPool{
@@ -247,25 +324,34 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		fees, err := simtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeAppendReward, err.Error()), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.EventTypeAppendReward,
+				err.Error(),
+			), nil, err
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
 			simAccount.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				msg.Type(),
+				"unable to generate mock tx",
+			), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -274,7 +360,11 @@ func SimulateMsgAdjustPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	}
 }
 
-func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgStake(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -282,15 +372,27 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 	) {
 		farmPool, exist := genRandomFarmPool(ctx, k, r)
 		if !exist {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "farm pool is not exist"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgStake,
+				"farm pool is not exist",
+			), nil, nil
 		}
 
 		if farmPool.StartHeight > ctx.BlockHeight() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "the farm activity has not yet started"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgStake,
+				"the farm activity has not yet started",
+			), nil, nil
 		}
 
 		if k.Expired(ctx, farmPool) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "the farm activity has ended"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgStake,
+				"the farm activity has ended",
+			), nil, nil
 		}
 
 		simAccount, _ := simtypes.RandomAcc(r, accs)
@@ -298,18 +400,30 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		if spendable.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "spendable is zero"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgStake,
+				"spendable is zero",
+			), nil, nil
 		}
 
 		amount := GenStake(r, farmPool, spendable)
 		if amount.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "The sender does not have the specified lpToken"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgStake,
+				"The sender does not have the specified lpToken",
+			), nil, nil
 		}
 
 		// Need to subtract the stake balance
-		balance, hasNeg := spendable.SafeSub(sdk.Coins{amount})
+		balance, hasNeg := spendable.SafeSub(sdk.Coins{amount}...)
 		if hasNeg {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "Insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgStake,
+				"Insufficient funds",
+			), nil, nil
 		}
 
 		msg := &types.MsgStake{
@@ -324,21 +438,26 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
 			simAccount.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				msg.Type(),
+				"unable to generate mock tx",
+			), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -348,7 +467,11 @@ func SimulateMsgStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeep
 	}
 }
 
-func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+func SimulateMsgUnStake(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -359,26 +482,46 @@ func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 
 		farmInfo, exist := genRandomFarmInfo(ctx, k, r, account.GetAddress().String())
 		if !exist {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "farmer not found in pool"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgUnstake,
+				"farmer not found in pool",
+			), nil, nil
 		}
 
 		farmPool, exist := k.GetPool(ctx, farmInfo.PoolId)
 		if !exist {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "farm pool is not exist"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgUnstake,
+				"farm pool is not exist",
+			), nil, nil
 		}
 
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		if spendable.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "spendable is zero"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgUnstake,
+				"spendable is zero",
+			), nil, nil
 		}
 
 		unStake := GenUnStake(r, farmPool, farmInfo)
 		if unStake.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "the sender does not have the specified lpToken"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgUnstake,
+				"the sender does not have the specified lpToken",
+			), nil, nil
 		}
 
 		if farmInfo.Locked.LT(unStake.Amount) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "the lp token unStaked must be less than staked"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgUnstake,
+				"the lp token unStaked must be less than staked",
+			), nil, nil
 		}
 
 		amount := farmInfo.Locked
@@ -394,21 +537,26 @@ func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
 			simAccount.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				msg.Type(),
+				"unable to generate mock tx",
+			), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -416,7 +564,12 @@ func SimulateMsgUnStake(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
-func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+
+func SimulateMsgHarvest(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -427,16 +580,28 @@ func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 
 		farmInfo, exist := genRandomFarmInfo(ctx, k, r, account.GetAddress().String())
 		if !exist {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "farmer not found in pool"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgUnstake,
+				"farmer not found in pool",
+			), nil, nil
 		}
 
 		farmPool, exist := k.GetPool(ctx, farmInfo.PoolId)
 		if !exist {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnstake, "farm pool is not exist"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgUnstake,
+				"farm pool is not exist",
+			), nil, nil
 		}
 
 		if k.Expired(ctx, farmPool) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgHarvest, "farm pool has expired"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgHarvest,
+				"farm pool has expired",
+			), nil, nil
 		}
 
 		msg := &types.MsgHarvest{
@@ -451,21 +616,26 @@ func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
 			simAccount.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				msg.Type(),
+				"unable to generate mock tx",
+			), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -473,7 +643,12 @@ func SimulateMsgHarvest(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
-func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+
+func SimulateMsgDestroyPool(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (
@@ -481,25 +656,45 @@ func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 	) {
 		farmPool, exist := genRandomFarmPool(ctx, k, r)
 		if !exist {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgStake, "farm pool is not exist"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgStake,
+				"farm pool is not exist",
+			), nil, nil
 		}
 
 		creator, err := sdk.AccAddressFromBech32(farmPool.Creator)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "invalid address"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"invalid address",
+			), nil, err
 		}
 
 		simAccount, found := simtypes.FindAccount(accs, creator)
 		if !found {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "unable to find account"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"unable to find account",
+			), nil, nil
 		}
 
 		if !farmPool.Editable {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDestroyPool, "farm pool is not editable"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgDestroyPool,
+				"farm pool is not editable",
+			), nil, nil
 		}
 
 		if k.Expired(ctx, farmPool) {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDestroyPool, "farm pool has expired"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgDestroyPool,
+				"farm pool has expired",
+			), nil, nil
 		}
 
 		msg := &types.MsgDestroyPool{
@@ -511,30 +706,43 @@ func SimulateMsgDestroyPool(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		if spendable.IsZero() {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgAdjustPool, "Insufficient funds"), nil, nil
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgAdjustPool,
+				"Insufficient funds",
+			), nil, nil
 		}
 
 		fees, err := simtypes.RandomFees(r, ctx, spendable)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeDestroyPool, err.Error()), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.EventTypeDestroyPool,
+				err.Error(),
+			), nil, err
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
 			simAccount.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				msg.Type(),
+				"unable to generate mock tx",
+			), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -620,7 +828,12 @@ func genRandomFarmPool(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (types.Fa
 }
 
 // genRandomFarmInfo randomized farmInfo
-func genRandomFarmInfo(ctx sdk.Context, k keeper.Keeper, r *rand.Rand, addr string) (types.FarmInfo, bool) {
+func genRandomFarmInfo(
+	ctx sdk.Context,
+	k keeper.Keeper,
+	r *rand.Rand,
+	addr string,
+) (types.FarmInfo, bool) {
 	var farmInfos []types.FarmInfo
 
 	k.IteratorFarmInfo(ctx, addr, func(farmInfo types.FarmInfo) {

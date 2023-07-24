@@ -8,7 +8,7 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 var (
@@ -24,7 +24,11 @@ func init() {
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreatePool{}, "irismod/farm/MsgCreatePool", nil)
-	cdc.RegisterConcrete(&MsgCreatePoolWithCommunityPool{}, "irismod/farm/MsgCreatePoolWithCommunityPool", nil)
+	cdc.RegisterConcrete(
+		&MsgCreatePoolWithCommunityPool{},
+		"irismod/farm/MsgCreatePoolWithCommunityPool",
+		nil,
+	)
 	cdc.RegisterConcrete(&MsgDestroyPool{}, "irismod/farm/MsgDestroyPool", nil)
 	cdc.RegisterConcrete(&MsgAdjustPool{}, "irismod/farm/MsgAdjustPool", nil)
 	cdc.RegisterConcrete(&MsgStake{}, "irismod/farm/MsgStake", nil)
@@ -46,7 +50,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	)
 
 	registry.RegisterImplementations(
-		(*govtypes.Content)(nil),
+		(*govv1beta1.Content)(nil),
 		&CommunityPoolCreateFarmProposal{},
 	)
 

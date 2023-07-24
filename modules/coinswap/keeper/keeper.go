@@ -6,9 +6,10 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -19,7 +20,7 @@ import (
 // Keeper of the coinswap store
 type Keeper struct {
 	cdc              codec.BinaryCodec
-	storeKey         sdk.StoreKey
+	storeKey         storetypes.StoreKey
 	bk               types.BankKeeper
 	ak               types.AccountKeeper
 	paramSpace       paramstypes.Subspace
@@ -33,7 +34,7 @@ type Keeper struct {
 // - sending to and from ModuleAccounts
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	key sdk.StoreKey,
+	key storetypes.StoreKey,
 	paramSpace paramstypes.Subspace,
 	bk types.BankKeeper,
 	ak types.AccountKeeper,
@@ -72,7 +73,8 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 	var err error
 
 	standardDenom := k.GetStandardDenom(ctx)
-	isDoubleSwap := (msg.Input.Coin.Denom != standardDenom) && (msg.Output.Coin.Denom != standardDenom)
+	isDoubleSwap := (msg.Input.Coin.Denom != standardDenom) &&
+		(msg.Output.Coin.Denom != standardDenom)
 
 	if msg.IsBuyOrder && isDoubleSwap {
 		amount, err = k.doubleTradeInputForExactOutput(ctx, msg.Input, msg.Output)
@@ -94,7 +96,10 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 			sdk.NewAttribute(types.AttributeValueSender, msg.Input.Address),
 			sdk.NewAttribute(types.AttributeValueRecipient, msg.Output.Address),
 			sdk.NewAttribute(types.AttributeValueIsBuyOrder, strconv.FormatBool(msg.IsBuyOrder)),
-			sdk.NewAttribute(types.AttributeValueTokenPair, types.GetTokenPairByDenom(msg.Input.Coin.Denom, msg.Output.Coin.Denom)),
+			sdk.NewAttribute(
+				types.AttributeValueTokenPair,
+				types.GetTokenPairByDenom(msg.Input.Coin.Denom, msg.Output.Coin.Denom),
+			),
 		),
 	)
 
@@ -130,7 +135,14 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 
 		mintLiquidityAmt = msg.ExactStandardAmt
 		if mintLiquidityAmt.LT(msg.MinLiquidity) {
-			return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("liquidity amount not met, user expected: no less than %s, actual: %s", msg.MinLiquidity.String(), mintLiquidityAmt.String()))
+			return sdk.Coin{}, sdkerrors.Wrap(
+				types.ErrConstraintNotMet,
+				fmt.Sprintf(
+					"liquidity amount not met, user expected: no less than %s, actual: %s",
+					msg.MinLiquidity.String(),
+					mintLiquidityAmt.String(),
+				),
+			)
 		}
 		depositToken = sdk.NewCoin(msg.MaxToken.Denom, msg.MaxToken.Amount)
 		pool = k.CreatePool(ctx, msg.MaxToken.Denom)
@@ -165,10 +177,21 @@ func (k Keeper) AddLiquidity(ctx sdk.Context, msg *types.MsgAddLiquidity) (sdk.C
 		sdk.NewEvent(
 			types.EventTypeAddLiquidity,
 			sdk.NewAttribute(types.AttributeValueSender, msg.Sender),
-			sdk.NewAttribute(types.AttributeValueTokenPair, types.GetTokenPairByDenom(msg.MaxToken.Denom, standardDenom)),
+			sdk.NewAttribute(
+				types.AttributeValueTokenPair,
+				types.GetTokenPairByDenom(msg.MaxToken.Denom, standardDenom),
+			),
 		),
 	)
-	return k.addLiquidity(ctx, sender, reservePoolAddress, standardCoin, depositToken, pool.LptDenom, mintLiquidityAmt)
+	return k.addLiquidity(
+		ctx,
+		sender,
+		reservePoolAddress,
+		standardCoin,
+		depositToken,
+		pool.LptDenom,
+		mintLiquidityAmt,
+	)
 }
 
 func (k Keeper) addLiquidity(ctx sdk.Context,
@@ -202,7 +225,11 @@ func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) 
 
 	pool, exists := k.GetPoolByLptDenom(ctx, msg.WithdrawLiquidity.Denom)
 	if !exists {
-		return nil, sdkerrors.Wrapf(types.ErrReservePoolNotExists, "liquidity pool token: %s", msg.WithdrawLiquidity.Denom)
+		return nil, sdkerrors.Wrapf(
+			types.ErrReservePoolNotExists,
+			"liquidity pool token: %s",
+			msg.WithdrawLiquidity.Denom,
+		)
 	}
 
 	balances, err := k.GetPoolBalances(ctx, pool.EscrowAddress)
@@ -217,13 +244,37 @@ func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) 
 	tokenReserveAmt := balances.AmountOf(minTokenDenom)
 	liquidityReserve := k.bk.GetSupply(ctx, lptDenom).Amount
 	if standardReserveAmt.LT(msg.MinStandardAmt) {
-		return nil, sdkerrors.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("insufficient %s funds, user expected: %s, actual: %s", standardDenom, msg.MinStandardAmt.String(), standardReserveAmt.String()))
+		return nil, sdkerrors.Wrap(
+			types.ErrInsufficientFunds,
+			fmt.Sprintf(
+				"insufficient %s funds, user expected: %s, actual: %s",
+				standardDenom,
+				msg.MinStandardAmt.String(),
+				standardReserveAmt.String(),
+			),
+		)
 	}
 	if tokenReserveAmt.LT(msg.MinToken) {
-		return nil, sdkerrors.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("insufficient %s funds, user expected: %s, actual: %s", minTokenDenom, msg.MinToken.String(), tokenReserveAmt.String()))
+		return nil, sdkerrors.Wrap(
+			types.ErrInsufficientFunds,
+			fmt.Sprintf(
+				"insufficient %s funds, user expected: %s, actual: %s",
+				minTokenDenom,
+				msg.MinToken.String(),
+				tokenReserveAmt.String(),
+			),
+		)
 	}
 	if liquidityReserve.LT(msg.WithdrawLiquidity.Amount) {
-		return nil, sdkerrors.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("insufficient %s funds, user expected: %s, actual: %s", lptDenom, msg.WithdrawLiquidity.Amount.String(), liquidityReserve.String()))
+		return nil, sdkerrors.Wrap(
+			types.ErrInsufficientFunds,
+			fmt.Sprintf(
+				"insufficient %s funds, user expected: %s, actual: %s",
+				lptDenom,
+				msg.WithdrawLiquidity.Amount.String(),
+				liquidityReserve.String(),
+			),
+		)
 	}
 
 	// calculate amount of UNI to be burned for sender
@@ -236,17 +287,34 @@ func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) 
 	deductUniCoin := msg.WithdrawLiquidity
 
 	if irisWithdrawCoin.Amount.LT(msg.MinStandardAmt) {
-		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("iris amount not met, user expected: no less than %s, actual: %s", sdk.NewCoin(standardDenom, msg.MinStandardAmt).String(), irisWithdrawCoin.String()))
+		return nil, sdkerrors.Wrap(
+			types.ErrConstraintNotMet,
+			fmt.Sprintf(
+				"iris amount not met, user expected: no less than %s, actual: %s",
+				sdk.NewCoin(standardDenom, msg.MinStandardAmt).String(),
+				irisWithdrawCoin.String(),
+			),
+		)
 	}
 	if tokenWithdrawCoin.Amount.LT(msg.MinToken) {
-		return nil, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("token amount not met, user expected: no less than %s, actual: %s", sdk.NewCoin(minTokenDenom, msg.MinToken).String(), tokenWithdrawCoin.String()))
+		return nil, sdkerrors.Wrap(
+			types.ErrConstraintNotMet,
+			fmt.Sprintf(
+				"token amount not met, user expected: no less than %s, actual: %s",
+				sdk.NewCoin(minTokenDenom, msg.MinToken).String(),
+				tokenWithdrawCoin.String(),
+			),
+		)
 	}
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeRemoveLiquidity,
 			sdk.NewAttribute(types.AttributeValueSender, msg.Sender),
-			sdk.NewAttribute(types.AttributeValueTokenPair, types.GetTokenPairByDenom(minTokenDenom, standardDenom)),
+			sdk.NewAttribute(
+				types.AttributeValueTokenPair,
+				types.GetTokenPairByDenom(minTokenDenom, standardDenom),
+			),
 		),
 	)
 
@@ -260,10 +328,21 @@ func (k Keeper) RemoveLiquidity(ctx sdk.Context, msg *types.MsgRemoveLiquidity) 
 		return nil, err
 	}
 
-	return k.removeLiquidity(ctx, poolAddr, sender, deductUniCoin, irisWithdrawCoin, tokenWithdrawCoin)
+	return k.removeLiquidity(
+		ctx,
+		poolAddr,
+		sender,
+		deductUniCoin,
+		irisWithdrawCoin,
+		tokenWithdrawCoin,
+	)
 }
 
-func (k Keeper) removeLiquidity(ctx sdk.Context, poolAddr, sender sdk.AccAddress, deductUniCoin, irisWithdrawCoin, tokenWithdrawCoin sdk.Coin) (sdk.Coins, error) {
+func (k Keeper) removeLiquidity(
+	ctx sdk.Context,
+	poolAddr, sender sdk.AccAddress,
+	deductUniCoin, irisWithdrawCoin, tokenWithdrawCoin sdk.Coin,
+) (sdk.Coins, error) {
 	deltaCoins := sdk.NewCoins(deductUniCoin)
 
 	// send liquidity vouchers to be burned from sender account to module account

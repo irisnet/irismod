@@ -6,10 +6,11 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/crypto/tmhash"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/irisnet/irismod/modules/record/types"
@@ -17,12 +18,12 @@ import (
 
 // Keeper of the record store
 type Keeper struct {
-	storeKey sdk.StoreKey
+	storeKey storetypes.StoreKey
 	cdc      codec.Codec
 }
 
 // NewKeeper returns a record keeper
-func NewKeeper(cdc codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.Codec, key storetypes.StoreKey) Keeper {
 	keeper := Keeper{
 		storeKey: key,
 		cdc:      cdc,

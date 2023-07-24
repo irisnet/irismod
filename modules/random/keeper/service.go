@@ -5,7 +5,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
+	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

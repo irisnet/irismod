@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
+	"github.com/cometbft/cometbft/crypto/tmhash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
 var (

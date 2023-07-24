@@ -5,7 +5,7 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
+	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 

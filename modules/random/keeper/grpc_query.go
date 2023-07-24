@@ -15,7 +15,10 @@ import (
 var _ types.QueryServer = Keeper{}
 
 // Random implements the Query/Random gRPC method
-func (k Keeper) Random(c context.Context, req *types.QueryRandomRequest) (*types.QueryRandomResponse, error) {
+func (k Keeper) Random(
+	c context.Context,
+	req *types.QueryRandomRequest,
+) (*types.QueryRandomResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -36,7 +39,10 @@ func (k Keeper) Random(c context.Context, req *types.QueryRandomRequest) (*types
 }
 
 // RandomRequestQueue implements the Query/RandomRequestQueue gRPC method
-func (k Keeper) RandomRequestQueue(c context.Context, req *types.QueryRandomRequestQueueRequest) (*types.QueryRandomRequestQueueResponse, error) {
+func (k Keeper) RandomRequestQueue(
+	c context.Context,
+	req *types.QueryRandomRequestQueueRequest,
+) (*types.QueryRandomRequestQueueResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -57,4 +63,31 @@ func (k Keeper) RandomRequestQueue(c context.Context, req *types.QueryRandomRequ
 	}
 
 	return &types.QueryRandomRequestQueueResponse{Requests: requests}, nil
+}
+
+func queryRandomRequestQueueByHeight(ctx sdk.Context, height int64, k Keeper) []types.Request {
+	var requests = make([]types.Request, 0)
+
+	iterator := k.IterateRandomRequestQueueByHeight(ctx, height)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var request types.Request
+		k.cdc.MustUnmarshal(iterator.Value(), &request)
+
+		requests = append(requests, request)
+	}
+
+	return requests
+}
+
+func queryAllRandomRequestsInQueue(ctx sdk.Context, k Keeper) []types.Request {
+	var requests = make([]types.Request, 0)
+
+	k.IterateRandomRequestQueue(ctx, func(h int64, reqID []byte, r types.Request) (stop bool) {
+		requests = append(requests, r)
+		return false
+	})
+
+	return requests
 }

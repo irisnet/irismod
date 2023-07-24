@@ -17,12 +17,23 @@ import (
 )
 
 func TestDecodeStore(t *testing.T) {
-	cdc := simapp.MakeTestEncodingConfig().Marshaler
+	cdc := simapp.MakeTestEncodingConfig().Codec
 	dec := simulation.NewDecodeStore(cdc)
 
-	request := types.NewRequest(50, sdk.AccAddress("consumer").String(), hex.EncodeToString([]byte("txHash")), false, nil, "")
+	request := types.NewRequest(
+		50,
+		sdk.AccAddress("consumer").String(),
+		hex.EncodeToString([]byte("txHash")),
+		false,
+		nil,
+		"",
+	)
 	reqID := types.GenerateRequestID(request)
-	random := types.NewRandom(hex.EncodeToString([]byte("requestTxHash")), 100, big.NewRat(10, 1000).FloatString(types.RandPrec))
+	random := types.NewRandom(
+		hex.EncodeToString([]byte("requestTxHash")),
+		100,
+		big.NewRat(10, 1000).FloatString(types.RandPrec),
+	)
 
 	kvPairs := kv.Pairs{
 		Pairs: []kv.Pair{

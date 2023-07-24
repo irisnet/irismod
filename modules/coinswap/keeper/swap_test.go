@@ -31,19 +31,44 @@ type SwapCase struct {
 
 func (suite *TestSuite) TestGetInputPrice() {
 	var datas = []SwapCase{{
-		data:   Data{delta: sdk.NewInt(100), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
+		data: Data{
+			delta: sdk.NewInt(100),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.NewDecWithPrec(3, 3),
+		},
 		expect: sdk.NewInt(90),
 	}, {
-		data:   Data{delta: sdk.NewInt(200), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
+		data: Data{
+			delta: sdk.NewInt(200),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.NewDecWithPrec(3, 3),
+		},
 		expect: sdk.NewInt(166),
 	}, {
-		data:   Data{delta: sdk.NewInt(300), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
+		data: Data{
+			delta: sdk.NewInt(300),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.NewDecWithPrec(3, 3),
+		},
 		expect: sdk.NewInt(230),
 	}, {
-		data:   Data{delta: sdk.NewInt(1000), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
+		data: Data{
+			delta: sdk.NewInt(1000),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.NewDecWithPrec(3, 3),
+		},
 		expect: sdk.NewInt(499),
 	}, {
-		data:   Data{delta: sdk.NewInt(1000), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.ZeroDec()},
+		data: Data{
+			delta: sdk.NewInt(1000),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.ZeroDec(),
+		},
 		expect: sdk.NewInt(500),
 	}}
 	for _, tcase := range datas {
@@ -55,16 +80,36 @@ func (suite *TestSuite) TestGetInputPrice() {
 
 func (suite *TestSuite) TestGetOutputPrice() {
 	var datas = []SwapCase{{
-		data:   Data{delta: sdk.NewInt(100), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
+		data: Data{
+			delta: sdk.NewInt(100),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.NewDecWithPrec(3, 3),
+		},
 		expect: sdk.NewInt(112),
 	}, {
-		data:   Data{delta: sdk.NewInt(200), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
+		data: Data{
+			delta: sdk.NewInt(200),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.NewDecWithPrec(3, 3),
+		},
 		expect: sdk.NewInt(251),
 	}, {
-		data:   Data{delta: sdk.NewInt(300), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
+		data: Data{
+			delta: sdk.NewInt(300),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.NewDecWithPrec(3, 3),
+		},
 		expect: sdk.NewInt(430),
 	}, {
-		data:   Data{delta: sdk.NewInt(300), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.ZeroDec()},
+		data: Data{
+			delta: sdk.NewInt(300),
+			x:     sdk.NewInt(1000),
+			y:     sdk.NewInt(1000),
+			fee:   sdk.ZeroDec(),
+		},
 		expect: sdk.NewInt(429),
 	}}
 	for _, tcase := range datas {
@@ -235,7 +280,10 @@ func (suite *TestSuite) TestDoubleSwap() {
 	)
 	suite.Equal(expCoins.Sort().String(), reservePoolBTCBalances.Sort().String())
 
-	suite.Equal(fmt.Sprintf("800%s,1252%s", denomETH, denomStandard), reservePoolETHBalances.String())
+	suite.Equal(
+		fmt.Sprintf("800%s,1252%s", denomETH, denomStandard),
+		reservePoolETHBalances.String(),
+	)
 	expCoins = sdk.NewCoins(
 		sdk.NewInt64Coin(denomETH, 800),
 		sdk.NewInt64Coin(denomStandard, 1252),
@@ -323,7 +371,12 @@ func createReservePool(suite *TestSuite, denom string) (sdk.AccAddress, sdk.AccA
 
 	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, coins)
 	suite.NoError(err)
-	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, addrSender, coins)
+	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(
+		suite.ctx,
+		types.ModuleName,
+		addrSender,
+		coins,
+	)
 	suite.NoError(err)
 
 	depositAmt, _ := sdk.NewIntFromString("1000")
@@ -332,7 +385,13 @@ func createReservePool(suite *TestSuite, denom string) (sdk.AccAddress, sdk.AccA
 	standardAmt, _ := sdk.NewIntFromString("1000")
 	minReward := sdk.NewInt(1)
 	deadline := time.Now().Add(1 * time.Minute)
-	msg := types.NewMsgAddLiquidity(depositCoin, standardAmt, minReward, deadline.Unix(), addrSender.String())
+	msg := types.NewMsgAddLiquidity(
+		depositCoin,
+		standardAmt,
+		minReward,
+		deadline.Unix(),
+		addrSender.String(),
+	)
 	_, err = suite.app.CoinswapKeeper.AddLiquidity(suite.ctx, msg)
 	suite.NoError(err)
 
@@ -392,8 +451,8 @@ func (suite *TestSuite) TestTradeInputForExactOutput() {
 		bought := sdk.NewCoins(outputCoin)
 		sold := sdk.NewCoins(sdk.NewCoin(denomStandard, amt))
 
-		pb := poolBalances.Add(sold...).Sub(bought)
-		sb := senderBlances.Add(bought...).Sub(sold)
+		pb := poolBalances.Add(sold...).Sub(bought...)
+		sb := senderBlances.Add(bought...).Sub(sold...)
 
 		assertResult(suite, poolAddr, sender, pb, sb)
 
@@ -426,8 +485,8 @@ func (suite *TestSuite) TestTradeExactInputForOutput() {
 		sold := sdk.NewCoins(inputCoin)
 		bought := sdk.NewCoins(sdk.NewCoin(denomBTC, amt))
 
-		pb := poolBalances.Add(sold...).Sub(bought)
-		sb := senderBlances.Add(bought...).Sub(sold)
+		pb := poolBalances.Add(sold...).Sub(bought...)
+		sb := senderBlances.Add(bought...).Sub(sold...)
 
 		assertResult(suite, poolAddr, sender, pb, sb)
 
@@ -436,7 +495,11 @@ func (suite *TestSuite) TestTradeExactInputForOutput() {
 	}
 }
 
-func assertResult(suite *TestSuite, reservePoolAddr, sender sdk.AccAddress, expectPoolBalance, expectSenderBalance sdk.Coins) {
+func assertResult(
+	suite *TestSuite,
+	reservePoolAddr, sender sdk.AccAddress,
+	expectPoolBalance, expectSenderBalance sdk.Coins,
+) {
 	reservePoolBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddr)
 	senderBlances := suite.app.BankKeeper.GetAllBalances(suite.ctx, sender)
 	suite.Equal(expectPoolBalance.String(), reservePoolBalances.String())
