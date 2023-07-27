@@ -54,7 +54,7 @@ func (m msgServer) CreatePool(
 	}
 
 	//check valid lp token denom
-	if err := m.Keeper.validateLPToken(ctx, msg.LptDenom); err != nil {
+	if err := m.Keeper.ck.ValidatePool(ctx, msg.LptDenom); err != nil {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidLPToken,
 			"The lp token denom[%s] is not exist",
@@ -111,7 +111,7 @@ func (m msgServer) CreatePoolWithCommunityPool(
 	}
 
 	//check valid lp token denom
-	if err := m.Keeper.validateLPToken(ctx, msg.Content.LptDenom); err != nil {
+	if err := m.Keeper.ck.ValidatePool(ctx, msg.Content.LptDenom); err != nil {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidLPToken,
 			"The lp token denom[%s] is not exist",

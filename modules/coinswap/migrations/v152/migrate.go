@@ -7,6 +7,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/irisnet/irismod/modules/coinswap/types"
+	"github.com/irisnet/irismod/types/exported"
 )
 
 // Parameter store keys
@@ -19,7 +20,7 @@ var (
 type (
 	CoinswapKeeper interface {
 		GetParams(ctx sdk.Context) types.Params
-		SetParams(ctx sdk.Context, params types.Params)
+		SetParams(ctx sdk.Context, params types.Params) error
 	}
 
 	Params struct {
@@ -27,7 +28,7 @@ type (
 	}
 )
 
-func Migrate(ctx sdk.Context, k CoinswapKeeper, paramSpace paramstypes.Subspace) error {
+func Migrate(ctx sdk.Context, k CoinswapKeeper, paramSpace exported.Subspace) error {
 	params := GetLegacyParams(ctx, paramSpace)
 	newParams := types.Params{
 		Fee:             params.Fee,
@@ -39,7 +40,7 @@ func Migrate(ctx sdk.Context, k CoinswapKeeper, paramSpace paramstypes.Subspace)
 }
 
 // GetLegacyParams gets the parameters for the coinswap module.
-func GetLegacyParams(ctx sdk.Context, paramSpace paramstypes.Subspace) Params {
+func GetLegacyParams(ctx sdk.Context, paramSpace exported.Subspace) Params {
 	var swapParams Params
 	paramSpace.GetParamSet(ctx, &swapParams)
 	return swapParams

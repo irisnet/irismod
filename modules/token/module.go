@@ -21,6 +21,7 @@ import (
 	"github.com/irisnet/irismod/modules/token/keeper"
 	"github.com/irisnet/irismod/modules/token/simulation"
 	"github.com/irisnet/irismod/modules/token/types"
+	"github.com/irisnet/irismod/types/exported"
 )
 
 var (
@@ -87,9 +88,10 @@ func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) 
 type AppModule struct {
 	AppModuleBasic
 
-	keeper        keeper.Keeper
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
+	keeper         keeper.Keeper
+	accountKeeper  types.AccountKeeper
+	bankKeeper     types.BankKeeper
+	legacySubspace exported.Subspace
 }
 
 // NewAppModule creates a new AppModule object
@@ -98,12 +100,14 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
+	legacySubspace exported.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
 		accountKeeper:  ak,
 		bankKeeper:     bk,
+		legacySubspace: legacySubspace,
 	}
 }
 

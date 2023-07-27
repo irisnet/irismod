@@ -7,6 +7,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/irisnet/irismod/modules/farm/types"
+	"github.com/irisnet/irismod/types/exported"
 )
 
 // Parameter store keys
@@ -17,7 +18,7 @@ var (
 
 type (
 	FarmKeeper interface {
-		SetParams(ctx sdk.Context, params types.Params)
+		SetParams(ctx sdk.Context, params types.Params) error
 	}
 
 	Params struct {
@@ -31,9 +32,9 @@ func Migrate(
 	ctx sdk.Context,
 	k FarmKeeper,
 	ak types.AccountKeeper,
-	paramSpace paramstypes.Subspace,
+	legacySubspace exported.Subspace,
 ) error {
-	params := GetLegacyParams(ctx, paramSpace)
+	params := GetLegacyParams(ctx, legacySubspace)
 	newParams := types.Params{
 		MaxRewardCategories: params.MaxRewardCategories,
 		PoolCreationFee:     DefaultPoolCreationFee,
@@ -52,9 +53,9 @@ func Migrate(
 }
 
 // GetLegacyParams gets the parameters for the coinswap module.
-func GetLegacyParams(ctx sdk.Context, paramSpace paramstypes.Subspace) Params {
+func GetLegacyParams(ctx sdk.Context, legacySubspace exported.Subspace) Params {
 	var swapParams Params
-	paramSpace.GetParamSet(ctx, &swapParams)
+	legacySubspace.GetParamSet(ctx, &swapParams)
 	return swapParams
 }
 

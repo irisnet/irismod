@@ -8,17 +8,26 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/irisnet/irismod/types/exported"
 )
 
 // Service params default values
 var (
-	DefaultMaxRequestTimeout         = int64(100)
-	DefaultMinDepositMultiple        = int64(1000)
-	DefaultMinDeposit                = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000))) // 5000stake
-	DefaultServiceFeeTax             = sdk.NewDecWithPrec(5, 2)                                          // 5%
-	DefaultSlashFraction             = sdk.NewDecWithPrec(1, 3)                                          // 0.1%
-	DefaultComplaintRetrospect       = 15 * 24 * time.Hour                                               // 15 days
-	DefaultArbitrationTimeLimit      = 5 * 24 * time.Hour                                                // 5 days
+	DefaultMaxRequestTimeout  = int64(100)
+	DefaultMinDepositMultiple = int64(1000)
+	DefaultMinDeposit         = sdk.NewCoins(
+		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)),
+	) // 5000stake
+	DefaultServiceFeeTax = sdk.NewDecWithPrec(
+		5,
+		2,
+	) // 5%
+	DefaultSlashFraction = sdk.NewDecWithPrec(
+		1,
+		3,
+	) // 0.1%
+	DefaultComplaintRetrospect       = 15 * 24 * time.Hour // 15 days
+	DefaultArbitrationTimeLimit      = 5 * 24 * time.Hour  // 5 days
 	DefaultTxSizeLimit               = uint64(4000)
 	DefaultBaseDenom                 = sdk.DefaultBondDenom
 	DefaultRestrictedServiceFeeDenom = false
@@ -66,19 +75,44 @@ func NewParams(
 	}
 }
 
+// ParamKeyTable for service module
+func ParamKeyTable() exported.KeyTable {
+	return exported.NewKeyTable().RegisterParamSet(&Params{})
+}
+
 // ParamSetPairs implements paramstypes.ParamSet
 func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(KeyMaxRequestTimeout, &p.MaxRequestTimeout, validateMaxRequestTimeout),
-		paramstypes.NewParamSetPair(KeyMinDepositMultiple, &p.MinDepositMultiple, validateMinDepositMultiple),
+		paramstypes.NewParamSetPair(
+			KeyMaxRequestTimeout,
+			&p.MaxRequestTimeout,
+			validateMaxRequestTimeout,
+		),
+		paramstypes.NewParamSetPair(
+			KeyMinDepositMultiple,
+			&p.MinDepositMultiple,
+			validateMinDepositMultiple,
+		),
 		paramstypes.NewParamSetPair(KeyMinDeposit, &p.MinDeposit, validateMinDeposit),
 		paramstypes.NewParamSetPair(KeyServiceFeeTax, &p.ServiceFeeTax, validateServiceFeeTax),
 		paramstypes.NewParamSetPair(KeySlashFraction, &p.SlashFraction, validateSlashFraction),
-		paramstypes.NewParamSetPair(KeyComplaintRetrospect, &p.ComplaintRetrospect, validateComplaintRetrospect),
-		paramstypes.NewParamSetPair(KeyArbitrationTimeLimit, &p.ArbitrationTimeLimit, validateArbitrationTimeLimit),
+		paramstypes.NewParamSetPair(
+			KeyComplaintRetrospect,
+			&p.ComplaintRetrospect,
+			validateComplaintRetrospect,
+		),
+		paramstypes.NewParamSetPair(
+			KeyArbitrationTimeLimit,
+			&p.ArbitrationTimeLimit,
+			validateArbitrationTimeLimit,
+		),
 		paramstypes.NewParamSetPair(KeyTxSizeLimit, &p.TxSizeLimit, validateTxSizeLimit),
 		paramstypes.NewParamSetPair(KeyBaseDenom, &p.BaseDenom, validateBaseDenom),
-		paramstypes.NewParamSetPair(KeyRestrictedServiceFeeDenom, &p.RestrictedServiceFeeDenom, validateRestrictedServiceFeeDenom),
+		paramstypes.NewParamSetPair(
+			KeyRestrictedServiceFeeDenom,
+			&p.RestrictedServiceFeeDenom,
+			validateRestrictedServiceFeeDenom,
+		),
 	}
 }
 

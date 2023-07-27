@@ -1,4 +1,4 @@
-//nolint
+// nolint
 package keeper
 
 import (
@@ -55,12 +55,14 @@ func (k Keeper) GetTokenMintFee(ctx sdk.Context, symbol string) (sdk.Coin, error
 	}
 
 	mintFee := sdk.NewDecFromInt(fee.Amount).Mul(params.MintTokenFeeRatio).TruncateInt()
-	return token.ToMinCoin(sdk.NewDecCoinFromDec(params.IssueTokenBaseFee.Denom, sdk.NewDecFromInt(mintFee)))
+	return token.ToMinCoin(
+		sdk.NewDecCoinFromDec(params.IssueTokenBaseFee.Denom, sdk.NewDecFromInt(mintFee)),
+	)
 }
 
 func (k Keeper) calcTokenIssueFee(ctx sdk.Context, symbol string) (sdk.Coin, types.Params) {
 	// get params
-	params := k.GetParamSet(ctx)
+	params := k.GetParams(ctx)
 	issueTokenBaseFee := params.IssueTokenBaseFee
 
 	// compute the fee
@@ -73,7 +75,7 @@ func (k Keeper) calcTokenIssueFee(ctx sdk.Context, symbol string) (sdk.Coin, typ
 
 // feeHandler handles the fee of token
 func feeHandler(ctx sdk.Context, k Keeper, feeAcc sdk.AccAddress, fee sdk.Coin) error {
-	params := k.GetParamSet(ctx)
+	params := k.GetParams(ctx)
 	tokenTaxRate := params.TokenTaxRate
 
 	// compute community tax and burned coin
