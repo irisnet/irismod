@@ -54,7 +54,7 @@ func (m msgServer) CreatePool(
 	}
 
 	//check valid lp token denom
-	if err := m.Keeper.validateLPToken(ctx, msg.LptDenom); err != nil {
+	if err := m.Keeper.ck.ValidatePool(ctx, msg.LptDenom); err != nil {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidLPToken,
 			"The lp token denom[%s] is not exist",
@@ -111,7 +111,7 @@ func (m msgServer) CreatePoolWithCommunityPool(
 	}
 
 	//check valid lp token denom
-	if err := m.Keeper.validateLPToken(ctx, msg.Content.LptDenom); err != nil {
+	if err := m.Keeper.ck.ValidatePool(ctx, msg.Content.LptDenom); err != nil {
 		return nil, sdkerrors.Wrapf(
 			types.ErrInvalidLPToken,
 			"The lp token denom[%s] is not exist",
@@ -338,4 +338,24 @@ func (m msgServer) Harvest(
 		),
 	})
 	return &types.MsgHarvestResponse{Reward: reward}, nil
+}
+
+func (m msgServer) UpdateParams(
+	goCtx context.Context,
+	msg *types.MsgUpdateParams,
+) (*types.MsgUpdateParamsResponse, error) {
+	if m.authority != msg.Authority {
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"invalid authority; expected %s, got %s",
+			m.authority,
+			msg.Authority,
+		)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := m.SetParams(ctx, msg.Params); err != nil {
+		return nil, err
+	}
+	return &types.MsgUpdateParamsResponse{}, nil
 }

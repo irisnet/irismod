@@ -54,7 +54,7 @@ func (suite *HandlerSuite) SetupTest() {
 	suite.bk = app.BankKeeper
 
 	// set params
-	suite.keeper.SetParamSet(suite.ctx, types.DefaultParams())
+	suite.keeper.SetParams(suite.ctx, types.DefaultParams())
 
 	// init tokens to addr
 	err := suite.bk.MintCoins(suite.ctx, types.ModuleName, initCoin)

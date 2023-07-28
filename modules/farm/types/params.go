@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/irisnet/irismod/types/exported"
 )
 
 // Farm params default values
@@ -31,11 +32,24 @@ func NewParams(createPoolFee sdk.Coin, maxRewardCategories uint32, taxRate sdk.D
 	}
 }
 
+// ParamKeyTable for farm module
+func ParamKeyTable() exported.KeyTable {
+	return exported.NewKeyTable().RegisterParamSet(&Params{})
+}
+
 // ParamSetPairs implements paramstypes.ParamSet
 func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(KeyPoolCreationFee, &p.PoolCreationFee, validatePoolCreationFee),
-		paramstypes.NewParamSetPair(KeyMaxRewardCategories, &p.MaxRewardCategories, validateMaxRewardCategories),
+		paramstypes.NewParamSetPair(
+			KeyPoolCreationFee,
+			&p.PoolCreationFee,
+			validatePoolCreationFee,
+		),
+		paramstypes.NewParamSetPair(
+			KeyMaxRewardCategories,
+			&p.MaxRewardCategories,
+			validateMaxRewardCategories,
+		),
 		paramstypes.NewParamSetPair(KeyTaxRate, &p.TaxRate, validateTaxRate),
 	}
 }

@@ -25,6 +25,7 @@ var (
 	_ sdk.Msg = &MsgMintToken{}
 	_ sdk.Msg = &MsgBurnToken{}
 	_ sdk.Msg = &MsgTransferTokenOwner{}
+	_ sdk.Msg = &MsgUpdateParams{}
 )
 
 // NewMsgIssueToken - construct token issue msg.
@@ -122,12 +123,20 @@ func (msg MsgTransferTokenOwner) GetSigners() []sdk.AccAddress {
 func (msg MsgTransferTokenOwner) ValidateBasic() error {
 	srcOwner, err := sdk.AccAddressFromBech32(msg.SrcOwner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid source owner address (%s)", err)
+		return sdkerrors.Wrapf(
+			sdkerrors.ErrInvalidAddress,
+			"invalid source owner address (%s)",
+			err,
+		)
 	}
 
 	dstOwner, err := sdk.AccAddressFromBech32(msg.DstOwner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid destination owner address (%s)", err)
+		return sdkerrors.Wrapf(
+			sdkerrors.ErrInvalidAddress,
+			"invalid destination owner address (%s)",
+			err,
+		)
 	}
 
 	// check if the `DstOwner` is same as the original owner
@@ -150,7 +159,12 @@ func (msg MsgTransferTokenOwner) Route() string { return MsgRoute }
 func (msg MsgTransferTokenOwner) Type() string { return TypeMsgTransferTokenOwner }
 
 // NewMsgEditToken creates a MsgEditToken
-func NewMsgEditToken(name, symbol string, maxSupply uint64, mintable Bool, owner string) *MsgEditToken {
+func NewMsgEditToken(
+	name, symbol string,
+	maxSupply uint64,
+	mintable Bool,
+	owner string,
+) *MsgEditToken {
 	return &MsgEditToken{
 		Name:      name,
 		Symbol:    symbol,
@@ -243,7 +257,11 @@ func (msg MsgMintToken) ValidateBasic() error {
 	// check the reception
 	if len(msg.To) > 0 {
 		if _, err := sdk.AccAddressFromBech32(msg.To); err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid mint reception address (%s)", err)
+			return sdkerrors.Wrapf(
+				sdkerrors.ErrInvalidAddress,
+				"invalid mint reception address (%s)",
+				err,
+			)
 		}
 	}
 
@@ -299,4 +317,25 @@ func (msg MsgBurnToken) ValidateBasic() error {
 	}
 
 	return ValidateSymbol(msg.Symbol)
+}
+
+// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
+// the expected signer needs to sign.
+func (m *MsgUpdateParams) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(m)
+	return sdk.MustSortJSON(bz)
+}
+
+// ValidateBasic executes sanity validation on the provided data
+func (m *MsgUpdateParams) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
+		return sdkerrors.Wrap(err, "invalid authority address")
+	}
+	return m.Params.Validate()
+}
+
+// GetSigners returns the expected signers for a MsgUpdateParams message
+func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Authority)
+	return []sdk.AccAddress{addr}
 }

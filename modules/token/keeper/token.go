@@ -64,11 +64,19 @@ func (k Keeper) GetToken(ctx sdk.Context, denom string) (types.TokenI, error) {
 // AddToken saves a new token
 func (k Keeper) AddToken(ctx sdk.Context, token types.Token) error {
 	if k.HasToken(ctx, token.Symbol) {
-		return sdkerrors.Wrapf(types.ErrSymbolAlreadyExists, "symbol already exists: %s", token.Symbol)
+		return sdkerrors.Wrapf(
+			types.ErrSymbolAlreadyExists,
+			"symbol already exists: %s",
+			token.Symbol,
+		)
 	}
 
 	if k.HasToken(ctx, token.MinUnit) {
-		return sdkerrors.Wrapf(types.ErrMinUnitAlreadyExists, "min-unit already exists: %s", token.MinUnit)
+		return sdkerrors.Wrapf(
+			types.ErrMinUnitAlreadyExists,
+			"min-unit already exists: %s",
+			token.MinUnit,
+		)
 	}
 
 	// set token
@@ -146,7 +154,11 @@ func (k Keeper) GetBurnCoin(ctx sdk.Context, minUint string) (sdk.Coin, error) {
 	bz := store.Get(key)
 
 	if len(bz) == 0 {
-		return sdk.Coin{}, sdkerrors.Wrapf(types.ErrNotFoundTokenAmt, "not found symbol: %s", minUint)
+		return sdk.Coin{}, sdkerrors.Wrapf(
+			types.ErrNotFoundTokenAmt,
+			"not found symbol: %s",
+			minUint,
+		)
 	}
 
 	var coin sdk.Coin
@@ -168,18 +180,6 @@ func (k Keeper) GetAllBurnCoin(ctx sdk.Context) []sdk.Coin {
 	}
 
 	return coins
-}
-
-// GetParamSet returns token params from the global param store
-func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
-	var p types.Params
-	k.paramSpace.GetParamSet(ctx, &p)
-	return p
-}
-
-// SetParamSet sets token params to the global param store
-func (k Keeper) SetParamSet(ctx sdk.Context, params types.Params) {
-	k.paramSpace.SetParamSet(ctx, &params)
 }
 
 func (k Keeper) setWithOwner(ctx sdk.Context, owner sdk.AccAddress, symbol string) {
@@ -210,7 +210,10 @@ func (k Keeper) getTokenBySymbol(ctx sdk.Context, symbol string) (token types.To
 
 	bz := store.Get(types.KeySymbol(symbol))
 	if bz == nil {
-		return token, sdkerrors.Wrap(types.ErrTokenNotExists, fmt.Sprintf("token symbol %s does not exist", symbol))
+		return token, sdkerrors.Wrap(
+			types.ErrTokenNotExists,
+			fmt.Sprintf("token symbol %s does not exist", symbol),
+		)
 	}
 
 	k.cdc.MustUnmarshal(bz, &token)
@@ -222,7 +225,10 @@ func (k Keeper) getTokenByMinUnit(ctx sdk.Context, minUnit string) (token types.
 
 	bz := store.Get(types.KeyMinUint(minUnit))
 	if bz == nil {
-		return token, sdkerrors.Wrap(types.ErrTokenNotExists, fmt.Sprintf("token minUnit %s does not exist", minUnit))
+		return token, sdkerrors.Wrap(
+			types.ErrTokenNotExists,
+			fmt.Sprintf("token minUnit %s does not exist", minUnit),
+		)
 	}
 
 	var symbol gogotypes.StringValue
@@ -237,7 +243,11 @@ func (k Keeper) getTokenByMinUnit(ctx sdk.Context, minUnit string) (token types.
 }
 
 // reset all indices by the new owner for token query
-func (k Keeper) resetStoreKeyForQueryToken(ctx sdk.Context, symbol string, srcOwner, dstOwner sdk.AccAddress) {
+func (k Keeper) resetStoreKeyForQueryToken(
+	ctx sdk.Context,
+	symbol string,
+	srcOwner, dstOwner sdk.AccAddress,
+) {
 	store := ctx.KVStore(k.storeKey)
 
 	// delete the old key

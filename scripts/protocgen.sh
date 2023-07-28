@@ -3,7 +3,6 @@
 set -e
 
 echo "Generating gogo proto code"
-
 cd proto
 proto_dirs=$(find ./irismod -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
@@ -22,3 +21,5 @@ cd ..
 # move proto files to the right places
 cp -r github.com/irisnet/irismod/* ./
 rm -rf github.com
+
+./scripts/protocgen-pulsar.sh

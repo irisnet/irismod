@@ -20,7 +20,10 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-func (k Keeper) Token(c context.Context, req *types.QueryTokenRequest) (*types.QueryTokenResponse, error) {
+func (k Keeper) Token(
+	c context.Context,
+	req *types.QueryTokenRequest,
+) (*types.QueryTokenResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -43,7 +46,10 @@ func (k Keeper) Token(c context.Context, req *types.QueryTokenRequest) (*types.Q
 	return &types.QueryTokenResponse{Token: any}, nil
 }
 
-func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types.QueryTokensResponse, error) {
+func (k Keeper) Tokens(
+	c context.Context,
+	req *types.QueryTokensRequest,
+) (*types.QueryTokensResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -54,7 +60,10 @@ func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types
 	if len(req.Owner) > 0 {
 		owner, err = sdk.AccAddressFromBech32(req.Owner)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("invalid owner address (%s)", err))
+			return nil, status.Errorf(
+				codes.InvalidArgument,
+				fmt.Sprintf("invalid owner address (%s)", err),
+			)
 		}
 	}
 
@@ -63,12 +72,16 @@ func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types
 	store := ctx.KVStore(k.storeKey)
 	if owner == nil {
 		tokenStore := prefix.NewStore(store, types.PrefixTokenForSymbol)
-		pageRes, err = query.Paginate(tokenStore, shapePageRequest(req.Pagination), func(key []byte, value []byte) error {
-			var token types.Token
-			k.cdc.MustUnmarshal(value, &token)
-			tokens = append(tokens, &token)
-			return nil
-		})
+		pageRes, err = query.Paginate(
+			tokenStore,
+			shapePageRequest(req.Pagination),
+			func(key []byte, value []byte) error {
+				var token types.Token
+				k.cdc.MustUnmarshal(value, &token)
+				tokens = append(tokens, &token)
+				return nil
+			},
+		)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 		}
@@ -103,7 +116,10 @@ func (k Keeper) Tokens(c context.Context, req *types.QueryTokensRequest) (*types
 	return &types.QueryTokensResponse{Tokens: result, Pagination: pageRes}, nil
 }
 
-func (k Keeper) Fees(c context.Context, req *types.QueryFeesRequest) (*types.QueryFeesResponse, error) {
+func (k Keeper) Fees(
+	c context.Context,
+	req *types.QueryFeesRequest,
+) (*types.QueryFeesResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -132,15 +148,21 @@ func (k Keeper) Fees(c context.Context, req *types.QueryFeesRequest) (*types.Que
 }
 
 // Params return the all the parameter in tonken module
-func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) Params(
+	c context.Context,
+	req *types.QueryParamsRequest,
+) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	params := k.GetParamSet(ctx)
+	params := k.GetParams(ctx)
 
 	return &types.QueryParamsResponse{Params: params}, nil
 }
 
 // TotalBurn return the all burn coin
-func (k Keeper) TotalBurn(c context.Context, req *types.QueryTotalBurnRequest) (*types.QueryTotalBurnResponse, error) {
+func (k Keeper) TotalBurn(
+	c context.Context,
+	req *types.QueryTotalBurnRequest,
+) (*types.QueryTotalBurnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	return &types.QueryTotalBurnResponse{
 		BurnedCoins: k.GetAllBurnCoin(ctx),

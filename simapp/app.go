@@ -1,3 +1,5 @@
+//go:build app_v1
+
 package simapp
 
 import (
@@ -428,10 +430,9 @@ func NewSimApp(
 	app.TokenKeeper = tokenkeeper.NewKeeper(
 		appCodec,
 		keys[tokentypes.StoreKey],
-		app.GetSubspace(tokentypes.ModuleName),
 		app.BankKeeper,
-		app.ModuleAccountAddrs(),
 		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	app.RecordKeeper = recordkeeper.NewKeeper(appCodec, keys[recordtypes.StoreKey])
 
@@ -445,20 +446,18 @@ func NewSimApp(
 	app.HTLCKeeper = htlckeeper.NewKeeper(
 		appCodec,
 		keys[htlctypes.StoreKey],
-		app.GetSubspace(htlctypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.ModuleAccountAddrs(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.CoinswapKeeper = coinswapkeeper.NewKeeper(
 		appCodec,
 		keys[coinswaptypes.StoreKey],
-		app.GetSubspace(coinswaptypes.ModuleName),
 		app.BankKeeper,
 		app.AccountKeeper,
-		app.ModuleAccountAddrs(),
 		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.ServiceKeeper = servicekeeper.NewKeeper(
@@ -466,9 +465,8 @@ func NewSimApp(
 		keys[servicetypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.GetSubspace(servicetypes.ModuleName),
-		app.ModuleAccountAddrs(),
 		servicetypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.OracleKeeper = oracleKeeper.NewKeeper(
@@ -481,11 +479,11 @@ func NewSimApp(
 		app.BankKeeper,
 		app.AccountKeeper,
 		app.DistrKeeper,
-		&app.GovKeeper,
-		func(ctx sdk.Context, lpTokenDenom string) error { return nil },
-		app.GetSubspace(farmtypes.ModuleName),
+		app.GovKeeper,
+		app.CoinswapKeeper,
 		authtypes.FeeCollectorName,
 		distrtypes.ModuleName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// register the proposal types
@@ -601,16 +599,46 @@ func NewSimApp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		token.NewAppModule(appCodec, app.TokenKeeper, app.AccountKeeper, app.BankKeeper),
+		token.NewAppModule(
+			appCodec,
+			app.TokenKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			app.GetSubspace(tokentypes.ModuleName),
+		),
 		record.NewAppModule(appCodec, app.RecordKeeper, app.AccountKeeper, app.BankKeeper),
 		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
 		mt.NewAppModule(appCodec, app.MTKeeper, app.AccountKeeper, app.BankKeeper),
-		htlc.NewAppModule(appCodec, app.HTLCKeeper, app.AccountKeeper, app.BankKeeper),
-		coinswap.NewAppModule(appCodec, app.CoinswapKeeper, app.AccountKeeper, app.BankKeeper),
-		service.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper),
+		htlc.NewAppModule(
+			appCodec,
+			app.HTLCKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			app.GetSubspace(htlctypes.ModuleName),
+		),
+		coinswap.NewAppModule(
+			appCodec,
+			app.CoinswapKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			app.GetSubspace(coinswaptypes.ModuleName),
+		),
+		service.NewAppModule(
+			appCodec,
+			app.ServiceKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			app.GetSubspace(servicetypes.ModuleName),
+		),
 		oracle.NewAppModule(appCodec, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 		random.NewAppModule(appCodec, app.RandomKeeper, app.AccountKeeper, app.BankKeeper),
-		farm.NewAppModule(appCodec, app.FarmKeeper, app.AccountKeeper, app.BankKeeper),
+		farm.NewAppModule(
+			appCodec,
+			app.FarmKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			app.GetSubspace(farmtypes.ModuleName),
+		),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 	)
 

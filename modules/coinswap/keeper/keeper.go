@@ -4,15 +4,12 @@ import (
 	"fmt"
 	"strconv"
 
-	gogotypes "github.com/gogo/protobuf/types"
-
 	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/irisnet/irismod/modules/coinswap/types"
 )
@@ -23,9 +20,9 @@ type Keeper struct {
 	storeKey         storetypes.StoreKey
 	bk               types.BankKeeper
 	ak               types.AccountKeeper
-	paramSpace       paramstypes.Subspace
 	feeCollectorName string
 	blockedAddrs     map[string]bool
+	authority        string
 }
 
 // NewKeeper returns a coinswap keeper. It handles:
@@ -35,20 +32,14 @@ type Keeper struct {
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	key storetypes.StoreKey,
-	paramSpace paramstypes.Subspace,
 	bk types.BankKeeper,
 	ak types.AccountKeeper,
-	blockedAddrs map[string]bool,
 	feeCollectorName string,
+	authority string,
 ) Keeper {
 	// ensure coinswap module account is set
 	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
-	}
-
-	// set KeyTable if it has not already been set
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
 
 	return Keeper{
@@ -56,9 +47,9 @@ func NewKeeper(
 		bk:               bk,
 		ak:               ak,
 		cdc:              cdc,
-		paramSpace:       paramSpace,
-		blockedAddrs:     blockedAddrs,
+		blockedAddrs:     bk.GetBlockedAddresses(),
 		feeCollectorName: feeCollectorName,
+		authority:        authority,
 	}
 }
 
@@ -358,34 +349,4 @@ func (k Keeper) removeLiquidity(
 	coins := sdk.NewCoins(irisWithdrawCoin, tokenWithdrawCoin)
 
 	return coins, k.bk.SendCoins(ctx, poolAddr, sender, coins)
-}
-
-// GetParams gets the parameters for the coinswap module.
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	var swapParams types.Params
-	k.paramSpace.GetParamSet(ctx, &swapParams)
-	return swapParams
-}
-
-// SetParams sets the parameters for the coinswap module.
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramSpace.SetParamSet(ctx, &params)
-}
-
-// SetStandardDenom sets the standard denom for the coinswap module.
-func (k Keeper) SetStandardDenom(ctx sdk.Context, denom string) {
-	store := ctx.KVStore(k.storeKey)
-	denomWrap := gogotypes.StringValue{Value: denom}
-	bz := k.cdc.MustMarshal(&denomWrap)
-	store.Set(types.KeyStandardDenom, bz)
-}
-
-// GetStandardDenom returns the standard denom of the coinswap module.
-func (k Keeper) GetStandardDenom(ctx sdk.Context) string {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.KeyStandardDenom)
-
-	var denomWrap = gogotypes.StringValue{}
-	k.cdc.MustUnmarshal(bz, &denomWrap)
-	return denomWrap.Value
 }

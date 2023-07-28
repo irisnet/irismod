@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/irisnet/irismod/modules/farm/types"
 )
@@ -17,13 +16,13 @@ import (
 type Keeper struct {
 	cdc                                 codec.Codec
 	storeKey                            storetypes.StoreKey
-	paramSpace                          paramstypes.Subspace
-	validateLPToken                     types.ValidateLPToken
 	bk                                  types.BankKeeper
 	ak                                  types.AccountKeeper
 	dk                                  types.DistrKeeper
 	gk                                  types.GovKeeper
+	ck                                  types.CoinswapKeeper
 	feeCollectorName, communityPoolName string // name of the fee collector
+	authority                           string
 }
 
 func NewKeeper(
@@ -33,15 +32,9 @@ func NewKeeper(
 	ak types.AccountKeeper,
 	dk types.DistrKeeper,
 	gk types.GovKeeper,
-	validateLPToken types.ValidateLPToken,
-	paramSpace paramstypes.Subspace,
-	feeCollectorName, communityPoolName string,
+	ck types.CoinswapKeeper,
+	feeCollectorName, communityPoolName, authority string,
 ) Keeper {
-	// set KeyTable if it has not already been set
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
-	}
-
 	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
@@ -58,10 +51,10 @@ func NewKeeper(
 		ak:                ak,
 		dk:                dk,
 		gk:                gk,
-		validateLPToken:   validateLPToken,
-		paramSpace:        paramSpace,
+		ck:                ck,
 		feeCollectorName:  feeCollectorName,
 		communityPoolName: communityPoolName,
+		authority:         authority,
 	}
 }
 

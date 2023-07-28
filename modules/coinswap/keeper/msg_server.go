@@ -22,11 +22,17 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func (m msgServer) AddLiquidity(goCtx context.Context, msg *types.MsgAddLiquidity) (*types.MsgAddLiquidityResponse, error) {
+func (m msgServer) AddLiquidity(
+	goCtx context.Context,
+	msg *types.MsgAddLiquidity,
+) (*types.MsgAddLiquidityResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// check that deadline has not passed
 	if ctx.BlockHeader().Time.After(time.Unix(msg.Deadline, 0)) {
-		return nil, sdkerrors.Wrap(types.ErrInvalidDeadline, "deadline has passed for MsgAddLiquidity")
+		return nil, sdkerrors.Wrap(
+			types.ErrInvalidDeadline,
+			"deadline has passed for MsgAddLiquidity",
+		)
 	}
 
 	mintToken, err := m.Keeper.AddLiquidity(ctx, msg)
@@ -47,11 +53,17 @@ func (m msgServer) AddLiquidity(goCtx context.Context, msg *types.MsgAddLiquidit
 	}, nil
 }
 
-func (m msgServer) RemoveLiquidity(goCtx context.Context, msg *types.MsgRemoveLiquidity) (*types.MsgRemoveLiquidityResponse, error) {
+func (m msgServer) RemoveLiquidity(
+	goCtx context.Context,
+	msg *types.MsgRemoveLiquidity,
+) (*types.MsgRemoveLiquidityResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// check that deadline has not passed
 	if ctx.BlockHeader().Time.After(time.Unix(msg.Deadline, 0)) {
-		return nil, sdkerrors.Wrap(types.ErrInvalidDeadline, "deadline has passed for MsgRemoveLiquidity")
+		return nil, sdkerrors.Wrap(
+			types.ErrInvalidDeadline,
+			"deadline has passed for MsgRemoveLiquidity",
+		)
 	}
 	withdrawCoins, err := m.Keeper.RemoveLiquidity(ctx, msg)
 	if err != nil {
@@ -66,9 +78,9 @@ func (m msgServer) RemoveLiquidity(goCtx context.Context, msg *types.MsgRemoveLi
 		),
 	)
 
-	var coins = make([]*sdk.Coin, 0, withdrawCoins.Len())
+	var coins = make([]sdk.Coin, 0, withdrawCoins.Len())
 	for _, coin := range withdrawCoins {
-		coins = append(coins, &coin)
+		coins = append(coins, coin)
 	}
 
 	return &types.MsgRemoveLiquidityResponse{
@@ -76,7 +88,10 @@ func (m msgServer) RemoveLiquidity(goCtx context.Context, msg *types.MsgRemoveLi
 	}, nil
 }
 
-func (m msgServer) SwapCoin(goCtx context.Context, msg *types.MsgSwapOrder) (*types.MsgSwapCoinResponse, error) {
+func (m msgServer) SwapCoin(
+	goCtx context.Context,
+	msg *types.MsgSwapOrder,
+) (*types.MsgSwapCoinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// check that deadline has not passed
 	if ctx.BlockHeader().Time.After(time.Unix(msg.Deadline, 0)) {
@@ -84,7 +99,11 @@ func (m msgServer) SwapCoin(goCtx context.Context, msg *types.MsgSwapOrder) (*ty
 	}
 
 	if m.Keeper.blockedAddrs[msg.Output.Address] {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive external funds", msg.Output.Address)
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"%s is not allowed to receive external funds",
+			msg.Output.Address,
+		)
 	}
 
 	if err := m.Keeper.Swap(ctx, msg); err != nil {
@@ -99,4 +118,24 @@ func (m msgServer) SwapCoin(goCtx context.Context, msg *types.MsgSwapOrder) (*ty
 		),
 	)
 	return &types.MsgSwapCoinResponse{}, nil
+}
+
+func (m msgServer) UpdateParams(
+	goCtx context.Context,
+	msg *types.MsgUpdateParams,
+) (*types.MsgUpdateParamsResponse, error) {
+	if m.authority != msg.Authority {
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"invalid authority; expected %s, got %s",
+			m.authority,
+			msg.Authority,
+		)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := m.SetParams(ctx, msg.Params); err != nil {
+		return nil, err
+	}
+	return &types.MsgUpdateParamsResponse{}, nil
 }
