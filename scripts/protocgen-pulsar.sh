@@ -7,8 +7,6 @@ protoc_install_gopulsar() {
 
 protoc_install_gopulsar
 
-mkdir api
-
 echo "Cleaning API directory"
 (cd api; find ./ -type f \( -iname \*.pulsar.go -o -iname \*.pb.go -o -iname \*.cosmos_orm.go -o -iname \*.pb.gw.go \) -delete; find . -empty -type d -delete; cd ..)
 

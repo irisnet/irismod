@@ -24,7 +24,10 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 }
 
 // CreateHTLC creates an HTLC
-func (m msgServer) CreateHTLC(goCtx context.Context, msg *types.MsgCreateHTLC) (*types.MsgCreateHTLCResponse, error) {
+func (m msgServer) CreateHTLC(
+	goCtx context.Context,
+	msg *types.MsgCreateHTLC,
+) (*types.MsgCreateHTLCResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -82,7 +85,10 @@ func (m msgServer) CreateHTLC(goCtx context.Context, msg *types.MsgCreateHTLC) (
 	}, nil
 }
 
-func (m msgServer) ClaimHTLC(goCtx context.Context, msg *types.MsgClaimHTLC) (*types.MsgClaimHTLCResponse, error) {
+func (m msgServer) ClaimHTLC(
+	goCtx context.Context,
+	msg *types.MsgClaimHTLC,
+) (*types.MsgClaimHTLCResponse, error) {
 	id, err := hex.DecodeString(msg.Id)
 	if err != nil {
 		return nil, err
@@ -116,4 +122,24 @@ func (m msgServer) ClaimHTLC(goCtx context.Context, msg *types.MsgClaimHTLC) (*t
 		),
 	})
 	return &types.MsgClaimHTLCResponse{}, nil
+}
+
+func (m msgServer) UpdateParams(
+	goCtx context.Context,
+	msg *types.MsgUpdateParams,
+) (*types.MsgUpdateParamsResponse, error) {
+	if m.authority != msg.Authority {
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"invalid authority; expected %s, got %s",
+			m.authority,
+			msg.Authority,
+		)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := m.SetParams(ctx, msg.Params); err != nil {
+		return nil, err
+	}
+	return &types.MsgUpdateParamsResponse{}, nil
 }

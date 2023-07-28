@@ -22,7 +22,10 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func (m msgServer) IssueToken(goCtx context.Context, msg *types.MsgIssueToken) (*types.MsgIssueTokenResponse, error) {
+func (m msgServer) IssueToken(
+	goCtx context.Context,
+	msg *types.MsgIssueToken,
+) (*types.MsgIssueTokenResponse, error) {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
@@ -62,7 +65,10 @@ func (m msgServer) IssueToken(goCtx context.Context, msg *types.MsgIssueToken) (
 	return &types.MsgIssueTokenResponse{}, nil
 }
 
-func (m msgServer) EditToken(goCtx context.Context, msg *types.MsgEditToken) (*types.MsgEditTokenResponse, error) {
+func (m msgServer) EditToken(
+	goCtx context.Context,
+	msg *types.MsgEditToken,
+) (*types.MsgEditTokenResponse, error) {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
@@ -93,7 +99,10 @@ func (m msgServer) EditToken(goCtx context.Context, msg *types.MsgEditToken) (*t
 	return &types.MsgEditTokenResponse{}, nil
 }
 
-func (m msgServer) MintToken(goCtx context.Context, msg *types.MsgMintToken) (*types.MsgMintTokenResponse, error) {
+func (m msgServer) MintToken(
+	goCtx context.Context,
+	msg *types.MsgMintToken,
+) (*types.MsgMintTokenResponse, error) {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
@@ -141,7 +150,10 @@ func (m msgServer) MintToken(goCtx context.Context, msg *types.MsgMintToken) (*t
 	return &types.MsgMintTokenResponse{}, nil
 }
 
-func (m msgServer) BurnToken(goCtx context.Context, msg *types.MsgBurnToken) (*types.MsgBurnTokenResponse, error) {
+func (m msgServer) BurnToken(
+	goCtx context.Context,
+	msg *types.MsgBurnToken,
+) (*types.MsgBurnTokenResponse, error) {
 	owner, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -168,7 +180,10 @@ func (m msgServer) BurnToken(goCtx context.Context, msg *types.MsgBurnToken) (*t
 	return &types.MsgBurnTokenResponse{}, nil
 }
 
-func (m msgServer) TransferTokenOwner(goCtx context.Context, msg *types.MsgTransferTokenOwner) (*types.MsgTransferTokenOwnerResponse, error) {
+func (m msgServer) TransferTokenOwner(
+	goCtx context.Context,
+	msg *types.MsgTransferTokenOwner,
+) (*types.MsgTransferTokenOwnerResponse, error) {
 	srcOwner, err := sdk.AccAddressFromBech32(msg.SrcOwner)
 	if err != nil {
 		return nil, err
@@ -180,7 +195,11 @@ func (m msgServer) TransferTokenOwner(goCtx context.Context, msg *types.MsgTrans
 	}
 
 	if m.Keeper.blockedAddrs[msg.DstOwner] {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is a module account", msg.DstOwner)
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"%s is a module account",
+			msg.DstOwner,
+		)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -204,4 +223,24 @@ func (m msgServer) TransferTokenOwner(goCtx context.Context, msg *types.MsgTrans
 	})
 
 	return &types.MsgTransferTokenOwnerResponse{}, nil
+}
+
+func (m msgServer) UpdateParams(
+	goCtx context.Context,
+	msg *types.MsgUpdateParams,
+) (*types.MsgUpdateParamsResponse, error) {
+	if m.authority != msg.Authority {
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"invalid authority; expected %s, got %s",
+			m.authority,
+			msg.Authority,
+		)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := m.SetParams(ctx, msg.Params); err != nil {
+		return nil, err
+	}
+	return &types.MsgUpdateParamsResponse{}, nil
 }
