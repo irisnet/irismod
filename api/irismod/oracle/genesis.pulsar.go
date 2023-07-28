@@ -2,7 +2,7 @@
 package oracle
 
 import (
-	service "cosmossdk.io/api/irismod/service"
+	service "github.com/irisnet/irismod/api/irismod/service"
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
