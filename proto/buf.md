@@ -1,3 +1,3 @@
 # Protobufs
 
-This is the public protocol buffers API for the [Iritamod](https://github.com/bianjieai/iritamod).
+This is the public protocol buffers API for the [irismod](https://github.com/irisnet/irismod).
