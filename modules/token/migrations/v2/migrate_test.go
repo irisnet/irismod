@@ -8,8 +8,8 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	v2 "github.com/irisnet/irismod/modules/token/migrations/v2"
+	"github.com/irisnet/irismod/modules/token/types"
 	tokentypes "github.com/irisnet/irismod/modules/token/types"
-	v1 "github.com/irisnet/irismod/modules/token/types/v1"
 	"github.com/irisnet/irismod/simapp"
 )
 
@@ -19,7 +19,7 @@ func TestMigrate(t *testing.T) {
 
 	legacySubspace := app.GetSubspace(tokentypes.ModuleName)
 
-	params := v1.DefaultParams()
+	params := types.DefaultParams()
 	legacySubspace.SetParamSet(ctx, &params)
 
 	err := v2.Migrate(
