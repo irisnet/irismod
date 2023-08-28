@@ -37,6 +37,14 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+### Improvements
+
+* [\#376](https://github.com/irisnet/irismod/pull/376) Bump up cosmos-sdk to v0.47.4.
+
+### Bug Fixes
+
+* [\#367](https://github.com/irisnet/irismod/pull/367) Fix rest uri conflict in mt module.
+
 ## [v1.7.3]
 
 ### Improvements
