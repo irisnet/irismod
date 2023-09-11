@@ -40,6 +40,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * [\#376](https://github.com/irisnet/irismod/pull/376) Bump up cosmos-sdk to v0.47.4.
+* [\#378](https://github.com/irisnet/irismod/pull/378) Support x/nft api.
 
 ### Bug Fixes
 
