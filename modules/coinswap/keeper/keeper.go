@@ -61,8 +61,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // Swap execute swap order in specified pool
-func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
-	var amount sdkmath.Int
+func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) (sdk.Coin, error) {
+	var amount sdk.Coin
 	var err error
 
 	standardDenom := k.GetStandardDenom(ctx)
@@ -79,7 +79,7 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 		amount, err = k.TradeExactInputForOutput(ctx, msg.Input, msg.Output)
 	}
 	if err != nil {
-		return err
+		return amount, err
 	}
 
 	ctx.EventManager().EmitEvent(
@@ -96,7 +96,7 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 		),
 	)
 
-	return nil
+	return amount, nil
 }
 
 // AddLiquidity adds liquidity to the specified pool

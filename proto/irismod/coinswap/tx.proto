@@ -140,7 +140,9 @@ message MsgSwapOrder {
 }
 
 // MsgSwapCoinResponse defines the Msg/SwapCoin response type
-message MsgSwapCoinResponse {}
+message MsgSwapCoinResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+}
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
 //
