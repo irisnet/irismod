@@ -10,6 +10,40 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const (
+	Buy        TradeType = "buy"
+	Sell       TradeType = "sell"
+	BuyDouble  TradeType = "buyDouble"
+	SellDouble TradeType = "SellDouble"
+)
+
+type TradeType string
+type TradeFunc func(ctx sdk.Context, input Input, output Output) (sdk.Coin, error)
+
+// GetTradeType returns the trade type based on the given parameters.
+//
+// Parameters:
+// - isBuyOrder: a boolean indicating whether the order is a buy order.
+// - standardDenom: the standard denomination.
+// - inputDenom: the input denomination.
+// - outputDenom: the output denomination.
+//
+// Returns:
+// - TradeType: the trade type based on the given parameters.
+func GetTradeType(isBuyOrder bool, standardDenom, inputDenom, outputDenom string) TradeType {
+	isDoubleSwap := (inputDenom != standardDenom) && (outputDenom != standardDenom)
+	if isBuyOrder && isDoubleSwap {
+		return BuyDouble
+	}
+	if isBuyOrder && !isDoubleSwap {
+		return Buy
+	}
+	if isDoubleSwap {
+		return SellDouble
+	}
+	return Sell
+}
+
 // GetReservePoolAddr returns the pool address for the provided liquidity denomination.
 func GetReservePoolAddr(lptDenom string) sdk.AccAddress {
 	return sdk.AccAddress(crypto.AddressHash([]byte(lptDenom)))

@@ -25,6 +25,7 @@ type Keeper struct {
 	feeCollectorName string
 	authority        string
 	blockedAddrs     map[string]bool
+	tradeFuncs       map[types.TradeType]types.TradeFunc
 }
 
 // NewKeeper returns a coinswap keeper. It handles:
@@ -44,7 +45,7 @@ func NewKeeper(
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
 
-	return Keeper{
+	k := Keeper{
 		storeKey:         key,
 		bk:               bk,
 		ak:               ak,
@@ -53,6 +54,13 @@ func NewKeeper(
 		feeCollectorName: feeCollectorName,
 		authority:        authority,
 	}
+	k.tradeFuncs = map[types.TradeType]types.TradeFunc{
+		types.Buy:        k.TradeInputForExactOutput,
+		types.Sell:       k.TradeExactInputForOutput,
+		types.BuyDouble:  k.doubleTradeInputForExactOutput,
+		types.SellDouble: k.doubleTradeExactInputForOutput,
+	}
+	return k
 }
 
 // Logger returns a module-specific logger.
@@ -61,25 +69,15 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // Swap execute swap order in specified pool
-func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
-	var amount sdkmath.Int
-	var err error
-
-	standardDenom := k.GetStandardDenom(ctx)
-	isDoubleSwap := (msg.Input.Coin.Denom != standardDenom) &&
-		(msg.Output.Coin.Denom != standardDenom)
-
-	if msg.IsBuyOrder && isDoubleSwap {
-		amount, err = k.doubleTradeInputForExactOutput(ctx, msg.Input, msg.Output)
-	} else if msg.IsBuyOrder && !isDoubleSwap {
-		amount, err = k.TradeInputForExactOutput(ctx, msg.Input, msg.Output)
-	} else if !msg.IsBuyOrder && isDoubleSwap {
-		amount, err = k.doubleTradeExactInputForOutput(ctx, msg.Input, msg.Output)
-	} else if !msg.IsBuyOrder && !isDoubleSwap {
-		amount, err = k.TradeExactInputForOutput(ctx, msg.Input, msg.Output)
-	}
+func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) (sdk.Coin, error) {
+	tradeType := types.GetTradeType(msg.IsBuyOrder,
+		k.GetStandardDenom(ctx),
+		msg.Input.Coin.Denom,
+		msg.Output.Coin.Denom,
+	)
+	amount, err := k.tradeFuncs[tradeType](ctx, msg.Input, msg.Output)
 	if err != nil {
-		return err
+		return amount, err
 	}
 
 	ctx.EventManager().EmitEvent(
@@ -95,8 +93,7 @@ func (k Keeper) Swap(ctx sdk.Context, msg *types.MsgSwapOrder) error {
 			),
 		),
 	)
-
-	return nil
+	return amount, nil
 }
 
 // AddLiquidity adds liquidity to the specified pool

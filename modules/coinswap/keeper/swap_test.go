@@ -93,7 +93,7 @@ func (suite *TestSuite) TestSwap() {
 	lptDenom := pool.LptDenom
 
 	// first swap buy order
-	err := suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err := suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddr)
 	senderBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, sender)
@@ -112,7 +112,7 @@ func (suite *TestSuite) TestSwap() {
 	suite.Equal(expCoins.Sort().String(), senderBalances.Sort().String())
 
 	// second swap buy order
-	err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddr)
 	senderBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, sender)
@@ -139,7 +139,7 @@ func (suite *TestSuite) TestSwap() {
 	)
 
 	// first swap sell order
-	err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddr)
 	senderBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, sender)
@@ -157,7 +157,7 @@ func (suite *TestSuite) TestSwap() {
 	suite.Equal(expCoins.Sort().String(), senderBalances.Sort().String())
 
 	// second swap sell order
-	err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddr)
 	senderBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, sender)
@@ -199,7 +199,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 	lptDenom := pool.LptDenom
 
 	// first swap buy order
-	err := suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err := suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBTCBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrBTC)
 	reservePoolETHBalances := suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrETH)
@@ -225,7 +225,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
 
 	// second swap buy order
-	err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBTCBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrBTC)
 	reservePoolETHBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrETH)
@@ -260,7 +260,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 	)
 
 	// first swap sell order
-	err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBTCBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrBTC)
 	reservePoolETHBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrETH)
@@ -286,7 +286,7 @@ func (suite *TestSuite) TestDoubleSwap() {
 	suite.Equal(expCoins.Sort().String(), sender2Balances.Sort().String())
 
 	// second swap sell order
-	err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
+	_, err = suite.app.CoinswapKeeper.Swap(suite.ctx, msg)
 	suite.NoError(err)
 	reservePoolBTCBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrBTC)
 	reservePoolETHBalances = suite.app.BankKeeper.GetAllBalances(suite.ctx, reservePoolAddrETH)
@@ -391,7 +391,7 @@ func (suite *TestSuite) TestTradeInputForExactOutput() {
 		suite.NoError(err)
 
 		bought := sdk.NewCoins(outputCoin)
-		sold := sdk.NewCoins(sdk.NewCoin(denomStandard, amt))
+		sold := sdk.NewCoins(sdk.NewCoin(denomStandard, amt.Amount))
 
 		pb := poolBalances.Add(sold...).Sub(bought...)
 		sb := senderBlances.Add(bought...).Sub(sold...)
@@ -425,7 +425,7 @@ func (suite *TestSuite) TestTradeExactInputForOutput() {
 		suite.NoError(err)
 
 		sold := sdk.NewCoins(inputCoin)
-		bought := sdk.NewCoins(sdk.NewCoin(denomBTC, amt))
+		bought := sdk.NewCoins(sdk.NewCoin(denomBTC, amt.Amount))
 
 		pb := poolBalances.Add(sold...).Sub(bought...)
 		sb := senderBlances.Add(bought...).Sub(sold...)

@@ -129,10 +129,13 @@ func (m msgServer) SwapCoin(
 		)
 	}
 
-	if err := m.k.Swap(ctx, msg); err != nil {
+	amount, err := m.k.Swap(ctx, msg)
+	if err != nil {
 		return nil, err
 	}
-	return &types.MsgSwapCoinResponse{}, nil
+	return &types.MsgSwapCoinResponse{
+		Amount: amount,
+	}, nil
 }
 
 func (m msgServer) UpdateParams(

@@ -69,34 +69,35 @@ Sell exact amount of a token for buying another, one of them must be standard to
 @param receipt: address of the receiver
 @return: actual amount of the token to be bought
 */
-func (k Keeper) TradeExactInputForOutput(ctx sdk.Context, input types.Input, output types.Output) (sdkmath.Int, error) {
+func (k Keeper) TradeExactInputForOutput(ctx sdk.Context, input types.Input, output types.Output) (sdk.Coin, error) {
 	boughtTokenAmt, err := k.calculateWithExactInput(ctx, input.Coin, output.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	// assert that the calculated amount is more than the
 	// minimum amount the buyer is willing to buy.
 	if boughtTokenAmt.LT(output.Coin.Amount) {
-		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtTokenAmt.String()))
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtTokenAmt.String()))
 	}
 	boughtToken := sdk.NewCoin(output.Coin.Denom, boughtTokenAmt)
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, input.Coin, boughtToken); err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
-	return boughtTokenAmt, nil
+	return boughtToken, nil
 }
 
-/**
+/*
+*
 Sell exact amount of a token for buying another, non of them are standard token
 @param input: exact amount of the token to be sold
 @param output: min amount of the token to be bought
@@ -104,45 +105,46 @@ Sell exact amount of a token for buying another, non of them are standard token
 @param receipt: address of the receiver
 @return: actual amount of the token to be bought
 */
-func (k Keeper) doubleTradeExactInputForOutput(ctx sdk.Context, input types.Input, output types.Output) (sdkmath.Int, error) {
+func (k Keeper) doubleTradeExactInputForOutput(ctx sdk.Context, input types.Input, output types.Output) (sdk.Coin, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 	standardAmount, err := k.calculateWithExactInput(ctx, input.Coin, standardDenom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	standardCoin := sdk.NewCoin(standardDenom, standardAmount)
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, input.Coin, standardCoin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 
 	boughtAmt, err := k.calculateWithExactInput(ctx, standardCoin, output.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	boughtToken := sdk.NewCoin(output.Coin.Denom, boughtAmt)
 	// assert that the calculated amount is less than the
 	// minimum amount the buyer is willing to buy.
 	if boughtAmt.LT(output.Coin.Amount) {
-		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtAmt.String()))
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtAmt.String()))
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, standardCoin, boughtToken); err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
-	return boughtAmt, nil
+	return boughtToken, nil
 }
 
-/**
+/*
+*
 Calculate the amount of the token to be paid based on the exact amount of the token to be bought
 @param exactBoughtCoin
 @param soldTokenDenom
@@ -178,7 +180,8 @@ func (k Keeper) calculateWithExactOutput(ctx sdk.Context, exactBoughtCoin sdk.Co
 	return soldTokenAmt, nil
 }
 
-/**
+/*
+*
 Buy exact amount of a token by specifying the max amount of another token, one of them must be standard token
 @param input : max amount of the token to be paid
 @param output : exact amount of the token to be bought
@@ -186,34 +189,35 @@ Buy exact amount of a token by specifying the max amount of another token, one o
 @param receipt : address of the receiver
 @return : actual amount of the token to be paid
 */
-func (k Keeper) TradeInputForExactOutput(ctx sdk.Context, input types.Input, output types.Output) (sdkmath.Int, error) {
+func (k Keeper) TradeInputForExactOutput(ctx sdk.Context, input types.Input, output types.Output) (sdk.Coin, error) {
 	soldTokenAmt, err := k.calculateWithExactOutput(ctx, output.Coin, input.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	// assert that the calculated amount is less than the
 	// max amount the buyer is willing to pay.
 	if soldTokenAmt.GT(input.Coin.Amount) {
-		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
 	}
 	soldToken := sdk.NewCoin(input.Coin.Denom, soldTokenAmt)
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, soldToken, output.Coin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
-	return soldTokenAmt, nil
+	return soldToken, nil
 }
 
-/**
+/*
+*
 Buy exact amount of a token by specifying the max amount of another token, non of them are standard token
 @param input : max amount of the token to be paid
 @param output : exact amount of the token to be bought
@@ -221,42 +225,42 @@ Buy exact amount of a token by specifying the max amount of another token, non o
 @param receipt : address of the receiver
 @return : actual amount of the token to be paid
 */
-func (k Keeper) doubleTradeInputForExactOutput(ctx sdk.Context, input types.Input, output types.Output) (sdkmath.Int, error) {
+func (k Keeper) doubleTradeInputForExactOutput(ctx sdk.Context, input types.Input, output types.Output) (sdk.Coin, error) {
 	standardDenom := k.GetStandardDenom(ctx)
 	soldStandardAmount, err := k.calculateWithExactOutput(ctx, output.Coin, standardDenom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	soldStandardCoin := sdk.NewCoin(standardDenom, soldStandardAmount)
 
 	soldTokenAmt, err := k.calculateWithExactOutput(ctx, soldStandardCoin, input.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	soldTokenCoin := sdk.NewCoin(input.Coin.Denom, soldTokenAmt)
 
 	// assert that the calculated amount is less than the
 	// max amount the buyer is willing to sell.
 	if soldTokenAmt.GT(input.Coin.Amount) {
-		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
 	}
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, soldTokenCoin, soldStandardCoin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, soldStandardCoin, output.Coin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdk.Coin{}, err
 	}
-	return soldTokenAmt, nil
+	return soldTokenCoin, nil
 }
 
 // GetInputPrice returns the amount of coins bought (calculated) given the input amount being sold (exact)
