@@ -24,4 +24,7 @@ var (
 	ErrInvalidBaseFee       = errorsmod.Register(ModuleName, 16, "invalid base fee")
 	ErrInvalidSwap          = errorsmod.Register(ModuleName, 17, "unregistered swapable fee token")
 	ErrInsufficientFee      = errorsmod.Register(ModuleName, 18, "the amount of tokens after swap is less than 1")
+	ErrJSONMarshal          = errorsmod.Register(ModuleName, 19, "failed to marshal JSON bytes")
+	ErrVMExecution          = errorsmod.Register(ModuleName, 20, "evm transaction execution failed")
+	ErrABIPack              = errorsmod.Register(ModuleName, 21, "contract ABI pack failed")
 )

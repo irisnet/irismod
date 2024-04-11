@@ -1,9 +1,17 @@
 package types
 
 import (
+	"context"
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/vm"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	"github.com/irisnet/irismod/types"
 )
 
 // BankKeeper defines the expected bank keeper (noalias)
@@ -41,7 +49,13 @@ type BankKeeper interface {
 
 // AccountKeeper defines the expected account keeper
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
-	GetModuleAddress(name string) sdk.AccAddress
-	GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI
+	GetModuleAddress(moduleName string) sdk.AccAddress
+	GetSequence(sdk.Context, sdk.AccAddress) (uint64, error)
+	GetAccount(sdk.Context, sdk.AccAddress) authtypes.AccountI
+}
+
+type EVMKeeper interface {
+	ChainID() *big.Int
+	EstimateGas(ctx context.Context, req *types.EthCallRequest) (uint64, error)
+	ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*types.Result, error)
 }

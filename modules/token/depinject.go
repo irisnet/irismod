@@ -45,6 +45,7 @@ type TokenInputs struct {
 
 	AccountKeeper types.AccountKeeper
 	BankKeeper    types.BankKeeper
+	EVMKeeper    types.EVMKeeper
 
 	// LegacySubspace is used solely for migration of x/params managed parameters
 	LegacySubspace exported.Subspace `optional:"true"`
@@ -68,6 +69,8 @@ func ProvideModule(in TokenInputs) TokenOutputs {
 		in.Cdc,
 		in.Key,
 		in.BankKeeper,
+		in.AccountKeeper,
+		in.EVMKeeper,
 		in.Config.FeeCollectorName,
 		authority.String(),
 	)

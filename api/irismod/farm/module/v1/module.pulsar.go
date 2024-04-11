@@ -582,7 +582,8 @@ type Module struct {
 
 	FeeCollectorName  string `protobuf:"bytes,1,opt,name=fee_collector_name,json=feeCollectorName,proto3" json:"fee_collector_name,omitempty"`
 	CommunityPoolName string `protobuf:"bytes,2,opt,name=community_pool_name,json=communityPoolName,proto3" json:"community_pool_name,omitempty"`
-	// authority defines the custom module authority. If not set, defaults to the governance module.
+	// authority defines the custom module authority. If not set, defaults to the
+	// governance module.
 	Authority string `protobuf:"bytes,3,opt,name=authority,proto3" json:"authority,omitempty"`
 }
 

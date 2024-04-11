@@ -19,6 +19,8 @@ type Keeper struct {
 	storeKey         storetypes.StoreKey
 	cdc              codec.Codec
 	bankKeeper       types.BankKeeper
+	accountKeeper    types.AccountKeeper
+	evmKeeper        types.EVMKeeper
 	blockedAddrs     map[string]bool
 	feeCollectorName string
 	authority        string
@@ -29,6 +31,8 @@ func NewKeeper(
 	cdc codec.Codec,
 	key storetypes.StoreKey,
 	bankKeeper types.BankKeeper,
+	accountKeeper types.AccountKeeper,
+	evmKeeper types.EVMKeeper,
 	feeCollectorName string,
 	authority string,
 ) Keeper {
@@ -36,6 +40,8 @@ func NewKeeper(
 		storeKey:         key,
 		cdc:              cdc,
 		bankKeeper:       bankKeeper,
+		accountKeeper:    accountKeeper,
+		evmKeeper:        evmKeeper,
 		feeCollectorName: feeCollectorName,
 		blockedAddrs:     bankKeeper.GetBlockedAddresses(),
 		registry:         make(v1.SwapRegistry),

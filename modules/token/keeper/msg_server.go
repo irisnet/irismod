@@ -269,3 +269,18 @@ func (m msgServer) UpdateParams(
 	}
 	return &v1.MsgUpdateParamsResponse{}, nil
 }
+
+func (m msgServer) SwapToERC20(ctx context.Context, erc20 *v1.MsgSwapToERC20) (*v1.MsgSwapToERC20Response, error) {
+	// TODO implement me
+	panic("implement me")
+}
+
+func (m msgServer) SwapFromERC20(ctx context.Context, erc20 *v1.MsgSwapFromERC20) (*v1.MsgSwapFromERC20Response, error) {
+	// TODO implement me
+	panic("implement me")
+}
+
+func (m msgServer) DeployERC20(ctx context.Context, erc20 *v1.MsgDeployERC20) (*v1.MsgDeployERC20Response, error) {
+	// TODO implement me
+	panic("implement me")
+}
