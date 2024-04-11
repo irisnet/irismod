@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//go:embed Token.json
+	//go:embed compiled_contracts/Token.json
 	ERC20JSON []byte //nolint: golint
 
 	// ERC20TokenContract is the compiled erc20 contract

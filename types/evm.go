@@ -16,13 +16,12 @@ import (
 )
 
 const (
+	// DefaultGasCap is the default gas cap for eth_call
 	DefaultGasCap uint64 = 25000000
 )
 
 // TransactionArgs represents the arguments to construct a new transaction
 // or a message call using JSON-RPC.
-// Duplicate struct definition since geth struct is in internal package
-// Ref: https://github.com/ethereum/go-ethereum/blob/release/1.10.4/internal/ethapi/transaction_args.go#L36
 type TransactionArgs struct {
 	From                 *common.Address `json:"from"`
 	To                   *common.Address `json:"to"`
@@ -35,7 +34,6 @@ type TransactionArgs struct {
 
 	// We accept "data" and "input" for backwards-compatibility reasons.
 	// "input" is the newer name and should be preferred by clients.
-	// Issue detail: https://github.com/ethereum/go-ethereum/issues/15628
 	Data  *hexutil.Bytes `json:"data"`
 	Input *hexutil.Bytes `json:"input"`
 
@@ -44,6 +42,7 @@ type TransactionArgs struct {
 	ChainID    *hexutil.Big         `json:"chainId,omitempty"`
 }
 
+// EthCallRequest represents the arguments to the eth_call RPC
 type EthCallRequest struct {
 	// args uses the same json format as the json rpc api.
 	Args []byte `json:"args,omitempty"`
@@ -52,9 +51,10 @@ type EthCallRequest struct {
 	// proposer_address of the requested block in hex format
 	ProposerAddress sdk.ConsAddress `json:"proposer_address,omitempty"`
 	// chain_id is the eip155 chain id parsed from the requested block header
-	ChainId int64 `json:"chain_id,omitempty"`
+	ChainID int64 `json:"chain_id,omitempty"`
 }
 
+// Result represents the result of a contract execution
 type Result struct {
 	// hash of the ethereum transaction in hex format. This hash differs from the
 	// Tendermint sha256 hash of the transaction bytes. See
@@ -67,14 +67,14 @@ type Result struct {
 	// opcode)
 	Ret []byte
 	// vm_error is the error returned by vm execution
-	VmError string
+	VMError string
 	// gas_used specifies how much gas was consumed by the transaction
 	GasUsed uint64
 }
 
 // Failed returns if the contract execution failed in vm errors
 func (r *Result) Failed() bool {
-	return len(r.VmError) > 0
+	return len(r.VMError) > 0
 }
 
 // Return is a helper function to help caller distinguish between revert reason
@@ -89,7 +89,7 @@ func (r *Result) Return() []byte {
 // Revert returns the concrete revert reason if the execution is aborted by `REVERT`
 // opcode. Note the reason can be nil if no data supplied with revert opcode.
 func (r *Result) Revert() []byte {
-	if r.VmError != vm.ErrExecutionReverted.Error() {
+	if r.VMError != vm.ErrExecutionReverted.Error() {
 		return nil
 	}
 	return common.CopyBytes(r.Ret)
@@ -164,35 +164,6 @@ func (s *HexString) UnmarshalJSON(data []byte) error {
 // CompiledContract contains compiled bytecode and abi
 type CompiledContract struct {
 	ABI abi.ABI
-	Bin HexString
-}
-
-type jsonCompiledContract struct {
-	ABI string
-	Bin HexString
-}
-
-// MarshalJSON serializes ByteArray to hex
-func (s CompiledContract) MarshalJSON() ([]byte, error) {
-	abi1, err := json.Marshal(s.ABI)
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(jsonCompiledContract{ABI: string(abi1), Bin: s.Bin})
-}
-
-// UnmarshalJSON deserializes ByteArray to hex
-func (s *CompiledContract) UnmarshalJSON(data []byte) error {
-	var x jsonCompiledContract
-	if err := json.Unmarshal(data, &x); err != nil {
-		return err
-	}
-
-	s.Bin = x.Bin
-	if err := json.Unmarshal([]byte(x.ABI), &s.ABI); err != nil {
-		return fmt.Errorf("failed to unmarshal ABI: %w", err)
-	}
-
-	return nil
+	Bin HexString 
 }
 

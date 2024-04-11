@@ -90,7 +90,7 @@ func (k Keeper) CallEVMWithData(
 		gas, err := k.evmKeeper.EstimateGas(sdk.WrapSDKContext(ctx), &types.EthCallRequest{
 			Args:    args,
 			GasCap:  types.DefaultGasCap,
-			ChainId: k.evmKeeper.ChainID().Int64(),
+			ChainID: k.evmKeeper.ChainID().Int64(),
 		})
 		if err != nil {
 			return nil, err
@@ -118,7 +118,7 @@ func (k Keeper) CallEVMWithData(
 	}
 
 	if res.Failed() {
-		return nil, errorsmod.Wrap(tokentypes.ErrVMExecution, res.VmError)
+		return nil, errorsmod.Wrap(tokentypes.ErrVMExecution, res.VMError)
 	}
 
 	return res, nil

@@ -110,7 +110,7 @@ func (k Keeper) MintERC20(
 	}
 
 	if res.Failed() {
-		return errorsmod.Wrapf(types.ErrVMExecution, "failed to mint %s", amount)
+		return errorsmod.Wrapf(types.ErrVMExecution, "failed to mint %d", amount)
 	}
 	return nil
 }
@@ -136,7 +136,7 @@ func (k Keeper) BurnERC20(
 	}
 
 	if res.Failed() {
-		return errorsmod.Wrapf(types.ErrVMExecution, "failed to burn %s", amount)
+		return errorsmod.Wrapf(types.ErrVMExecution, "failed to burn %d", amount)
 	}
 	return nil
 }
