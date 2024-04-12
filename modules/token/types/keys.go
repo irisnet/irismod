@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
@@ -30,7 +31,10 @@ var (
 	PrefixTokens = []byte{0x03}
 	// PeffixBurnTokenAmt defines a prefix for the amount of token burnt
 	PeffixBurnTokenAmt = []byte{0x04}
-	ParamsKey          = []byte{0x05} // prefix for the token params
+	// ParamsKey defines the key for the Params store
+	ParamsKey = []byte{0x05}
+	// PrefixTokenForContract defines the erc20 contract prefix for the token
+	PrefixTokenForContract = []byte{0x06}
 )
 
 // KeySymbol returns the key of the token with the specified symbol
@@ -41,6 +45,12 @@ func KeySymbol(symbol string) []byte {
 // KeyMinUint returns the key of the token with the specified min unit
 func KeyMinUint(minUnit string) []byte {
 	return append(PrefixTokenForMinUint, []byte(minUnit)...)
+}
+
+// KeyContract returns the key of the token with the specified contract
+func KeyContract(contract string) []byte {
+	bz := common.FromHex(contract)
+	return append(PrefixTokenForContract, bz...)
 }
 
 // KeyTokens returns the key of the specified owner and symbol. Intended for querying all tokens of an owner

@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/vm"
 
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -54,9 +55,17 @@ type AccountKeeper interface {
 	GetAccount(sdk.Context, sdk.AccAddress) authtypes.AccountI
 }
 
+// EVMKeeper defines the expected keeper of the evm module
 type EVMKeeper interface {
 	FeeDenom() string
 	ChainID() *big.Int
+
+	SupportedKey(pubKey cryptotypes.PubKey) bool
 	EstimateGas(ctx context.Context, req *types.EthCallRequest) (uint64, error)
 	ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*types.Result, error)
+}
+
+// ICS20Keeper defines the expected keeper of ICS20
+type ICS20Keeper interface{
+	HasTrace(ctx sdk.Context, denom string) bool
 }

@@ -2,10 +2,13 @@ package keeper
 
 import (
 	"context"
+	"encoding/hex"
+	"math/big"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/irisnet/irismod/modules/token/types"
 	v1 "github.com/irisnet/irismod/modules/token/types/v1"
@@ -270,17 +273,97 @@ func (m msgServer) UpdateParams(
 	return &v1.MsgUpdateParamsResponse{}, nil
 }
 
-func (m msgServer) SwapToERC20(ctx context.Context, erc20 *v1.MsgSwapToERC20) (*v1.MsgSwapToERC20Response, error) {
-	// TODO implement me
-	panic("implement me")
+func (m msgServer) SwapToERC20(goCtx context.Context, msg *v1.MsgSwapToERC20) (*v1.MsgSwapToERC20Response, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	receiver := common.BytesToAddress(sender.Bytes())
+	if len(msg.Receiver) > 0 {
+		bz, err := hex.DecodeString(msg.Receiver)
+		if err != nil {
+			return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "expecting a hex address of 0x, got %s", msg.Receiver)
+		}
+		receiver = common.BytesToAddress(bz)
+	}
+
+	if err := m.k.SwapToERC20(ctx, sender, receiver, msg.Amount); err != nil {
+		return nil, err
+	}
+	return &v1.MsgSwapToERC20Response{}, nil
 }
 
-func (m msgServer) SwapFromERC20(ctx context.Context, erc20 *v1.MsgSwapFromERC20) (*v1.MsgSwapFromERC20Response, error) {
-	// TODO implement me
-	panic("implement me")
+func (m msgServer) SwapFromERC20(goCtx context.Context, msg *v1.MsgSwapFromERC20) (*v1.MsgSwapFromERC20Response, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	sender, err := sdk.AccAddressFromBech32(msg.Receiver)
+	if err != nil {
+		return nil, err
+	}
+
+	receiver := sender
+	if len(msg.Receiver) > 0 {
+		receiver, err = sdk.AccAddressFromBech32(msg.Receiver)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	bz, err := hex.DecodeString(msg.Receiver)
+	if err != nil {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "expecting a hex address of 0x, got %s", msg.Receiver)
+	}
+	contract := common.BytesToAddress(bz)
+
+	if err := m.k.SwapFromERC20(ctx, common.BytesToAddress(sender.Bytes()), receiver, contract, big.NewInt(msg.Amount)); err != nil {
+		return nil, err
+	}
+	return &v1.MsgSwapFromERC20Response{}, nil
 }
 
-func (m msgServer) DeployERC20(ctx context.Context, erc20 *v1.MsgDeployERC20) (*v1.MsgDeployERC20Response, error) {
-	// TODO implement me
-	panic("implement me")
+func (m msgServer) DeployERC20(goCtx context.Context, msg *v1.MsgDeployERC20) (*v1.MsgDeployERC20Response, error) {
+	var (
+		ctx     = sdk.UnwrapSDKContext(goCtx)
+		name    = msg.Name
+		symbol  = msg.Symbol
+		scale   = msg.Scale
+		minUnit = msg.MinUnit
+		token   v1.Token
+		err     error
+	)
+
+	if !m.k.HasMinUint(ctx, msg.MinUnit) {
+		if !m.k.ics20Keeper.HasTrace(ctx, msg.MinUnit) {
+			return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "token: %s not exist", msg.MinUnit)
+		}
+		token = v1.Token{
+			Symbol:   symbol,
+			Name:     name,
+			Scale:    scale,
+			MinUnit:  msg.MinUnit,
+			Mintable: true,
+			Owner:    string(m.k.accountKeeper.GetModuleAddress(types.ModuleName)),
+		}
+	} else {
+		token, err = m.k.getTokenByMinUnit(ctx, msg.MinUnit)
+		if err != nil {
+			return nil, err
+		}
+		if len(token.Contract) > 0 {
+			return nil, errorsmod.Wrapf(types.ErrERC20AlreadyExists, "token: %s already deployed erc20 contract: %s", token.Symbol, token.Contract)
+		}
+		name = token.Name
+		symbol = token.Symbol
+		scale = token.Scale
+		minUnit = token.MinUnit
+	}
+
+	contractAddr, err := m.k.DeployERC20(ctx, name, symbol, minUnit, int8(scale))
+	if err != nil {
+		return nil, err
+	}
+	token.Contract = contractAddr.String()
+	m.k.upsertToken(ctx, token)
+	return &v1.MsgDeployERC20Response{}, nil
 }

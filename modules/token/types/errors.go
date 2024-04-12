@@ -1,4 +1,3 @@
-// nolint
 package types
 
 import (
@@ -27,4 +26,7 @@ var (
 	ErrJSONMarshal          = errorsmod.Register(ModuleName, 19, "failed to marshal JSON bytes")
 	ErrVMExecution          = errorsmod.Register(ModuleName, 20, "evm transaction execution failed")
 	ErrABIPack              = errorsmod.Register(ModuleName, 21, "contract ABI pack failed")
+	ErrERC20AlreadyExists   = errorsmod.Register(ModuleName, 22, "erc20 contract already exists")
+	ErrERC20NotDeployed     = errorsmod.Register(ModuleName, 23, "erc20 contract not deployed")
+	ErrUnsupportedKey       = errorsmod.Register(ModuleName, 24, "evm not supported public key")
 )
