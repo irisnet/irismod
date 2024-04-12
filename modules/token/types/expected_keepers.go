@@ -55,6 +55,7 @@ type AccountKeeper interface {
 }
 
 type EVMKeeper interface {
+	FeeDenom() string
 	ChainID() *big.Int
 	EstimateGas(ctx context.Context, req *types.EthCallRequest) (uint64, error)
 	ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*types.Result, error)

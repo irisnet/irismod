@@ -7,6 +7,10 @@ import (
 	"github.com/irisnet/irismod/types"
 )
 
+const (
+	EventSwapToNative = "SwapToNative"
+)
+
 var (
 	//go:embed compiled_contracts/Token.json
 	ERC20JSON []byte //nolint: golint
