@@ -467,7 +467,7 @@ func GetCmdSwapToErc20() *cobra.Command {
 				return err
 			}
 
-			var prompt = fmt.Sprintf("Swapping native token to ERC20, sender: %s, receiver: %s, contract %s, amount: %s", from, receiver, token.GetContract(), paidAmount)
+			var prompt = fmt.Sprintf("Swapping native token to ERC20, sender: %s, receiver: %s, contract: %s, amount: %s", from, receiver, token.GetContract(), paidAmount)
 
 			fmt.Println(prompt)
 
@@ -476,6 +476,71 @@ func GetCmdSwapToErc20() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(FsSwapToErc20)
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdSwapFromErc20 implements the swap-from-erc20 command
+func GetCmdSwapFromErc20() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "swap-from-erc20",
+		Long: "Swap native token from the corresponding ERC20 at 1:1.",
+		Example: fmt.Sprintf(
+			"$ %s tx token swap-from-erc20 [wanted_amount]"+
+				"--to=\"iaaeeb8ec40c6705b669469346ff8f9ce5cad57ed5\" "+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress().String()
+			wantedAmount, _, err := parseMainCoin(clientCtx, args[0])
+			if err != nil {
+				return err
+			}
+			receiver, err := cmd.Flags().GetString(FlagTo)
+			if err != nil {
+				return err
+			}
+			if len(receiver) <= 0 {
+				// set default receiver
+				receiver = from
+			}
+
+			msg := &v1.MsgSwapFromERC20{
+				WantedAmount: wantedAmount,
+				Sender:       from,
+				Receiver:     receiver,
+			}
+
+			token, err := queryToken(clientCtx, wantedAmount.Denom)
+			if err != nil {
+				return err
+			}
+			if len(token.GetContract()) <= 0 {
+				return fmt.Errorf("corresponding erc20 contract of %s does not exist", wantedAmount.Denom)
+			}
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			var prompt = fmt.Sprintf("Swapping native token from ERC20, sender: %s, receiver: %s, contract: %s, amount: %s", from, receiver, token.GetContract(), wantedAmount)
+
+			fmt.Println(prompt)
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FsSwapFromErc20)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
