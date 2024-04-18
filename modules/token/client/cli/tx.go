@@ -33,6 +33,8 @@ func NewTxCmd() *cobra.Command {
 		GetCmdBurnToken(),
 		GetCmdTransferTokenOwner(),
 		GetCmdSwapFeeToken(),
+		GetCmdSwapToErc20(),
+		GetCmdSwapFromErc20(),
 	)
 
 	return txCmd
@@ -436,10 +438,14 @@ func GetCmdSwapToErc20() *cobra.Command {
 			}
 
 			from := clientCtx.GetFromAddress().String()
-			paidAmount, _, err := parseMainCoin(clientCtx, args[0])
+			paidAmount, token, err := parseMainCoin(clientCtx, args[0])
 			if err != nil {
 				return err
 			}
+			if len(token.GetContract()) <= 0 {
+				return fmt.Errorf("corresponding erc20 contract of %s does not exist", paidAmount.Denom)
+			}
+
 			receiver, err := cmd.Flags().GetString(FlagTo)
 			if err != nil {
 				return err
@@ -453,14 +459,6 @@ func GetCmdSwapToErc20() *cobra.Command {
 				Amount:   paidAmount,
 				Sender:   from,
 				Receiver: receiver,
-			}
-
-			token, err := queryToken(clientCtx, paidAmount.Denom)
-			if err != nil {
-				return err
-			}
-			if len(token.GetContract()) <= 0 {
-				return fmt.Errorf("corresponding erc20 contract of %s does not exist", paidAmount.Denom)
 			}
 
 			if err := msg.ValidateBasic(); err != nil {
@@ -501,10 +499,14 @@ func GetCmdSwapFromErc20() *cobra.Command {
 			}
 
 			from := clientCtx.GetFromAddress().String()
-			wantedAmount, _, err := parseMainCoin(clientCtx, args[0])
+			wantedAmount, token, err := parseMainCoin(clientCtx, args[0])
 			if err != nil {
 				return err
 			}
+			if len(token.GetContract()) <= 0 {
+				return fmt.Errorf("corresponding erc20 contract of %s does not exist", wantedAmount.Denom)
+			}
+
 			receiver, err := cmd.Flags().GetString(FlagTo)
 			if err != nil {
 				return err
@@ -518,14 +520,6 @@ func GetCmdSwapFromErc20() *cobra.Command {
 				WantedAmount: wantedAmount,
 				Sender:       from,
 				Receiver:     receiver,
-			}
-
-			token, err := queryToken(clientCtx, wantedAmount.Denom)
-			if err != nil {
-				return err
-			}
-			if len(token.GetContract()) <= 0 {
-				return fmt.Errorf("corresponding erc20 contract of %s does not exist", wantedAmount.Denom)
 			}
 
 			if err := msg.ValidateBasic(); err != nil {
