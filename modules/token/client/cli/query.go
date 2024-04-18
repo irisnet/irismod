@@ -29,6 +29,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryFee(),
 		GetCmdQueryTotalBurn(),
 		GetCmdQueryParams(),
+		GetCmdQueryBalances(),
 	)
 
 	return queryCmd
