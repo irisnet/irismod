@@ -161,11 +161,11 @@ func (k Keeper) EditToken(
 
 	if name != v1.DoNotModify {
 		token.Name = name
-
-		metadata, _ := k.bankKeeper.GetDenomMetaData(ctx, token.MinUnit)
-		metadata.Description = name
-
-		k.bankKeeper.SetDenomMetaData(ctx, metadata)
+		metadata, exist := k.bankKeeper.GetDenomMetaData(ctx, token.MinUnit)
+		if exist {
+			metadata.Description = name
+			k.bankKeeper.SetDenomMetaData(ctx, metadata)
+		}
 	}
 
 	if mintable != types.Nil {
