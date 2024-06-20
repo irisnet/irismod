@@ -46,8 +46,9 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	nftmodule "github.com/irisnet/irismod/api/irismod/nft/module/v1"
 	_ "irismod.io/nft"
+
+	nftmodule "irismod.io/nft/api/irismod/nft/module/v1"
 	nfttypes "irismod.io/nft/types"
 )
 

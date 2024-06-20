@@ -5,4 +5,4 @@
 # previous "buf.yaml" configuration.
 version: v1
 directories:
-  - proto
+  - modules/coinswap/proto

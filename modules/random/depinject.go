@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
-	modulev1 "github.com/irisnet/irismod/api/irismod/random/module/v1"
+	modulev1 "irismod.io/random/api/irismod/random/module/v1"
 	"irismod.io/random/keeper"
 	"irismod.io/random/types"
 )

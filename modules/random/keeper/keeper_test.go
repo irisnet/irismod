@@ -14,9 +14,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/irisnet/irismod/simapp"
 	"irismod.io/random/keeper"
 	"irismod.io/random/types"
+	"irismod.io/simapp"
 )
 
 // define testing variables

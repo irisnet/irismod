@@ -9,8 +9,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	modulev1 "github.com/irisnet/irismod/api/irismod/farm/module/v1"
 	"github.com/irisnet/irismod/types/exported"
+	modulev1 "irismod.io/farm/api/irismod/farm/module/v1"
 	"irismod.io/farm/keeper"
 	"irismod.io/farm/types"
 )
