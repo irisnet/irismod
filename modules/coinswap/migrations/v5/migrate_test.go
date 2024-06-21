@@ -8,8 +8,8 @@ package v5_test
 // 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 // 	"github.com/irisnet/irismod/simapp"
-// 	v5 "github.com/irisnet/irismod/coinswap/migrations/v5"
-// 	coinswaptypes "github.com/irisnet/irismod/coinswap/types"
+// 	v5 "github.com/irisnet/irismod/modules/coinswap/migrations/v5"
+// 	coinswaptypes "github.com/irisnet/irismod/modules/coinswap/types"
 // )
 
 // func TestMigrate(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/irisnet/irismod/coinswap
+module github.com/irisnet/irismod/modules/coinswap
 
 go 1.19
 
