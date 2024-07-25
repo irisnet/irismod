@@ -408,12 +408,12 @@ func SimulateMsgTransferDenom(
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
 		denomID := randDenom(ctx, k, r, false, false)
-		denom, err := k.GetDenomInfo(ctx, denomID)
-		if err != nil {
+		denom,exist := k.GetDenom(ctx, denomID)
+		if !exist {
 			return simtypes.NoOpMsg(
 				types.ModuleName,
 				types.TypeMsgTransferDenom,
-				err.Error(),
+				"denom not found",
 			), nil, err
 		}
 
@@ -496,7 +496,7 @@ func SimulateMsgIssueDenom(
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
 		denomID := genDenomID(r)
-		if k.HasDenom(ctx, denomID) {
+		if k.HasDenomID(ctx, denomID) {
 			return simtypes.NoOpMsg(
 				types.ModuleName,
 				types.TypeMsgTransferDenom,
@@ -585,8 +585,8 @@ func randNFT(
 	idx := r.Intn(len(denoms))
 
 	rndDenomID := denoms[idx]
-	nfts, err := k.GetNFTs(ctx, rndDenomID)
-	if err != nil || len(nfts) == 0 {
+	nfts:= k.GetNFTs(ctx, rndDenomID)
+	if len(nfts) == 0 {
 		return nil, "", ""
 	}
 

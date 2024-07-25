@@ -754,490 +754,6 @@ func (x *fastReflection_BaseNFT) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_NFTMetadata      protoreflect.MessageDescriptor
-	fd_NFTMetadata_name protoreflect.FieldDescriptor
-	fd_NFTMetadata_data protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_irismod_nft_nft_proto_init()
-	md_NFTMetadata = File_irismod_nft_nft_proto.Messages().ByName("NFTMetadata")
-	fd_NFTMetadata_name = md_NFTMetadata.Fields().ByName("name")
-	fd_NFTMetadata_data = md_NFTMetadata.Fields().ByName("data")
-}
-
-var _ protoreflect.Message = (*fastReflection_NFTMetadata)(nil)
-
-type fastReflection_NFTMetadata NFTMetadata
-
-func (x *NFTMetadata) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_NFTMetadata)(x)
-}
-
-func (x *NFTMetadata) slowProtoReflect() protoreflect.Message {
-	mi := &file_irismod_nft_nft_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_NFTMetadata_messageType fastReflection_NFTMetadata_messageType
-var _ protoreflect.MessageType = fastReflection_NFTMetadata_messageType{}
-
-type fastReflection_NFTMetadata_messageType struct{}
-
-func (x fastReflection_NFTMetadata_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_NFTMetadata)(nil)
-}
-func (x fastReflection_NFTMetadata_messageType) New() protoreflect.Message {
-	return new(fastReflection_NFTMetadata)
-}
-func (x fastReflection_NFTMetadata_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_NFTMetadata
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_NFTMetadata) Descriptor() protoreflect.MessageDescriptor {
-	return md_NFTMetadata
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_NFTMetadata) Type() protoreflect.MessageType {
-	return _fastReflection_NFTMetadata_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_NFTMetadata) New() protoreflect.Message {
-	return new(fastReflection_NFTMetadata)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_NFTMetadata) Interface() protoreflect.ProtoMessage {
-	return (*NFTMetadata)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_NFTMetadata) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Name != "" {
-		value := protoreflect.ValueOfString(x.Name)
-		if !f(fd_NFTMetadata_name, value) {
-			return
-		}
-	}
-	if x.Data != "" {
-		value := protoreflect.ValueOfString(x.Data)
-		if !f(fd_NFTMetadata_data, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_NFTMetadata) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "irismod.nft.NFTMetadata.name":
-		return x.Name != ""
-	case "irismod.nft.NFTMetadata.data":
-		return x.Data != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.NFTMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.NFTMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NFTMetadata) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "irismod.nft.NFTMetadata.name":
-		x.Name = ""
-	case "irismod.nft.NFTMetadata.data":
-		x.Data = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.NFTMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.NFTMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_NFTMetadata) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "irismod.nft.NFTMetadata.name":
-		value := x.Name
-		return protoreflect.ValueOfString(value)
-	case "irismod.nft.NFTMetadata.data":
-		value := x.Data
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.NFTMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.NFTMetadata does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NFTMetadata) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "irismod.nft.NFTMetadata.name":
-		x.Name = value.Interface().(string)
-	case "irismod.nft.NFTMetadata.data":
-		x.Data = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.NFTMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.NFTMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NFTMetadata) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "irismod.nft.NFTMetadata.name":
-		panic(fmt.Errorf("field name of message irismod.nft.NFTMetadata is not mutable"))
-	case "irismod.nft.NFTMetadata.data":
-		panic(fmt.Errorf("field data of message irismod.nft.NFTMetadata is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.NFTMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.NFTMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_NFTMetadata) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "irismod.nft.NFTMetadata.name":
-		return protoreflect.ValueOfString("")
-	case "irismod.nft.NFTMetadata.data":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.NFTMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.NFTMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_NFTMetadata) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in irismod.nft.NFTMetadata", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_NFTMetadata) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_NFTMetadata) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_NFTMetadata) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_NFTMetadata) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*NFTMetadata)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Name)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Data)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*NFTMetadata)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Data) > 0 {
-			i -= len(x.Data)
-			copy(dAtA[i:], x.Data)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Data)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if len(x.Name) > 0 {
-			i -= len(x.Name)
-			copy(dAtA[i:], x.Name)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Name)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*NFTMetadata)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NFTMetadata: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NFTMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Name = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Data = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
 	md_Denom                   protoreflect.MessageDescriptor
 	fd_Denom_id                protoreflect.FieldDescriptor
 	fd_Denom_name              protoreflect.FieldDescriptor
@@ -1277,7 +793,7 @@ func (x *Denom) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Denom) slowProtoReflect() protoreflect.Message {
-	mi := &file_irismod_nft_nft_proto_msgTypes[2]
+	mi := &file_irismod_nft_nft_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2277,662 +1793,6 @@ func (x *fastReflection_Denom) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var (
-	md_DenomMetadata                   protoreflect.MessageDescriptor
-	fd_DenomMetadata_creator           protoreflect.FieldDescriptor
-	fd_DenomMetadata_schema            protoreflect.FieldDescriptor
-	fd_DenomMetadata_mint_restricted   protoreflect.FieldDescriptor
-	fd_DenomMetadata_update_restricted protoreflect.FieldDescriptor
-	fd_DenomMetadata_data              protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_irismod_nft_nft_proto_init()
-	md_DenomMetadata = File_irismod_nft_nft_proto.Messages().ByName("DenomMetadata")
-	fd_DenomMetadata_creator = md_DenomMetadata.Fields().ByName("creator")
-	fd_DenomMetadata_schema = md_DenomMetadata.Fields().ByName("schema")
-	fd_DenomMetadata_mint_restricted = md_DenomMetadata.Fields().ByName("mint_restricted")
-	fd_DenomMetadata_update_restricted = md_DenomMetadata.Fields().ByName("update_restricted")
-	fd_DenomMetadata_data = md_DenomMetadata.Fields().ByName("data")
-}
-
-var _ protoreflect.Message = (*fastReflection_DenomMetadata)(nil)
-
-type fastReflection_DenomMetadata DenomMetadata
-
-func (x *DenomMetadata) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_DenomMetadata)(x)
-}
-
-func (x *DenomMetadata) slowProtoReflect() protoreflect.Message {
-	mi := &file_irismod_nft_nft_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_DenomMetadata_messageType fastReflection_DenomMetadata_messageType
-var _ protoreflect.MessageType = fastReflection_DenomMetadata_messageType{}
-
-type fastReflection_DenomMetadata_messageType struct{}
-
-func (x fastReflection_DenomMetadata_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_DenomMetadata)(nil)
-}
-func (x fastReflection_DenomMetadata_messageType) New() protoreflect.Message {
-	return new(fastReflection_DenomMetadata)
-}
-func (x fastReflection_DenomMetadata_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_DenomMetadata
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_DenomMetadata) Descriptor() protoreflect.MessageDescriptor {
-	return md_DenomMetadata
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_DenomMetadata) Type() protoreflect.MessageType {
-	return _fastReflection_DenomMetadata_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_DenomMetadata) New() protoreflect.Message {
-	return new(fastReflection_DenomMetadata)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_DenomMetadata) Interface() protoreflect.ProtoMessage {
-	return (*DenomMetadata)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_DenomMetadata) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Creator != "" {
-		value := protoreflect.ValueOfString(x.Creator)
-		if !f(fd_DenomMetadata_creator, value) {
-			return
-		}
-	}
-	if x.Schema != "" {
-		value := protoreflect.ValueOfString(x.Schema)
-		if !f(fd_DenomMetadata_schema, value) {
-			return
-		}
-	}
-	if x.MintRestricted != false {
-		value := protoreflect.ValueOfBool(x.MintRestricted)
-		if !f(fd_DenomMetadata_mint_restricted, value) {
-			return
-		}
-	}
-	if x.UpdateRestricted != false {
-		value := protoreflect.ValueOfBool(x.UpdateRestricted)
-		if !f(fd_DenomMetadata_update_restricted, value) {
-			return
-		}
-	}
-	if x.Data != "" {
-		value := protoreflect.ValueOfString(x.Data)
-		if !f(fd_DenomMetadata_data, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_DenomMetadata) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "irismod.nft.DenomMetadata.creator":
-		return x.Creator != ""
-	case "irismod.nft.DenomMetadata.schema":
-		return x.Schema != ""
-	case "irismod.nft.DenomMetadata.mint_restricted":
-		return x.MintRestricted != false
-	case "irismod.nft.DenomMetadata.update_restricted":
-		return x.UpdateRestricted != false
-	case "irismod.nft.DenomMetadata.data":
-		return x.Data != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.DenomMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.DenomMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DenomMetadata) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "irismod.nft.DenomMetadata.creator":
-		x.Creator = ""
-	case "irismod.nft.DenomMetadata.schema":
-		x.Schema = ""
-	case "irismod.nft.DenomMetadata.mint_restricted":
-		x.MintRestricted = false
-	case "irismod.nft.DenomMetadata.update_restricted":
-		x.UpdateRestricted = false
-	case "irismod.nft.DenomMetadata.data":
-		x.Data = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.DenomMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.DenomMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_DenomMetadata) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "irismod.nft.DenomMetadata.creator":
-		value := x.Creator
-		return protoreflect.ValueOfString(value)
-	case "irismod.nft.DenomMetadata.schema":
-		value := x.Schema
-		return protoreflect.ValueOfString(value)
-	case "irismod.nft.DenomMetadata.mint_restricted":
-		value := x.MintRestricted
-		return protoreflect.ValueOfBool(value)
-	case "irismod.nft.DenomMetadata.update_restricted":
-		value := x.UpdateRestricted
-		return protoreflect.ValueOfBool(value)
-	case "irismod.nft.DenomMetadata.data":
-		value := x.Data
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.DenomMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.DenomMetadata does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DenomMetadata) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "irismod.nft.DenomMetadata.creator":
-		x.Creator = value.Interface().(string)
-	case "irismod.nft.DenomMetadata.schema":
-		x.Schema = value.Interface().(string)
-	case "irismod.nft.DenomMetadata.mint_restricted":
-		x.MintRestricted = value.Bool()
-	case "irismod.nft.DenomMetadata.update_restricted":
-		x.UpdateRestricted = value.Bool()
-	case "irismod.nft.DenomMetadata.data":
-		x.Data = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.DenomMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.DenomMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DenomMetadata) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "irismod.nft.DenomMetadata.creator":
-		panic(fmt.Errorf("field creator of message irismod.nft.DenomMetadata is not mutable"))
-	case "irismod.nft.DenomMetadata.schema":
-		panic(fmt.Errorf("field schema of message irismod.nft.DenomMetadata is not mutable"))
-	case "irismod.nft.DenomMetadata.mint_restricted":
-		panic(fmt.Errorf("field mint_restricted of message irismod.nft.DenomMetadata is not mutable"))
-	case "irismod.nft.DenomMetadata.update_restricted":
-		panic(fmt.Errorf("field update_restricted of message irismod.nft.DenomMetadata is not mutable"))
-	case "irismod.nft.DenomMetadata.data":
-		panic(fmt.Errorf("field data of message irismod.nft.DenomMetadata is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.DenomMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.DenomMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_DenomMetadata) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "irismod.nft.DenomMetadata.creator":
-		return protoreflect.ValueOfString("")
-	case "irismod.nft.DenomMetadata.schema":
-		return protoreflect.ValueOfString("")
-	case "irismod.nft.DenomMetadata.mint_restricted":
-		return protoreflect.ValueOfBool(false)
-	case "irismod.nft.DenomMetadata.update_restricted":
-		return protoreflect.ValueOfBool(false)
-	case "irismod.nft.DenomMetadata.data":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: irismod.nft.DenomMetadata"))
-		}
-		panic(fmt.Errorf("message irismod.nft.DenomMetadata does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_DenomMetadata) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in irismod.nft.DenomMetadata", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_DenomMetadata) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DenomMetadata) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_DenomMetadata) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_DenomMetadata) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*DenomMetadata)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Creator)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Schema)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.MintRestricted {
-			n += 2
-		}
-		if x.UpdateRestricted {
-			n += 2
-		}
-		l = len(x.Data)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*DenomMetadata)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Data) > 0 {
-			i -= len(x.Data)
-			copy(dAtA[i:], x.Data)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Data)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if x.UpdateRestricted {
-			i--
-			if x.UpdateRestricted {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
-			}
-			i--
-			dAtA[i] = 0x20
-		}
-		if x.MintRestricted {
-			i--
-			if x.MintRestricted {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
-			}
-			i--
-			dAtA[i] = 0x18
-		}
-		if len(x.Schema) > 0 {
-			i -= len(x.Schema)
-			copy(dAtA[i:], x.Schema)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Schema)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if len(x.Creator) > 0 {
-			i -= len(x.Creator)
-			copy(dAtA[i:], x.Creator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*DenomMetadata)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DenomMetadata: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DenomMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Creator = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Schema", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Schema = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MintRestricted", wireType)
-				}
-				var v int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				x.MintRestricted = bool(v != 0)
-			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UpdateRestricted", wireType)
-				}
-				var v int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				x.UpdateRestricted = bool(v != 0)
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Data = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
 var _ protoreflect.List = (*_IDCollection_2_list)(nil)
 
 type _IDCollection_2_list struct {
@@ -3001,7 +1861,7 @@ func (x *IDCollection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *IDCollection) slowProtoReflect() protoreflect.Message {
-	mi := &file_irismod_nft_nft_proto_msgTypes[4]
+	mi := &file_irismod_nft_nft_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3550,7 +2410,7 @@ func (x *Owner) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Owner) slowProtoReflect() protoreflect.Message {
-	mi := &file_irismod_nft_nft_proto_msgTypes[5]
+	mi := &file_irismod_nft_nft_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4108,7 +2968,7 @@ func (x *Collection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Collection) slowProtoReflect() protoreflect.Message {
-	mi := &file_irismod_nft_nft_proto_msgTypes[6]
+	mi := &file_irismod_nft_nft_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4697,49 +3557,6 @@ func (x *BaseNFT) GetUriHash() string {
 	return ""
 }
 
-type NFTMetadata struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Data string `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-}
-
-func (x *NFTMetadata) Reset() {
-	*x = NFTMetadata{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_irismod_nft_nft_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *NFTMetadata) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*NFTMetadata) ProtoMessage() {}
-
-// Deprecated: Use NFTMetadata.ProtoReflect.Descriptor instead.
-func (*NFTMetadata) Descriptor() ([]byte, []int) {
-	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *NFTMetadata) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *NFTMetadata) GetData() string {
-	if x != nil {
-		return x.Data
-	}
-	return ""
-}
-
 // Denom defines a type of NFT
 type Denom struct {
 	state         protoimpl.MessageState
@@ -4762,7 +3579,7 @@ type Denom struct {
 func (x *Denom) Reset() {
 	*x = Denom{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_irismod_nft_nft_proto_msgTypes[2]
+		mi := &file_irismod_nft_nft_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4776,7 +3593,7 @@ func (*Denom) ProtoMessage() {}
 
 // Deprecated: Use Denom.ProtoReflect.Descriptor instead.
 func (*Denom) Descriptor() ([]byte, []int) {
-	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{2}
+	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Denom) GetId() string {
@@ -4856,73 +3673,6 @@ func (x *Denom) GetData() string {
 	return ""
 }
 
-type DenomMetadata struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Creator          string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Schema           string `protobuf:"bytes,2,opt,name=schema,proto3" json:"schema,omitempty"`
-	MintRestricted   bool   `protobuf:"varint,3,opt,name=mint_restricted,json=mintRestricted,proto3" json:"mint_restricted,omitempty"`
-	UpdateRestricted bool   `protobuf:"varint,4,opt,name=update_restricted,json=updateRestricted,proto3" json:"update_restricted,omitempty"`
-	Data             string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-}
-
-func (x *DenomMetadata) Reset() {
-	*x = DenomMetadata{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_irismod_nft_nft_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DenomMetadata) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DenomMetadata) ProtoMessage() {}
-
-// Deprecated: Use DenomMetadata.ProtoReflect.Descriptor instead.
-func (*DenomMetadata) Descriptor() ([]byte, []int) {
-	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *DenomMetadata) GetCreator() string {
-	if x != nil {
-		return x.Creator
-	}
-	return ""
-}
-
-func (x *DenomMetadata) GetSchema() string {
-	if x != nil {
-		return x.Schema
-	}
-	return ""
-}
-
-func (x *DenomMetadata) GetMintRestricted() bool {
-	if x != nil {
-		return x.MintRestricted
-	}
-	return false
-}
-
-func (x *DenomMetadata) GetUpdateRestricted() bool {
-	if x != nil {
-		return x.UpdateRestricted
-	}
-	return false
-}
-
-func (x *DenomMetadata) GetData() string {
-	if x != nil {
-		return x.Data
-	}
-	return ""
-}
-
 // IDCollection defines a type of collection with specified ID
 type IDCollection struct {
 	state         protoimpl.MessageState
@@ -4936,7 +3686,7 @@ type IDCollection struct {
 func (x *IDCollection) Reset() {
 	*x = IDCollection{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_irismod_nft_nft_proto_msgTypes[4]
+		mi := &file_irismod_nft_nft_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4950,7 +3700,7 @@ func (*IDCollection) ProtoMessage() {}
 
 // Deprecated: Use IDCollection.ProtoReflect.Descriptor instead.
 func (*IDCollection) Descriptor() ([]byte, []int) {
-	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{4}
+	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *IDCollection) GetDenomId() string {
@@ -4980,7 +3730,7 @@ type Owner struct {
 func (x *Owner) Reset() {
 	*x = Owner{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_irismod_nft_nft_proto_msgTypes[5]
+		mi := &file_irismod_nft_nft_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4994,7 +3744,7 @@ func (*Owner) ProtoMessage() {}
 
 // Deprecated: Use Owner.ProtoReflect.Descriptor instead.
 func (*Owner) Descriptor() ([]byte, []int) {
-	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{5}
+	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Owner) GetAddress() string {
@@ -5024,7 +3774,7 @@ type Collection struct {
 func (x *Collection) Reset() {
 	*x = Collection{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_irismod_nft_nft_proto_msgTypes[6]
+		mi := &file_irismod_nft_nft_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5038,7 +3788,7 @@ func (*Collection) ProtoMessage() {}
 
 // Deprecated: Use Collection.ProtoReflect.Descriptor instead.
 func (*Collection) Descriptor() ([]byte, []int) {
-	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{6}
+	return file_irismod_nft_nft_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Collection) GetDenom() *Denom {
@@ -5071,75 +3821,60 @@ var file_irismod_nft_nft_proto_rawDesc = []byte{
 	0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12,
 	0x19, 0x0a, 0x08, 0x75, 0x72, 0x69, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x06, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x07, 0x75, 0x72, 0x69, 0x48, 0x61, 0x73, 0x68, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01,
-	0x22, 0x3b, 0x0a, 0x0b, 0x4e, 0x46, 0x54, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12,
-	0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e,
-	0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x22, 0xb4, 0x02,
-	0x0a, 0x05, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73,
-	0x63, 0x68, 0x65, 0x6d, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x63, 0x68,
-	0x65, 0x6d, 0x61, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x16, 0x0a,
-	0x06, 0x73, 0x79, 0x6d, 0x62, 0x6f, 0x6c, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73,
-	0x79, 0x6d, 0x62, 0x6f, 0x6c, 0x12, 0x27, 0x0a, 0x0f, 0x6d, 0x69, 0x6e, 0x74, 0x5f, 0x72, 0x65,
-	0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e,
-	0x6d, 0x69, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x12, 0x2b,
-	0x0a, 0x11, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x72, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63,
-	0x74, 0x65, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10, 0x75, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x64,
-	0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x10, 0x0a,
-	0x03, 0x75, 0x72, 0x69, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x69, 0x12,
-	0x19, 0x0a, 0x08, 0x75, 0x72, 0x69, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x0a, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x75, 0x72, 0x69, 0x48, 0x61, 0x73, 0x68, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61,
-	0x74, 0x61, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x3a, 0x04,
-	0xe8, 0xa0, 0x1f, 0x01, 0x22, 0xb1, 0x01, 0x0a, 0x0d, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x4d, 0x65,
-	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
-	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
-	0x12, 0x16, 0x0a, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x12, 0x27, 0x0a, 0x0f, 0x6d, 0x69, 0x6e, 0x74,
-	0x5f, 0x72, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x22, 0xb4, 0x02, 0x0a, 0x05, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x16,
+	0x0a, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
+	0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x12, 0x16, 0x0a, 0x06, 0x73, 0x79, 0x6d, 0x62, 0x6f, 0x6c, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x73, 0x79, 0x6d, 0x62, 0x6f, 0x6c, 0x12, 0x27, 0x0a, 0x0f, 0x6d, 0x69, 0x6e, 0x74,
+	0x5f, 0x72, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28,
 	0x08, 0x52, 0x0e, 0x6d, 0x69, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65,
 	0x64, 0x12, 0x2b, 0x0a, 0x11, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x72, 0x65, 0x73, 0x74,
-	0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10, 0x75, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x12, 0x12,
-	0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61,
-	0x74, 0x61, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x22, 0x77, 0x0a, 0x0c, 0x49, 0x44, 0x43, 0x6f,
-	0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2e, 0x0a, 0x08, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x13, 0xf2, 0xde, 0x1f, 0x0f,
-	0x79, 0x61, 0x6d, 0x6c, 0x3a, 0x22, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x5f, 0x69, 0x64, 0x22, 0x52,
-	0x07, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x49, 0x64, 0x12, 0x31, 0x0a, 0x09, 0x74, 0x6f, 0x6b, 0x65,
-	0x6e, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x42, 0x14, 0xf2, 0xde, 0x1f,
-	0x10, 0x79, 0x61, 0x6d, 0x6c, 0x3a, 0x22, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x73,
-	0x22, 0x52, 0x08, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x64, 0x73, 0x3a, 0x04, 0xe8, 0xa0, 0x1f,
-	0x01, 0x22, 0x8f, 0x01, 0x0a, 0x05, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x66, 0x0a, 0x0e, 0x69, 0x64, 0x5f, 0x63, 0x6f, 0x6c, 0x6c,
-	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e,
-	0x69, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x2e, 0x49, 0x44, 0x43, 0x6f,
-	0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x24, 0xc8, 0xde, 0x1f, 0x00, 0xe2, 0xde,
-	0x1f, 0x0d, 0x49, 0x44, 0x43, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0xf2,
-	0xde, 0x1f, 0x0b, 0x79, 0x61, 0x6d, 0x6c, 0x3a, 0x22, 0x69, 0x64, 0x63, 0x73, 0x22, 0x52, 0x0d,
-	0x69, 0x64, 0x43, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x04, 0xe8,
-	0xa0, 0x1f, 0x01, 0x22, 0x7a, 0x0a, 0x0a, 0x43, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x2e, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x12, 0x2e, 0x69, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x2e, 0x44,
-	0x65, 0x6e, 0x6f, 0x6d, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x12, 0x36, 0x0a, 0x04, 0x6e, 0x66, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x14, 0x2e, 0x69, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x2e, 0x42, 0x61,
-	0x73, 0x65, 0x4e, 0x46, 0x54, 0x42, 0x0c, 0xc8, 0xde, 0x1f, 0x00, 0xe2, 0xde, 0x1f, 0x04, 0x4e,
-	0x46, 0x54, 0x73, 0x52, 0x04, 0x6e, 0x66, 0x74, 0x73, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x42,
-	0x8e, 0x01, 0xc8, 0xe1, 0x1e, 0x00, 0x0a, 0x0f, 0x63, 0x6f, 0x6d, 0x2e, 0x69, 0x72, 0x69, 0x73,
-	0x6d, 0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x42, 0x08, 0x4e, 0x66, 0x74, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x20, 0x6d, 0x6f, 0x64, 0x73, 0x2e, 0x69, 0x72, 0x69, 0x73, 0x6e, 0x65,
-	0x74, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x69, 0x72, 0x69, 0x73, 0x6d, 0x6f,
-	0x64, 0x2f, 0x6e, 0x66, 0x74, 0xa2, 0x02, 0x03, 0x49, 0x4e, 0x58, 0xaa, 0x02, 0x0b, 0x49, 0x72,
-	0x69, 0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x4e, 0x66, 0x74, 0xca, 0x02, 0x0b, 0x49, 0x72, 0x69, 0x73,
-	0x6d, 0x6f, 0x64, 0x5c, 0x4e, 0x66, 0x74, 0xe2, 0x02, 0x17, 0x49, 0x72, 0x69, 0x73, 0x6d, 0x6f,
-	0x64, 0x5c, 0x4e, 0x66, 0x74, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x0c, 0x49, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x3a, 0x3a, 0x4e, 0x66, 0x74,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10, 0x75, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x65, 0x64, 0x12, 0x20,
+	0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x69, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75,
+	0x72, 0x69, 0x12, 0x19, 0x0a, 0x08, 0x75, 0x72, 0x69, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x0a,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x75, 0x72, 0x69, 0x48, 0x61, 0x73, 0x68, 0x12, 0x12, 0x0a,
+	0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x74,
+	0x61, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x22, 0x77, 0x0a, 0x0c, 0x49, 0x44, 0x43, 0x6f, 0x6c,
+	0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2e, 0x0a, 0x08, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
+	0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x13, 0xf2, 0xde, 0x1f, 0x0f, 0x79,
+	0x61, 0x6d, 0x6c, 0x3a, 0x22, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x5f, 0x69, 0x64, 0x22, 0x52, 0x07,
+	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x49, 0x64, 0x12, 0x31, 0x0a, 0x09, 0x74, 0x6f, 0x6b, 0x65, 0x6e,
+	0x5f, 0x69, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x42, 0x14, 0xf2, 0xde, 0x1f, 0x10,
+	0x79, 0x61, 0x6d, 0x6c, 0x3a, 0x22, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x73, 0x22,
+	0x52, 0x08, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x64, 0x73, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01,
+	0x22, 0x8f, 0x01, 0x0a, 0x05, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x66, 0x0a, 0x0e, 0x69, 0x64, 0x5f, 0x63, 0x6f, 0x6c, 0x6c, 0x65,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x69,
+	0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x2e, 0x49, 0x44, 0x43, 0x6f, 0x6c,
+	0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x24, 0xc8, 0xde, 0x1f, 0x00, 0xe2, 0xde, 0x1f,
+	0x0d, 0x49, 0x44, 0x43, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0xf2, 0xde,
+	0x1f, 0x0b, 0x79, 0x61, 0x6d, 0x6c, 0x3a, 0x22, 0x69, 0x64, 0x63, 0x73, 0x22, 0x52, 0x0d, 0x69,
+	0x64, 0x43, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x04, 0xe8, 0xa0,
+	0x1f, 0x01, 0x22, 0x7a, 0x0a, 0x0a, 0x43, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x2e, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x12, 0x2e, 0x69, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x2e, 0x44, 0x65,
+	0x6e, 0x6f, 0x6d, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
+	0x12, 0x36, 0x0a, 0x04, 0x6e, 0x66, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14,
+	0x2e, 0x69, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x2e, 0x42, 0x61, 0x73,
+	0x65, 0x4e, 0x46, 0x54, 0x42, 0x0c, 0xc8, 0xde, 0x1f, 0x00, 0xe2, 0xde, 0x1f, 0x04, 0x4e, 0x46,
+	0x54, 0x73, 0x52, 0x04, 0x6e, 0x66, 0x74, 0x73, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x42, 0x8e,
+	0x01, 0xc8, 0xe1, 0x1e, 0x00, 0x0a, 0x0f, 0x63, 0x6f, 0x6d, 0x2e, 0x69, 0x72, 0x69, 0x73, 0x6d,
+	0x6f, 0x64, 0x2e, 0x6e, 0x66, 0x74, 0x42, 0x08, 0x4e, 0x66, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x50, 0x01, 0x5a, 0x20, 0x6d, 0x6f, 0x64, 0x73, 0x2e, 0x69, 0x72, 0x69, 0x73, 0x6e, 0x65, 0x74,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x69, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64,
+	0x2f, 0x6e, 0x66, 0x74, 0xa2, 0x02, 0x03, 0x49, 0x4e, 0x58, 0xaa, 0x02, 0x0b, 0x49, 0x72, 0x69,
+	0x73, 0x6d, 0x6f, 0x64, 0x2e, 0x4e, 0x66, 0x74, 0xca, 0x02, 0x0b, 0x49, 0x72, 0x69, 0x73, 0x6d,
+	0x6f, 0x64, 0x5c, 0x4e, 0x66, 0x74, 0xe2, 0x02, 0x17, 0x49, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64,
+	0x5c, 0x4e, 0x66, 0x74, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x0c, 0x49, 0x72, 0x69, 0x73, 0x6d, 0x6f, 0x64, 0x3a, 0x3a, 0x4e, 0x66, 0x74, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -5154,19 +3889,17 @@ func file_irismod_nft_nft_proto_rawDescGZIP() []byte {
 	return file_irismod_nft_nft_proto_rawDescData
 }
 
-var file_irismod_nft_nft_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_irismod_nft_nft_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_irismod_nft_nft_proto_goTypes = []interface{}{
-	(*BaseNFT)(nil),       // 0: irismod.nft.BaseNFT
-	(*NFTMetadata)(nil),   // 1: irismod.nft.NFTMetadata
-	(*Denom)(nil),         // 2: irismod.nft.Denom
-	(*DenomMetadata)(nil), // 3: irismod.nft.DenomMetadata
-	(*IDCollection)(nil),  // 4: irismod.nft.IDCollection
-	(*Owner)(nil),         // 5: irismod.nft.Owner
-	(*Collection)(nil),    // 6: irismod.nft.Collection
+	(*BaseNFT)(nil),      // 0: irismod.nft.BaseNFT
+	(*Denom)(nil),        // 1: irismod.nft.Denom
+	(*IDCollection)(nil), // 2: irismod.nft.IDCollection
+	(*Owner)(nil),        // 3: irismod.nft.Owner
+	(*Collection)(nil),   // 4: irismod.nft.Collection
 }
 var file_irismod_nft_nft_proto_depIdxs = []int32{
-	4, // 0: irismod.nft.Owner.id_collections:type_name -> irismod.nft.IDCollection
-	2, // 1: irismod.nft.Collection.denom:type_name -> irismod.nft.Denom
+	2, // 0: irismod.nft.Owner.id_collections:type_name -> irismod.nft.IDCollection
+	1, // 1: irismod.nft.Collection.denom:type_name -> irismod.nft.Denom
 	0, // 2: irismod.nft.Collection.nfts:type_name -> irismod.nft.BaseNFT
 	3, // [3:3] is the sub-list for method output_type
 	3, // [3:3] is the sub-list for method input_type
@@ -5194,18 +3927,6 @@ func file_irismod_nft_nft_proto_init() {
 			}
 		}
 		file_irismod_nft_nft_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NFTMetadata); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_irismod_nft_nft_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Denom); i {
 			case 0:
 				return &v.state
@@ -5217,19 +3938,7 @@ func file_irismod_nft_nft_proto_init() {
 				return nil
 			}
 		}
-		file_irismod_nft_nft_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DenomMetadata); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_irismod_nft_nft_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_irismod_nft_nft_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*IDCollection); i {
 			case 0:
 				return &v.state
@@ -5241,7 +3950,7 @@ func file_irismod_nft_nft_proto_init() {
 				return nil
 			}
 		}
-		file_irismod_nft_nft_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_irismod_nft_nft_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Owner); i {
 			case 0:
 				return &v.state
@@ -5253,7 +3962,7 @@ func file_irismod_nft_nft_proto_init() {
 				return nil
 			}
 		}
-		file_irismod_nft_nft_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_irismod_nft_nft_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Collection); i {
 			case 0:
 				return &v.state
@@ -5272,7 +3981,7 @@ func file_irismod_nft_nft_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_irismod_nft_nft_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

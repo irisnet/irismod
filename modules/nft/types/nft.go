@@ -1,7 +1,6 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/nft/exported"
@@ -57,15 +56,3 @@ func (bnft BaseNFT) GetData() string {
 
 // NFTs define a list of NFT
 type NFTs []exported.NFT
-
-func UnmarshalNFTMetadata(cdc codec.Codec, bz []byte) (NFTMetadata, error) {
-	var nftMetadata NFTMetadata
-	if len(bz) == 0 {
-		return nftMetadata, nil
-	}
-
-	if err := cdc.Unmarshal(bz, &nftMetadata); err != nil {
-		return nftMetadata, err
-	}
-	return nftMetadata, nil
-}

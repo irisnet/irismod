@@ -213,7 +213,7 @@ func QueryOwnerExec(t *testing.T,
 	clientCtx client.Context,
 	address string,
 	extraArgs ...string,
-) *nfttypes.QueryNFTsOfOwnerResponse {
+) *nfttypes.QueryOwnerResponse {
 	t.Helper()
 	args := []string{
 		address,
@@ -221,7 +221,7 @@ func QueryOwnerExec(t *testing.T,
 	}
 	args = append(args, extraArgs...)
 
-	response := &nfttypes.QueryNFTsOfOwnerResponse{}
+	response := &nfttypes.QueryOwnerResponse{}
 	network.ExecQueryCmd(t, clientCtx, nftcli.GetCmdQueryOwner(), args, response)
 	return response
 }

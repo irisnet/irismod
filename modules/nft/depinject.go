@@ -53,8 +53,6 @@ func ProvideModule(in Inputs) Outputs {
 	keeper := keeper.NewKeeper(
 		in.Cdc,
 		in.Key,
-		in.AccountKeeper,
-		in.BankKeeper,
 	)
 	m := NewAppModule(in.Cdc, keeper, in.AccountKeeper, in.BankKeeper)
 
