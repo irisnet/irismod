@@ -8,7 +8,7 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	proto "github.com/cosmos/gogoproto/proto"
+	gogotypes "github.com/gogo/protobuf/types"
 
 	"mods.irisnet.org/modules/nft/exported"
 )
@@ -37,6 +37,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&BaseNFT{}, "irismod/nft/BaseNFT", nil)
 }
 
+// RegisterInterfaces registers the interfaces types with the interface registry
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
@@ -53,11 +54,31 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&BaseNFT{},
 	)
 
-	registry.RegisterImplementations(
-		(*proto.Message)(nil),
-		&DenomMetadata{},
-		&NFTMetadata{},
-	)
-
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
+}
+
+// MustMarshalSupply return supply protobuf code
+func MustMarshalSupply(cdc codec.Codec, supply uint64) []byte {
+	supplyWrap := gogotypes.UInt64Value{Value: supply}
+	return cdc.MustMarshal(&supplyWrap)
+}
+
+// MustUnMarshalSupply return the supply
+func MustUnMarshalSupply(cdc codec.Codec, value []byte) uint64 {
+	var supplyWrap gogotypes.UInt64Value
+	cdc.MustUnmarshal(value, &supplyWrap)
+	return supplyWrap.Value
+}
+
+// MustMarshalTokenID return the tokenID protobuf code
+func MustMarshalTokenID(cdc codec.Codec, tokenID string) []byte {
+	tokenIDWrap := gogotypes.StringValue{Value: tokenID}
+	return cdc.MustMarshal(&tokenIDWrap)
+}
+
+// MustUnMarshalTokenID return th tokenID
+func MustUnMarshalTokenID(cdc codec.Codec, value []byte) string {
+	var tokenIDWrap gogotypes.StringValue
+	cdc.MustUnmarshal(value, &tokenIDWrap)
+	return tokenIDWrap.Value
 }

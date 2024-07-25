@@ -22,11 +22,7 @@ func SupplyInvariant(k Keeper) sdk.Invariant {
 		var msg string
 		count := 0
 
-		collections, err := k.GetCollections(ctx)
-		if err != nil {
-			panic(err)
-		}
-
+		collections := k.GetCollections(ctx)
 		for _, collection := range collections {
 			ownersCollectionsSupply[collection.Denom.Id] = uint64(len(collection.NFTs))
 		}
