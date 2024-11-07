@@ -3,7 +3,7 @@ package mt
 import (
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/depinject"
-	store "cosmossdk.io/store/types"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	modulev1 "mods.irisnet.org/api/irismod/mt/module/v1"
@@ -32,7 +32,7 @@ type Inputs struct {
 
 	Config *modulev1.Module
 	Cdc    codec.Codec
-	Key    *store.KVStoreKey
+	Key    *storetypes.KVStoreKey
 
 	AccountKeeper types.AccountKeeper
 	BankKeeper    types.BankKeeper
