@@ -2,8 +2,6 @@ module mods.irisnet.org/simapp
 
 go 1.21
 
-toolchain go1.23.1
-
 require (
 	cosmossdk.io/depinject v1.0.0
 	cosmossdk.io/errors v1.0.1
