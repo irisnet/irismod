@@ -2,8 +2,6 @@ module mods.irisnet.org/e2e
 
 go 1.21
 
-toolchain go1.23.1
-
 require (
 	cosmossdk.io/api v0.7.5
 	cosmossdk.io/core v0.11.1
