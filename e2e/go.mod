@@ -12,18 +12,18 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/gjson v1.14.4
 	google.golang.org/protobuf v1.32.0
-	mods.irisnet.org/api v1.0.0-beta
-	mods.irisnet.org/modules/coinswap v1.0.0-beta
-	mods.irisnet.org/modules/farm v1.0.0-beta
-	mods.irisnet.org/modules/htlc v1.0.0-beta
-	mods.irisnet.org/modules/mt v1.0.0-beta
-	mods.irisnet.org/modules/nft v1.0.0-beta
-	mods.irisnet.org/modules/oracle v1.0.0-beta
-	mods.irisnet.org/modules/random v1.0.0-beta
-	mods.irisnet.org/modules/record v1.0.0-beta
-	mods.irisnet.org/modules/service v1.0.0-beta
-	mods.irisnet.org/modules/token v1.0.0-beta
-	mods.irisnet.org/simapp v1.0.0-beta
+	mods.irisnet.org/api v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/coinswap v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/farm v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/htlc v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/mt v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/nft v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/oracle v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/random v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/record v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/service v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/token v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/simapp v0.0.0-20240725053619-ef0885f8eb03
 )
 
 require (
@@ -221,17 +221,17 @@ replace (
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.0
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-	// TODO
-	mods.irisnet.org/api => ../api
-	mods.irisnet.org/modules/coinswap => ../modules/coinswap
-	mods.irisnet.org/modules/farm => ../modules/farm
-	mods.irisnet.org/modules/htlc => ../modules/htlc
-	mods.irisnet.org/modules/mt => ../modules/mt
-	mods.irisnet.org/modules/nft => ../modules/nft
-	mods.irisnet.org/modules/oracle => ../modules/oracle
-	mods.irisnet.org/modules/random => ../modules/random
-	mods.irisnet.org/modules/record => ../modules/record
-	mods.irisnet.org/modules/service => ../modules/service
-	mods.irisnet.org/modules/token => ../modules/token
-	mods.irisnet.org/simapp => ../simapp
+// TODO
+//mods.irisnet.org/api => ../api
+//mods.irisnet.org/modules/coinswap => ../modules/coinswap
+//mods.irisnet.org/modules/farm => ../modules/farm
+//mods.irisnet.org/modules/htlc => ../modules/htlc
+//mods.irisnet.org/modules/mt => ../modules/mt
+//mods.irisnet.org/modules/nft => ../modules/nft
+//mods.irisnet.org/modules/oracle => ../modules/oracle
+//mods.irisnet.org/modules/random => ../modules/random
+//mods.irisnet.org/modules/record => ../modules/record
+//mods.irisnet.org/modules/service => ../modules/service
+//mods.irisnet.org/modules/token => ../modules/token
+//mods.irisnet.org/simapp => ../simapp
 )
