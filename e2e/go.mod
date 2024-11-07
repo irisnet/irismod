@@ -12,18 +12,18 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/gjson v1.14.4
 	google.golang.org/protobuf v1.32.0
-	mods.irisnet.org/api v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/coinswap v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/farm v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/htlc v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/mt v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/nft v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/oracle v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/random v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/record v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/service v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/modules/token v0.0.0-20240705013837-55f906fb239e
-	mods.irisnet.org/simapp v0.0.0-20240705013837-55f906fb239e
+	mods.irisnet.org/api v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/coinswap v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/farm v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/htlc v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/mt v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/nft v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/oracle v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/random v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/record v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/service v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/modules/token v0.0.0-20240725053619-ef0885f8eb03
+	mods.irisnet.org/simapp v0.0.0-20240725053619-ef0885f8eb03
 )
 
 require (
