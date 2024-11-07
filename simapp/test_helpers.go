@@ -804,6 +804,7 @@ func MsgSendExec(
 func QueryTx(t *testing.T, clientCtx client.Context, txHash string) abci.ExecTxResult {
 	t.Helper()
 	txResult, _ := QueryTxWithHeight(t, clientCtx, txHash)
+
 	return txResult
 }
 
