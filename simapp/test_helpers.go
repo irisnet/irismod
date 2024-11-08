@@ -435,11 +435,11 @@ func AddTestAddrsFromPubKeys(
 	pubKeys []cryptotypes.PubKey,
 	accAmt math.Int,
 ) {
-	bondDemo, err := app.StakingKeeper.BondDenom(ctx)
+	bondDenom, err := app.StakingKeeper.BondDenom(ctx)
 	if err != nil {
 		panic(err)
 	}
-	initCoins := sdk.NewCoins(sdk.NewCoin(bondDemo, accAmt))
+	initCoins := sdk.NewCoins(sdk.NewCoin(bondDenom, accAmt))
 
 	for _, pk := range pubKeys {
 		initAccountWithCoins(app, ctx, sdk.AccAddress(pk.Address()), initCoins)
@@ -471,11 +471,11 @@ func addTestAddrs(
 	strategy GenerateAccountStrategy,
 ) []sdk.AccAddress {
 	testAddrs := strategy(accNum)
-	bondDemon, err := app.StakingKeeper.BondDenom(ctx)
+	bondDenom, err := app.StakingKeeper.BondDenom(ctx)
 	if err != nil {
 		panic(err)
 	}
-	initCoins := sdk.NewCoins(sdk.NewCoin(bondDemon, accAmt))
+	initCoins := sdk.NewCoins(sdk.NewCoin(bondDenom, accAmt))
 
 	for _, addr := range testAddrs {
 		initAccountWithCoins(app, ctx, addr, initCoins)
