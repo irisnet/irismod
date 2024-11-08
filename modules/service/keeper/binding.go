@@ -5,6 +5,8 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	v1 "github.com/cosmos/cosmos-sdk/x/auth/migrations/v1"
 	gogotypes "github.com/cosmos/gogoproto/types"
@@ -452,7 +454,7 @@ func (k Keeper) GetOwnerServiceBindings(
 
 	bindings := make([]*types.ServiceBinding, 0)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.GetOwnerBindingsSubspace(owner, serviceName))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetOwnerBindingsSubspace(owner, serviceName))
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -498,9 +500,9 @@ func (k Keeper) SetOwnerProvider(ctx sdk.Context, owner, provider sdk.AccAddress
 }
 
 // OwnerProvidersIterator returns an iterator for all providers of the specified owner
-func (k Keeper) OwnerProvidersIterator(ctx sdk.Context, owner sdk.AccAddress) sdk.Iterator {
+func (k Keeper) OwnerProvidersIterator(ctx sdk.Context, owner sdk.AccAddress) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.GetOwnerProvidersSubspace(owner))
+	return storetypes.KVStorePrefixIterator(store, types.GetOwnerProvidersSubspace(owner))
 }
 
 // SetPricing sets the pricing for the specified service binding
@@ -558,7 +560,7 @@ func (k Keeper) IterateWithdrawAddresses(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.WithdrawAddrKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.WithdrawAddrKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -572,15 +574,15 @@ func (k Keeper) IterateWithdrawAddresses(
 }
 
 // ServiceBindingsIterator returns an iterator for all bindings of the specified service definition
-func (k Keeper) ServiceBindingsIterator(ctx sdk.Context, serviceName string) sdk.Iterator {
+func (k Keeper) ServiceBindingsIterator(ctx sdk.Context, serviceName string) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.GetBindingsSubspace(serviceName))
+	return storetypes.KVStorePrefixIterator(store, types.GetBindingsSubspace(serviceName))
 }
 
 // AllServiceBindingsIterator returns an iterator for all bindings
-func (k Keeper) AllServiceBindingsIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) AllServiceBindingsIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.ServiceBindingKey)
+	return storetypes.KVStorePrefixIterator(store, types.ServiceBindingKey)
 }
 
 func (k Keeper) IterateServiceBindings(
@@ -589,7 +591,7 @@ func (k Keeper) IterateServiceBindings(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.ServiceBindingKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.ServiceBindingKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -604,7 +606,7 @@ func (k Keeper) IterateServiceBindings(
 
 // GetMinDeposit gets the minimum deposit required for the service binding
 func (k Keeper) GetMinDeposit(ctx sdk.Context, pricing types.Pricing) (sdk.Coins, error) {
-	minDepositMultiple := sdk.NewInt(k.MinDepositMultiple(ctx))
+	minDepositMultiple := math.NewInt(k.MinDepositMultiple(ctx))
 	minDepositParam := k.MinDeposit(ctx)
 	baseDenom := k.BaseDenom(ctx)
 
@@ -619,9 +621,9 @@ func (k Keeper) GetMinDeposit(ctx sdk.Context, pricing types.Pricing) (sdk.Coins
 			return nil, err
 		}
 
-		basePrice = sdk.NewDecFromInt(price).Mul(rate).TruncateInt()
+		basePrice = math.LegacyNewDecFromInt(price).Mul(rate).TruncateInt()
 		if basePrice.IsZero() {
-			basePrice = sdk.OneInt()
+			basePrice = math.OneInt()
 		}
 	}
 

@@ -5,9 +5,8 @@ import (
 	"testing"
 	"time"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	"cosmossdk.io/math"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	v1 "github.com/cosmos/cosmos-sdk/x/auth/migrations/v1"
@@ -22,7 +21,7 @@ import (
 )
 
 var (
-	initCoinAmt = sdk.NewInt(100000)
+	initCoinAmt = math.NewInt(100000)
 
 	testDenom1 = "testdenom1"                                                           // testing the normal cases
 	testDenom2 = "testdenom2"                                                           // testing the case in which the feed value is 0
@@ -30,10 +29,10 @@ var (
 	testDenom4 = "ibc/9EBF7EBE6F8FFD34617809F3CF00E04A10D8B7226048F68866371FB9DAD8A25D" // testing the ibc case
 	testDenom5 = "pegeth0xdac17f958d2ee523a2206206994597c13d831ec7"                     // testing the ethpeg case
 
-	testCoin1 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10000))
-	testCoin2 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
-	testCoin3 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(2))
-	testCoin4 = sdk.NewCoin(testDenom4, sdk.NewInt(10))
+	testCoin1 = sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(10000))
+	testCoin2 = sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100))
+	testCoin3 = sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(2))
+	testCoin4 = sdk.NewCoin(testDenom4, math.NewInt(10))
 
 	testAuthor    sdk.AccAddress
 	testOwner     sdk.AccAddress
@@ -92,8 +91,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 	isCheckTx := false
 	app := simapp.Setup(suite.T(), isCheckTx, depInjectOptions)
 
-	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
-	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
+	suite.cdc = app.AppCodec()
+	suite.ctx = app.BaseApp.NewContext(isCheckTx)
 	suite.app = app
 
 	suite.NoError(suite.keeper.SetParams(suite.ctx, types.DefaultParams()), "set params failed")
@@ -264,7 +263,7 @@ func (suite *KeeperTestSuite) TestBindService() {
 	)
 	suite.True(found)
 
-	suite.True(updatedSvcBinding.Deposit.IsEqual(svcBinding.Deposit.Add(testAddedDeposit...)))
+	suite.True(updatedSvcBinding.Deposit.Equal(svcBinding.Deposit.Add(testAddedDeposit...)))
 	suite.Equal(newPricing, updatedSvcBinding.Pricing)
 	suite.Equal(newQoS, updatedSvcBinding.QoS)
 }
@@ -356,7 +355,7 @@ func (suite *KeeperTestSuite) TestKeeperRequestContext() {
 
 	blockHeight := int64(1000)
 	ctx := suite.ctx.WithBlockHeight(blockHeight)
-	suite.app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+	suite.app.BeginBlocker(ctx)
 
 	// create
 	requestContextID, err := suite.keeper.CreateRequestContext(
@@ -458,7 +457,7 @@ func (suite *KeeperTestSuite) TestKeeperRequestService() {
 
 	blockHeight := int64(1000)
 	ctx := suite.ctx.WithBlockHeight(blockHeight)
-	suite.app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+	suite.app.BeginBlocker(ctx)
 
 	requestContextID, requestContext := suite.setRequestContext(
 		ctx,
@@ -756,28 +755,28 @@ func (suite *KeeperTestSuite) TestGetMinDeposit() {
 
 	minDeposit, err := suite.keeper.GetMinDeposit(suite.ctx, pricing)
 	suite.NoError(err)
-	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000))), minDeposit)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5000))), minDeposit)
 
 	pricing1, err := types.ParsePricing(testPricing1)
 	suite.NoError(err)
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing1)
 	suite.NoError(err)
-	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))), minDeposit)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(50000))), minDeposit)
 
 	pricing2, err := types.ParsePricing(testPricing2)
 	suite.NoError(err)
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing2)
 	suite.NoError(err)
-	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000))), minDeposit)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5000))), minDeposit)
 
 	pricing3, err := types.ParsePricing(testPricing3)
 	suite.NoError(err)
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing3)
 	suite.NoError(err)
-	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0))), minDeposit)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(0))), minDeposit)
 
 	pricing4, err := types.ParsePricing(testPricing4)
 	suite.NoError(err)
@@ -796,14 +795,14 @@ func (suite *KeeperTestSuite) TestGetMinDeposit() {
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing6)
 	suite.NoError(err)
-	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(500000))), minDeposit)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(500000))), minDeposit)
 
 	pricing7, err := types.ParsePricing(testPricing7)
 	suite.NoError(err)
 
 	minDeposit, err = suite.keeper.GetMinDeposit(suite.ctx, pricing7)
 	suite.NoError(err)
-	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000))), minDeposit)
+	suite.Equal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100000))), minDeposit)
 }
 
 func callback(ctx sdk.Context, requestContextID tmbytes.HexBytes, responses []string, err error) {

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/service/types"
@@ -55,7 +56,7 @@ func (k Keeper) IterateServiceDefinitions(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.ServiceDefinitionKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.ServiceDefinitionKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
