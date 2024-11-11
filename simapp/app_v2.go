@@ -248,7 +248,7 @@ func NewSimApp(
 	// register streaming services
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {
 		logger.Error("failed to register streaming services", "err", err)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// initParamsKeeper(app.ParamsKeeper)
