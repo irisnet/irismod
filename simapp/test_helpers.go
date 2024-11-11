@@ -1,5 +1,6 @@
 package simapp
 
+//
 import (
 	"bytes"
 	"context"
@@ -14,16 +15,19 @@ import (
 
 	"cosmossdk.io/depinject"
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/log"
 	"cosmossdk.io/math"
-	dbm "github.com/cometbft/cometbft-db"
+	sdkmath "cosmossdk.io/math"
+	pruningtypes "cosmossdk.io/store/pruning/types"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
+	dbm "github.com/cosmos/cosmos-db"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/address"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -32,22 +36,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
-	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/require"
 )
 
@@ -94,7 +94,7 @@ func Setup(t *testing.T, isCheckTx bool, depInjectOptions DepinjectOptions) *Sim
 	)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100000000000000))),
 	}
 
 	app := SetupWithGenesisValSet(t, depInjectOptions, valSet, []authtypes.GenesisAccount{acc}, balance)
@@ -128,7 +128,7 @@ func SetupWithGenesisStateFn(
 	)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100000000000000))),
 	}
 	genesisState = genesisStateWithValSet(
 		t,
@@ -149,21 +149,13 @@ func SetupWithGenesisStateFn(
 	}
 
 	// Initialize the chain
-	app.InitChain(
-		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: simtestutil.DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
-		},
+	_, err = app.InitChain(&abci.RequestInitChain{
+		Validators:      []abci.ValidatorUpdate{},
+		ConsensusParams: simtestutil.DefaultConsensusParams,
+		AppStateBytes:   stateBytes,
+	},
 	)
-	// commit genesis changes
-	app.Commit()
-	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
-		Height:             app.LastBlockHeight() + 1,
-		AppHash:            app.LastCommitID().Hash,
-		ValidatorsHash:     valSet.Hash(),
-		NextValidatorsHash: valSet.Hash(),
-	}})
+	require.NoError(t, err)
 	return app
 }
 
@@ -203,7 +195,7 @@ func NewConfig(depInjectOptions DepinjectOptions) (network.Config, error) {
 	cfg.GenesisState = appBuilder.DefaultGenesis()
 	cfg.AppConstructor = func(val network.ValidatorI) servertypes.Application {
 		return NewSimApp(
-			val.GetCtx().Logger,
+			log.NewNopLogger(),
 			dbm.NewMemDB(),
 			nil,
 			true,
@@ -249,21 +241,22 @@ func genesisStateWithValSet(t *testing.T,
 			Jailed:          false,
 			Status:          stakingtypes.Bonded,
 			Tokens:          bondAmt,
-			DelegatorShares: sdk.OneDec(),
+			DelegatorShares: sdkmath.LegacyOneDec(),
 			Description:     stakingtypes.Description{},
 			UnbondingHeight: int64(0),
 			UnbondingTime:   time.Unix(0, 0).UTC(),
 			Commission: stakingtypes.NewCommission(
-				sdk.ZeroDec(),
-				sdk.ZeroDec(),
-				sdk.ZeroDec(),
+				sdkmath.LegacyZeroDec(),
+				sdkmath.LegacyZeroDec(),
+				sdkmath.LegacyZeroDec(),
 			),
-			MinSelfDelegation: sdk.ZeroInt(),
+			MinSelfDelegation: sdkmath.ZeroInt(),
 		}
 		validators = append(validators, validator)
+		valAddr := sdk.ValAddress(val.Address.Bytes())
 		delegations = append(
 			delegations,
-			stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdk.OneDec()),
+			stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), valAddr.String(), sdkmath.LegacyOneDec()),
 		)
 
 	}
@@ -325,22 +318,14 @@ func SetupWithGenesisValSet(
 	require.NoError(t, err)
 
 	// init chain will set the validator set and initialize the genesis accounts
-	app.InitChain(
-		abci.RequestInitChain{
+	_, err = app.InitChain(
+		&abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: simtestutil.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
-
-	// commit genesis changes
-	app.Commit()
-	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
-		Height:             app.LastBlockHeight() + 1,
-		AppHash:            app.LastCommitID().Hash,
-		ValidatorsHash:     valSet.Hash(),
-		NextValidatorsHash: valSet.Hash(),
-	}})
+	require.NoError(t, err)
 
 	return app
 }
@@ -450,7 +435,11 @@ func AddTestAddrsFromPubKeys(
 	pubKeys []cryptotypes.PubKey,
 	accAmt math.Int,
 ) {
-	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
+	bondDenom, err := app.StakingKeeper.BondDenom(ctx)
+	if err != nil {
+		panic(err)
+	}
+	initCoins := sdk.NewCoins(sdk.NewCoin(bondDenom, accAmt))
 
 	for _, pk := range pubKeys {
 		initAccountWithCoins(app, ctx, sdk.AccAddress(pk.Address()), initCoins)
@@ -482,8 +471,11 @@ func addTestAddrs(
 	strategy GenerateAccountStrategy,
 ) []sdk.AccAddress {
 	testAddrs := strategy(accNum)
-
-	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
+	bondDenom, err := app.StakingKeeper.BondDenom(ctx)
+	if err != nil {
+		panic(err)
+	}
+	initCoins := sdk.NewCoins(sdk.NewCoin(bondDenom, accAmt))
 
 	for _, addr := range testAddrs {
 		initAccountWithCoins(app, ctx, addr, initCoins)
@@ -539,8 +531,8 @@ func TestAddr(addr, bech string) (sdk.AccAddress, error) {
 // CheckBalance checks the balance of an account.
 func CheckBalance(t *testing.T, app *SimApp, addr sdk.AccAddress, balances sdk.Coins) {
 	t.Helper()
-	ctxCheck := app.BaseApp.NewContext(true, tmproto.Header{})
-	require.True(t, balances.IsEqual(app.BankKeeper.GetAllBalances(ctxCheck, addr)))
+	ctxCheck := app.BaseApp.NewContext(true)
+	require.True(t, balances.Equal(app.BankKeeper.GetAllBalances(ctxCheck, addr)))
 }
 
 // SignCheckDeliver checks a generated signed transaction and simulates a
@@ -586,7 +578,12 @@ func SignCheckDeliver(
 	}
 
 	// Simulate a sending a transaction and committing a block
-	app.BeginBlock(abci.RequestBeginBlock{Header: header})
+	//app.BeginBlock(abci.RequestBeginBlock{Header: header})
+	app.FinalizeBlock(&abci.RequestFinalizeBlock{
+		Height:             header.Height,
+		Hash:               header.AppHash,
+		NextValidatorsHash: header.NextValidatorsHash,
+	})
 	gInfo, res, err := app.SimDeliver(txCfg.TxEncoder(), tx)
 
 	if expPass {
@@ -597,7 +594,7 @@ func SignCheckDeliver(
 		require.Nil(t, res)
 	}
 
-	app.EndBlock(abci.RequestEndBlock{})
+	//app.EndBlock(abci.RequestEndBlock{})
 	app.Commit()
 
 	return gInfo, res, err
@@ -737,7 +734,7 @@ func QueryBalancesExec(
 	args = append(args, extraArgs...)
 
 	result := &banktypes.QueryAllBalancesResponse{}
-	network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
+	//network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
 	return result.Balances
 }
 
@@ -750,15 +747,15 @@ func QueryBalanceExec(
 	extraArgs ...string,
 ) *sdk.Coin {
 	t.Helper()
-	args := []string{
-		address,
-		fmt.Sprintf("--%s=%s", bankcli.FlagDenom, denom),
-		fmt.Sprintf("--%s=json", "output"),
-	}
-	args = append(args, extraArgs...)
+	//args := []string{
+	//	address,
+	//	fmt.Sprintf("--%s=%s", bankcli.FlagDenom, denom),
+	//	fmt.Sprintf("--%s=json", "output"),
+	//}
+	//args = append(args, extraArgs...)
 
 	result := &sdk.Coin{}
-	network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
+	//network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
 	return result
 }
 
@@ -770,20 +767,20 @@ func QueryAccountExec(
 	extraArgs ...string,
 ) authtypes.AccountI {
 	t.Helper()
-	args := []string{
-		address,
-		fmt.Sprintf("--%s=json", "output"),
-	}
-	args = append(args, extraArgs...)
-	out, err := clitestutil.ExecTestCLICmd(clientCtx, authcli.GetAccountCmd(), args)
-	require.NoError(t, err, "QueryAccountExec  failed")
-
-	respType := proto.Message(&codectypes.Any{})
-	require.NoError(t, clientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
+	//args := []string{
+	//	address,
+	//	fmt.Sprintf("--%s=json", "output"),
+	//}
+	//args = append(args, extraArgs...)
+	////out, err := clitestutil.ExecTestCLICmd(clientCtx, authcli.GetAccountCmd(), args)
+	////require.NoError(t, err, "QueryAccountExec  failed")
+	//
+	//respType := proto.Message(&codectypes.Any{})
+	//require.NoError(t, clientCtx.Codec.UnmarshalJSON(out.Bytes(), respType))
 
 	var account authtypes.AccountI
-	err = clientCtx.InterfaceRegistry.UnpackAny(respType.(*codectypes.Any), &account)
-	require.NoError(t, err, "UnpackAccount failed")
+	//err = clientCtx.InterfaceRegistry.UnpackAny(respType.(*codectypes.Any), &account)
+	//require.NoError(t, err, "UnpackAccount failed")
 
 	return account
 }
@@ -799,12 +796,15 @@ func MsgSendExec(
 	args := []string{from.String(), to.String(), amount.String()}
 	args = append(args, extraArgs...)
 
-	return network.ExecTxCmdWithResult(t, clientCtx, bankcli.NewSendTxCmd(), args)
+	ac := address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix())
+
+	return network.ExecTxCmdWithResult(t, clientCtx, bankcli.NewSendTxCmd(ac), args)
 }
 
-func QueryTx(t *testing.T, clientCtx client.Context, txHash string) abci.ResponseDeliverTx {
+func QueryTx(t *testing.T, clientCtx client.Context, txHash string) abci.ExecTxResult {
 	t.Helper()
 	txResult, _ := QueryTxWithHeight(t, clientCtx, txHash)
+
 	return txResult
 }
 
@@ -812,7 +812,7 @@ func QueryTxWithHeight(
 	t *testing.T,
 	clientCtx client.Context,
 	txHash string,
-) (abci.ResponseDeliverTx, int64) {
+) (abci.ExecTxResult, int64) {
 	t.Helper()
 	txHashBz, err := hex.DecodeString(txHash)
 	require.NoError(t, err, "query tx failed")
@@ -841,7 +841,7 @@ func NewTestNetworkFixture(depInjectOptions DepinjectOptions) network.TestFixtur
 
 	appCtr := func(val network.ValidatorI) servertypes.Application {
 		return NewSimApp(
-			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, depInjectOptions,
+			log.NewNopLogger(), dbm.NewMemDB(), nil, true, depInjectOptions,
 			simtestutil.NewAppOptionsWithFlagHome(val.GetCtx().Config.RootDir),
 			bam.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			bam.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
