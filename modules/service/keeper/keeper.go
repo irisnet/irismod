@@ -3,12 +3,10 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 	"mods.irisnet.org/modules/service/types"
 )
 
@@ -67,11 +65,11 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // GetServiceDepositAccount returns the service depost ModuleAccount
-func (k Keeper) GetServiceDepositAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+func (k Keeper) GetServiceDepositAccount(ctx sdk.Context) sdk.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.DepositAccName)
 }
 
 // GetServiceRequestAccount returns the service request ModuleAccount
-func (k Keeper) GetServiceRequestAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+func (k Keeper) GetServiceRequestAccount(ctx sdk.Context) sdk.ModuleAccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, types.RequestAccName)
 }

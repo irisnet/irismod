@@ -119,7 +119,7 @@ message PromotionByTime {
   google.protobuf.Timestamp end_time = 2
       [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
   string discount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 }
@@ -128,7 +128,7 @@ message PromotionByTime {
 message PromotionByVolume {
   uint64 volume = 1;
   string discount = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 }
@@ -173,11 +173,11 @@ message Params {
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
   string service_fee_tax = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
   string slash_fraction = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
   google.protobuf.Duration complaint_retrospect = 6
