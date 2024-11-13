@@ -1,11 +1,11 @@
 package simulation
 
 import (
-	"cosmossdk.io/math"
 	"errors"
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/math"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -349,6 +349,7 @@ func (suite *KeeperTestSuite) TestRegisterCallback() {
 
 func (suite *KeeperTestSuite) TestKeeperRequestContext() {
 	consumer := testConsumer
+
 	providers := []sdk.AccAddress{testProvider}
 
 	suite.setServiceDefinition()
