@@ -3,9 +3,11 @@ package v2
 import (
 	"time"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/core/store"
+	"cosmossdk.io/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/nft/types"
@@ -13,21 +15,22 @@ import (
 
 // Migrate is used to migrate nft data from irismod/nft to x/nft
 func Migrate(ctx sdk.Context,
-	storeKey storetypes.StoreKey,
-	cdc codec.Codec,
+	storeService store.KVStoreService,
+	cdc codec.BinaryCodec,
 	logger log.Logger,
 	saveDenom SaveDenom,
 ) error {
 	logger.Info("migrate store data from version 1 to 2")
 	startTime := time.Now()
 
-	store := ctx.KVStore(storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, KeyDenom(""))
+	store := runtime.KVStoreAdapter(storeService.OpenKVStore(ctx))
+
+	iterator := storetypes.KVStorePrefixIterator(store, KeyDenom(""))
 	defer iterator.Close()
 
 	k := keeper{
-		storeKey: storeKey,
-		cdc:      cdc,
+		storeService: storeService,
+		cdc:          cdc,
 	}
 
 	var (
@@ -85,17 +88,17 @@ func migrateToken(
 	logger log.Logger,
 	denomID string,
 ) (int64, error) {
-	var iterator sdk.Iterator
+	var iterator storetypes.Iterator
 	defer func() {
 		if iterator != nil {
 			_ = iterator.Close()
 		}
 	}()
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 
 	total := int64(0)
-	iterator = sdk.KVStorePrefixIterator(store, KeyNFT(denomID, ""))
+	iterator = storetypes.KVStorePrefixIterator(store, KeyNFT(denomID, ""))
 	for ; iterator.Valid(); iterator.Next() {
 		var baseNFT types.BaseNFT
 		k.cdc.MustUnmarshal(iterator.Value(), &baseNFT)

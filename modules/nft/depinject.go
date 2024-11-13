@@ -2,9 +2,9 @@ package nft
 
 import (
 	"cosmossdk.io/core/appmodule"
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
 	"github.com/cosmos/cosmos-sdk/codec"
-	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	modulev1 "mods.irisnet.org/api/irismod/nft/module/v1"
 	"mods.irisnet.org/modules/nft/keeper"
@@ -30,9 +30,9 @@ func (am AppModule) IsAppModule() {}
 type Inputs struct {
 	depinject.In
 
-	Config *modulev1.Module
-	Cdc    codec.Codec
-	Key    *store.KVStoreKey
+	Config       *modulev1.Module
+	Cdc          codec.Codec
+	StoreService store.KVStoreService
 
 	AccountKeeper types.AccountKeeper
 	BankKeeper    types.BankKeeper
@@ -52,7 +52,7 @@ type Outputs struct {
 func ProvideModule(in Inputs) Outputs {
 	keeper := keeper.NewKeeper(
 		in.Cdc,
-		in.Key,
+		in.StoreService,
 		in.AccountKeeper,
 		in.BankKeeper,
 	)
