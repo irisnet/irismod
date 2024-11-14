@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -74,7 +75,7 @@ func GenOraclePriceSvcBinding(baseDenom string) ServiceBinding {
 	return ServiceBinding{
 		ServiceName:  OraclePriceServiceName,
 		Provider:     OraclePriceServiceProvider.String(),
-		Deposit:      sdk.NewCoins(sdk.NewCoin(baseDenom, sdk.NewInt(0))),
+		Deposit:      sdk.NewCoins(sdk.NewCoin(baseDenom, math.NewInt(0))),
 		Pricing:      fmt.Sprintf(`{"price": "0%s"}`, baseDenom),
 		QoS:          1,
 		Options:      `{}`,

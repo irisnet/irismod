@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -409,7 +411,7 @@ func (k Keeper) IterateRequestContexts(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.RequestContextKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RequestContextKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -623,7 +625,7 @@ func (k Keeper) IterateRequests(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.RequestKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RequestKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -643,9 +645,9 @@ func (k Keeper) RequestsIteratorByReqCtx(
 	ctx sdk.Context,
 	requestContextID tmbytes.HexBytes,
 	batchCounter uint64,
-) sdk.Iterator {
+) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(
+	return storetypes.KVStorePrefixIterator(
 		store,
 		types.GetRequestSubspaceByReqCtx(requestContextID, batchCounter),
 	)
@@ -832,7 +834,7 @@ func (k Keeper) IterateExpiredRequestBatch(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(
+	iterator := storetypes.KVStorePrefixIterator(
 		store,
 		types.GetExpiredRequestBatchSubspace(expirationHeight),
 	)
@@ -856,7 +858,7 @@ func (k Keeper) IterateNewRequestBatch(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(
+	iterator := storetypes.KVStorePrefixIterator(
 		store,
 		types.GetNewRequestBatchSubspace(requestBatchHeight),
 	)
@@ -877,9 +879,9 @@ func (k Keeper) ActiveRequestsIterator(
 	ctx sdk.Context,
 	serviceName string,
 	provider sdk.AccAddress,
-) sdk.Iterator {
+) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.GetActiveRequestSubspace(serviceName, provider))
+	return storetypes.KVStorePrefixIterator(store, types.GetActiveRequestSubspace(serviceName, provider))
 }
 
 // ActiveRequestsIteratorByReqCtx returns an iterator for all the active requests of the specified service binding
@@ -887,17 +889,17 @@ func (k Keeper) ActiveRequestsIteratorByReqCtx(
 	ctx sdk.Context,
 	requestContextID tmbytes.HexBytes,
 	batchCounter uint64,
-) sdk.Iterator {
+) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(
+	return storetypes.KVStorePrefixIterator(
 		store,
 		types.GetActiveRequestSubspaceByReqCtx(requestContextID, batchCounter),
 	)
 }
 
 // AllActiveRequestsIterator returns an iterator for all the active requests
-func (k Keeper) AllActiveRequestsIterator(store sdk.KVStore) sdk.Iterator {
-	return sdk.KVStorePrefixIterator(store, types.ActiveRequestKey)
+func (k Keeper) AllActiveRequestsIterator(store storetypes.KVStore) storetypes.Iterator {
+	return storetypes.KVStorePrefixIterator(store, types.ActiveRequestKey)
 }
 
 // IterateActiveRequests iterates through the active requests for the specified request context ID and batch counter
@@ -991,7 +993,7 @@ func (k Keeper) GetPrice(
 
 	var price []sdk.Coin
 	for _, token := range pricing.Price {
-		priceAmount := sdk.NewDecFromInt(token.Amount).Mul(discountByTime).Mul(discountByVolume)
+		priceAmount := math.LegacyNewDecFromInt(token.Amount).Mul(discountByTime).Mul(discountByVolume)
 		price = append(price, sdk.NewCoin(token.Denom, priceAmount.TruncateInt()))
 	}
 
@@ -1123,7 +1125,7 @@ func (k Keeper) IterateResponses(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.ResponseKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.ResponseKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -1143,9 +1145,9 @@ func (k Keeper) ResponsesIteratorByReqCtx(
 	ctx sdk.Context,
 	requestContextID tmbytes.HexBytes,
 	batchCounter uint64,
-) sdk.Iterator {
+) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(
+	return storetypes.KVStorePrefixIterator(
 		store,
 		types.GetResponseSubspaceByReqCtx(requestContextID, batchCounter),
 	)
@@ -1229,7 +1231,7 @@ func (k Keeper) Slash(ctx sdk.Context, requestID tmbytes.HexBytes) error {
 	baseDenom := k.BaseDenom(ctx)
 
 	depositAmt := binding.Deposit.AmountOf(baseDenom)
-	slashedAmt := sdk.NewDecFromInt(depositAmt).Mul(slashFraction).TruncateInt()
+	slashedAmt := math.LegacyNewDecFromInt(depositAmt).Mul(slashFraction).TruncateInt()
 	slashedCoins := sdk.NewCoins(sdk.NewCoin(baseDenom, slashedAmt))
 
 	deposit, hasNeg := binding.Deposit.SafeSub(slashedCoins...)

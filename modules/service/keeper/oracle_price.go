@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tidwall/gjson"
 
@@ -30,7 +31,7 @@ func (k Keeper) GetExchangedPrice(
 	rawDenom := pricing.Price.GetDenomByIndex(0)
 
 	rawPrice := pricing.Price.AmountOf(rawDenom)
-	price := sdk.NewDecFromInt(rawPrice).Mul(discountByTime).Mul(discountByVolume)
+	price := math.LegacyNewDecFromInt(rawPrice).Mul(discountByTime).Mul(discountByVolume)
 
 	realPrice := price
 	if baseDenom != rawDenom {
@@ -46,35 +47,35 @@ func (k Keeper) GetExchangedPrice(
 }
 
 // GetExchangeRate retrieves the exchange rate of the given pair by the oracle module service
-func (k Keeper) GetExchangeRate(ctx sdk.Context, quoteDenom, baseDenom string) (sdk.Dec, error) {
+func (k Keeper) GetExchangeRate(ctx sdk.Context, quoteDenom, baseDenom string) (math.LegacyDec, error) {
 	exchangeRateSvc, exist := k.GetModuleServiceByModuleName(types.RegisterModuleName)
 	if !exist {
-		return sdk.Dec{}, errorsmod.Wrapf(types.ErrInvalidModuleService, "module service does not exist: %s", types.RegisterModuleName)
+		return math.LegacyDec{}, errorsmod.Wrapf(types.ErrInvalidModuleService, "module service does not exist: %s", types.RegisterModuleName)
 	}
 
 	inputBody := fmt.Sprintf(`{"pair":"%s-%s"}`, quoteDenom, baseDenom)
 	input := fmt.Sprintf(`{"header":{},"body":%s`, inputBody)
 	if err := types.ValidateRequestInputBody(types.OraclePriceSchemas, inputBody); err != nil {
-		return sdk.Dec{}, err
+		return math.LegacyDec{}, err
 	}
 
 	result, output := exchangeRateSvc.ReuquestService(ctx, input)
 	if code, msg := CheckResult(result); code != types.ResultOK {
-		return sdk.Dec{}, errorsmod.Wrapf(types.ErrInvalidModuleService, msg)
+		return math.LegacyDec{}, errorsmod.Wrapf(types.ErrInvalidModuleService, msg)
 	}
 
 	outputBody := gjson.Get(output, types.PATH_BODY).String()
 	if err := types.ValidateResponseOutputBody(types.OraclePriceSchemas, outputBody); err != nil {
-		return sdk.Dec{}, err
+		return math.LegacyDec{}, err
 	}
 
 	rate, err := GetExchangeRateFromJSON(outputBody)
 	if err != nil {
-		return sdk.Dec{}, err
+		return math.LegacyDec{}, err
 	}
 
 	if rate.IsZero() {
-		return sdk.Dec{}, errorsmod.Wrapf(types.ErrInvalidResponseOutputBody, "rate can not be zero")
+		return math.LegacyDec{}, errorsmod.Wrapf(types.ErrInvalidResponseOutputBody, "rate can not be zero")
 	}
 
 	return rate, nil
@@ -86,7 +87,7 @@ func CheckResult(jsonStr string) (code types.ResultCode, msg string) {
 	return
 }
 
-func GetExchangeRateFromJSON(jsonStr string) (sdk.Dec, error) {
+func GetExchangeRateFromJSON(jsonStr string) (math.LegacyDec, error) {
 	result := gjson.Get(jsonStr, types.OraclePriceValueJSONPath)
-	return sdk.NewDecFromStr(result.String())
+	return math.LegacyNewDecFromStr(result.String())
 }

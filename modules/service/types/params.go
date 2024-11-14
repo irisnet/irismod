@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gopkg.in/yaml.v2"
 )
@@ -12,10 +13,10 @@ import (
 var (
 	DefaultMaxRequestTimeout         = int64(100)
 	DefaultMinDepositMultiple        = int64(1000)
-	DefaultServiceFeeTax             = sdk.NewDecWithPrec(5, 2) // 5%
-	DefaultSlashFraction             = sdk.NewDecWithPrec(1, 3) // 0.1%
-	DefaultComplaintRetrospect       = 15 * 24 * time.Hour      // 15 days
-	DefaultArbitrationTimeLimit      = 5 * 24 * time.Hour       // 5 days
+	DefaultServiceFeeTax             = math.LegacyNewDecWithPrec(5, 2) // 5%
+	DefaultSlashFraction             = math.LegacyNewDecWithPrec(1, 3) // 0.1%
+	DefaultComplaintRetrospect       = 15 * 24 * time.Hour             // 15 days
+	DefaultArbitrationTimeLimit      = 5 * 24 * time.Hour              // 5 days
 	DefaultTxSizeLimit               = uint64(4000)
 	DefaultRestrictedServiceFeeDenom = false
 )
@@ -26,7 +27,7 @@ func NewParams(
 	minDepositMultiple int64,
 	minDeposit sdk.Coins,
 	serviceFeeTax,
-	slashFraction sdk.Dec,
+	slashFraction math.LegacyDec,
 	complaintRetrospect,
 	arbitrationTimeLimit time.Duration,
 	txSizeLimit uint64,
@@ -53,7 +54,7 @@ func DefaultParams() Params {
 		DefaultMaxRequestTimeout,
 		DefaultMinDepositMultiple,
 		sdk.NewCoins(
-			sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)),
+			sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5000)),
 		),
 		DefaultServiceFeeTax,
 		DefaultSlashFraction,
@@ -144,12 +145,12 @@ func validateMinDeposit(i interface{}) error {
 }
 
 func validateSlashFraction(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.LT(sdk.ZeroDec()) || v.GT(sdk.OneDec()) {
+	if v.LT(math.LegacyZeroDec()) || v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("slashing fraction must be between [0, 1]: %s", v)
 	}
 
@@ -157,12 +158,12 @@ func validateSlashFraction(i interface{}) error {
 }
 
 func validateServiceFeeTax(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.LT(sdk.ZeroDec()) || v.GTE(sdk.OneDec()) {
+	if v.LT(math.LegacyZeroDec()) || v.GTE(math.LegacyOneDec()) {
 		return fmt.Errorf("service fee tax must be between [0, 1): %s", v)
 	}
 

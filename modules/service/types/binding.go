@@ -5,6 +5,7 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -41,25 +42,25 @@ type RawPricing struct {
 }
 
 // GetDiscountByTime gets the discount level by the specified time
-func GetDiscountByTime(pricing Pricing, time time.Time) sdk.Dec {
+func GetDiscountByTime(pricing Pricing, time time.Time) math.LegacyDec {
 	for _, p := range pricing.PromotionsByTime {
 		if !time.Before(p.StartTime) && time.Before(p.EndTime) {
 			return p.Discount
 		}
 	}
 
-	return sdk.OneDec()
+	return math.LegacyOneDec()
 }
 
 // GetDiscountByVolume gets the discount level by the specified volume
 // Note: make sure that the promotions by volume are sorted in ascending order
-func GetDiscountByVolume(pricing Pricing, volume uint64) sdk.Dec {
+func GetDiscountByVolume(pricing Pricing, volume uint64) math.LegacyDec {
 	promotionsByVol := pricing.PromotionsByVolume
 
 	for i, p := range promotionsByVol {
 		if volume < p.Volume {
 			if i == 0 {
-				return sdk.OneDec()
+				return math.LegacyOneDec()
 			}
 
 			return promotionsByVol[i-1].Discount
@@ -70,7 +71,7 @@ func GetDiscountByVolume(pricing Pricing, volume uint64) sdk.Dec {
 		}
 	}
 
-	return sdk.OneDec()
+	return math.LegacyOneDec()
 }
 
 // ParsePricing parses the given string to Pricing

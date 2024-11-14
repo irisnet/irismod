@@ -3,6 +3,7 @@ package keeper
 import (
 	"time"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/service/types"
@@ -24,12 +25,12 @@ func (k Keeper) MinDeposit(ctx sdk.Context) sdk.Coins {
 }
 
 // ServiceFeeTax returns the service fee tax
-func (k Keeper) ServiceFeeTax(ctx sdk.Context) sdk.Dec {
+func (k Keeper) ServiceFeeTax(ctx sdk.Context) math.LegacyDec {
 	return k.GetParams(ctx).ServiceFeeTax
 }
 
 // SlashFraction returns the slashing fraction
-func (k Keeper) SlashFraction(ctx sdk.Context) sdk.Dec {
+func (k Keeper) SlashFraction(ctx sdk.Context) math.LegacyDec {
 	return k.GetParams(ctx).SlashFraction
 }
 
