@@ -5,13 +5,12 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestLossLessConvert(t *testing.T) {
 	type args struct {
 		a      math.Int
-		ratio  sdk.Dec
+		ratio  math.LegacyDec
 		aScale uint32
 		bScale uint32
 	}
@@ -26,7 +25,7 @@ func TestLossLessConvert(t *testing.T) {
 			name: "partial conversion(refund)",
 			args: args{
 				a:      Int("1000000000000000001"),
-				ratio:  sdk.OneDec(),
+				ratio:  math.LegacyOneDec(),
 				aScale: 18,
 				bScale: 6,
 			},
@@ -38,7 +37,7 @@ func TestLossLessConvert(t *testing.T) {
 			name: "fully conversion",
 			args: args{
 				a:      Int("1000000000000000001"),
-				ratio:  sdk.OneDec(),
+				ratio:  math.LegacyOneDec(),
 				aScale: 18,
 				bScale: 18,
 			},
@@ -50,7 +49,7 @@ func TestLossLessConvert(t *testing.T) {
 			name: "partial conversion(refund,non-equivalent ratio)",
 			args: args{
 				a:      Int("1000000000000000001"),
-				ratio:  sdk.NewDecWithPrec(5, 1),
+				ratio:  math.LegacyNewDecWithPrec(5, 1),
 				aScale: 18,
 				bScale: 6,
 			},
@@ -62,7 +61,7 @@ func TestLossLessConvert(t *testing.T) {
 			name: "fully conversion",
 			args: args{
 				a:      Int("1000001"),
-				ratio:  sdk.OneDec(),
+				ratio:  math.LegacyOneDec(),
 				aScale: 6,
 				bScale: 18,
 			},
@@ -74,7 +73,7 @@ func TestLossLessConvert(t *testing.T) {
 			name: "fully conversion(non-equivalent ratio)",
 			args: args{
 				a:      Int("1000000"),
-				ratio:  sdk.NewDecWithPrec(5, 1),
+				ratio:  math.LegacyNewDecWithPrec(5, 1),
 				aScale: 6,
 				bScale: 18,
 			},
@@ -97,7 +96,7 @@ func TestLossLessConvert(t *testing.T) {
 }
 
 func Int(i string) math.Int {
-	iInt, ok := sdk.NewIntFromString(i)
+	iInt, ok := math.NewIntFromString(i)
 	if !ok {
 		panic("invalid i: " + i)
 	}

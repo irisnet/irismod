@@ -27,7 +27,7 @@ message Params {
   option (gogoproto.equal) = true;
 
   string token_tax_rate = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 
@@ -35,7 +35,7 @@ message Params {
       [ (gogoproto.nullable) = false ];
 
   string mint_token_fee_ratio = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 

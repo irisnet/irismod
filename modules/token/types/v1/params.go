@@ -4,14 +4,15 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 )
 
 // NewParams constructs a new Params instance
-func NewParams(tokenTaxRate sdk.Dec, issueTokenBaseFee sdk.Coin,
-	mintTokenFeeRatio sdk.Dec, enableErc20 bool, beacon string,
+func NewParams(tokenTaxRate math.LegacyDec, issueTokenBaseFee sdk.Coin,
+	mintTokenFeeRatio math.LegacyDec, enableErc20 bool, beacon string,
 ) Params {
 	return Params{
 		TokenTaxRate:      tokenTaxRate,
@@ -26,9 +27,9 @@ func NewParams(tokenTaxRate sdk.Dec, issueTokenBaseFee sdk.Coin,
 func DefaultParams() Params {
 	defaultToken := GetNativeToken()
 	return Params{
-		TokenTaxRate:      sdk.NewDecWithPrec(4, 1), // 0.4 (40%)
-		IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.NewInt(60000)),
-		MintTokenFeeRatio: sdk.NewDecWithPrec(1, 1), // 0.1 (10%)
+		TokenTaxRate:      math.LegacyNewDecWithPrec(4, 1), // 0.4 (40%)
+		IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, math.NewInt(60000)),
+		MintTokenFeeRatio: math.LegacyNewDecWithPrec(1, 1), // 0.1 (10%)
 		EnableErc20:       true,
 	}
 }
@@ -48,23 +49,23 @@ func (p Params) Validate() error {
 }
 
 func validateTaxRate(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.GT(sdk.NewDec(1)) || v.LT(sdk.ZeroDec()) {
+	if v.GT(math.LegacyNewDec(1)) || v.LT(math.LegacyZeroDec()) {
 		return fmt.Errorf("token tax rate [%s] should be between [0, 1]", v.String())
 	}
 	return nil
 }
 
 func validateMintTokenFeeRatio(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if v.GT(sdk.NewDec(1)) || v.LT(sdk.ZeroDec()) {
+	if v.GT(math.LegacyNewDec(1)) || v.LT(math.LegacyZeroDec()) {
 		return fmt.Errorf("fee ratio for minting tokens [%s] should be between [0, 1]", v.String())
 	}
 	return nil
