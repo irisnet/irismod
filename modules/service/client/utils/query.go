@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	rpcclient "github.com/cometbft/cometbft/rpc/client"
@@ -212,18 +213,21 @@ func QueryResponseByTxQuery(
 ) (
 	response types.Response, err error,
 ) {
-	//events := []string{
-	//	fmt.Sprintf(
-	//		"%s.%s='%s'",
-	//		types.EventTypeRespondService,
-	//		types.AttributeKeyRequestID,
-	//		[]byte(fmt.Sprintf("%d", requestID)),
-	//	),
-	//}
+	events := []string{
+		fmt.Sprintf(
+			"%s.%s='%s'",
+			types.EventTypeRespondService,
+			types.AttributeKeyRequestID,
+			[]byte(fmt.Sprintf("%d", requestID)),
+		),
+	}
 
 	// NOTE: SearchTxs is used to facilitate the txs query which does not currently
 	// support configurable pagination.
-	result, err := authtx.QueryTxsByEvents(cliCtx, 1, 1, "", "")
+
+	query := strings.Join(events, " AND ")
+
+	result, err := authtx.QueryTxsByEvents(cliCtx, 1, 1, query, "")
 	if err != nil {
 		return response, err
 	}
