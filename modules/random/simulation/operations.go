@@ -81,7 +81,7 @@ func WeightedOperations(
 					), nil, err
 				}
 
-				return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+				return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 			},
 		),
 	}

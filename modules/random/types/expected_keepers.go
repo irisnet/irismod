@@ -1,22 +1,22 @@
 package types
 
 import (
+	"context"
+	storetypes "cosmossdk.io/store/types"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 	service "mods.irisnet.org/modules/service/exported"
 	servicetypes "mods.irisnet.org/modules/service/types"
 )
 
 // accountKeeper defines the expected account keeper used for simulations (noalias)
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
 }
 
 // bankKeeper defines the expected bank keeper for module accounts (noalias)
 type BankKeeper interface {
-	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 }
 
 // expected Service keeper
@@ -73,7 +73,7 @@ type ServiceKeeper interface {
 		consumer sdk.AccAddress,
 	) error
 
-	ServiceBindingsIterator(ctx sdk.Context, serviceName string) sdk.Iterator
+	ServiceBindingsIterator(ctx sdk.Context, serviceName string) storetypes.Iterator
 
 	GetParams(ctx sdk.Context) servicetypes.Params
 }

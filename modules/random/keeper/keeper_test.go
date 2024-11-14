@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/cometbft/cometbft/crypto"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -50,7 +49,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	suite.app = app
 	suite.cdc = app.LegacyAmino()
-	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{})
+	suite.ctx = app.BaseApp.NewContext(false)
 }
 
 func TestKeeperTestSuite(t *testing.T) {

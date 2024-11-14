@@ -4,11 +4,10 @@ import (
 	"encoding/hex"
 
 	errorsmod "cosmossdk.io/errors"
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"mods.irisnet.org/modules/random/types"
 )
 
@@ -174,7 +173,7 @@ func (k Keeper) GetRandom(ctx sdk.Context, reqID []byte) (types.Random, error) {
 func (k Keeper) IterateRandoms(ctx sdk.Context, op func(r types.Random) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.RandomKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RandomKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -188,9 +187,9 @@ func (k Keeper) IterateRandoms(ctx sdk.Context, op func(r types.Random) (stop bo
 }
 
 // IterateRandomRequestQueueByHeight iterates through the random number request queue by the specified height
-func (k Keeper) IterateRandomRequestQueueByHeight(ctx sdk.Context, height int64) sdk.Iterator {
+func (k Keeper) IterateRandomRequestQueueByHeight(ctx sdk.Context, height int64) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.KeyRandomRequestQueueSubspace(height))
+	return storetypes.KVStorePrefixIterator(store, types.KeyRandomRequestQueueSubspace(height))
 }
 
 // IterateRandomRequestQueue iterates through the random number request queue
@@ -200,7 +199,7 @@ func (k Keeper) IterateRandomRequestQueue(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.RandomRequestQueueKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RandomRequestQueueKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {

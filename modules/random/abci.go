@@ -1,6 +1,7 @@
 package random
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
 
@@ -11,7 +12,8 @@ import (
 )
 
 // BeginBlocker handles block beginning logic for random
-func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+func BeginBlocker(c context.Context, k keeper.Keeper) {
+	ctx := sdk.UnwrapSDKContext(c)
 	currentTimestamp := ctx.BlockHeader().Time.Unix()
 	lastBlockHeight := ctx.BlockHeight() - 1
 	lastBlockHash := ctx.BlockHeader().LastBlockId.Hash
@@ -75,4 +77,5 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if handledNormalRandReqNum > 0 {
 		k.Logger(ctx).Info(fmt.Sprintf("%d random requests are handled", handledNormalRandReqNum))
 	}
+
 }
