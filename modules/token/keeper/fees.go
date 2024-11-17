@@ -55,9 +55,9 @@ func (k Keeper) GetTokenMintFee(ctx sdk.Context, symbol string) (sdk.Coin, error
 		return sdk.Coin{}, err
 	}
 
-	mintFee := sdk.NewDecFromInt(fee.Amount).Mul(params.MintTokenFeeRatio).TruncateInt()
+	mintFee := sdkmath.LegacyNewDecFromInt(fee.Amount).Mul(params.MintTokenFeeRatio).TruncateInt()
 	return token.ToMinCoin(
-		sdk.NewDecCoinFromDec(params.IssueTokenBaseFee.Denom, sdk.NewDecFromInt(mintFee)),
+		sdk.NewDecCoinFromDec(params.IssueTokenBaseFee.Denom, sdkmath.LegacyNewDecFromInt(mintFee)),
 	)
 }
 
@@ -68,10 +68,10 @@ func (k Keeper) calcTokenIssueFee(ctx sdk.Context, symbol string) (sdk.Coin, v1.
 
 	// compute the fee
 	feeAmt := calcFeeByBase(symbol, issueTokenBaseFee.Amount)
-	if feeAmt.GT(sdk.NewDec(1)) {
+	if feeAmt.GT(sdkmath.LegacyNewDec(1)) {
 		return sdk.NewCoin(issueTokenBaseFee.Denom, feeAmt.TruncateInt()), params
 	}
-	return sdk.NewCoin(issueTokenBaseFee.Denom, sdk.OneInt()), params
+	return sdk.NewCoin(issueTokenBaseFee.Denom, sdkmath.OneInt()), params
 }
 
 // feeHandler handles the fee of token
@@ -81,7 +81,7 @@ func feeHandler(ctx sdk.Context, k Keeper, feeAcc sdk.AccAddress, fee sdk.Coin) 
 
 	// compute community tax and burned coin
 	communityTaxCoin := sdk.NewCoin(fee.Denom,
-		sdk.NewDecFromInt(fee.Amount).Mul(tokenTaxRate).TruncateInt())
+		sdkmath.LegacyNewDecFromInt(fee.Amount).Mul(tokenTaxRate).TruncateInt())
 	burnedCoins := sdk.NewCoins(fee.Sub(communityTaxCoin))
 
 	// send all fees to module account
@@ -101,16 +101,16 @@ func feeHandler(ctx sdk.Context, k Keeper, feeAcc sdk.AccAddress, fee sdk.Coin) 
 }
 
 // calcFeeByBase computes the actual fee according to the given base fee
-func calcFeeByBase(name string, baseFee sdkmath.Int) sdk.Dec {
+func calcFeeByBase(name string, baseFee sdkmath.Int) sdkmath.LegacyDec {
 	feeFactor := calcFeeFactor(name)
-	actualFee := sdk.NewDecFromInt(baseFee).Quo(feeFactor)
+	actualFee := sdkmath.LegacyNewDecFromInt(baseFee).Quo(feeFactor)
 
 	return actualFee
 }
 
 // calcFeeFactor computes the fee factor of the given name
 // Note: make sure that the name size is examined before invoking the function
-func calcFeeFactor(name string) sdk.Dec {
+func calcFeeFactor(name string) sdkmath.LegacyDec {
 	nameLen := len(name)
 	if nameLen == 0 {
 		panic("the length of name must be greater than 0")
@@ -120,7 +120,7 @@ func calcFeeFactor(name string) sdk.Dec {
 	numerator := math.Log(float64(nameLen))
 
 	feeFactor := math.Pow(numerator/denominator, FeeFactorExp)
-	feeFactorDec, err := sdk.NewDecFromStr(strconv.FormatFloat(feeFactor, 'f', 2, 64))
+	feeFactorDec, err := sdkmath.LegacyNewDecFromStr(strconv.FormatFloat(feeFactor, 'f', 2, 64))
 	if err != nil {
 		panic("invalid string")
 	}

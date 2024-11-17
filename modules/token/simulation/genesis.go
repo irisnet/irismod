@@ -24,32 +24,32 @@ const (
 )
 
 // RandomDec randomized sdk.RandomDec
-func RandomDec(r *rand.Rand) sdk.Dec {
-	return sdk.NewDecWithPrec(r.Int63n(9)+1, 1)
+func RandomDec(r *rand.Rand) math.LegacyDec {
+	return math.LegacyNewDecWithPrec(r.Int63n(9)+1, 1)
 }
 
 // RandomInt randomized math.Int
 func RandomInt(r *rand.Rand) math.Int {
-	return sdk.NewInt(r.Int63())
+	return math.NewInt(r.Int63())
 }
 
 // RandomizedGenState generates a random GenesisState for bank
 func RandomizedGenState(simState *module.SimulationState) {
-	var tokenTaxRate sdk.Dec
+	var tokenTaxRate math.LegacyDec
 	var issueTokenBaseFee math.Int
-	var mintTokenFeeRatio sdk.Dec
+	var mintTokenFeeRatio math.LegacyDec
 	var enableErc20 bool
 	var tokens []v1.Token
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, TokenTaxRate, &tokenTaxRate, simState.Rand,
-		func(r *rand.Rand) { tokenTaxRate = sdk.NewDecWithPrec(int64(r.Intn(5)), 1) },
+		TokenTaxRate, &tokenTaxRate, simState.Rand,
+		func(r *rand.Rand) { tokenTaxRate = math.LegacyNewDecWithPrec(int64(r.Intn(5)), 1) },
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, IssueTokenBaseFee, &issueTokenBaseFee, simState.Rand,
+		IssueTokenBaseFee, &issueTokenBaseFee, simState.Rand,
 		func(r *rand.Rand) {
-			issueTokenBaseFee = sdk.NewInt(int64(10))
+			issueTokenBaseFee = math.NewInt(int64(10))
 
 			for i := 0; i < 5; i++ {
 				tokens = append(tokens, randToken(r, simState.Accounts))
@@ -59,12 +59,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, MintTokenFeeRatio, &mintTokenFeeRatio, simState.Rand,
-		func(r *rand.Rand) { mintTokenFeeRatio = sdk.NewDecWithPrec(int64(r.Intn(5)), 1) },
+		MintTokenFeeRatio, &mintTokenFeeRatio, simState.Rand,
+		func(r *rand.Rand) { mintTokenFeeRatio = math.LegacyNewDecWithPrec(int64(r.Intn(5)), 1) },
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, EnableErc20, &enableErc20, simState.Rand,
+		EnableErc20, &enableErc20, simState.Rand,
 		func(r *rand.Rand) {
 			enableErc20 = true
 		},

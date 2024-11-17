@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/gogoproto/proto"
@@ -114,7 +115,7 @@ func (t Token) ToMainCoin(coin sdk.Coin) (sdk.DecCoin, error) {
 	if t.Symbol != coin.Denom && t.MinUnit != coin.Denom {
 		return sdk.NewDecCoinFromDec(
 				coin.Denom,
-				sdk.ZeroDec(),
+				math.LegacyZeroDec(),
 			), errorsmod.Wrapf(
 				tokentypes.ErrTokenNotExists,
 				"token not match",
@@ -127,7 +128,7 @@ func (t Token) ToMainCoin(coin sdk.Coin) (sdk.DecCoin, error) {
 
 	precision := new(big.Int).Exp(tenInt, big.NewInt(int64(t.Scale)), nil)
 	// dest amount = src amount / 10^(scale)
-	amount := sdk.NewDecFromInt(coin.Amount).Quo(sdk.NewDecFromBigInt(precision))
+	amount := math.LegacyNewDecFromInt(coin.Amount).Quo(math.LegacyNewDecFromBigInt(precision))
 	return sdk.NewDecCoinFromDec(t.Symbol, amount), nil
 }
 
@@ -136,7 +137,7 @@ func (t Token) ToMinCoin(coin sdk.DecCoin) (newCoin sdk.Coin, err error) {
 	if t.Symbol != coin.Denom && t.MinUnit != coin.Denom {
 		return sdk.NewCoin(
 				coin.Denom,
-				sdk.ZeroInt(),
+				math.ZeroInt(),
 			), errorsmod.Wrapf(
 				tokentypes.ErrTokenNotExists,
 				"token not match",
@@ -149,7 +150,7 @@ func (t Token) ToMinCoin(coin sdk.DecCoin) (newCoin sdk.Coin, err error) {
 
 	precision := new(big.Int).Exp(tenInt, big.NewInt(int64(t.Scale)), nil)
 	// dest amount = src amount * 10^(dest scale)
-	amount := coin.Amount.Mul(sdk.NewDecFromBigInt(precision))
+	amount := coin.Amount.Mul(math.LegacyNewDecFromBigInt(precision))
 	return sdk.NewCoin(t.MinUnit, amount.TruncateInt()), nil
 }
 

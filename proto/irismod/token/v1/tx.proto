@@ -162,6 +162,7 @@ message MsgUpdateParamsResponse {}
 
 // MsgDeployERC20 defines an SDK message for DeployERC20
 message MsgDeployERC20 {
+  option (cosmos.msg.v1.signer) = "authority";
   string symbol = 1;
   string name = 2;
   uint32 scale = 3;
