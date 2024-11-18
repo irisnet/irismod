@@ -2,8 +2,6 @@ module mods.irisnet.org/modules/token
 
 go 1.21
 
-toolchain go1.23.1
-
 require (
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/depinject v1.0.0
