@@ -148,12 +148,10 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock performs a no-op.
-func (AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
+func (AppModule) BeginBlock(_ context.Context) error { return nil }
 
 // EndBlock returns the end blocker for the oracle module. It returns no validator updates.
-func (AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return []abci.ValidatorUpdate{}
-}
+func (AppModule) EndBlock(_ context.Context) error { return nil }
 
 // ____________________________________________________________________________
 
@@ -163,7 +161,7 @@ func (AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Validato
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {}
 
 // RegisterStoreDecoder registers a decoder for oracle module's types
-func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {}
+func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {}
 
 // WeightedOperations returns the all the oracle module operations with their respective weights.
 func (am AppModule) WeightedOperations(

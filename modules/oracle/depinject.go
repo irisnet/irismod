@@ -3,8 +3,8 @@ package oracle
 import (
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/depinject"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	modulev1 "mods.irisnet.org/api/irismod/oracle/module/v1"
 	"mods.irisnet.org/modules/oracle/keeper"
@@ -32,7 +32,7 @@ type Inputs struct {
 
 	Config *modulev1.Module
 	Cdc    codec.Codec
-	Key    *store.KVStoreKey
+	Key    *storetypes.KVStoreKey
 
 	AccountKeeper types.AccountKeeper
 	BankKeeper    types.BankKeeper

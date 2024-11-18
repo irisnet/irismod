@@ -3,12 +3,13 @@ package keeper
 import (
 	"encoding/hex"
 
+	storetypes "cosmossdk.io/store/types"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogotypes "github.com/cosmos/gogoproto/types"
-
 	"mods.irisnet.org/modules/oracle/types"
 	"mods.irisnet.org/modules/service/exported"
+
 	servicetypes "mods.irisnet.org/modules/service/types"
 )
 
@@ -38,7 +39,7 @@ func (k Keeper) GetFeedByReqCtxID(
 // IteratorFeeds iterates through all feeds
 func (k Keeper) IteratorFeeds(ctx sdk.Context, fn func(feed types.Feed)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetFeedPrefixKey())
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetFeedPrefixKey())
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var res types.Feed
@@ -54,7 +55,7 @@ func (k Keeper) IteratorFeedsByState(
 	fn func(feed types.Feed),
 ) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetFeedStatePrefixKey(state))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetFeedStatePrefixKey(state))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var feedName gogotypes.StringValue
@@ -95,7 +96,7 @@ func (k Keeper) SetFeedValue(
 // GetFeedValues returns all feed values by the feed name
 func (k Keeper) GetFeedValues(ctx sdk.Context, feedName string) (result types.FeedValues) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.GetFeedValuePrefixKey(feedName))
+	iterator := storetypes.KVStoreReversePrefixIterator(store, types.GetFeedValuePrefixKey(feedName))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var res types.FeedValue
@@ -134,7 +135,7 @@ func (k Keeper) dequeueAndEnqueue(
 
 func (k Keeper) getFeedValuesCnt(ctx sdk.Context, feedName string) (i int) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.GetFeedValuePrefixKey(feedName))
+	iterator := storetypes.KVStoreReversePrefixIterator(store, types.GetFeedValuePrefixKey(feedName))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		i++
@@ -144,7 +145,7 @@ func (k Keeper) getFeedValuesCnt(ctx sdk.Context, feedName string) (i int) {
 
 func (k Keeper) deleteOldestFeedValue(ctx sdk.Context, feedName string, delta int) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetFeedValuePrefixKey(feedName))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetFeedValuePrefixKey(feedName))
 	defer iterator.Close()
 	for i := 1; iterator.Valid() && i <= delta; iterator.Next() {
 		store.Delete(iterator.Key())
