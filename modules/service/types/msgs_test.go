@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -13,8 +14,8 @@ import (
 var (
 	emptyAddress = ""
 
-	testCoin1 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10000))
-	testCoin2 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
+	testCoin1 = sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(10000))
+	testCoin2 = sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100))
 
 	testServiceName = "test-service"
 	testServiceDesc = "test-service-desc"
@@ -296,7 +297,7 @@ func TestMsgBindServiceType(t *testing.T) {
 // TestMsgBindServiceValidation tests ValidateBasic for MsgBindService
 func TestMsgBindServiceValidation(t *testing.T) {
 	invalidLongName := strings.Repeat("s", MaxNameLength+1)
-	invalidDeposit := sdk.Coins{sdk.Coin{Denom: "stake", Amount: sdk.NewInt(-1)}}
+	invalidDeposit := sdk.Coins{sdk.Coin{Denom: "stake", Amount: math.NewInt(-1)}}
 	invalidQoS := uint64(0)
 
 	invalidPricing := `{"price":"1stake","other":"notallowedfield"}`
@@ -1084,7 +1085,7 @@ func TestMsgCallServiceType(t *testing.T) {
 // TestMsgCallServiceValidation tests ValidateBasic for MsgCallService
 func TestMsgCallServiceValidation(t *testing.T) {
 	invalidLongName := strings.Repeat("s", MaxNameLength+1)
-	invalidDenomCoins := sdk.Coins{sdk.Coin{Denom: "eth+min", Amount: sdk.NewInt(1000)}}
+	invalidDenomCoins := sdk.Coins{sdk.Coin{Denom: "eth+min", Amount: math.NewInt(1000)}}
 
 	invalidDuplicateProviders := []string{testProvider, testProvider}
 	invalidInput := "iris-usdt"
@@ -1558,7 +1559,7 @@ func TestMsgUpdateRequestContextValidation(t *testing.T) {
 	invalidTimeout := int64(-1)
 	invalidLessRepeatedFreq := uint64(testTimeout) - 10
 	invalidRepeatedTotal := int64(-2)
-	invalidDenomCoins := sdk.Coins{sdk.Coin{Denom: "eth+min", Amount: sdk.NewInt(1000)}}
+	invalidDenomCoins := sdk.Coins{sdk.Coin{Denom: "eth+min", Amount: math.NewInt(1000)}}
 
 	testMsgs := []*MsgUpdateRequestContext{
 		NewMsgUpdateRequestContext(

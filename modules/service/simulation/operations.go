@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/math"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -62,20 +63,19 @@ func WeightedOperations(
 		weightMsgWithdrawEarnedFees    int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgDefineService, &weightMsgDefineService, nil,
+	appParams.GetOrGenerate(OpWeightMsgDefineService, &weightMsgDefineService, nil,
 		func(_ *rand.Rand) {
 			weightMsgDefineService = DefaultWeightMsgDefineService
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgBindService, &weightMsgBindService, nil,
+	appParams.GetOrGenerate(OpWeightMsgBindService, &weightMsgBindService, nil,
 		func(_ *rand.Rand) {
 			weightMsgBindService = DefaultWeightMsgBindService
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc,
 		OpWeightMsgUpdateServiceBinding,
 		&weightMsgUpdateServiceBinding,
 		nil,
@@ -84,14 +84,13 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgSetWithdrawAddress, &weightMsgSetWithdrawAddress, nil,
+	appParams.GetOrGenerate(OpWeightMsgSetWithdrawAddress, &weightMsgSetWithdrawAddress, nil,
 		func(_ *rand.Rand) {
 			weightMsgSetWithdrawAddress = DefaultWeightMsgSetWithdrawAddress
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc,
 		OpWeightMsgDisableServiceBinding,
 		&weightMsgDisableServiceBinding,
 		nil,
@@ -101,7 +100,6 @@ func WeightedOperations(
 	)
 
 	appParams.GetOrGenerate(
-		cdc,
 		OpWeightMsgEnableServiceBinding,
 		&weightMsgEnableServiceBinding,
 		nil,
@@ -111,7 +109,6 @@ func WeightedOperations(
 	)
 
 	appParams.GetOrGenerate(
-		cdc,
 		OpWeightMsgRefundServiceDeposit,
 		&weightMsgRefundServiceDeposit,
 		nil,
@@ -121,7 +118,6 @@ func WeightedOperations(
 	)
 
 	appParams.GetOrGenerate(
-		cdc,
 		OpWeightMsgRefundServiceDeposit,
 		&weightMsgRefundServiceDeposit,
 		nil,
@@ -130,38 +126,37 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCallService, &weightMsgCallService, nil,
+	appParams.GetOrGenerate(OpWeightMsgCallService, &weightMsgCallService, nil,
 		func(_ *rand.Rand) {
 			weightMsgCallService = DefaultWeightMsgCallService
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRespondService, &weightMsgRespondService, nil,
+	appParams.GetOrGenerate(OpWeightMsgRespondService, &weightMsgRespondService, nil,
 		func(_ *rand.Rand) {
 			weightMsgRespondService = DefaultWeightMsgRespondService
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgPauseRequestContext, &weightMsgPauseRequestContext, nil,
+	appParams.GetOrGenerate(OpWeightMsgPauseRequestContext, &weightMsgPauseRequestContext, nil,
 		func(_ *rand.Rand) {
 			weightMsgPauseRequestContext = DefaultWeightMsgPauseRequestContext
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgStartRequestContext, &weightMsgStartRequestContext, nil,
+	appParams.GetOrGenerate(OpWeightMsgStartRequestContext, &weightMsgStartRequestContext, nil,
 		func(_ *rand.Rand) {
 			weightMsgStartRequestContext = DefaultWeightMsgStartRequestContext
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgKillRequestContext, &weightMsgKillRequestContext, nil,
+	appParams.GetOrGenerate(OpWeightMsgKillRequestContext, &weightMsgKillRequestContext, nil,
 		func(_ *rand.Rand) {
 			weightMsgKillRequestContext = DefaultWeightMsgKillRequestContext
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc,
 		OpWeightMsgUpdateRequestContext,
 		&weightMsgUpdateRequestContext,
 		nil,
@@ -170,7 +165,7 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgWithdrawEarnedFees, &weightMsgWithdrawEarnedFees, nil,
+	appParams.GetOrGenerate(OpWeightMsgWithdrawEarnedFees, &weightMsgWithdrawEarnedFees, nil,
 		func(_ *rand.Rand) {
 			weightMsgWithdrawEarnedFees = DefaultWeightMsgWithdrawEarnedFees
 		},
@@ -298,7 +293,7 @@ func SimulateMsgDefineService(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -446,7 +441,7 @@ func SimulateMsgBindService(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -565,7 +560,7 @@ func SimulateMsgUpdateServiceBinding(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -643,7 +638,7 @@ func SimulateMsgSetWithdrawAddress(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -730,7 +725,7 @@ func SimulateMsgDisableServiceBinding(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -845,7 +840,7 @@ func SimulateMsgEnableServiceBinding(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -947,7 +942,7 @@ func SimulateMsgRefundServiceDeposit(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -991,7 +986,7 @@ func SimulateMsgCallService(
 		consumer := simAccount.Address.String()
 		input := `{"header":{},"body":{}}`
 		serviceFeeCap := sdk.Coins{
-			sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
+			sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
 		}
 		timeout := int64(simtypes.RandIntBetween(r, 1, int(k.MaxRequestTimeout(ctx))))
 
@@ -1045,7 +1040,7 @@ func SimulateMsgCallService(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -1125,7 +1120,7 @@ func SimulateMsgRespondService(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -1218,7 +1213,7 @@ func SimulateMsgPauseRequestContext(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -1319,7 +1314,7 @@ func SimulateMsgStartRequestContext(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -1419,7 +1414,7 @@ func SimulateMsgKillRequestContext(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -1484,7 +1479,7 @@ func SimulateMsgUpdateRequestContext(
 		providers := GetProviders(definition, k, ctx)
 
 		serviceFeeCap := sdk.Coins{
-			sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
+			sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
 		}
 		timeout := r.Int63n(k.MaxRequestTimeout(ctx))
 		repeatedFrequency := uint64(0)
@@ -1554,7 +1549,7 @@ func SimulateMsgUpdateRequestContext(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -1631,7 +1626,7 @@ func SimulateMsgWithdrawEarnedFees(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 

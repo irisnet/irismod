@@ -2,6 +2,8 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	v1 "github.com/cosmos/cosmos-sdk/x/auth/migrations/v1"
@@ -30,7 +32,7 @@ func (k Keeper) AddEarnedFee(ctx sdk.Context, provider sdk.AccAddress, fee sdk.C
 
 	taxCoins := sdk.Coins{}
 	for _, coin := range fee {
-		taxAmount := sdk.NewDecFromInt(coin.Amount).Mul(taxRate).TruncateInt()
+		taxAmount := math.LegacyNewDecFromInt(coin.Amount).Mul(taxRate).TruncateInt()
 		taxCoins = taxCoins.Add(sdk.NewCoin(coin.Denom, taxAmount))
 	}
 
@@ -72,7 +74,7 @@ func (k Keeper) GetEarnedFees(
 ) (fees sdk.Coins, found bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.GetEarnedFeesSubspace(provider))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetEarnedFeesSubspace(provider))
 
 	fees = sdk.NewCoins()
 	for ; iterator.Valid(); iterator.Next() {
@@ -87,7 +89,7 @@ func (k Keeper) GetEarnedFees(
 // DeleteEarnedFees removes the earned fees of the specified provider
 func (k Keeper) DeleteEarnedFees(ctx sdk.Context, provider sdk.AccAddress) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetEarnedFeesSubspace(provider))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetEarnedFeesSubspace(provider))
 
 	for ; iterator.Valid(); iterator.Next() {
 		store.Delete(iterator.Key())
@@ -111,7 +113,7 @@ func (k Keeper) GetOwnerEarnedFees(
 ) (fees sdk.Coins, found bool) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.GetOwnerEarnedFeesSubspace(owner))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetOwnerEarnedFeesSubspace(owner))
 
 	fees = sdk.NewCoins()
 	for ; iterator.Valid(); iterator.Next() {
@@ -126,7 +128,7 @@ func (k Keeper) GetOwnerEarnedFees(
 // DeleteOwnerEarnedFees removes the earned fees of the specified owner
 func (k Keeper) DeleteOwnerEarnedFees(ctx sdk.Context, owner sdk.AccAddress) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.GetOwnerEarnedFeesSubspace(owner))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetOwnerEarnedFeesSubspace(owner))
 
 	for ; iterator.Valid(); iterator.Next() {
 		store.Delete(iterator.Key())
@@ -157,7 +159,7 @@ func (k Keeper) WithdrawEarnedFees(ctx sdk.Context, owner, provider sdk.AccAddre
 
 		k.DeleteEarnedFees(ctx, provider)
 
-		if earnedFees.IsEqual(ownerEarnedFees) {
+		if earnedFees.Equal(ownerEarnedFees) {
 			k.DeleteOwnerEarnedFees(ctx, owner)
 		} else {
 			k.SetOwnerEarnedFees(ctx, owner, ownerEarnedFees.Sub(earnedFees...))
@@ -188,9 +190,9 @@ func (k Keeper) WithdrawEarnedFees(ctx sdk.Context, owner, provider sdk.AccAddre
 }
 
 // AllEarnedFeesIterator returns an iterator for all the earned fees
-func (k Keeper) AllEarnedFeesIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) AllEarnedFeesIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.EarnedFeesKey)
+	return storetypes.KVStorePrefixIterator(store, types.EarnedFeesKey)
 }
 
 // RefundEarnedFees refunds all the earned fees
