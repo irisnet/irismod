@@ -3,8 +3,8 @@ package record
 import (
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/depinject"
+	store "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	modulev1 "mods.irisnet.org/api/irismod/record/module/v1"
 	"mods.irisnet.org/modules/record/keeper"

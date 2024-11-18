@@ -31,7 +31,7 @@ func WeightedOperations(
 ) simulation.WeightedOperations {
 	var weightCreate int
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgCreateRecord, &weightCreate, nil,
+		OpWeightMsgCreateRecord, &weightCreate, nil,
 		func(_ *rand.Rand) {
 			weightCreate = 50
 		},
@@ -108,7 +108,7 @@ func SimulateCreateRecord(ak types.AccountKeeper, bk types.BankKeeper) simtypes.
 			), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate issue token", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate issue token"), nil, nil
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/cometbft/cometbft/crypto/tmhash"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -33,8 +32,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	app := simapp.Setup(suite.T(), false, depInjectOptions)
 
-	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
-	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{})
+	suite.cdc = app.AppCodec()
+	suite.ctx = app.BaseApp.NewContext(false)
 	suite.keeper.SetIntraTxCounter(suite.ctx, 0)
 }
 
