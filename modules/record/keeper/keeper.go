@@ -4,10 +4,10 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"cosmossdk.io/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cometbft/cometbft/crypto/tmhash"
-	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogotypes "github.com/cosmos/gogoproto/types"
 
@@ -63,9 +63,9 @@ func (k Keeper) GetRecord(ctx sdk.Context, recordID []byte) (record types.Record
 }
 
 // RecordsIterator gets all records
-func (k Keeper) RecordsIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) RecordsIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.RecordKey)
+	return storetypes.KVStorePrefixIterator(store, types.RecordKey)
 }
 
 // GetIntraTxCounter gets the current in-block request operation counter
