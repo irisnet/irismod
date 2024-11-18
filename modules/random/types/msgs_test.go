@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -13,7 +14,7 @@ var (
 	emptyAddr     = ""
 	testAddr      = sdk.AccAddress(tmhash.SumTruncated([]byte("testAddr"))).String()
 	blockInterval = uint64(10)
-	serviceFeeCap = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000000000000000000)))
+	serviceFeeCap = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(1000000000000000000)))
 )
 
 func TestNewMsgRequestRandom(t *testing.T) {
