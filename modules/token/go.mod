@@ -21,8 +21,8 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240318140521-94a12d6c2237
 	google.golang.org/grpc v1.64.1
 	gopkg.in/yaml.v2 v2.4.0
-	mods.irisnet.org/api v0.0.0-20240628054110-4cb043e0238a
-	mods.irisnet.org/simapp v0.0.0-20240628054110-4cb043e0238a
+	mods.irisnet.org/api v0.0.0-20241118093307-345265846e1d
+	mods.irisnet.org/simapp v0.0.0-20241118093307-345265846e1d
 )
 
 require (
@@ -224,8 +224,4 @@ replace (
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.0
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-	// todo replace version
-	mods.irisnet.org/api => ../../api
-	mods.irisnet.org/simapp => ../../simapp
 )
