@@ -158,8 +158,7 @@ func (AppModule) ConsensusVersion() uint64 { return ConsensusVersion }
 
 // BeginBlock performs a no-op.
 func (am AppModule) BeginBlock(ctx context.Context) error {
-	BeginBlocker(ctx, am.keeper)
-	return nil
+	return BeginBlocker(ctx, am.keeper)
 }
 
 // EndBlock returns the end blocker for the HTLC module. It returns no validator updates.

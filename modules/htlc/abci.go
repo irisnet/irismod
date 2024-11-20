@@ -12,7 +12,7 @@ import (
 )
 
 // BeginBlocker handles block beginning logic for HTLC
-func BeginBlocker(c context.Context, k keeper.Keeper) {
+func BeginBlocker(c context.Context, k keeper.Keeper) error {
 	ctx := sdk.UnwrapSDKContext(c)
 	ctx = ctx.WithLogger(ctx.Logger().With("handler", "beginBlock").With("module", "irismod/htlc"))
 
@@ -21,7 +21,9 @@ func BeginBlocker(c context.Context, k keeper.Keeper) {
 		ctx, currentBlockHeight,
 		func(id tmbytes.HexBytes, h types.HTLC) (stop bool) {
 			// refund HTLC
-			_ = k.RefundHTLC(ctx, h, id)
+			if err := k.RefundHTLC(ctx, h, id); err != nil {
+				return err
+			}
 			// delete from the expiration queue
 			k.DeleteHTLCFromExpiredQueue(ctx, currentBlockHeight, id)
 
@@ -39,4 +41,6 @@ func BeginBlocker(c context.Context, k keeper.Keeper) {
 	)
 
 	k.UpdateTimeBasedSupplyLimits(ctx)
+
+	return nil
 }
