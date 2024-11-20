@@ -7,6 +7,7 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -403,7 +404,7 @@ func (k Keeper) IterateHTLCs(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.HTLCKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.HTLCKey)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -425,7 +426,7 @@ func (k Keeper) IterateHTLCExpiredQueueByHeight(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.GetHTLCExpiredQueueSubspace(height))
+	iterator := storetypes.KVStorePrefixIterator(store, types.GetHTLCExpiredQueueSubspace(height))
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {

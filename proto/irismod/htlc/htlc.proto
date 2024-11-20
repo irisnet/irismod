@@ -88,15 +88,15 @@ message AssetParam {
   bool active = 3;           // denotes if asset is available or paused
   string deputy_address = 4; // the address of the relayer process
   string fixed_fee = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ]; // the fixed fee charged by the relayer process for outgoing swaps
   string min_swap_amount = 6 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ]; // Minimum swap amount
   string max_swap_amount = 7 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];                         // Maximum swap amount
   uint64 min_block_lock = 8; // Minimum swap block lock
@@ -109,7 +109,7 @@ message SupplyLimit {
   option (gogoproto.goproto_stringer) = false;
 
   string limit = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];                     // the absolute supply limit for an asset
   bool time_limited = 2; // boolean for if the supply is also limited by time
@@ -118,7 +118,7 @@ message SupplyLimit {
     (gogoproto.stdduration) = true
   ]; // the duration for which the supply time limit applies
   string time_based_limit = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ]; // the supply limit for an asset for each time period
 }

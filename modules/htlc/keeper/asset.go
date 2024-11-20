@@ -4,6 +4,8 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogotypes "github.com/cosmos/gogoproto/types"
 
@@ -184,8 +186,8 @@ func (k Keeper) DecrementOutgoingAssetSupply(ctx sdk.Context, coin sdk.Coin) err
 // CreateNewAssetSupply creates a new AssetSupply in the store for the input denom
 func (k Keeper) CreateNewAssetSupply(ctx sdk.Context, denom string) types.AssetSupply {
 	supply := types.NewAssetSupply(
-		sdk.NewCoin(denom, sdk.ZeroInt()), sdk.NewCoin(denom, sdk.ZeroInt()),
-		sdk.NewCoin(denom, sdk.ZeroInt()), sdk.NewCoin(denom, sdk.ZeroInt()), time.Duration(0),
+		sdk.NewCoin(denom, math.ZeroInt()), sdk.NewCoin(denom, math.ZeroInt()),
+		sdk.NewCoin(denom, math.ZeroInt()), sdk.NewCoin(denom, math.ZeroInt()), time.Duration(0),
 	)
 	k.SetAssetSupply(ctx, supply, denom)
 	return supply
@@ -214,7 +216,7 @@ func (k Keeper) UpdateTimeBasedSupplyLimits(ctx sdk.Context) {
 			supply.TimeElapsed = newTimeElapsed
 		} else {
 			supply.TimeElapsed = time.Duration(0)
-			supply.TimeLimitedCurrentSupply = sdk.NewCoin(asset.Denom, sdk.ZeroInt())
+			supply.TimeLimitedCurrentSupply = sdk.NewCoin(asset.Denom, math.ZeroInt())
 		}
 		k.SetAssetSupply(ctx, supply, asset.Denom)
 	}
@@ -249,7 +251,7 @@ func (k Keeper) IterateAssetSupplies(
 ) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.AssetSupplyPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.AssetSupplyPrefix)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {

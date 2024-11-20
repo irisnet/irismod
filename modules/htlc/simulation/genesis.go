@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -30,32 +31,32 @@ func RandomizedGenState(simState *module.SimulationState) {
 				{
 					Denom: BNB_DENOM,
 					SupplyLimit: types.SupplyLimit{
-						Limit:          sdk.NewInt(350000000000000),
+						Limit:          math.NewInt(350000000000000),
 						TimeLimited:    false,
-						TimeBasedLimit: sdk.ZeroInt(),
+						TimeBasedLimit: math.ZeroInt(),
 						TimePeriod:     time.Hour,
 					},
 					Active:        true,
 					DeputyAddress: Deputy.String(),
-					FixedFee:      sdk.NewInt(1000),
-					MinSwapAmount: sdk.NewInt(2000),
-					MaxSwapAmount: sdk.NewInt(1000000000000),
+					FixedFee:      math.NewInt(1000),
+					MinSwapAmount: math.NewInt(2000),
+					MaxSwapAmount: math.NewInt(1000000000000),
 					MinBlockLock:  MinTimeLock,
 					MaxBlockLock:  MaxTimeLock,
 				},
 				{
 					Denom: OTHER_DENOM,
 					SupplyLimit: types.SupplyLimit{
-						Limit:          sdk.NewInt(100000000000000),
+						Limit:          math.NewInt(100000000000000),
 						TimeLimited:    true,
-						TimeBasedLimit: sdk.NewInt(50000000000),
+						TimeBasedLimit: math.NewInt(50000000000),
 						TimePeriod:     time.Hour,
 					},
 					Active:        false,
 					DeputyAddress: Deputy.String(),
-					FixedFee:      sdk.NewInt(1000),
-					MinSwapAmount: sdk.NewInt(2000),
-					MaxSwapAmount: sdk.NewInt(100000000000),
+					FixedFee:      math.NewInt(1000),
+					MinSwapAmount: math.NewInt(2000),
+					MaxSwapAmount: math.NewInt(100000000000),
 					MinBlockLock:  MinTimeLock,
 					MaxBlockLock:  MaxTimeLock,
 				},
@@ -64,17 +65,17 @@ func RandomizedGenState(simState *module.SimulationState) {
 		Htlcs: []types.HTLC{},
 		Supplies: []types.AssetSupply{
 			types.NewAssetSupply(
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
 				time.Duration(0),
 			),
 			types.NewAssetSupply(
-				sdk.NewCoin("htltinc", sdk.ZeroInt()),
-				sdk.NewCoin("htltinc", sdk.ZeroInt()),
-				sdk.NewCoin("htltinc", sdk.ZeroInt()),
-				sdk.NewCoin("htltinc", sdk.ZeroInt()),
+				sdk.NewCoin("htltinc", math.ZeroInt()),
+				sdk.NewCoin("htltinc", math.ZeroInt()),
+				sdk.NewCoin("htltinc", math.ZeroInt()),
+				sdk.NewCoin("htltinc", math.ZeroInt()),
 				time.Duration(0),
 			),
 		},

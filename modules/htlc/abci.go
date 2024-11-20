@@ -1,6 +1,7 @@
 package htlc
 
 import (
+	"context"
 	"fmt"
 
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
@@ -11,7 +12,8 @@ import (
 )
 
 // BeginBlocker handles block beginning logic for HTLC
-func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+func BeginBlocker(c context.Context, k keeper.Keeper) {
+	ctx := sdk.UnwrapSDKContext(c)
 	ctx = ctx.WithLogger(ctx.Logger().With("handler", "beginBlock").With("module", "irismod/htlc"))
 
 	currentBlockHeight := uint64(ctx.BlockHeight())

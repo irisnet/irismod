@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -38,7 +39,7 @@ func (suite *AssetTestSuite) SetupTest() {
 			return state
 		},
 	)
-	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: time.Now()})
+	suite.ctx = app.BaseApp.NewContextLegacy(false, tmproto.Header{Height: 1, Time: time.Now()})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
 	suite.app = app
@@ -48,9 +49,9 @@ func (suite *AssetTestSuite) SetupTest() {
 
 func (suite *AssetTestSuite) setTestParams() {
 	params := suite.keeper.GetParams(suite.ctx)
-	params.AssetParams[0].SupplyLimit.Limit = sdk.NewInt(50)
-	params.AssetParams[1].SupplyLimit.Limit = sdk.NewInt(100)
-	params.AssetParams[1].SupplyLimit.TimeBasedLimit = sdk.NewInt(15)
+	params.AssetParams[0].SupplyLimit.Limit = math.NewInt(50)
+	params.AssetParams[1].SupplyLimit.Limit = math.NewInt(100)
+	params.AssetParams[1].SupplyLimit.TimeBasedLimit = math.NewInt(15)
 	suite.NoError(suite.keeper.SetParams(suite.ctx, params), "set params failed")
 
 	bnbSupply := types.NewAssetSupply(
@@ -642,46 +643,46 @@ func (suite *AssetTestSuite) TestUpdateTimeBasedSupplyLimits() {
 					AssetParams: []types.AssetParam{{
 						Denom: "htltbnb",
 						SupplyLimit: types.SupplyLimit{
-							Limit:          sdk.NewInt(350000000000000),
+							Limit:          math.NewInt(350000000000000),
 							TimeLimited:    false,
-							TimeBasedLimit: sdk.ZeroInt(),
+							TimeBasedLimit: math.ZeroInt(),
 							TimePeriod:     time.Hour,
 						},
 						Active:        true,
 						DeputyAddress: TestDeputy.String(),
-						FixedFee:      sdk.NewInt(1000),
-						MinSwapAmount: sdk.OneInt(),
-						MaxSwapAmount: sdk.NewInt(1000000000000),
+						FixedFee:      math.NewInt(1000),
+						MinSwapAmount: math.OneInt(),
+						MaxSwapAmount: math.NewInt(1000000000000),
 						MinBlockLock:  MinTimeLock,
 						MaxBlockLock:  MaxTimeLock,
 					}, {
 						Denom: "htltinc",
 						SupplyLimit: types.SupplyLimit{
-							Limit:          sdk.NewInt(100),
+							Limit:          math.NewInt(100),
 							TimeLimited:    true,
-							TimeBasedLimit: sdk.NewInt(10),
+							TimeBasedLimit: math.NewInt(10),
 							TimePeriod:     time.Hour,
 						},
 						Active:        false,
 						DeputyAddress: TestDeputy.String(),
-						FixedFee:      sdk.NewInt(1000),
-						MinSwapAmount: sdk.OneInt(),
-						MaxSwapAmount: sdk.NewInt(1000000000000),
+						FixedFee:      math.NewInt(1000),
+						MinSwapAmount: math.OneInt(),
+						MaxSwapAmount: math.NewInt(1000000000000),
 						MinBlockLock:  MinTimeLock,
 						MaxBlockLock:  MaxTimeLock,
 					}, {
 						Denom: "htltlol",
 						SupplyLimit: types.SupplyLimit{
-							Limit:          sdk.NewInt(100),
+							Limit:          math.NewInt(100),
 							TimeLimited:    true,
-							TimeBasedLimit: sdk.NewInt(10),
+							TimeBasedLimit: math.NewInt(10),
 							TimePeriod:     time.Hour,
 						},
 						Active:        false,
 						DeputyAddress: TestDeputy.String(),
-						FixedFee:      sdk.NewInt(1000),
-						MinSwapAmount: sdk.OneInt(),
-						MaxSwapAmount: sdk.NewInt(1000000000000),
+						FixedFee:      math.NewInt(1000),
+						MinSwapAmount: math.OneInt(),
+						MaxSwapAmount: math.NewInt(1000000000000),
 						MinBlockLock:  MinTimeLock,
 						MaxBlockLock:  MaxTimeLock,
 					}},

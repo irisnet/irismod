@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,7 +22,7 @@ var (
 	recipientStr         = recipient.String()
 	receiverOnOtherChain = "receiverOnOtherChain"
 	senderOnOtherChain   = "senderOnOtherChain"
-	amount               = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
+	amount               = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(10)))
 	secret               = tmbytes.HexBytes(tmhash.Sum([]byte("secret")))
 	secretStr            = secret.String()
 	timestamp            = uint64(1580000000)

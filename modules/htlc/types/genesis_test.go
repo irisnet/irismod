@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
@@ -17,7 +18,7 @@ type GenesisTestSuite struct {
 }
 
 func (suite *GenesisTestSuite) SetupTest() {
-	coin := sdk.NewCoin("htltbnb", sdk.OneInt())
+	coin := sdk.NewCoin("htltbnb", math.OneInt())
 	suite.htlcs = htlcs(10)
 
 	supply := types.NewAssetSupply(coin, coin, coin, coin, time.Duration(0))
@@ -64,7 +65,7 @@ func (suite *GenesisTestSuite) TestValidate() {
 		"invalid supply",
 		args{
 			swaps:             []types.HTLC{},
-			supplies:          []types.AssetSupply{{IncomingSupply: sdk.Coin{Denom: "Invalid", Amount: sdk.ZeroInt()}}},
+			supplies:          []types.AssetSupply{{IncomingSupply: sdk.Coin{Denom: "Invalid", Amount: math.ZeroInt()}}},
 			previousBlockTime: types.DefaultPreviousBlockTime,
 		},
 		false,
@@ -78,7 +79,7 @@ func (suite *GenesisTestSuite) TestValidate() {
 	}, {
 		"invalid swap",
 		args{
-			swaps:             []types.HTLC{{Amount: sdk.Coins{sdk.Coin{Denom: "Invalid Denom", Amount: sdk.NewInt(-1)}}}},
+			swaps:             []types.HTLC{{Amount: sdk.Coins{sdk.Coin{Denom: "Invalid Denom", Amount: math.NewInt(-1)}}}},
 			previousBlockTime: types.DefaultPreviousBlockTime,
 		},
 		false,
