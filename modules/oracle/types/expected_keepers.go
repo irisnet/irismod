@@ -1,9 +1,10 @@
 package types
 
 import (
+	"context"
+
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	service "mods.irisnet.org/modules/service/exported"
 )
@@ -88,14 +89,14 @@ type ServiceKeeper interface {
 
 // AuthKeeper defines the expected auth keeper (noalias)
 type AuthKeeper interface {
-	Authorized(ctx sdk.Context, addr sdk.AccAddress) bool
+	Authorized(ctx context.Context, addr sdk.AccAddress) bool
 }
 
 var RequestContextStateFromString = service.RequestContextStateFromString
 
 type BankKeeper interface {
-	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 }
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
 }

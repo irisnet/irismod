@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -54,7 +54,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	app := simapp.Setup(suite.T(), false, depInjectOptions)
 
 	suite.cdc = app.LegacyAmino()
-	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{})
+	suite.ctx = app.BaseApp.NewContext(false)
 	suite.app = app
 
 	suite.keeper = keeper.NewKeeper(
@@ -78,7 +78,7 @@ func (suite *KeeperTestSuite) TestFeed() {
 		Providers:         []string{addrs[1]},
 		Input:             `{"header":{},"body":{}}`,
 		Timeout:           10,
-		ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))),
+		ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100))),
 		RepeatedFrequency: 11,
 		ResponseThreshold: 1,
 		Creator:           addrs[0],
@@ -146,7 +146,7 @@ func (suite *KeeperTestSuite) TestFeed() {
 		FeedName:          msg.FeedName,
 		LatestHistory:     latestHistory,
 		Providers:         []string{addrs[0]},
-		ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))),
+		ServiceFeeCap:     sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100))),
 		RepeatedFrequency: 1,
 		ResponseThreshold: 1,
 		Creator:           addrs[0],

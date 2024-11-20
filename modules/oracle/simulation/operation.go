@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -34,25 +35,25 @@ func WeightedOperations(
 	var weightCreate, weightPause, weightStart, WeightEdit int
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgCreateFeed, &weightCreate, nil,
+		OpWeightMsgCreateFeed, &weightCreate, nil,
 		func(_ *rand.Rand) {
 			weightCreate = 50
 		},
 	)
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgPauseFeed, &weightPause, nil,
+		OpWeightMsgPauseFeed, &weightPause, nil,
 		func(_ *rand.Rand) {
 			weightPause = 50
 		},
 	)
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgStartFeed, &weightStart, nil,
+		OpWeightMsgStartFeed, &weightStart, nil,
 		func(_ *rand.Rand) {
 			weightStart = 50
 		},
 	)
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgEditFeed, &WeightEdit, nil,
+		OpWeightMsgEditFeed, &WeightEdit, nil,
 		func(_ *rand.Rand) {
 			WeightEdit = 50
 		},
@@ -119,7 +120,7 @@ func SimulateCreateFeed(
 		input := `{"header":{},"body":{}}`
 		timeout := int64(simtypes.RandIntBetween(r, 10, 100))
 		srvFeeCap := sdk.Coins{
-			sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
+			sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
 		}
 		repeatedFrequency := uint64(100)
 		aggregateFunc := GenAggregateFunc(r)
@@ -181,7 +182,7 @@ func SimulateCreateFeed(
 			), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -260,7 +261,7 @@ func SimulateStartFeed(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -340,7 +341,7 @@ func SimulatePauseFeed(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -385,7 +386,7 @@ func SimulateEditFeed(
 		providers := GenProviders(r, accs)
 		timeout := int64(simtypes.RandIntBetween(r, 10, 100))
 		srvFeeCap := sdk.Coins{
-			sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
+			sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(simtypes.RandIntBetween(r, 2, 10)))),
 		}
 		repeatedFrequency := uint64(100)
 		responseThreshold := uint32(simtypes.RandIntBetween(r, 1, len(providers)))
@@ -441,7 +442,7 @@ func SimulateEditFeed(
 			), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
