@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/log"
 	sdkmath "cosmossdk.io/math"
-	"github.com/cometbft/cometbft/libs/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/token/types"
@@ -105,7 +105,7 @@ func (k Keeper) IssueToken(
 	precision := sdkmath.NewIntWithDecimal(1, int(token.Scale))
 	initialCoin := sdk.NewCoin(
 		token.MinUnit,
-		sdk.NewIntFromUint64(token.InitialSupply).Mul(precision),
+		sdkmath.NewIntFromUint64(token.InitialSupply).Mul(precision),
 	)
 
 	mintCoins := sdk.NewCoins(initialCoin)
@@ -147,7 +147,7 @@ func (k Keeper) EditToken(
 		issuedAmt := k.getTokenSupply(ctx, token.MinUnit)
 		issuedMainUnitAmt := issuedAmt.Quo(sdkmath.NewIntWithDecimal(1, int(token.Scale)))
 
-		if sdk.NewIntFromUint64(maxSupply).LT(issuedMainUnitAmt) {
+		if sdkmath.NewIntFromUint64(maxSupply).LT(issuedMainUnitAmt) {
 			return errorsmod.Wrapf(
 				types.ErrInvalidMaxSupply,
 				"max supply must not be less than %s",
@@ -237,7 +237,7 @@ func (k Keeper) MintToken(
 
 	supply := k.getTokenSupply(ctx, token.MinUnit)
 	precision := sdkmath.NewIntWithDecimal(1, int(token.Scale))
-	mintableAmt := sdk.NewIntFromUint64(token.MaxSupply).Mul(precision).Sub(supply)
+	mintableAmt := sdkmath.NewIntFromUint64(token.MaxSupply).Mul(precision).Sub(supply)
 
 	if coinMinted.Amount.GT(mintableAmt) {
 		return errorsmod.Wrapf(

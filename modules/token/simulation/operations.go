@@ -38,35 +38,35 @@ func WeightedOperations(
 ) simulation.WeightedOperations {
 	var weightIssue, weightEdit, weightMint, weightTransfer, weightBurn int
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgIssueToken, &weightIssue, nil,
+		OpWeightMsgIssueToken, &weightIssue, nil,
 		func(_ *rand.Rand) {
 			weightIssue = 10
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgEditToken, &weightEdit, nil,
+		OpWeightMsgEditToken, &weightEdit, nil,
 		func(_ *rand.Rand) {
 			weightEdit = 50
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgMintToken, &weightMint, nil,
+		OpWeightMsgMintToken, &weightMint, nil,
 		func(_ *rand.Rand) {
 			weightMint = 50
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgTransferTokenOwner, &weightTransfer, nil,
+		OpWeightMsgTransferTokenOwner, &weightTransfer, nil,
 		func(_ *rand.Rand) {
 			weightTransfer = 50
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgBurnToken, &weightBurn, nil,
+		OpWeightMsgBurnToken, &weightBurn, nil,
 		func(_ *rand.Rand) {
 			weightBurn = 50
 		},
@@ -172,7 +172,7 @@ func SimulateIssueToken(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate issue token", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate issue token"), nil, nil
 	}
 }
 
@@ -251,7 +251,7 @@ func SimulateEditToken(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate edit token", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate edit token"), nil, nil
 	}
 }
 
@@ -330,7 +330,7 @@ func SimulateMintToken(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate mint token", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate mint token"), nil, nil
 	}
 }
 
@@ -412,7 +412,7 @@ func SimulateTransferTokenOwner(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate transfer token", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate transfer token"), nil, nil
 	}
 }
 
@@ -512,7 +512,7 @@ func SimulateBurnToken(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "simulate mint token", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "simulate mint token"), nil, nil
 	}
 }
 

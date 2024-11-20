@@ -4,6 +4,7 @@ import (
 	"math"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -18,57 +19,57 @@ func TestValidateParams(t *testing.T) {
 		{
 			"Minimum value",
 			Params{
-				TokenTaxRate:      sdk.ZeroDec(),
-				MintTokenFeeRatio: sdk.ZeroDec(),
-				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.ZeroInt()),
+				TokenTaxRate:      sdkmath.LegacyZeroDec(),
+				MintTokenFeeRatio: sdkmath.LegacyZeroDec(),
+				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdkmath.ZeroInt()),
 			},
 			true,
 		}, {
 			"Maximum value",
 			Params{
-				TokenTaxRate:      sdk.NewDec(1),
-				MintTokenFeeRatio: sdk.NewDec(1),
-				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.NewInt(math.MaxInt64)),
+				TokenTaxRate:      sdkmath.LegacyNewDec(1),
+				MintTokenFeeRatio: sdkmath.LegacyNewDec(1),
+				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdkmath.NewInt(math.MaxInt64)),
 			},
 			true,
 		}, {
 			"TokenTaxRate less than the maximum",
 			Params{
-				TokenTaxRate:      sdk.NewDecWithPrec(-1, 1),
-				MintTokenFeeRatio: sdk.NewDec(0),
-				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.NewInt(1)),
+				TokenTaxRate:      sdkmath.LegacyNewDecWithPrec(-1, 1),
+				MintTokenFeeRatio: sdkmath.LegacyNewDec(0),
+				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdkmath.NewInt(1)),
 			},
 			false,
 		}, {
 			"MintTokenFeeRatio less than the maximum",
 			Params{
-				TokenTaxRate:      sdk.NewDec(0),
-				MintTokenFeeRatio: sdk.NewDecWithPrec(-1, 1),
-				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.NewInt(1)),
+				TokenTaxRate:      sdkmath.LegacyNewDec(0),
+				MintTokenFeeRatio: sdkmath.LegacyNewDecWithPrec(-1, 1),
+				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdkmath.NewInt(1)),
 			},
 			false,
 		}, {
 			"TokenTaxRate greater than the maximum",
 			Params{
-				TokenTaxRate:      sdk.NewDecWithPrec(11, 1),
-				MintTokenFeeRatio: sdk.NewDec(1),
-				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.NewInt(1)),
+				TokenTaxRate:      sdkmath.LegacyNewDecWithPrec(11, 1),
+				MintTokenFeeRatio: sdkmath.LegacyNewDec(1),
+				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdkmath.NewInt(1)),
 			},
 			false,
 		}, {
 			"MintTokenFeeRatio greater than the maximum",
 			Params{
-				TokenTaxRate:      sdk.NewDec(1),
-				MintTokenFeeRatio: sdk.NewDecWithPrec(11, 1),
-				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdk.NewInt(1)),
+				TokenTaxRate:      sdkmath.LegacyNewDec(1),
+				MintTokenFeeRatio: sdkmath.LegacyNewDecWithPrec(11, 1),
+				IssueTokenBaseFee: sdk.NewCoin(defaultToken.Symbol, sdkmath.NewInt(1)),
 			},
 			false,
 		}, {
 			"IssueTokenBaseFee is negative",
 			Params{
-				TokenTaxRate:      sdk.NewDec(1),
-				MintTokenFeeRatio: sdk.NewDec(1),
-				IssueTokenBaseFee: sdk.Coin{Denom: defaultToken.Symbol, Amount: sdk.NewInt(-1)},
+				TokenTaxRate:      sdkmath.LegacyNewDec(1),
+				MintTokenFeeRatio: sdkmath.LegacyNewDec(1),
+				IssueTokenBaseFee: sdk.Coin{Denom: defaultToken.Symbol, Amount: sdkmath.NewInt(-1)},
 			},
 			false,
 		},

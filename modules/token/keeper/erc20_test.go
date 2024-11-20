@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"math/big"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -59,7 +60,7 @@ func (suite *KeeperTestSuite) TestSwapFromERC20() {
 	})
 
 	suite.Run("swap from erc20", func() {
-		wantedAmount := sdk.NewCoin(token.MinUnit, sdk.NewInt(1e18))
+		wantedAmount := sdk.NewCoin(token.MinUnit, math.NewInt(1e18))
 
 		err = suite.keeper.SwapFromERC20(suite.ctx, evmAddr, cosmosAddr, wantedAmount)
 		suite.NoError(err)
@@ -93,7 +94,7 @@ func (suite *KeeperTestSuite) TestSwapToERC20() {
 
 	balanceBefore := suite.bk.GetBalance(suite.ctx, sender, token.MinUnit)
 	suite.Run("swap to erc20", func() {
-		amount := sdk.NewCoin(token.MinUnit, sdk.NewInt(1e18))
+		amount := sdk.NewCoin(token.MinUnit, math.NewInt(1e18))
 
 		err = suite.keeper.SwapToERC20(suite.ctx, sender, receiver, amount)
 		suite.NoError(err)

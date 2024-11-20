@@ -5,6 +5,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	gogotypes "github.com/cosmos/gogoproto/types"
@@ -18,13 +19,13 @@ import (
 func (k Keeper) GetTokens(ctx sdk.Context, owner sdk.AccAddress) (tokens []v1.TokenI) {
 	store := ctx.KVStore(k.storeKey)
 
-	var it sdk.Iterator
+	var it storetypes.Iterator
 
 	// 获取迭代器
 	if owner == nil {
-		it = sdk.KVStorePrefixIterator(store, types.PrefixTokenForSymbol)
+		it = storetypes.KVStorePrefixIterator(store, types.PrefixTokenForSymbol)
 	} else {
-		it = sdk.KVStorePrefixIterator(store, types.KeyTokens(owner, ""))
+		it = storetypes.KVStorePrefixIterator(store, types.KeyTokens(owner, ""))
 	}
 	defer it.Close()
 
@@ -149,7 +150,7 @@ func (k Keeper) GetAllBurnCoin(ctx sdk.Context) []sdk.Coin {
 	store := ctx.KVStore(k.storeKey)
 
 	var coins []sdk.Coin
-	it := sdk.KVStorePrefixIterator(store, types.PrefixBurnTokenAmt)
+	it := storetypes.KVStorePrefixIterator(store, types.PrefixBurnTokenAmt)
 	for ; it.Valid(); it.Next() {
 		var coin sdk.Coin
 		k.cdc.MustUnmarshal(it.Value(), &coin)

@@ -39,15 +39,15 @@ func TestToken_ToMinCoin(t *testing.T) {
 			{
 				name:    fmt.Sprintf("Main Coin to Min Coin,scale=%d", i),
 				wantErr: false,
-				args:    args{coin: sdk.NewDecCoin(token.Symbol, sdk.NewInt(10))},
+				args:    args{coin: sdk.NewDecCoin(token.Symbol, sdkmath.NewInt(10))},
 				want:    sdk.NewCoin(token.MinUnit, sdkmath.NewIntWithDecimal(10, int(token.Scale))),
 				success: true,
 			},
 			{
 				name:    fmt.Sprintf("Main Coin to Min Coin Failed,scale=%d", i),
 				wantErr: false,
-				args:    args{coin: sdk.NewDecCoin(token.Symbol, sdk.NewInt(10))},
-				want:    sdk.NewCoin(token.MinUnit, sdk.NewInt(10)),
+				args:    args{coin: sdk.NewDecCoin(token.Symbol, sdkmath.NewInt(10))},
+				want:    sdk.NewCoin(token.MinUnit, sdkmath.NewInt(10)),
 				success: (i == 0),
 			},
 		}
@@ -88,16 +88,16 @@ func TestToken_ToMainCoin(t *testing.T) {
 			{
 				name:    "Min Coin to Main Coin Failed",
 				wantErr: false,
-				args:    args{coin: sdk.NewCoin(token.MinUnit, sdk.NewInt(10))},
+				args:    args{coin: sdk.NewCoin(token.MinUnit, sdkmath.NewInt(10))},
 				want:    sdk.NewInt64DecCoin(token.Symbol, 10),
 				success: (i == 0),
 			},
 			{
 				name:    "Min Coin to Main Coin Success",
 				wantErr: false,
-				args:    args{coin: sdk.NewCoin(token.MinUnit, sdk.NewInt(10))},
+				args:    args{coin: sdk.NewCoin(token.MinUnit, sdkmath.NewInt(10))},
 				want: sdk.NewDecCoinFromDec(token.Symbol,
-					sdk.NewDecWithPrec(1, int64(token.Scale)).MulInt64(10)),
+					sdkmath.LegacyNewDecWithPrec(1, int64(token.Scale)).MulInt64(10)),
 				success: true,
 			},
 		}

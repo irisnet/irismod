@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	sdkmath "cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type Bool string
@@ -75,17 +74,17 @@ func ParseBool(v string) (Bool, error) {
 // ratio: swap rate
 // inputScale: the decimal scale of input amount
 // outputScale: the decimal scale of output amount
-func LossLessSwap(input sdkmath.Int, ratio sdk.Dec, inputScale, outputScale uint32) (sdkmath.Int, sdkmath.Int) {
-	inputDec := sdk.NewDecFromInt(input)
+func LossLessSwap(input sdkmath.Int, ratio sdkmath.LegacyDec, inputScale, outputScale uint32) (sdkmath.Int, sdkmath.Int) {
+	inputDec := sdkmath.LegacyNewDecFromInt(input)
 	scaleFactor := int64(inputScale) - int64(outputScale)
-	var scaleMultipler, scaleReverseMultipler sdk.Dec
+	var scaleMultipler, scaleReverseMultipler sdkmath.LegacyDec
 
 	if scaleFactor >= 0 {
-		scaleMultipler = sdk.NewDecWithPrec(1, scaleFactor)
-		scaleReverseMultipler = sdk.NewDecFromInt(sdkmath.NewIntWithDecimal(1, int(scaleFactor)))
+		scaleMultipler = sdkmath.LegacyNewDecWithPrec(1, scaleFactor)
+		scaleReverseMultipler = sdkmath.LegacyNewDecFromInt(sdkmath.NewIntWithDecimal(1, int(scaleFactor)))
 	} else {
-		scaleMultipler = sdk.NewDecFromInt(sdkmath.NewIntWithDecimal(1, int(-scaleFactor)))
-		scaleReverseMultipler = sdk.NewDecWithPrec(1, -scaleFactor)
+		scaleMultipler = sdkmath.LegacyNewDecFromInt(sdkmath.NewIntWithDecimal(1, int(-scaleFactor)))
+		scaleReverseMultipler = sdkmath.LegacyNewDecWithPrec(1, -scaleFactor)
 	}
 
 	// Calculate output

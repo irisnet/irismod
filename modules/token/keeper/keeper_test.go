@@ -3,9 +3,9 @@ package keeper_test
 import (
 	"testing"
 
+	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/tmhash"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -54,7 +54,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	app := simapp.Setup(suite.T(), isCheckTx, depInjectOptions)
 
 	suite.legacyAmino = app.LegacyAmino()
-	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
+	suite.ctx = app.BaseApp.NewContext(isCheckTx)
 	suite.bk = app.BankKeeper
 	suite.app = app
 
@@ -223,11 +223,11 @@ func (suite *KeeperTestSuite) TestSwapFeeToken() {
 	suite.keeper = suite.keeper.WithSwapRegistry(v1.SwapRegistry{
 		token1.MinUnit: v1.SwapParams{
 			MinUnit: token2.MinUnit,
-			Ratio:   sdk.NewDec(1),
+			Ratio:   math.LegacyNewDec(1),
 		},
 		token2.MinUnit: v1.SwapParams{
 			MinUnit: token1.MinUnit,
-			Ratio:   sdk.NewDec(1),
+			Ratio:   math.LegacyNewDec(1),
 		},
 	})
 
