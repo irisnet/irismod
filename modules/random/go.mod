@@ -27,8 +27,8 @@ require (
 	google.golang.org/grpc v1.64.1
 	google.golang.org/protobuf v1.34.2
 	mods.irisnet.org/api v0.0.0-20240628054110-4cb043e0238a
-	mods.irisnet.org/modules/service v0.0.0-20240628073359-e86a7a18ad5d
-	mods.irisnet.org/simapp v0.0.0-20240628054110-4cb043e0238a
+	mods.irisnet.org/modules/service v0.0.0-20241118093307-345265846e1d
+	mods.irisnet.org/simapp v0.0.0-20241118093307-345265846e1d
 )
 
 require (
@@ -214,6 +214,4 @@ replace (
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 
-	mods.irisnet.org/modules/service => ../service
-	mods.irisnet.org/simapp => ../../simapp
 )
