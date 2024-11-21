@@ -31,13 +31,13 @@ func WeightedOperations(
 ) simulation.WeightedOperations {
 	var weightCreateHtlc, weightClaimHtlc int
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgCreateHTLC, &weightCreateHtlc, nil,
+		OpWeightMsgCreateHTLC, &weightCreateHtlc, nil,
 		func(_ *rand.Rand) {
 			weightCreateHtlc = 100
 		},
 	)
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgClaimHTLC, &weightClaimHtlc, nil,
+		OpWeightMsgClaimHTLC, &weightClaimHtlc, nil,
 		func(_ *rand.Rand) {
 			weightClaimHtlc = 50
 		},
@@ -141,7 +141,7 @@ func SimulateMsgCreateHtlc(
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -226,7 +226,7 @@ func SimulateMsgClaimHtlc(
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 

@@ -39,7 +39,7 @@ func (suite *ParamsTestSuite) SetupTest() {
 			return state
 		},
 	)
-	suite.ctx = app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: time.Now()})
+	suite.ctx = app.BaseApp.NewContextLegacy(false, tmproto.Header{Height: 1, Time: time.Now()})
 
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
 	suite.app = app
