@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -22,38 +23,38 @@ const (
 // RandomizedGenState generates a random GenesisState for coinswap
 func RandomizedGenState(simState *module.SimulationState) {
 	var (
-		fee                    sdk.Dec
+		fee                    math.LegacyDec
 		poolCreationFee        sdk.Coin
-		taxRate                sdk.Dec
-		unilateralLiquidityFee sdk.Dec
+		taxRate                math.LegacyDec
+		unilateralLiquidityFee math.LegacyDec
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, keyFee, &fee, simState.Rand,
+		keyFee, &fee, simState.Rand,
 		func(r *rand.Rand) {
 			num := simulation.RandIntBetween(simState.Rand, 1, 9)
-			fee = sdk.NewDecWithPrec(int64(num), 3)
+			fee = math.LegacyNewDecWithPrec(int64(num), 3)
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, keyPoolCreationFee, &poolCreationFee, simState.Rand,
+		keyPoolCreationFee, &poolCreationFee, simState.Rand,
 		func(r *rand.Rand) { poolCreationFee = sdk.NewInt64Coin(sdk.DefaultBondDenom, r.Int63n(100)) },
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, keyTaxRate, &taxRate, simState.Rand,
+		keyTaxRate, &taxRate, simState.Rand,
 		func(r *rand.Rand) {
 			num := simulation.RandIntBetween(simState.Rand, 1, 5)
-			taxRate = sdk.NewDecWithPrec(int64(num), 1)
+			taxRate = math.LegacyNewDecWithPrec(int64(num), 1)
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, keyUnilateralLiquidityFee, &unilateralLiquidityFee, simState.Rand,
+		keyUnilateralLiquidityFee, &unilateralLiquidityFee, simState.Rand,
 		func(r *rand.Rand) {
 			num := simulation.RandIntBetween(simState.Rand, 1, 3)
-			unilateralLiquidityFee = sdk.NewDecWithPrec(int64(num), 3)
+			unilateralLiquidityFee = math.LegacyNewDecWithPrec(int64(num), 3)
 		},
 	)
 

@@ -11,7 +11,7 @@ import (
 var (
 	KeyFee                 = []byte("Fee") // fee key
 	DefaultPoolCreationFee = sdk.NewCoin("uiris", sdkmath.NewIntWithDecimal(5000, 6))
-	DefaultTaxRate         = sdk.NewDecWithPrec(4, 1)
+	DefaultTaxRate         = sdkmath.LegacyNewDecWithPrec(4, 1)
 )
 
 type (
@@ -21,7 +21,7 @@ type (
 	}
 
 	Params struct {
-		Fee sdk.Dec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"fee"`
+		Fee sdkmath.LegacyDec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=comsmossdk.io/math.LegacyDec" json:"fee"`
 	}
 )
 
