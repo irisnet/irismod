@@ -2,6 +2,7 @@ package simapp
 
 import (
 	"context"
+
 	"cosmossdk.io/depinject"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
