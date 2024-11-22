@@ -26,11 +26,11 @@ func NewDistrKeeperAdapter(keeper distrkeeper.Keeper) DistrKeeperAdapter {
 	return DistrKeeperAdapter{keeper: keeper}
 }
 
-func (a DistrKeeperAdapter) GetFeePool(ctx sdk.Context) (distrtypes.FeePool, error) {
+func (a DistrKeeperAdapter) GetFeePool(ctx context.Context) (distrtypes.FeePool, error) {
 	return a.keeper.FeePool.Get(ctx)
 }
 
-func (a DistrKeeperAdapter) SetFeePool(ctx sdk.Context, feePool distrtypes.FeePool) error {
+func (a DistrKeeperAdapter) SetFeePool(ctx context.Context, feePool distrtypes.FeePool) error {
 	return a.keeper.FeePool.Set(ctx, feePool)
 }
 
