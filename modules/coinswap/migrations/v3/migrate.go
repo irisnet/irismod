@@ -21,7 +21,7 @@ type (
 	}
 
 	Params struct {
-		Fee sdkmath.LegacyDec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=comsmossdk.io/math.LegacyDec" json:"fee"`
+		Fee sdkmath.LegacyDec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"fee"`
 	}
 )
 

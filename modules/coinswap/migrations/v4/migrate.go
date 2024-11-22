@@ -21,9 +21,9 @@ type (
 	}
 
 	Params struct {
-		Fee             math.LegacyDec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=comsmossdk.io/math.LegacyDec"                   json:"fee"`
+		Fee             math.LegacyDec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=cosmossdk.io/math.LegacyDec"                   json:"fee"`
 		PoolCreationFee sdk.Coin       `protobuf:"bytes,2,opt,name=pool_creation_fee,json=poolCreationFee,proto3"                                  json:"pool_creation_fee"`
-		TaxRate         math.LegacyDec `protobuf:"bytes,3,opt,name=tax_rate,json=taxRate,proto3,customtype=comsmossdk.io/math.LegacyDec" json:"tax_rate"`
+		TaxRate         math.LegacyDec `protobuf:"bytes,3,opt,name=tax_rate,json=taxRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"tax_rate"`
 	}
 )
 
