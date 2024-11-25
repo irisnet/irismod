@@ -10,6 +10,8 @@ option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the oracle Msg service
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // CreateRecord defines a method for creating a new record
   rpc CreateRecord(MsgCreateRecord) returns (MsgCreateRecordResponse);
 }

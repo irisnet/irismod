@@ -9,6 +9,8 @@ option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the oracle Msg service
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // IssueToken defines a method for issuing a new token
   rpc IssueToken(MsgIssueToken) returns (MsgIssueTokenResponse);
 

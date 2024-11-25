@@ -10,6 +10,8 @@ option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the nft Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // IssueDenom defines a method for issue a denom.
   rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
 

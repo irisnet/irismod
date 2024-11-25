@@ -9,6 +9,8 @@ option go_package = "mods.irisnet.org/modules/oracle/types";
 
 // Msg defines the oracle Msg service
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // CreateFeed defines a method for creating a new feed
   rpc CreateFeed(MsgCreateFeed) returns (MsgCreateFeedResponse);
 

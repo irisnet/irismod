@@ -8,6 +8,8 @@ option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the mt Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // IssueDenom defines a method for issuing a denom.
   rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
 

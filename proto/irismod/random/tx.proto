@@ -9,6 +9,8 @@ option go_package = "mods.irisnet.org/modules/random/types";
 
 // Msg defines the oracle Msg service
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // RequestRandom defines a method for requesting a new random number
   rpc RequestRandom(MsgRequestRandom) returns (MsgRequestRandomResponse);
 }
