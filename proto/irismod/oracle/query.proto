@@ -7,6 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "mods.irisnet.org/modules/oracle/types";
 
@@ -14,16 +15,19 @@ option go_package = "mods.irisnet.org/modules/oracle/types";
 service Query {
   // Feed queries the feed
   rpc Feed(QueryFeedRequest) returns (QueryFeedResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/oracle/feeds/{feed_name}";
   }
 
   // Feeds queries the feed list
   rpc Feeds(QueryFeedsRequest) returns (QueryFeedsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/oracle/feeds";
   }
 
   // FeedValue queries the feed value
   rpc FeedValue(QueryFeedValueRequest) returns (QueryFeedValueResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/oracle/feeds/{feed_name}/values";
   }
 }

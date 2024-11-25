@@ -4,6 +4,7 @@ package irismod.token;
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/query/v1/query.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/any.proto";
@@ -15,22 +16,27 @@ option go_package = "mods.irisnet.org/modules/token/types/v1beta1";
 service Query {
   // Token returns token with token name
   rpc Token(QueryTokenRequest) returns (QueryTokenResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/token/tokens/{denom}";
   }
   // Tokens returns the token list
   rpc Tokens(QueryTokensRequest) returns (QueryTokensResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/token/tokens";
   }
   // Fees returns the fees to issue or mint a token
   rpc Fees(QueryFeesRequest) returns (QueryFeesResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/token/tokens/{symbol}/fees";
   }
   // Params queries the token parameters
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/token/params";
   }
   // TotalBurn queries all the burnt coins
   rpc TotalBurn(QueryTotalBurnRequest) returns (QueryTotalBurnResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/token/total_burn";
   }
 }

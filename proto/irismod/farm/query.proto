@@ -3,6 +3,7 @@ package irismod.farm;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/query/v1/query.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "irismod/farm/farm.proto";
@@ -13,21 +14,25 @@ option go_package = "mods.irisnet.org/modules/farm/types";
 service Query {
   // FarmPools returns all the farm pool
   rpc FarmPools(QueryFarmPoolsRequest) returns (QueryFarmPoolsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/farm/pools";
   }
 
   // FarmPool returns the farm pool for the provided id
   rpc FarmPool(QueryFarmPoolRequest) returns (QueryFarmPoolResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/farm/pool/{id}";
   }
 
   // Farmer returns the farmer for the provided farmer address
   rpc Farmer(QueryFarmerRequest) returns (QueryFarmerResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/farm/farmers/{farmer}";
   }
 
   // Params queries the farm parameters
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/farm/params";
   }
 }

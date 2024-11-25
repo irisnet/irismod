@@ -2,6 +2,7 @@ syntax = "proto3";
 package irismod.token;
 
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
 
 option go_package = "mods.irisnet.org/modules/token/types/v1beta1";
 option (gogoproto.goproto_getters_all) = false;
@@ -27,6 +28,7 @@ service Msg {
 
 // MsgIssueToken defines an SDK message for issuing a new token
 message MsgIssueToken {
+  option (cosmos.msg.v1.signer) = "owner";
   string symbol = 1;
   string name = 2;
   uint32 scale = 3;
@@ -43,6 +45,7 @@ message MsgIssueTokenResponse {}
 
 // MsgTransferTokenOwner defines an SDK message for transferring the token owner
 message MsgTransferTokenOwner {
+  option (cosmos.msg.v1.signer) = "src_owner";
   string src_owner = 1 [ (gogoproto.moretags) = "yaml:\"src_owner\"" ];
   string dst_owner = 2 [ (gogoproto.moretags) = "yaml:\"dst_owner\"" ];
   string symbol = 3;
@@ -54,6 +57,7 @@ message MsgTransferTokenOwnerResponse {}
 
 // MsgEditToken defines an SDK message for editing a new token
 message MsgEditToken {
+  option (cosmos.msg.v1.signer) = "owner";
   string symbol = 1;
   string name = 2;
   uint64 max_supply = 3 [ (gogoproto.moretags) = "yaml:\"max_supply\"" ];
@@ -68,6 +72,7 @@ message MsgEditTokenResponse {}
 
 // MsgMintToken defines an SDK message for minting a new token
 message MsgMintToken {
+  option (cosmos.msg.v1.signer) = "owner";
   string symbol = 1;
   uint64 amount = 2;
   string to = 3;

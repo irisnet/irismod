@@ -3,6 +3,7 @@ package irismod.random;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
 
 option go_package = "mods.irisnet.org/modules/random/types";
 
@@ -15,6 +16,7 @@ service Msg {
 // MsgRequestRandom defines an sdk.Msg type that supports requesting a random
 // number
 message MsgRequestRandom {
+  option (cosmos.msg.v1.signer) = "consumer";
   uint64 block_interval = 1
       [ (gogoproto.moretags) = "yaml:\"block_interval\"" ];
   string consumer = 2;

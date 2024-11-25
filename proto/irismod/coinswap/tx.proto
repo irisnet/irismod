@@ -12,6 +12,7 @@ option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the coinswap Msg service
 service Msg {
+  option (cosmos.msg.v1.service) = true;
   // AddLiquidity defines a method for depositing some tokens to the liquidity
   // pool
   rpc AddLiquidity(MsgAddLiquidity) returns (MsgAddLiquidityResponse);
