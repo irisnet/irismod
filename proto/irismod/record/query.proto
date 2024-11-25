@@ -3,6 +3,7 @@ package irismod.record;
 
 import "irismod/record/record.proto";
 import "google/api/annotations.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "mods.irisnet.org/modules/record/types";
 
@@ -10,6 +11,7 @@ option go_package = "mods.irisnet.org/modules/record/types";
 service Query {
   // Record queries the record by the given record ID
   rpc Record(QueryRecordRequest) returns (QueryRecordResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/record/records/{record_id}";
   }
 }

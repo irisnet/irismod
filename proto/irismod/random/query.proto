@@ -4,6 +4,7 @@ package irismod.random;
 import "irismod/random/random.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "mods.irisnet.org/modules/random/types";
 
@@ -11,12 +12,14 @@ option go_package = "mods.irisnet.org/modules/random/types";
 service Query {
   // Random queries the random result
   rpc Random(QueryRandomRequest) returns (QueryRandomResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/random/randoms/{req_id}";
   }
 
   // RandomRequestQueue queries the random request queue
   rpc RandomRequestQueue(QueryRandomRequestQueueRequest)
       returns (QueryRandomRequestQueueResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/random/queue";
   }
 }
