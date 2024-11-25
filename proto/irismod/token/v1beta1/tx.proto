@@ -84,6 +84,7 @@ message MsgMintTokenResponse {}
 
 // MsgBurnToken defines an SDK message for burning some tokens
 message MsgBurnToken {
+  option (cosmos.msg.v1.signer) = "sender";
   string symbol = 1;
   uint64 amount = 2;
   string sender = 3;
