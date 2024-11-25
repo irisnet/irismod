@@ -48,35 +48,35 @@ func WeightedOperations(
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgSwapOrder, &weightSwap, nil,
+		OpWeightMsgSwapOrder, &weightSwap, nil,
 		func(_ *rand.Rand) {
 			weightSwap = 50
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgAddLiquidity, &weightAdd, nil,
+		OpWeightMsgAddLiquidity, &weightAdd, nil,
 		func(_ *rand.Rand) {
 			weightAdd = 100
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgRemoveLiquidity, &weightRemove, nil,
+		OpWeightMsgRemoveLiquidity, &weightRemove, nil,
 		func(_ *rand.Rand) {
 			weightRemove = 30
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgAddUnilateralLiquidity, &weightAddUnilateral, nil,
+		OpWeightMsgAddUnilateralLiquidity, &weightAddUnilateral, nil,
 		func(_ *rand.Rand) {
 			weightAddUnilateral = 50
 		},
 	)
 
 	appParams.GetOrGenerate(
-		cdc, OpWeightMsgRemoveUnilateralLiquidity, &weightRemoveUnilateral, nil,
+		OpWeightMsgRemoveUnilateralLiquidity, &weightRemoveUnilateral, nil,
 		func(_ *rand.Rand) {
 			weightRemoveUnilateral = 50
 		},
@@ -248,7 +248,7 @@ func SimulateMsgAddLiquidity(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -460,7 +460,7 @@ func SimulateMsgSwapOrder(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -618,7 +618,7 @@ func SimulateMsgRemoveLiquidity(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -697,9 +697,9 @@ func SimulateMsgAddUnilateralLiquidity(
 		}
 		exactTokenAmt := exactToken.Amount
 
-		deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
+		deltaFeeUnilateral := sdkmath.LegacyOneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
 		numerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-		denominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
+		denominator := sdkmath.NewIntWithDecimal(1, sdkmath.LegacyPrecision)
 
 		square := denominator.Mul(tokenBalanceAmt).
 			Add(numerator.Mul(exactTokenAmt)).
@@ -766,7 +766,7 @@ func SimulateMsgAddUnilateralLiquidity(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -871,9 +871,9 @@ func SimulateMsgRemoveUnilateralLiquidity(
 			Mul(counterpartWithdrawnAmt).
 			Quo(counterpartBalanceAmt)
 
-		deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
+		deltaFeeUnilateral := sdkmath.LegacyOneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
 		numerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-		denominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
+		denominator := sdkmath.NewIntWithDecimal(1, sdkmath.LegacyPrecision)
 		targetTokenAmt := targetWithdrawnAmt.Add(targetSwapAmt).Mul(numerator).Quo(denominator)
 
 		if targetBalanceAmt.LT(targetTokenAmt) {
@@ -932,7 +932,7 @@ func SimulateMsgRemoveUnilateralLiquidity(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -1001,7 +1001,7 @@ func doubleSwapBill(
 		outputReserve2,
 		param.Fee,
 	)
-	
+
 	if soldTokenAmt.IsNegative() {
 		return sdk.Coin{}, sdk.Coin{}, errorsmod.Wrap(
 			types.ErrConstraintNotMet,

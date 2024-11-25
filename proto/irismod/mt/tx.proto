@@ -2,12 +2,14 @@ syntax = "proto3";
 package irismod.mt;
 
 import "gogoproto/gogo.proto";
-
+import "cosmos/msg/v1/msg.proto";
 option go_package = "mods.irisnet.org/modules/mt/types";
 option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the mt Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // IssueDenom defines a method for issuing a denom.
   rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
 
@@ -30,6 +32,7 @@ service Msg {
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
 message MsgIssueDenom {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string name = 1;
@@ -43,6 +46,7 @@ message MsgIssueDenomResponse {}
 // MsgTransferDenom defines an SDK message for transferring an denom to
 // recipient.
 message MsgTransferDenom {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
   string id = 1;
   string sender = 2;
@@ -54,6 +58,7 @@ message MsgTransferDenomResponse {}
 
 // MsgMintMT defines an SDK message for creating a new MT.
 message MsgMintMT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -69,6 +74,7 @@ message MsgMintMTResponse {}
 
 // MsgEditMT defines an SDK message for editing an MT.
 message MsgEditMT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -82,6 +88,7 @@ message MsgEditMTResponse {}
 
 // MsgTransferMT defines an SDK message for transferring an MT to recipient.
 message MsgTransferMT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -96,6 +103,7 @@ message MsgTransferMTResponse {}
 
 // MsgBurnMT defines an SDK message for burning an MT.
 message MsgBurnMT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;

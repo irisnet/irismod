@@ -2,12 +2,16 @@ syntax = "proto3";
 package irismod.nft;
 
 import "gogoproto/gogo.proto";
+import "cosmos/query/v1/query.proto";
+import "cosmos/msg/v1/msg.proto";
 
 option go_package = "mods.irisnet.org/modules/nft/types";
 option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the nft Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // IssueDenom defines a method for issue a denom.
   rpc IssueDenom(MsgIssueDenom) returns (MsgIssueDenomResponse);
 
@@ -29,6 +33,7 @@ service Msg {
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
 message MsgIssueDenom {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -49,6 +54,7 @@ message MsgIssueDenomResponse {}
 
 // MsgTransferNFT defines an SDK message for transferring an NFT to recipient.
 message MsgTransferNFT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -66,6 +72,7 @@ message MsgTransferNFTResponse {}
 
 // MsgEditNFT defines an SDK message for editing a nft.
 message MsgEditNFT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -82,6 +89,7 @@ message MsgEditNFTResponse {}
 
 // MsgMintNFT defines an SDK message for creating a new NFT.
 message MsgMintNFT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -99,6 +107,7 @@ message MsgMintNFTResponse {}
 
 // MsgBurnNFT defines an SDK message for burning a NFT.
 message MsgBurnNFT {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
 
   string id = 1;
@@ -112,6 +121,7 @@ message MsgBurnNFTResponse {}
 // MsgTransferDenom defines an SDK message for transferring an denom to
 // recipient.
 message MsgTransferDenom {
+  option (cosmos.msg.v1.signer) = "sender";
   option (gogoproto.equal) = true;
   string id = 1;
   string sender = 2;

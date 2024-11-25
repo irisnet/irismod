@@ -3,18 +3,22 @@ package irismod.record;
 
 import "irismod/record/record.proto";
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
 
 option go_package = "mods.irisnet.org/modules/record/types";
 option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the oracle Msg service
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // CreateRecord defines a method for creating a new record
   rpc CreateRecord(MsgCreateRecord) returns (MsgCreateRecordResponse);
 }
 
 // MsgCreateRecord defines an SDK message for creating a new record
 message MsgCreateRecord {
+  option (cosmos.msg.v1.signer) = "creator";
   option (gogoproto.equal) = true;
 
   repeated Content contents = 1 [ (gogoproto.nullable) = false ];

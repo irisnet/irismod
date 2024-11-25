@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "irismod/mt/mt.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/query/v1/query.proto";
 
 option go_package = "mods.irisnet.org/modules/mt/types";
 
@@ -12,36 +13,43 @@ option go_package = "mods.irisnet.org/modules/mt/types";
 service Query {
   // Supply queries the total supply of a given denom or owner
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/mt/denoms/supply";
   }
 
   // Denoms queries all the denoms
   rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/mt/denoms";
   }
 
   // Denom queries the definition of a given denom ID
   rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/mt/denoms/{denom_id}";
   }
 
   // MTSupply queries the total supply of given denom and mt ID
   rpc MTSupply(QueryMTSupplyRequest) returns (QueryMTSupplyResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/mt/mts/{denom_id}/{mt_id}/supply";
   }
 
   // MTs queries all the MTs of a given denom ID
   rpc MTs(QueryMTsRequest) returns (QueryMTsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/mt/mts/{denom_id}";
   }
 
   // MT queries the MT of the given denom and mt ID
   rpc MT(QueryMTRequest) returns (QueryMTResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/mt/mts/{denom_id}/{mt_id}";
   }
 
   // Balances queries the MT balances of a specified owner
   rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/irismod/mt/mts/{owner}/{denom_id}/balances";
   }
 }

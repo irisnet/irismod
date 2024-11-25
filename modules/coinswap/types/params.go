@@ -3,12 +3,13 @@ package types
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"sigs.k8s.io/yaml"
 )
 
 // NewParams is the coinswap params constructor
-func NewParams(fee, taxRate, unilateralLiquidityFee sdk.Dec, poolCreationFee sdk.Coin) Params {
+func NewParams(fee, taxRate, unilateralLiquidityFee math.LegacyDec, poolCreationFee sdk.Coin) Params {
 	return Params{
 		Fee:                    fee,
 		TaxRate:                taxRate,
@@ -19,12 +20,12 @@ func NewParams(fee, taxRate, unilateralLiquidityFee sdk.Dec, poolCreationFee sdk
 
 // DefaultParams returns the default coinswap module parameters
 func DefaultParams() Params {
-	fee := sdk.NewDecWithPrec(3, 3)
-	unilateralFee := sdk.NewDecWithPrec(2, 3)
+	fee := math.LegacyNewDecWithPrec(3, 3)
+	unilateralFee := math.LegacyNewDecWithPrec(2, 3)
 	return Params{
 		Fee:                    fee,
 		PoolCreationFee:        sdk.NewInt64Coin(sdk.DefaultBondDenom, 5000),
-		TaxRate:                sdk.NewDecWithPrec(4, 1), // 0.4 (40%)
+		TaxRate:                math.LegacyNewDecWithPrec(4, 1), // 0.4 (40%)
 		UnilateralLiquidityFee: unilateralFee,
 	}
 }
@@ -37,7 +38,7 @@ func (p Params) String() string {
 
 // Validate returns err if Params is invalid
 func (p Params) Validate() error {
-	if !p.Fee.GT(sdk.ZeroDec()) || !p.Fee.LT(sdk.OneDec()) {
+	if !p.Fee.GT(math.LegacyZeroDec()) || !p.Fee.LT(math.LegacyOneDec()) {
 		return fmt.Errorf("fee must be positive and less than 1: %s", p.Fee.String())
 	}
 
@@ -45,23 +46,23 @@ func (p Params) Validate() error {
 		return fmt.Errorf("poolCreationFee must be positive: %s", p.PoolCreationFee.String())
 	}
 
-	if !p.TaxRate.GT(sdk.ZeroDec()) || !p.TaxRate.LT(sdk.OneDec()) {
+	if !p.TaxRate.GT(math.LegacyZeroDec()) || !p.TaxRate.LT(math.LegacyOneDec()) {
 		return fmt.Errorf("fee must be positive and less than 1: %s", p.TaxRate.String())
 	}
 
-	if !p.UnilateralLiquidityFee.GTE(sdk.ZeroDec()) || !p.UnilateralLiquidityFee.LT(sdk.OneDec()) {
+	if !p.UnilateralLiquidityFee.GTE(math.LegacyZeroDec()) || !p.UnilateralLiquidityFee.LT(math.LegacyOneDec()) {
 		return fmt.Errorf("fee must be positive and less than 1: %s", p.TaxRate.String())
 	}
 	return nil
 }
 
 func validateFee(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if !v.GT(sdk.ZeroDec()) || !v.LT(sdk.OneDec()) {
+	if !v.GT(math.LegacyZeroDec()) || !v.LT(math.LegacyOneDec()) {
 		return fmt.Errorf("fee must be positive and less than 1: %s", v.String())
 	}
 
@@ -81,25 +82,25 @@ func validatePoolCreationFee(i interface{}) error {
 }
 
 func validateTaxRate(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if !v.GT(sdk.ZeroDec()) || !v.LT(sdk.OneDec()) {
+	if !v.GT(math.LegacyZeroDec()) || !v.LT(math.LegacyOneDec()) {
 		return fmt.Errorf("fee must be positive and less than 1: %s", v.String())
 	}
 	return nil
 }
 
 func validateUnilateraLiquiditylFee(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	// unilateral fee should be in range of [0, 1)
-	if !v.GTE(sdk.ZeroDec()) || !v.LT(sdk.OneDec()) {
+	if !v.GTE(math.LegacyZeroDec()) || !v.LT(math.LegacyOneDec()) {
 		return fmt.Errorf(
 			"unilateral liquidity fee must be positive and less than 1: %s",
 			v.String(),

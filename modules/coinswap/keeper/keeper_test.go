@@ -6,7 +6,6 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/tmhash"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -41,7 +40,7 @@ type TestSuite struct {
 
 func (suite *TestSuite) SetupTest() {
 	app := setupWithGenesisAccounts(suite.T(), &suite.keeper)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(false)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, suite.keeper)
@@ -158,7 +157,7 @@ func (suite *TestSuite) TestLiquidity() {
 		sdk.NewInt64Coin(denomBTC, 2999999900),
 		sdk.NewCoin(
 			denomStandard,
-			sdkmath.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000)),
+			sdkmath.NewIntWithDecimal(2, 19).Sub(sdkmath.NewIntFromUint64(5000)),
 		),
 		sdk.NewCoin(lptDenom, sdkmath.NewIntWithDecimal(1, 19)),
 	)
@@ -231,7 +230,7 @@ func (suite *TestSuite) TestLiquidity() {
 		sdk.NewInt64Coin(denomBTC, 3000000000),
 		sdk.NewCoin(
 			denomStandard,
-			sdkmath.NewIntWithDecimal(3, 19).Sub(sdk.NewIntFromUint64(5000)),
+			sdkmath.NewIntWithDecimal(3, 19).Sub(sdkmath.NewIntFromUint64(5000)),
 		),
 	)
 	suite.Equal(expCoins.Sort().String(), sender1Balances.Sort().String())
@@ -315,7 +314,7 @@ func (suite *TestSuite) TestLiquidity2() {
 		), // 3*10^9 - 100
 		sdk.NewCoin(
 			denomStandard,
-			sdkmath.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000)),
+			sdkmath.NewIntWithDecimal(2, 19).Sub(sdkmath.NewIntFromUint64(5000)),
 		), // 2*10^19 - 5000
 		sdk.NewCoin(
 			pool.LptDenom,
@@ -408,7 +407,7 @@ func (suite *TestSuite) TestLiquidity3() {
 		), // 3*10^9 - 100
 		sdk.NewCoin(
 			denomStandard,
-			sdkmath.NewIntWithDecimal(2, 19).Sub(sdk.NewIntFromUint64(5000)),
+			sdkmath.NewIntWithDecimal(2, 19).Sub(sdkmath.NewIntFromUint64(5000)),
 		), // 2*10^19 - 5000
 		sdk.NewCoin(
 			pool.LptDenom,
