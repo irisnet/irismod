@@ -1,14 +1,15 @@
 package types
 
 import (
-	fmt "fmt"
+	"fmt"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"sigs.k8s.io/yaml"
 )
 
 // NewParams creates a new Params instance
-func NewParams(createPoolFee sdk.Coin, maxRewardCategories uint32, taxRate sdk.Dec) Params {
+func NewParams(createPoolFee sdk.Coin, maxRewardCategories uint32, taxRate math.LegacyDec) Params {
 	return Params{
 		PoolCreationFee:     createPoolFee,
 		TaxRate:             taxRate,
@@ -19,9 +20,9 @@ func NewParams(createPoolFee sdk.Coin, maxRewardCategories uint32, taxRate sdk.D
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)),
+		sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5000)),
 		2,
-		sdk.NewDecWithPrec(4, 1),
+		math.LegacyNewDecWithPrec(4, 1),
 	)
 }
 
@@ -49,12 +50,12 @@ func validatePoolCreationFee(i interface{}) error {
 }
 
 func validateTaxRate(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if !v.GT(sdk.ZeroDec()) || !v.LT(sdk.OneDec()) {
+	if !v.GT(math.LegacyZeroDec()) || !v.LT(math.LegacyOneDec()) {
 		return fmt.Errorf("tax rate must be positive and less than 1: %s", v.String())
 	}
 	return nil

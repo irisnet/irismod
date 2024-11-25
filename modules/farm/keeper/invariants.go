@@ -35,7 +35,7 @@ func RewardInvariant(k Keeper) sdk.Invariant {
 			})
 		})
 
-		broken := !expectedBalance.IsEqual(balance)
+		broken := !expectedBalance.Equal(balance)
 		return sdk.FormatInvariant(
 			types.ModuleName,
 			"module account balance",

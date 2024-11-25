@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/farm/types"
@@ -36,7 +37,7 @@ func (k Keeper) DequeueActivePool(ctx sdk.Context, poolId string, expiredHeight 
 
 func (k Keeper) IteratorExpiredPool(ctx sdk.Context, height int64, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.PrefixActiveFarmPool(height))
+	iterator := storetypes.KVStorePrefixIterator(store, types.PrefixActiveFarmPool(height))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		poolId := types.MustUnMarshalPoolId(k.cdc, iterator.Value())
@@ -48,7 +49,7 @@ func (k Keeper) IteratorExpiredPool(ctx sdk.Context, height int64, fun func(pool
 
 func (k Keeper) IteratorActivePool(ctx sdk.Context, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.ActiveFarmPoolKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.ActiveFarmPoolKey)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		poolId := types.MustUnMarshalPoolId(k.cdc, iterator.Value())
@@ -60,7 +61,7 @@ func (k Keeper) IteratorActivePool(ctx sdk.Context, fun func(pool types.FarmPool
 
 func (k Keeper) IteratorAllPools(ctx sdk.Context, fun func(pool types.FarmPool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.FarmPoolKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.FarmPoolKey)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var pool types.FarmPool

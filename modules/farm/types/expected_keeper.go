@@ -1,8 +1,9 @@
 package types
 
 import (
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
@@ -10,61 +11,50 @@ import (
 // BankKeeper defines the expected bank keeper (noalias)
 type BankKeeper interface {
 	SendCoinsFromModuleToAccount(
-		ctx sdk.Context,
+		ctx context.Context,
 		senderModule string,
 		recipientAddr sdk.AccAddress,
 		amt sdk.Coins,
 	) error
 	SendCoinsFromModuleToModule(
-		ctx sdk.Context,
+		ctx context.Context,
 		senderModule string,
 		recipientModule string,
 		amt sdk.Coins,
 	) error
 	SendCoinsFromAccountToModule(
-		ctx sdk.Context,
+		ctx context.Context,
 		senderAddr sdk.AccAddress,
 		recipientModule string,
 		amt sdk.Coins,
 	) error
-	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	BurnCoins(ctx sdk.Context, name string, amt sdk.Coins) error
+	GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
 }
 
-type ValidateLPToken func(ctx sdk.Context, lpTokenDenom string) error
+type ValidateLPToken func(ctx context.Context, lpTokenDenom string) error
 
 // AccountKeeper defines the expected account keeper (noalias)
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
 	GetModuleAddress(name string) sdk.AccAddress
-	GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.ModuleAccountI
-	SetModuleAccount(ctx sdk.Context, macc authtypes.ModuleAccountI)
+	GetModuleAccount(ctx context.Context, moduleName string) sdk.ModuleAccountI
+	SetModuleAccount(ctx context.Context, macc sdk.ModuleAccountI)
 }
 
 // DistrKeeper defines the expected distribution keeper (noalias)
 type DistrKeeper interface {
-	GetFeePool(ctx sdk.Context) (feePool distrtypes.FeePool)
-	SetFeePool(ctx sdk.Context, feePool distrtypes.FeePool)
+	GetFeePool(ctx context.Context) (feePool distrtypes.FeePool, err error)
+	SetFeePool(ctx context.Context, feePool distrtypes.FeePool) error
 }
 
 // GovKeeper defines the expected gov keeper (noalias)
 type GovKeeper interface {
-	SubmitProposal(
-		ctx sdk.Context,
-		messages []sdk.Msg,
-		metadata string,
-		title, summary string,
-		proposer sdk.AccAddress,
-	) (v1.Proposal, error)
-	AddDeposit(
-		ctx sdk.Context,
-		proposalID uint64,
-		depositorAddr sdk.AccAddress,
-		depositAmount sdk.Coins,
-	) (bool, error)
-	GetProposal(ctx sdk.Context, proposalID uint64) (v1.Proposal, bool)
-	GetGovernanceAccount(ctx sdk.Context) authtypes.ModuleAccountI
+	SubmitProposal(ctx context.Context, messages []sdk.Msg, metadata, title, summary string, proposer sdk.AccAddress, expedited bool) (v1.Proposal, error)
+	AddDeposit(ctx context.Context, proposalID uint64, depositorAddr sdk.AccAddress, depositAmount sdk.Coins) (bool, error)
+	GetProposal(ctx context.Context, proposalID uint64) (v1.Proposal, error)
+	GetGovernanceAccount(ctx context.Context) sdk.ModuleAccountI
 }
 
 // CoinswapKeeper defines the expected coinswap keeper (noalias)

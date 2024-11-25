@@ -4,7 +4,8 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"cosmossdk.io/math"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
@@ -135,7 +136,7 @@ func (k Keeper) Farmer(goctx context.Context, request *types.QueryFarmerRequest)
 		}
 
 		if !k.Expired(ctx, pool) {
-			pool, _, err = k.updatePool(cacheCtx, pool, sdk.ZeroInt(), false)
+			pool, _, err = k.updatePool(cacheCtx, pool, math.ZeroInt(), false)
 			if err != nil {
 				return nil, err
 			}
@@ -143,7 +144,7 @@ func (k Keeper) Farmer(goctx context.Context, request *types.QueryFarmerRequest)
 			pool.Rules = k.GetRewardRules(ctx, pool.Id)
 		}
 
-		rewards, _ := pool.CaclRewards(farmer, sdk.ZeroInt())
+		rewards, _ := pool.CaclRewards(farmer, math.ZeroInt())
 		list = append(list, &types.LockedInfo{
 			PoolId:        farmer.PoolId,
 			Locked:        sdk.NewCoin(pool.TotalLptLocked.Denom, farmer.Locked),

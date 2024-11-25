@@ -3,9 +3,9 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/farm/types"
@@ -92,7 +92,7 @@ func (k Keeper) SetRewardRule(ctx sdk.Context, poolId string, rule types.RewardR
 
 func (k Keeper) GetRewardRules(ctx sdk.Context, poolId string) (rules types.RewardRules) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.PrefixRewardRule(poolId))
+	iterator := storetypes.KVStorePrefixIterator(store, types.PrefixRewardRule(poolId))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var r types.RewardRule
@@ -108,7 +108,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 func (k Keeper) IteratorRewardRules(ctx sdk.Context, poolId string, fun func(r types.RewardRule)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.PrefixRewardRule(poolId))
+	iterator := storetypes.KVStorePrefixIterator(store, types.PrefixRewardRule(poolId))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var r types.RewardRule

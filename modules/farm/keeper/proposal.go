@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/farm/types"
@@ -37,7 +38,10 @@ func (k Keeper) HandleCreateFarmProposal(ctx sdk.Context, p *types.CommunityPool
 // escrowFromFeePool distributes funds from the distribution module account to
 // farm module address while updating the community pool
 func (k Keeper) escrowFromFeePool(ctx sdk.Context, amount sdk.Coins) error {
-	feePool := k.dk.GetFeePool(ctx)
+	feePool, err := k.dk.GetFeePool(ctx)
+	if err != nil {
+		return err
+	}
 
 	// NOTE the community pool isn't a module account, however its coins
 	// are held in the distribution module account. Thus the community pool
@@ -48,13 +52,12 @@ func (k Keeper) escrowFromFeePool(ctx sdk.Context, amount sdk.Coins) error {
 	}
 
 	feePool.CommunityPool = newPool
-	err := k.bk.SendCoinsFromModuleToModule(ctx, k.communityPoolName, types.EscrowCollector, amount)
+	err = k.bk.SendCoinsFromModuleToModule(ctx, k.communityPoolName, types.EscrowCollector, amount)
 	if err != nil {
 		return err
 	}
 
-	k.dk.SetFeePool(ctx, feePool)
-	return nil
+	return k.dk.SetFeePool(ctx, feePool)
 }
 
 // refundToFeePool return the remaining funds of the farm pool to CommunityPool
@@ -63,10 +66,12 @@ func (k Keeper) refundToFeePool(ctx sdk.Context, fromModule string, refundTotal 
 	if err := k.bk.SendCoinsFromModuleToModule(ctx, fromModule, k.communityPoolName, refundTotal); err != nil {
 		return err
 	}
-	feelPool := k.dk.GetFeePool(ctx)
+	feelPool, err := k.dk.GetFeePool(ctx)
+	if err != nil {
+		return err
+	}
 	feelPool.CommunityPool = feelPool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(sdk.NewCoins(refundTotal...)...)...)
-	k.dk.SetFeePool(ctx, feelPool)
-	return nil
+	return k.dk.SetFeePool(ctx, feelPool)
 }
 
 func (k Keeper) refundEscrow(ctx sdk.Context, info types.EscrowInfo) {
@@ -113,7 +118,7 @@ func (k Keeper) GetEscrowInfo(ctx sdk.Context, proposalId uint64) (types.EscrowI
 
 func (k Keeper) GetAllEscrowInfo(ctx sdk.Context) (infos []types.EscrowInfo) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.EscrowInfoKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.EscrowInfoKey)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var info types.EscrowInfo

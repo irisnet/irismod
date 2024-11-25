@@ -111,7 +111,7 @@ func (k Keeper) AdjustPool(
 	}
 
 	// update pool reward shards
-	pool, _, err = k.updatePool(ctx, pool, sdk.ZeroInt(), false)
+	pool, _, err = k.updatePool(ctx, pool, math.ZeroInt(), false)
 	if err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func (k Keeper) AdjustPool(
 			remainingReward = remainingReward.Add(
 				sdk.NewCoin(
 					rules[i].Reward,
-					rules[i].RewardPerBlock.Mul(sdk.NewInt(remainingHeight)),
+					rules[i].RewardPerBlock.Mul(math.NewInt(remainingHeight)),
 				),
 			)
 		}
@@ -189,7 +189,7 @@ func (k Keeper) createPool(
 		Description:    description,
 		StartHeight:    startHeight,
 		Editable:       editable,
-		TotalLptLocked: sdk.NewCoin(lptDenom, sdk.ZeroInt()),
+		TotalLptLocked: sdk.NewCoin(lptDenom, math.ZeroInt()),
 		Rules:          []types.RewardRule{},
 	}
 
@@ -199,7 +199,7 @@ func (k Keeper) createPool(
 			TotalReward:     total.Amount,
 			RemainingReward: total.Amount,
 			RewardPerBlock:  rewardPerBlock.AmountOf(total.Denom),
-			RewardPerShare:  sdk.ZeroDec(),
+			RewardPerShare:  math.LegacyZeroDec(),
 		}
 		k.SetRewardRule(ctx, pool.Id, rewardRule)
 		pool.Rules = append(pool.Rules, rewardRule)
@@ -244,7 +244,7 @@ func (k Keeper) updatePool(
 	var rewardTotal sdk.Coins
 	// when there are multiple farm operations in the same block, the value needs to be updated once
 	if height > pool.LastHeightDistrRewards &&
-		pool.TotalLptLocked.Amount.GT(sdk.ZeroInt()) {
+		pool.TotalLptLocked.Amount.GT(math.ZeroInt()) {
 		blockInterval := height - pool.LastHeightDistrRewards
 		for i := range rules {
 			rewardCollected := rules[i].RewardPerBlock.MulRaw(blockInterval)
@@ -262,7 +262,7 @@ func (k Keeper) updatePool(
 					pool.Id, sdk.NewCoin(rules[i].Reward, rules[i].RemainingReward).String(), coinCollected,
 				)
 			}
-			newRewardPerShare := sdk.NewDecFromInt(rewardCollected).QuoInt(pool.TotalLptLocked.Amount)
+			newRewardPerShare := math.LegacyNewDecFromInt(rewardCollected).QuoInt(pool.TotalLptLocked.Amount)
 			rules[i].RewardPerShare = rules[i].RewardPerShare.Add(newRewardPerShare)
 			rules[i].RemainingReward = rules[i].RemainingReward.Sub(rewardCollected)
 

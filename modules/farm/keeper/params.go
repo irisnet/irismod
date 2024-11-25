@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/farm/types"
@@ -17,7 +18,7 @@ func (k Keeper) MaxRewardCategories(ctx sdk.Context) uint32 {
 }
 
 // MaxRewardCategories returns the maxRewardCategories
-func (k Keeper) TaxRate(ctx sdk.Context) sdk.Dec {
+func (k Keeper) TaxRate(ctx sdk.Context) math.LegacyDec {
 	return k.GetParams(ctx).TaxRate
 }
 

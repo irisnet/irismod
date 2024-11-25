@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math/rand"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -40,37 +41,37 @@ func WeightedOperations(
 		weightMsgDestroyPool int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreatePool, &weightMsgCreatePool, nil,
+	appParams.GetOrGenerate(OpWeightMsgCreatePool, &weightMsgCreatePool, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreatePool = 30
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgAdjustPool, &weightMsgAdjustPool, nil,
+	appParams.GetOrGenerate(OpWeightMsgAdjustPool, &weightMsgAdjustPool, nil,
 		func(_ *rand.Rand) {
 			weightMsgAdjustPool = 30
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgStake, &weightMsgStake, nil,
+	appParams.GetOrGenerate(OpWeightMsgStake, &weightMsgStake, nil,
 		func(_ *rand.Rand) {
 			weightMsgStake = 50
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgStake, &weightMsgStake, nil,
+	appParams.GetOrGenerate(OpWeightMsgStake, &weightMsgStake, nil,
 		func(_ *rand.Rand) {
 			weightMsgStake = 50
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgUnStake, &weightMsgUnStake, nil,
+	appParams.GetOrGenerate(OpWeightMsgUnStake, &weightMsgUnStake, nil,
 		func(_ *rand.Rand) {
 			weightMsgUnStake = 50
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgHarvest, &weightMsgHarvest, nil,
+	appParams.GetOrGenerate(OpWeightMsgHarvest, &weightMsgHarvest, nil,
 		func(_ *rand.Rand) {
 			weightMsgHarvest = 40
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgDestroyPool, &weightMsgDestroyPool, nil,
+	appParams.GetOrGenerate(OpWeightMsgDestroyPool, &weightMsgDestroyPool, nil,
 		func(_ *rand.Rand) {
 			weightMsgDestroyPool = 30
 		},
@@ -165,7 +166,7 @@ func SimulateMsgCreatePool(
 			), nil, nil
 		}
 
-		if rewardPerBlock.Amount.LTE(sdk.ZeroInt()) {
+		if rewardPerBlock.Amount.LTE(math.ZeroInt()) {
 			return simtypes.NoOpMsg(
 				types.ModuleName,
 				types.TypeMsgCreatePool,
@@ -233,7 +234,7 @@ func SimulateMsgCreatePool(
 		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, nil
 		}
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -385,7 +386,7 @@ func SimulateMsgAdjustPool(
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -492,7 +493,7 @@ func SimulateMsgStake(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -597,7 +598,7 @@ func SimulateMsgUnStake(
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -676,7 +677,7 @@ func SimulateMsgHarvest(
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -783,7 +784,7 @@ func SimulateMsgDestroyPool(
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -857,7 +858,7 @@ func GenStake(r *rand.Rand, pool types.FarmPool, spendable sdk.Coins) (sdk.Coin,
 			return sdk.NewCoin(pool.TotalLptLocked.Denom, amount), nil
 		}
 	}
-	return sdk.NewCoin(pool.TotalLptLocked.Denom, sdk.ZeroInt()), nil
+	return sdk.NewCoin(pool.TotalLptLocked.Denom, math.ZeroInt()), nil
 }
 
 // GenUnStake randomized unStake

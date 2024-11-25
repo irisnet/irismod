@@ -1,6 +1,8 @@
 package farm
 
 import (
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/farm/keeper"
@@ -8,7 +10,8 @@ import (
 )
 
 // EndBlocker handles block beginning logic for farm
-func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
+func EndBlocker(c context.Context, k keeper.Keeper) {
+	ctx := sdk.UnwrapSDKContext(c)
 	logger := k.Logger(ctx).With("handler", "endBlocker")
 	k.IteratorExpiredPool(ctx, ctx.BlockHeight(), func(pool types.FarmPool) {
 		logger.Info(

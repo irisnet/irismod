@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/farm/types"
@@ -20,7 +21,7 @@ func (k Keeper) GetFarmInfo(ctx sdk.Context, poolId, address string) (info types
 
 func (k Keeper) IteratorFarmInfo(ctx sdk.Context, address string, fun func(farmer types.FarmInfo)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.PrefixFarmInfo(address))
+	iterator := storetypes.KVStorePrefixIterator(store, types.PrefixFarmInfo(address))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var farmer types.FarmInfo
@@ -31,7 +32,7 @@ func (k Keeper) IteratorFarmInfo(ctx sdk.Context, address string, fun func(farme
 
 func (k Keeper) IteratorAllFarmInfo(ctx sdk.Context, fun func(farmer types.FarmInfo)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.FarmerKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.FarmerKey)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var farmer types.FarmInfo

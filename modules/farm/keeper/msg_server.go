@@ -146,6 +146,7 @@ func (m msgServer) CreatePoolWithCommunityPool(
 		msg.Content.Title,
 		msg.Content.Description,
 		proposer,
+		true,
 	)
 	if err != nil {
 		return nil, err
