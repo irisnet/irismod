@@ -38,23 +38,23 @@ Calculate the amount of another token to be received based on the exact amount o
 func (k Keeper) calculateWithExactInput(ctx sdk.Context, exactSoldCoin sdk.Coin, boughtTokenDenom string) (sdkmath.Int, error) {
 	lptDenom, err := k.GetLptDenomFromDenoms(ctx, exactSoldCoin.Denom, boughtTokenDenom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	reservePoolAddress := types.GetReservePoolAddr(lptDenom).String()
 	reservePool, err := k.GetPoolBalances(ctx, reservePoolAddress)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	inputReserve := reservePool.AmountOf(exactSoldCoin.Denom)
 	outputReserve := reservePool.AmountOf(boughtTokenDenom)
 
 	if !inputReserve.IsPositive() {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient funds, actual [%s%s]", inputReserve.String(), exactSoldCoin.Denom))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient funds, actual [%s%s]", inputReserve.String(), exactSoldCoin.Denom))
 	}
 	if !outputReserve.IsPositive() {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient funds, actual [%s%s]", outputReserve.String(), boughtTokenDenom))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient funds, actual [%s%s]", outputReserve.String(), boughtTokenDenom))
 	}
 	param := k.GetParams(ctx)
 
@@ -74,26 +74,26 @@ Sell exact amount of a token for buying another, one of them must be standard to
 func (k Keeper) TradeExactInputForOutput(ctx sdk.Context, input types.Input, output types.Output) (sdkmath.Int, error) {
 	boughtTokenAmt, err := k.calculateWithExactInput(ctx, input.Coin, output.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	// assert that the calculated amount is more than the
 	// minimum amount the buyer is willing to buy.
 	if boughtTokenAmt.LT(output.Coin.Amount) {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtTokenAmt.String()))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtTokenAmt.String()))
 	}
 	boughtToken := sdk.NewCoin(output.Coin.Denom, boughtTokenAmt)
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, input.Coin, boughtToken); err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	return boughtTokenAmt, nil
 }
@@ -111,36 +111,36 @@ func (k Keeper) doubleTradeExactInputForOutput(ctx sdk.Context, input types.Inpu
 	standardDenom := k.GetStandardDenom(ctx)
 	standardAmount, err := k.calculateWithExactInput(ctx, input.Coin, standardDenom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	standardCoin := sdk.NewCoin(standardDenom, standardAmount)
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, input.Coin, standardCoin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	boughtAmt, err := k.calculateWithExactInput(ctx, standardCoin, output.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	boughtToken := sdk.NewCoin(output.Coin.Denom, boughtAmt)
 	// assert that the calculated amount is less than the
 	// minimum amount the buyer is willing to buy.
 	if boughtAmt.LT(output.Coin.Amount) {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtAmt.String()))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", output.Coin.Denom, output.Coin.Amount.String(), boughtAmt.String()))
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, standardCoin, boughtToken); err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	return boughtAmt, nil
 }
@@ -155,26 +155,26 @@ Calculate the amount of the token to be paid based on the exact amount of the to
 func (k Keeper) calculateWithExactOutput(ctx sdk.Context, exactBoughtCoin sdk.Coin, soldTokenDenom string) (sdkmath.Int, error) {
 	lptDenom, err := k.GetLptDenomFromDenoms(ctx, exactBoughtCoin.Denom, soldTokenDenom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	poolAddr := types.GetReservePoolAddr(lptDenom).String()
 	reservePool, err := k.GetPoolBalances(ctx, poolAddr)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	outputReserve := reservePool.AmountOf(exactBoughtCoin.Denom)
 	inputReserve := reservePool.AmountOf(soldTokenDenom)
 
 	if !inputReserve.IsPositive() {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient balance: [%s%s]", inputReserve.String(), soldTokenDenom))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient balance: [%s%s]", inputReserve.String(), soldTokenDenom))
 	}
 	if !outputReserve.IsPositive() {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient balance: [%s%s]", outputReserve.String(), exactBoughtCoin.Denom))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient balance: [%s%s]", outputReserve.String(), exactBoughtCoin.Denom))
 	}
 	if exactBoughtCoin.Amount.GTE(outputReserve) {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient balance of %s, user expected: %s, actual: %s", exactBoughtCoin.Denom, exactBoughtCoin.Amount.String(), outputReserve.String()))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrInsufficientFunds, fmt.Sprintf("reserve pool insufficient balance of %s, user expected: %s, actual: %s", exactBoughtCoin.Denom, exactBoughtCoin.Amount.String(), outputReserve.String()))
 	}
 	param := k.GetParams(ctx)
 
@@ -194,26 +194,26 @@ Buy exact amount of a token by specifying the max amount of another token, one o
 func (k Keeper) TradeInputForExactOutput(ctx sdk.Context, input types.Input, output types.Output) (sdkmath.Int, error) {
 	soldTokenAmt, err := k.calculateWithExactOutput(ctx, output.Coin, input.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	// assert that the calculated amount is less than the
 	// max amount the buyer is willing to pay.
 	if soldTokenAmt.GT(input.Coin.Amount) {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
 	}
 	soldToken := sdk.NewCoin(input.Coin.Denom, soldTokenAmt)
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, soldToken, output.Coin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	return soldTokenAmt, nil
 }
@@ -231,36 +231,36 @@ func (k Keeper) doubleTradeInputForExactOutput(ctx sdk.Context, input types.Inpu
 	standardDenom := k.GetStandardDenom(ctx)
 	soldStandardAmount, err := k.calculateWithExactOutput(ctx, output.Coin, standardDenom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	soldStandardCoin := sdk.NewCoin(standardDenom, soldStandardAmount)
 
 	soldTokenAmt, err := k.calculateWithExactOutput(ctx, soldStandardCoin, input.Coin.Denom)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	soldTokenCoin := sdk.NewCoin(input.Coin.Denom, soldTokenAmt)
 
 	// assert that the calculated amount is less than the
 	// max amount the buyer is willing to sell.
 	if soldTokenAmt.GT(input.Coin.Amount) {
-		return sdk.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
+		return sdkmath.ZeroInt(), errorsmod.Wrap(types.ErrConstraintNotMet, fmt.Sprintf("insufficient amount of %s, user expected: %s, actual: %s", input.Coin.Denom, input.Coin.Amount.String(), soldTokenAmt.String()))
 	}
 
 	inputAddress, err := sdk.AccAddressFromBech32(input.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	outputAddress, err := sdk.AccAddressFromBech32(output.Address)
 	if err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, soldTokenCoin, soldStandardCoin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	if err := k.swapCoins(ctx, inputAddress, outputAddress, soldStandardCoin, output.Coin); err != nil {
-		return sdk.ZeroInt(), err
+		return sdkmath.ZeroInt(), err
 	}
 	return soldTokenAmt, nil
 }
@@ -268,19 +268,19 @@ func (k Keeper) doubleTradeInputForExactOutput(ctx sdk.Context, input types.Inpu
 // GetInputPrice returns the amount of coins bought (calculated) given the input amount being sold (exact)
 // The fee is included in the input coins being bought
 // https://github.com/runtimeverification/verified-smart-contracts/blob/uniswap/uniswap/x-y-k.pdf
-func GetInputPrice(inputAmt, inputReserve, outputReserve sdkmath.Int, fee sdk.Dec) sdkmath.Int {
-	deltaFee := sdk.OneDec().Sub(fee)
-	inputAmtWithFee := inputAmt.Mul(sdk.NewIntFromBigInt(deltaFee.BigInt()))
+func GetInputPrice(inputAmt, inputReserve, outputReserve sdkmath.Int, fee sdkmath.LegacyDec) sdkmath.Int {
+	deltaFee := sdkmath.LegacyOneDec().Sub(fee)
+	inputAmtWithFee := inputAmt.Mul(sdkmath.NewIntFromBigInt(deltaFee.BigInt()))
 	numerator := inputAmtWithFee.Mul(outputReserve)
-	denominator := inputReserve.Mul(sdkmath.NewIntWithDecimal(1, sdk.Precision)).Add(inputAmtWithFee)
+	denominator := inputReserve.Mul(sdkmath.NewIntWithDecimal(1, sdkmath.LegacyPrecision)).Add(inputAmtWithFee)
 	return numerator.Quo(denominator)
 }
 
 // GetOutputPrice returns the amount of coins sold (calculated) given the output amount being bought (exact)
 // The fee is included in the output coins being bought
-func GetOutputPrice(outputAmt, inputReserve, outputReserve sdkmath.Int, fee sdk.Dec) sdkmath.Int {
-	deltaFee := sdk.OneDec().Sub(fee)
-	numerator := inputReserve.Mul(outputAmt).Mul(sdkmath.NewIntWithDecimal(1, sdk.Precision))
-	denominator := (outputReserve.Sub(outputAmt)).Mul(sdk.NewIntFromBigInt(deltaFee.BigInt()))
-	return numerator.Quo(denominator).Add(sdk.OneInt())
+func GetOutputPrice(outputAmt, inputReserve, outputReserve sdkmath.Int, fee sdkmath.LegacyDec) sdkmath.Int {
+	deltaFee := sdkmath.LegacyOneDec().Sub(fee)
+	numerator := inputReserve.Mul(outputAmt).Mul(sdkmath.NewIntWithDecimal(1, sdkmath.LegacyPrecision))
+	denominator := (outputReserve.Sub(outputAmt)).Mul(sdkmath.NewIntFromBigInt(deltaFee.BigInt()))
+	return numerator.Quo(denominator).Add(sdkmath.OneInt())
 }

@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/log"
 	sdkmath "cosmossdk.io/math"
-	"github.com/cometbft/cometbft/libs/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -313,9 +313,9 @@ func (k Keeper) AddUnilateralLiquidity(
 	lptBalanceAmt := k.bk.GetSupply(ctx, pool.LptDenom).Amount
 	exactTokenAmt := msg.ExactToken.Amount
 
-	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
+	deltaFeeUnilateral := sdkmath.LegacyOneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
 	numerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-	denominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
+	denominator := sdkmath.NewIntWithDecimal(1, sdkmath.LegacyPrecision)
 
 	square := denominator.Mul(tokenBalanceAmt).
 		Add(numerator.Mul(exactTokenAmt)).
@@ -323,7 +323,7 @@ func (k Keeper) AddUnilateralLiquidity(
 		Mul(lptBalanceAmt).
 		Quo(denominator.Mul(tokenBalanceAmt))
 
-		// lpt = square^0.5 - lpt_balance
+	// lpt = square^0.5 - lpt_balance
 	squareBigInt := &big.Int{}
 	squareBigInt.Sqrt(square.BigInt())
 	mintLptAmt := sdkmath.NewIntFromBigInt(squareBigInt).Sub(lptBalanceAmt)
@@ -592,9 +592,9 @@ func (k Keeper) RemoveUnilateralLiquidity(
 	// Deduce with fee
 	// target_amt' = target_amt * ( 1 - fee_unilateral)
 	// fee_unilateral = numerator / denominator
-	deltaFeeUnilateral := sdk.OneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
+	deltaFeeUnilateral := sdkmath.LegacyOneDec().Sub(k.GetParams(ctx).UnilateralLiquidityFee)
 	feeNumerator := sdkmath.NewIntFromBigInt(deltaFeeUnilateral.BigInt())
-	feeDenominator := sdkmath.NewIntWithDecimal(1, sdk.Precision)
+	feeDenominator := sdkmath.NewIntWithDecimal(1, sdkmath.LegacyPrecision)
 
 	targetTokenNumerator := lptBalanceAmt.Add(lptBalanceAmt).Sub(msg.ExactLiquidity).
 		Mul(msg.ExactLiquidity).Mul(targetBalanceAmt).Mul(feeNumerator)

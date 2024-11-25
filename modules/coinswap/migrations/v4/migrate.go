@@ -1,6 +1,7 @@
 package v4
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/modules/coinswap/types"
@@ -10,7 +11,7 @@ var (
 	KeyFee                 = []byte("Fee")
 	KeyPoolCreationFee     = []byte("PoolCreationFee")
 	KeyTaxRate             = []byte("TaxRate")
-	UnilateralLiquidityFee = sdk.NewDecWithPrec(2, 3)
+	UnilateralLiquidityFee = math.LegacyNewDecWithPrec(2, 3)
 )
 
 type (
@@ -20,9 +21,9 @@ type (
 	}
 
 	Params struct {
-		Fee             sdk.Dec  `protobuf:"bytes,1,opt,name=fee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec"                   json:"fee"`
-		PoolCreationFee sdk.Coin `protobuf:"bytes,2,opt,name=pool_creation_fee,json=poolCreationFee,proto3"                                  json:"pool_creation_fee"`
-		TaxRate         sdk.Dec  `protobuf:"bytes,3,opt,name=tax_rate,json=taxRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"tax_rate"`
+		Fee             math.LegacyDec `protobuf:"bytes,1,opt,name=fee,proto3,customtype=cosmossdk.io/math.LegacyDec"                   json:"fee"`
+		PoolCreationFee sdk.Coin       `protobuf:"bytes,2,opt,name=pool_creation_fee,json=poolCreationFee,proto3"                                  json:"pool_creation_fee"`
+		TaxRate         math.LegacyDec `protobuf:"bytes,3,opt,name=tax_rate,json=taxRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"tax_rate"`
 	}
 )
 

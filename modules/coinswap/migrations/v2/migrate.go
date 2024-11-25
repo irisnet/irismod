@@ -4,8 +4,6 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 	coinswaptypes "mods.irisnet.org/modules/coinswap/types"
 )
 
@@ -41,7 +39,7 @@ func Migrate(ctx sdk.Context,
 	}
 
 	// 4. Traverse all accounts and modify the old liquidity token to the new liquidity token
-	ak.IterateAccounts(ctx, func(account authtypes.AccountI) (stop bool) {
+	ak.IterateAccounts(ctx, func(account sdk.AccountI) (stop bool) {
 		balances := bk.GetAllBalances(ctx, account.GetAddress())
 		for _, ltpDenom := range lptDenoms {
 			amount := balances.AmountOf(ltpDenom)
