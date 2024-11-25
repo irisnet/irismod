@@ -132,7 +132,7 @@ message MsgRemoveUnilateralLiquidityResponse {
 
 // MsgSwapOrder defines a msg for swap order
 message MsgSwapOrder {
-  option (cosmos.msg.v1.signer) = "inputs";
+  option (cosmos.msg.v1.signer) = "input";
 
   Input input = 1 [ (gogoproto.nullable) = false ];
   Output output = 2 [ (gogoproto.nullable) = false ];
