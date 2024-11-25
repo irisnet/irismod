@@ -188,6 +188,7 @@ func NewSimApp(
 			// mocks.ProvideEVMKeeper(),
 			// mocks.ProvideICS20Keeper(),
 			),
+			depinject.Provide(NewDistrKeeperAdapter, NewGovKeeperAdapter),
 		)
 	)
 

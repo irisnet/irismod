@@ -22,7 +22,7 @@ type Data struct {
 	delta sdkmath.Int
 	x     sdkmath.Int
 	y     sdkmath.Int
-	fee   sdk.Dec
+	fee   sdkmath.LegacyDec
 }
 type SwapCase struct {
 	data   Data
@@ -31,20 +31,20 @@ type SwapCase struct {
 
 func (suite *TestSuite) TestGetInputPrice() {
 	datas := []SwapCase{{
-		data:   Data{delta: sdk.NewInt(100), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
-		expect: sdk.NewInt(90),
+		data:   Data{delta: sdkmath.NewInt(100), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyNewDecWithPrec(3, 3)},
+		expect: sdkmath.NewInt(90),
 	}, {
-		data:   Data{delta: sdk.NewInt(200), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
-		expect: sdk.NewInt(166),
+		data:   Data{delta: sdkmath.NewInt(200), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyNewDecWithPrec(3, 3)},
+		expect: sdkmath.NewInt(166),
 	}, {
-		data:   Data{delta: sdk.NewInt(300), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
-		expect: sdk.NewInt(230),
+		data:   Data{delta: sdkmath.NewInt(300), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyNewDecWithPrec(3, 3)},
+		expect: sdkmath.NewInt(230),
 	}, {
-		data:   Data{delta: sdk.NewInt(1000), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
-		expect: sdk.NewInt(499),
+		data:   Data{delta: sdkmath.NewInt(1000), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyNewDecWithPrec(3, 3)},
+		expect: sdkmath.NewInt(499),
 	}, {
-		data:   Data{delta: sdk.NewInt(1000), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.ZeroDec()},
-		expect: sdk.NewInt(500),
+		data:   Data{delta: sdkmath.NewInt(1000), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyZeroDec()},
+		expect: sdkmath.NewInt(500),
 	}}
 	for _, tcase := range datas {
 		data := tcase.data
@@ -55,17 +55,17 @@ func (suite *TestSuite) TestGetInputPrice() {
 
 func (suite *TestSuite) TestGetOutputPrice() {
 	datas := []SwapCase{{
-		data:   Data{delta: sdk.NewInt(100), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
-		expect: sdk.NewInt(112),
+		data:   Data{delta: sdkmath.NewInt(100), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyNewDecWithPrec(3, 3)},
+		expect: sdkmath.NewInt(112),
 	}, {
-		data:   Data{delta: sdk.NewInt(200), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
-		expect: sdk.NewInt(251),
+		data:   Data{delta: sdkmath.NewInt(200), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyNewDecWithPrec(3, 3)},
+		expect: sdkmath.NewInt(251),
 	}, {
-		data:   Data{delta: sdk.NewInt(300), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.NewDecWithPrec(3, 3)},
-		expect: sdk.NewInt(430),
+		data:   Data{delta: sdkmath.NewInt(300), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyNewDecWithPrec(3, 3)},
+		expect: sdkmath.NewInt(430),
 	}, {
-		data:   Data{delta: sdk.NewInt(300), x: sdk.NewInt(1000), y: sdk.NewInt(1000), fee: sdk.ZeroDec()},
-		expect: sdk.NewInt(429),
+		data:   Data{delta: sdkmath.NewInt(300), x: sdkmath.NewInt(1000), y: sdkmath.NewInt(1000), fee: sdkmath.LegacyZeroDec()},
+		expect: sdkmath.NewInt(429),
 	}}
 	for _, tcase := range datas {
 		data := tcase.data
@@ -79,8 +79,8 @@ func (suite *TestSuite) TestSwap() {
 
 	// swap buy order msg
 	msg := types.NewMsgSwapOrder(
-		types.Input{Coin: sdk.NewCoin(denomStandard, sdk.NewInt(1000)), Address: sender.String()},
-		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(100)), Address: sender.String()},
+		types.Input{Coin: sdk.NewCoin(denomStandard, sdkmath.NewInt(1000)), Address: sender.String()},
+		types.Output{Coin: sdk.NewCoin(denomBTC, sdkmath.NewInt(100)), Address: sender.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		true,
 	)
@@ -131,8 +131,8 @@ func (suite *TestSuite) TestSwap() {
 
 	// swap sell order msg
 	msg = types.NewMsgSwapOrder(
-		types.Input{Coin: sdk.NewCoin(denomStandard, sdk.NewInt(1000)), Address: sender.String()},
-		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(100)), Address: sender.String()},
+		types.Input{Coin: sdk.NewCoin(denomStandard, sdkmath.NewInt(1000)), Address: sender.String()},
+		types.Output{Coin: sdk.NewCoin(denomBTC, sdkmath.NewInt(100)), Address: sender.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		false,
 	)
@@ -181,8 +181,8 @@ func (suite *TestSuite) TestDoubleSwap() {
 
 	// swap buy order msg
 	msg := types.NewMsgSwapOrder(
-		types.Input{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(1000)), Address: sender1.String()},
-		types.Output{Coin: sdk.NewCoin(denomETH, sdk.NewInt(100)), Address: sender1.String()},
+		types.Input{Coin: sdk.NewCoin(denomBTC, sdkmath.NewInt(1000)), Address: sender1.String()},
+		types.Output{Coin: sdk.NewCoin(denomETH, sdkmath.NewInt(100)), Address: sender1.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		true,
 	)
@@ -252,8 +252,8 @@ func (suite *TestSuite) TestDoubleSwap() {
 
 	// swap sell order msg
 	msg = types.NewMsgSwapOrder(
-		types.Input{Coin: sdk.NewCoin(denomETH, sdk.NewInt(1000)), Address: sender2.String()},
-		types.Output{Coin: sdk.NewCoin(denomBTC, sdk.NewInt(80)), Address: sender2.String()},
+		types.Input{Coin: sdk.NewCoin(denomETH, sdkmath.NewInt(1000)), Address: sender2.String()},
+		types.Output{Coin: sdk.NewCoin(denomBTC, sdkmath.NewInt(80)), Address: sender2.String()},
 		time.Now().Add(1*time.Minute).Unix(),
 		false,
 	)
@@ -330,7 +330,7 @@ func createReservePool(suite *TestSuite, denom string) (sdk.AccAddress, sdk.AccA
 	depositCoin := sdk.NewCoin(denom, depositAmt)
 
 	standardAmt, _ := sdkmath.NewIntFromString("1000")
-	minReward := sdk.NewInt(1)
+	minReward := sdkmath.NewInt(1)
 	deadline := time.Now().Add(1 * time.Minute)
 	msg := types.NewMsgAddLiquidity(depositCoin, standardAmt, minReward, deadline.Unix(), addrSender.String())
 	_, err = suite.keeper.AddLiquidity(suite.ctx, msg)
@@ -364,8 +364,8 @@ func createReservePool(suite *TestSuite, denom string) (sdk.AccAddress, sdk.AccA
 func (suite *TestSuite) TestTradeInputForExactOutput() {
 	sender, poolAddr := createReservePool(suite, denomBTC)
 
-	outputCoin := sdk.NewCoin(denomBTC, sdk.NewInt(100))
-	inputCoin := sdk.NewCoin(denomStandard, sdk.NewInt(100000))
+	outputCoin := sdk.NewCoin(denomBTC, sdkmath.NewInt(100))
+	inputCoin := sdk.NewCoin(denomStandard, sdkmath.NewInt(100000))
 	input := types.Input{
 		Address: sender.String(),
 		Coin:    inputCoin,
@@ -405,8 +405,8 @@ func (suite *TestSuite) TestTradeInputForExactOutput() {
 func (suite *TestSuite) TestTradeExactInputForOutput() {
 	sender, poolAddr := createReservePool(suite, denomBTC)
 
-	outputCoin := sdk.NewCoin(denomBTC, sdk.NewInt(0))
-	inputCoin := sdk.NewCoin(denomStandard, sdk.NewInt(100))
+	outputCoin := sdk.NewCoin(denomBTC, sdkmath.NewInt(0))
+	inputCoin := sdk.NewCoin(denomStandard, sdkmath.NewInt(100))
 	input := types.Input{
 		Address: sender.String(),
 		Coin:    inputCoin,

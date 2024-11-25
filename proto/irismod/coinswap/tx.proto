@@ -48,11 +48,11 @@ message MsgAddLiquidity {
 
   cosmos.base.v1beta1.Coin max_token = 1 [ (gogoproto.nullable) = false ];
   string exact_standard_amt = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
   string min_liquidity = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
   int64 deadline = 4;
@@ -71,7 +71,7 @@ message MsgAddUnilateralLiquidity {
   cosmos.base.v1beta1.Coin exact_token = 2
       [ (gogoproto.nullable) = false ]; // exact amount of token
   string min_liquidity = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
   int64 deadline = 4;
@@ -90,11 +90,11 @@ message MsgRemoveLiquidity {
   cosmos.base.v1beta1.Coin withdraw_liquidity = 1
       [ (gogoproto.nullable) = false ];
   string min_token = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
   string min_standard_amt = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
   int64 deadline = 4;
@@ -116,7 +116,7 @@ message MsgRemoveUnilateralLiquidity {
   cosmos.base.v1beta1.Coin min_token = 2
       [ (gogoproto.nullable) = false ]; // minimum amount of token
   string exact_liquidity = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
   int64 deadline = 4;
