@@ -3,6 +3,7 @@ package mt
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -47,7 +48,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 	txResult := IssueDenomExec(
@@ -74,7 +75,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(100))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(100))).String(),
 		),
 	}
 

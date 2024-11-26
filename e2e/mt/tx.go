@@ -3,6 +3,7 @@ package mt
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -43,7 +44,7 @@ func (s *TxTestSuite) TestMT() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -80,7 +81,7 @@ func (s *TxTestSuite) TestMT() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(100))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(100))).String(),
 		),
 	}
 
@@ -119,7 +120,7 @@ func (s *TxTestSuite) TestMT() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -140,7 +141,7 @@ func (s *TxTestSuite) TestMT() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -160,7 +161,7 @@ func (s *TxTestSuite) TestMT() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -181,7 +182,7 @@ func (s *TxTestSuite) TestMT() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 

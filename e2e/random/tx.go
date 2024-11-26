@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -80,7 +81,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -103,7 +104,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -133,7 +134,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var requestId string
-	for _, event := range blockResult.EndBlockEvents {
+	for _, event := range blockResult.FinalizeBlockEvents {
 		if event.Type == servicetypes.EventTypeNewBatchRequestProvider {
 			var found bool
 			var requestIds []string
@@ -166,7 +167,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 

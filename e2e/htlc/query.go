@@ -1,6 +1,7 @@
 package htlc
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 
 	"github.com/cometbft/cometbft/crypto"
@@ -44,7 +45,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 

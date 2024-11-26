@@ -176,6 +176,7 @@ func NewConfig(depInjectOptions DepinjectOptions) (network.Config, error) {
 				providers...,
 			),
 		),
+		depinject.Provide(NewDistrKeeperAdapter, NewGovKeeperAdapter),
 		&appBuilder,
 		&txConfig,
 		&cdc,

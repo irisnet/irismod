@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -32,8 +33,8 @@ func (s *TxTestSuite) TestTxCmd() {
 	creator := val.Address
 	description := "iris-atom farm pool"
 	startHeight := s.latestHeight() + 2
-	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10)))
-	totalReward := sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(1000)))
+	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10)))
+	totalReward := sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(1000)))
 	editable := true
 	lptDenom := "lpt-1"
 
@@ -43,7 +44,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -79,7 +80,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		EndHeight:       startHeight + 100,
 		Editable:        editable,
 		Expired:         false,
-		TotalLptLocked:  sdk.NewCoin(lptDenom, sdk.ZeroInt()),
+		TotalLptLocked:  sdk.NewCoin(lptDenom, math.ZeroInt()),
 		TotalReward:     totalReward,
 		RemainingReward: totalReward,
 		RewardPerBlock:  rewardPerBlock,
@@ -88,7 +89,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	respType := QueryFarmPoolExec(s.T(), s.Network, val.ClientCtx, poolID)
 	s.Require().EqualValues(expectedContents, respType.Pool)
 
-	reward := sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(1000)))
+	reward := sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(1000)))
 	args = []string{
 		fmt.Sprintf("--%s=%v", farmcli.FlagAdditionalReward, reward.String()),
 	}
@@ -103,7 +104,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	)
 	s.Require().EqualValues(txResult.Code, 0, txResult.Log)
 
-	lpToken := sdk.NewCoin(lptDenom, sdk.NewInt(100))
+	lpToken := sdk.NewCoin(lptDenom, math.NewInt(100))
 	txResult = StakeExec(
 		s.T(),
 		s.Network,
@@ -116,7 +117,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	s.Require().EqualValues(txResult.Code, 0, txResult.Log)
 	beginHeight := txResult.Height
 
-	unstakeLPToken := sdk.NewCoin(lptDenom, sdk.NewInt(50))
+	unstakeLPToken := sdk.NewCoin(lptDenom, math.NewInt(50))
 	txResult = UnstakeExec(
 		s.T(),
 		s.Network,
@@ -134,7 +135,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		farmtypes.AttributeValueReward,
 		txResult.Events,
 	)
-	expectedReward := rewardPerBlock.MulInt(sdk.NewInt(endHeight - beginHeight))
+	expectedReward := rewardPerBlock.MulInt(math.NewInt(endHeight - beginHeight))
 	s.Require().Equal(expectedReward.String(), rewardGot)
 
 	txResult = HarvestExec(
@@ -153,7 +154,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		farmtypes.AttributeValueReward,
 		txResult.Events,
 	)
-	expectedReward = rewardPerBlock.MulInt(sdk.NewInt(endHeight1 - endHeight))
+	expectedReward = rewardPerBlock.MulInt(math.NewInt(endHeight1 - endHeight))
 	s.Require().Equal(expectedReward.String(), rewardGot)
 
 	queryFarmerArgs := []string{
@@ -217,9 +218,9 @@ func (s *TxTestSuite) setup() {
 	deadline := status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
 	msgAddLiquidity := &coinswaptypes.MsgAddLiquidity{
-		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(1000)),
-		ExactStandardAmt: sdk.NewInt(1000),
-		MinLiquidity:     sdk.NewInt(1000),
+		MaxToken:         sdk.NewCoin(symbol, math.NewInt(1000)),
+		ExactStandardAmt: math.NewInt(1000),
+		MinLiquidity:     math.NewInt(1000),
 		Deadline:         deadline.Unix(),
 		Sender:           val.Address.String(),
 	}

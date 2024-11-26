@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -95,7 +96,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -130,7 +131,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -169,7 +170,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -199,7 +200,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -231,7 +232,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -256,7 +257,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 
 	//------send token to consumer------------------------
 	amount := sdk.NewCoins(
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000000)),
+		sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(50000000)),
 	)
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -264,7 +265,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -284,7 +285,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -306,7 +307,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var compactRequest servicetypes.CompactRequest
-	for _, event := range blockResult.EndBlockEvents {
+	for _, event := range blockResult.FinalizeBlockEvents {
 		if event.Type == servicetypes.EventTypeNewBatchRequest {
 			var found bool
 			var requests []servicetypes.CompactRequest
@@ -365,7 +366,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -393,7 +394,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -413,7 +414,7 @@ func (s *TxTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
@@ -71,9 +72,9 @@ func (s *QueryTestSuite) TestCoinswap() {
 	deadline := status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
 	msgAddLiquidity := &coinswaptypes.MsgAddLiquidity{
-		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(1000)),
-		ExactStandardAmt: sdk.NewInt(1000),
-		MinLiquidity:     sdk.NewInt(1000),
+		MaxToken:         sdk.NewCoin(symbol, math.NewInt(1000)),
+		ExactStandardAmt: math.NewInt(1000),
+		MinLiquidity:     math.NewInt(1000),
 		Deadline:         deadline.Unix(),
 		Sender:           from.String(),
 	}
@@ -101,9 +102,9 @@ func (s *QueryTestSuite) TestCoinswap() {
 	deadline = status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
 	msgAddLiquidity = &coinswaptypes.MsgAddLiquidity{
-		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(2001)),
-		ExactStandardAmt: sdk.NewInt(2000),
-		MinLiquidity:     sdk.NewInt(2000),
+		MaxToken:         sdk.NewCoin(symbol, math.NewInt(2001)),
+		ExactStandardAmt: math.NewInt(2000),
+		MinLiquidity:     math.NewInt(2000),
 		Deadline:         deadline.Unix(),
 		Sender:           from.String(),
 	}
@@ -127,7 +128,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	msgSellOrder := &coinswaptypes.MsgSwapOrder{
 		Input: coinswaptypes.Input{
 			Address: from.String(),
-			Coin:    sdk.NewCoin(symbol, sdk.NewInt(1000)),
+			Coin:    sdk.NewCoin(symbol, math.NewInt(1000)),
 		},
 		Output: coinswaptypes.Output{
 			Address: from.String(),
@@ -160,7 +161,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 		},
 		Output: coinswaptypes.Output{
 			Address: from.String(),
-			Coin:    sdk.NewCoin(symbol, sdk.NewInt(1000)),
+			Coin:    sdk.NewCoin(symbol, math.NewInt(1000)),
 		},
 		Deadline:   deadline.Unix(),
 		IsBuyOrder: true,
@@ -183,9 +184,9 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	// Test remove liquidity (remove part)
 	msgRemoveLiquidity := &coinswaptypes.MsgRemoveLiquidity{
-		WithdrawLiquidity: sdk.NewCoin(lptDenom, sdk.NewInt(2000)),
-		MinToken:          sdk.NewInt(2000),
-		MinStandardAmt:    sdk.NewInt(2000),
+		WithdrawLiquidity: sdk.NewCoin(lptDenom, math.NewInt(2000)),
+		MinToken:          math.NewInt(2000),
+		MinStandardAmt:    math.NewInt(2000),
 		Deadline:          deadline.Unix(),
 		Sender:            from.String(),
 	}
@@ -209,9 +210,9 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	// Test remove liquidity (remove all)
 	msgRemoveLiquidity = &coinswaptypes.MsgRemoveLiquidity{
-		WithdrawLiquidity: sdk.NewCoin(lptDenom, sdk.NewInt(1000)),
-		MinToken:          sdk.NewInt(1000),
-		MinStandardAmt:    sdk.NewInt(1000),
+		WithdrawLiquidity: sdk.NewCoin(lptDenom, math.NewInt(1000)),
+		MinToken:          math.NewInt(1000),
+		MinStandardAmt:    math.NewInt(1000),
 		Deadline:          deadline.Unix(),
 		Sender:            from.String(),
 	}

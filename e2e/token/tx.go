@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,7 +51,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 	expectedCode := uint32(0)
@@ -104,7 +105,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 	coinMintedStr := fmt.Sprintf("%d%s", mintAmount, symbol)
@@ -139,7 +140,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -178,7 +179,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -207,7 +208,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -233,7 +234,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	// 	fmt.Sprintf(
 	// 		"--%s=%s",
 	// 		flags.FlagFees,
-	// 		sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+	// 		sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 	// 	),
 	// }
 
@@ -242,7 +243,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	// 	s.Network,
 	// 	clientCtx,
 	// 	from.String(),
-	// 	sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(1))).String(),
+	// 	sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(1))).String(),
 	// 	args...)
 
 	// TODO assert
@@ -258,7 +259,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	// 	fmt.Sprintf(
 	// 		"--%s=%s",
 	// 		flags.FlagFees,
-	// 		sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+	// 		sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 	// 	),
 	// }
 
@@ -267,7 +268,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	// 	s.Network,
 	// 	clientCtx,
 	// 	from.String(),
-	// 	sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(1))).String(),
+	// 	sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(1))).String(),
 	// 	args...)
 
 	// TODO assert
