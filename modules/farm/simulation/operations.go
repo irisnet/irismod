@@ -56,11 +56,6 @@ func WeightedOperations(
 			weightMsgStake = 50
 		},
 	)
-	appParams.GetOrGenerate(OpWeightMsgStake, &weightMsgStake, nil,
-		func(_ *rand.Rand) {
-			weightMsgStake = 50
-		},
-	)
 	appParams.GetOrGenerate(OpWeightMsgUnStake, &weightMsgUnStake, nil,
 		func(_ *rand.Rand) {
 			weightMsgUnStake = 50
