@@ -112,7 +112,6 @@ func (s *TxTestSuite) TestTxCmd() {
 	requestID := txResult.Events[8].Attributes[0].Value
 	heightStr := txResult.Events[8].Attributes[2].Value
 	requestHeight, err := strconv.ParseInt(heightStr, 10, 64)
-
 	s.Require().NoError(err)
 
 	// ------test GetCmdQueryRandomRequestQueue()-------------

@@ -752,7 +752,10 @@ func QueryBalanceExec(
 		Address: address,
 		Denom:   denom,
 	}
-	result, err := queryClient.Balance(context.Background(), req)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	result, err := queryClient.Balance(ctx, req)
 	if err != nil {
 		t.Fatalf("failed to query balances: %v", err)
 	}
