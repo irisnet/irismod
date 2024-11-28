@@ -34,8 +34,9 @@ func (h GovHook) AfterProposalVotingPeriodEnded(ctx sdk.Context, proposalID uint
 		return
 	}
 
-	proposal, has := h.k.gk.GetProposal(ctx, proposalID)
-	if !has {
+	proposal, err := h.k.gk.GetProposal(ctx, proposalID)
+	if err != nil {
+		h.k.Logger(ctx).Error("failed to get proposal", "proposalID", proposalID, "err", err)
 		return
 	}
 

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -59,7 +60,7 @@ func (k Keeper) Stake(
 		farmInfo = types.FarmInfo{
 			PoolId:     poolId,
 			Address:    sender.String(),
-			Locked:     sdk.ZeroInt(),
+			Locked:     math.ZeroInt(),
 			RewardDebt: sdk.NewCoins(),
 		}
 	}
@@ -183,7 +184,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolId string, sender sdk.AccAddress) (
 		)
 	}
 
-	amtAdded := sdk.ZeroInt()
+	amtAdded := math.ZeroInt()
 	// update pool reward shards
 	pool, _, err := k.updatePool(ctx, pool, amtAdded, false)
 	if err != nil {
@@ -207,7 +208,7 @@ func (k Keeper) Harvest(ctx sdk.Context, poolId string, sender sdk.AccAddress) (
 func (k Keeper) Refund(ctx sdk.Context, pool types.FarmPool) (sdk.Coins, error) {
 	// remove from active Pool
 	k.DequeueActivePool(ctx, pool.Id, pool.EndHeight)
-	pool, _, err := k.updatePool(ctx, pool, sdk.ZeroInt(), true)
+	pool, _, err := k.updatePool(ctx, pool, math.ZeroInt(), true)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +221,7 @@ func (k Keeper) Refund(ctx sdk.Context, pool types.FarmPool) (sdk.Coins, error) 
 	var refundTotal sdk.Coins
 	for _, r := range pool.Rules {
 		refundTotal = refundTotal.Add(sdk.NewCoin(r.Reward, r.RemainingReward))
-		r.RemainingReward = sdk.ZeroInt()
+		r.RemainingReward = math.ZeroInt()
 		k.SetRewardRule(ctx, pool.Id, r)
 	}
 

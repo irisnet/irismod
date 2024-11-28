@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	testInitCoinAmt     = sdk.NewInt(100000000_000_000)
+	testInitCoinAmt     = math.NewInt(100000000_000_000)
 	testPoolDescription = "USDT/IRIS Farm Pool"
 	testBeginHeight     = int64(1)
 	testLPTokenDenom    = sdk.DefaultBondDenom
-	testRewardPerBlock  = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1_000_000)))
-	testTotalReward     = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000_000_000)))
+	testRewardPerBlock  = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(1_000_000)))
+	testTotalReward     = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(1000_000_000)))
 	testDestructible    = true
 
 	testCreator sdk.AccAddress
@@ -56,7 +56,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	}
 	app := simapp.Setup(suite.T(), isCheckTx, depInjectOptions)
 	suite.cdc = codec.NewAminoCodec(app.LegacyAmino())
-	suite.ctx = app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: 1})
+	suite.ctx = app.BaseApp.NewContextLegacy(isCheckTx, tmproto.Header{Height: 1})
 	suite.app = app
 	suite.Require().NoError(suite.keeper.SetParams(suite.ctx, types.DefaultParams()), "set params failed")
 	suite.setTestAddrs()
@@ -102,7 +102,7 @@ func (suite *KeeperTestSuite) TestCreatePool() {
 		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.RemainingReward)
 		suite.Require().Equal(testTotalReward.AmountOf(r.Reward), r.TotalReward)
 		suite.Require().Equal(testRewardPerBlock.AmountOf(r.Reward), r.RewardPerBlock)
-		suite.Require().Equal(sdk.ZeroDec(), r.RewardPerShare)
+		suite.Require().Equal(math.LegacyZeroDec(), r.RewardPerShare)
 	}
 
 	pool.Rules = rules
@@ -135,7 +135,7 @@ func (suite *KeeperTestSuite) TestDestroyPool() {
 	)
 	suite.Require().NoError(err)
 
-	newCtx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{
+	newCtx := suite.app.BaseApp.NewContextLegacy(isCheckTx, tmproto.Header{
 		Height: 10,
 	})
 	_, err = suite.keeper.DestroyPool(newCtx, pool.Id, testCreator)
@@ -155,8 +155,8 @@ func (suite *KeeperTestSuite) TestDestroyPool() {
 	suite.Require().Equal(expectedBal, actualBal)
 
 	rewardAdded := sdk.NewCoins(
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
-		sdk.NewCoin("uiris", sdk.NewInt(10_000_000)),
+		sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(10_000_000)),
+		sdk.NewCoin("uiris", math.NewInt(10_000_000)),
 	)
 	err = suite.keeper.AdjustPool(newCtx,
 		p.Id,
@@ -187,8 +187,8 @@ func (suite *KeeperTestSuite) TestAppendReward() {
 
 	// panic with adding new token as reward
 	rewardAdded := sdk.NewCoins(
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
-		sdk.NewCoin("uiris", sdk.NewInt(10_000_000)),
+		sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(10_000_000)),
+		sdk.NewCoin("uiris", math.NewInt(10_000_000)),
 	)
 	err = suite.keeper.AdjustPool(ctx,
 		p.Id,
@@ -199,7 +199,7 @@ func (suite *KeeperTestSuite) TestAppendReward() {
 	suite.Require().Error(err)
 
 	rewardAdded = sdk.NewCoins(
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10_000_000)),
+		sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(10_000_000)),
 	)
 	err = suite.keeper.AdjustPool(ctx,
 		p.Id,
@@ -244,14 +244,14 @@ func (suite *KeeperTestSuite) TestStake() {
 	)
 	suite.Require().NoError(err)
 
-	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
+	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))
 	type args struct {
 		height         int64
 		stakeCoin      sdk.Coin
 		locked         math.Int
 		expectReward   sdk.Coins
 		debt           sdk.Coins
-		rewardPerShare sdk.Dec
+		rewardPerShare math.LegacyDec
 	}
 
 	testcase := []args{
@@ -261,41 +261,41 @@ func (suite *KeeperTestSuite) TestStake() {
 			locked:         lpToken.Amount.MulRaw(1),
 			expectReward:   nil,
 			debt:           nil,
-			rewardPerShare: sdk.ZeroDec(),
+			rewardPerShare: math.LegacyZeroDec(),
 		},
 		{
 			height:    200,
 			stakeCoin: lpToken,
 			locked:    lpToken.Amount.MulRaw(2),
 			expectReward: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)),
 			),
 			debt: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(200_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(200_000_000)),
 			),
-			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1), 0),
+			rewardPerShare: math.LegacyNewDecFromIntWithPrec(math.NewInt(1), 0),
 		},
 		{
 			height:    300,
 			stakeCoin: lpToken,
 			locked:    lpToken.Amount.MulRaw(3),
 			expectReward: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)),
 			),
 			debt: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(450_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(450_000_000)),
 			),
-			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(15), 1),
+			rewardPerShare: math.LegacyNewDecFromIntWithPrec(math.NewInt(15), 1),
 		},
 		{
 			height:       400,
 			stakeCoin:    lpToken,
 			locked:       lpToken.Amount.MulRaw(4),
-			expectReward: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(99999999))),
+			expectReward: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(99999999))),
 			debt: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(733_333_333)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(733_333_333)),
 			),
-			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1_833_333_333_333_333_333), 18),
+			rewardPerShare: math.LegacyNewDecFromIntWithPrec(math.NewInt(1_833_333_333_333_333_333), 18),
 		},
 	}
 
@@ -325,40 +325,40 @@ func (suite *KeeperTestSuite) TestUnstake() {
 	)
 	suite.Require().NoError(err)
 
-	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
+	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))
 	suite.AssertStake(pool.Id, 100,
 		lpToken,
 		lpToken.Amount,
 		nil,
 		nil,
-		sdk.ZeroDec(),
+		math.LegacyZeroDec(),
 	)
 	suite.AssertUnstake(pool.Id, 200,
 		lpToken,
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))),
 		nil,
-		sdk.NewDecFromIntWithPrec(sdk.NewInt(1), 0),
+		math.LegacyNewDecFromIntWithPrec(math.NewInt(1), 0),
 		true,
 	)
 	suite.AssertStake(pool.Id, 300,
 		lpToken,
 		lpToken.Amount,
 		nil,
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
-		sdk.NewDecFromIntWithPrec(sdk.NewInt(1), 0),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))),
+		math.LegacyNewDecFromIntWithPrec(math.NewInt(1), 0),
 	)
 	suite.AssertUnstake(pool.Id, 400,
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50_000_000)),
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
-		sdk.NewDecFromIntWithPrec(sdk.NewInt(2), 0),
+		sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(50_000_000)),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))),
+		math.LegacyNewDecFromIntWithPrec(math.NewInt(2), 0),
 		false,
 	)
 	suite.AssertUnstake(pool.Id, 500,
-		sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50_000_000)),
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))),
+		sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(50_000_000)),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))),
 		nil,
-		sdk.NewDecFromIntWithPrec(sdk.NewInt(4), 0),
+		math.LegacyNewDecFromIntWithPrec(math.NewInt(4), 0),
 		true,
 	)
 }
@@ -377,15 +377,15 @@ func (suite *KeeperTestSuite) TestHarvest() {
 	)
 	suite.Require().NoError(err)
 
-	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000))
-	suite.AssertStake(pool.Id, 100, lpToken, lpToken.Amount, nil, nil, sdk.ZeroDec())
+	lpToken := sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000))
+	suite.AssertStake(pool.Id, 100, lpToken, lpToken.Amount, nil, nil, math.LegacyZeroDec())
 
 	type args struct {
 		index          int64
 		height         int64
 		expectReward   sdk.Coins
 		debt           sdk.Coins
-		rewardPerShare sdk.Dec
+		rewardPerShare math.LegacyDec
 	}
 
 	testcase := []args{
@@ -393,45 +393,45 @@ func (suite *KeeperTestSuite) TestHarvest() {
 			index:  1,
 			height: 200,
 			expectReward: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)),
 			),
 			debt: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)),
 			),
-			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(1), 0),
+			rewardPerShare: math.LegacyNewDecFromIntWithPrec(math.NewInt(1), 0),
 		},
 		{
 			index:  2,
 			height: 300,
 			expectReward: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)),
 			),
 			debt: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(200_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(200_000_000)),
 			),
-			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(2), 0),
+			rewardPerShare: math.LegacyNewDecFromIntWithPrec(math.NewInt(2), 0),
 		},
 		{
 			index:  3,
 			height: 400,
 			expectReward: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)),
 			),
 			debt: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(300_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(300_000_000)),
 			),
-			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(3), 0),
+			rewardPerShare: math.LegacyNewDecFromIntWithPrec(math.NewInt(3), 0),
 		},
 		{
 			index:  4,
 			height: 500,
 			expectReward: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)),
 			),
 			debt: sdk.NewCoins(
-				sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(400_000_000)),
+				sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(400_000_000)),
 			),
-			rewardPerShare: sdk.NewDecFromIntWithPrec(sdk.NewInt(4), 0),
+			rewardPerShare: math.LegacyNewDecFromIntWithPrec(math.NewInt(4), 0),
 		},
 	}
 
@@ -441,10 +441,10 @@ func (suite *KeeperTestSuite) TestHarvest() {
 			tc.expectReward,
 			tc.debt,
 			tc.rewardPerShare)
-		err,broken := keeper.RewardInvariant(suite.keeper)(ctx)
+		err, broken := keeper.RewardInvariant(suite.keeper)(ctx)
 		suite.Require().False(broken, err)
 	}
-	
+
 }
 
 func (suite *KeeperTestSuite) AssertStake(
@@ -453,9 +453,9 @@ func (suite *KeeperTestSuite) AssertStake(
 	stakeCoin sdk.Coin,
 	locked math.Int,
 	expectReward, debt sdk.Coins,
-	rewardPerShare sdk.Dec,
+	rewardPerShare math.LegacyDec,
 ) {
-	ctx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: height})
+	ctx := suite.app.BaseApp.NewContextLegacy(isCheckTx, tmproto.Header{Height: height})
 	reward, err := suite.keeper.Stake(ctx, poolID, stakeCoin, testFarmer1)
 
 	suite.Require().NoError(err)
@@ -479,10 +479,10 @@ func (suite *KeeperTestSuite) AssertUnstake(
 	height int64,
 	unstakeCoin sdk.Coin,
 	expectReward, expectDebt sdk.Coins,
-	rewardPerShare sdk.Dec,
+	rewardPerShare math.LegacyDec,
 	unstakeAll bool,
 ) {
-	ctx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: height})
+	ctx := suite.app.BaseApp.NewContextLegacy(isCheckTx, tmproto.Header{Height: height})
 
 	// check farm pool
 	poolSrc, _ := suite.keeper.GetPool(ctx, poolID)
@@ -523,9 +523,9 @@ func (suite *KeeperTestSuite) AssertHarvest(
 	height int64,
 	expectReward sdk.Coins,
 	debt sdk.Coins,
-	rewardPerShare sdk.Dec,
+	rewardPerShare math.LegacyDec,
 ) {
-	ctx := suite.app.BaseApp.NewContext(isCheckTx, tmproto.Header{Height: height})
+	ctx := suite.app.BaseApp.NewContextLegacy(isCheckTx, tmproto.Header{Height: height})
 	reward, err := suite.keeper.Harvest(ctx, poolID, testFarmer1)
 
 	suite.Require().NoError(err)

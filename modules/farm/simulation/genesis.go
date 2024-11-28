@@ -21,25 +21,21 @@ const (
 func RandomizedGenState(simState *module.SimulationState) {
 	var (
 		createPoolFee      math.Int
-		taxRate            sdk.Dec
+		taxRate            math.LegacyDec
 		maxRewardCategoryN uint32
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, PoolCreationFee, &createPoolFee, simState.Rand,
-		func(r *rand.Rand) { createPoolFee = sdk.NewInt(5000) },
+		PoolCreationFee, &createPoolFee, simState.Rand,
+		func(r *rand.Rand) { createPoolFee = math.NewInt(5000) },
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, PoolCreationFee, &createPoolFee, simState.Rand,
-		func(r *rand.Rand) { taxRate = sdk.NewDecWithPrec(4, 1) },
-	)
-
-	simState.AppParams.GetOrGenerate(
-		simState.Cdc, MaxRewardCategoryN, &maxRewardCategoryN, simState.Rand,
+		MaxRewardCategoryN, &maxRewardCategoryN, simState.Rand,
 		func(r *rand.Rand) { maxRewardCategoryN = 2 },
 	)
 
+	taxRate = math.LegacyNewDecWithPrec(4, 1)
 	farmPoolGenesis := types.NewGenesisState(
 		types.NewParams(sdk.NewCoin(sdk.DefaultBondDenom, createPoolFee), maxRewardCategoryN, taxRate),
 		nil, nil, 0, nil,

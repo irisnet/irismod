@@ -11,7 +11,7 @@ import (
 // Parameter store keys
 var (
 	DefaultPoolCreationFee = sdk.NewCoin("uiris", sdkmath.NewIntWithDecimal(2000, 6))
-	DefaultTaxRate         = sdk.NewDecWithPrec(4, 1)
+	DefaultTaxRate         = sdkmath.LegacyNewDecWithPrec(4, 1)
 )
 
 type (
@@ -20,9 +20,9 @@ type (
 	}
 
 	Params struct {
-		PoolCreationFee     sdk.Coin `protobuf:"bytes,1,opt,name=pool_creation_fee,json=poolCreationFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Coin" json:"pool_creation_fee"`
-		MaxRewardCategories uint32   `protobuf:"varint,2,opt,name=max_reward_categories,json=maxRewardCategories,proto3"                                           json:"max_reward_categories,omitempty"`
-		TaxRate             sdk.Dec  `protobuf:"bytes,3,opt,name=tax_rate,json=taxRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec"                   json:"tax_rate"`
+		PoolCreationFee     sdk.Coin          `protobuf:"bytes,1,opt,name=pool_creation_fee,json=poolCreationFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Coin" json:"pool_creation_fee"`
+		MaxRewardCategories uint32            `protobuf:"varint,2,opt,name=max_reward_categories,json=maxRewardCategories,proto3"                                           json:"max_reward_categories,omitempty"`
+		TaxRate             sdkmath.LegacyDec `protobuf:"bytes,3,opt,name=tax_rate,json=taxRate,proto3,customtype=cosmossdk.io/math.LegacyDec"                   json:"tax_rate"`
 	}
 )
 

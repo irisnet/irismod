@@ -1,7 +1,7 @@
 package types
 
 import (
-	math "math"
+	"math"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
@@ -29,7 +29,7 @@ func (pool FarmPool) ExpiredHeight() (int64, error) {
 
 func (pool FarmPool) CaclRewards(farmInfo FarmInfo, deltaAmt sdkmath.Int) (rewards, rewardDebt sdk.Coins) {
 	for _, r := range pool.Rules {
-		if farmInfo.Locked.GT(sdk.ZeroInt()) {
+		if farmInfo.Locked.GT(sdkmath.ZeroInt()) {
 			pendingRewardTotal := r.RewardPerShare.MulInt(farmInfo.Locked).TruncateInt()
 			pendingReward := pendingRewardTotal.Sub(farmInfo.RewardDebt.AmountOf(r.Reward))
 			rewards = rewards.Add(sdk.NewCoin(r.Reward, pendingReward))
