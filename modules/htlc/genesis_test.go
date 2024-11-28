@@ -10,6 +10,7 @@ package htlc_test
 
 // 	"github.com/cosmos/cosmos-sdk/codec"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"cosmossdk.io/math"
 
 // 	"mods.irisnet.org/simapp"
 // 	"mods.irisnet.org/modules/htlc/keeper"
@@ -76,7 +77,7 @@ package htlc_test
 // 		name: "0 deputy fees",
 // 		genState: func() *types.GenesisState {
 // 			gs := NewHTLTGenesis(suite.addrs[0])
-// 			gs.Params.AssetParams[0].FixedFee = sdk.ZeroInt()
+// 			gs.Params.AssetParams[0].FixedFee = math.ZeroInt()
 // 			return gs
 // 		},
 // 		expectPass: true,

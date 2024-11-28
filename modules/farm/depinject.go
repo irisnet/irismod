@@ -47,7 +47,7 @@ type Inputs struct {
 
 	AccountKeeper  types.AccountKeeper
 	BankKeeper     types.BankKeeper
-	DistrKeeper    types.DistrKeeper `optional:"true"`
+	DistrKeeper    types.DistrKeeper
 	GovKeeper      types.GovKeeper
 	CoinswapKeeper types.CoinswapKeeper
 

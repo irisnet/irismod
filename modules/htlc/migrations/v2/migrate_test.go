@@ -10,6 +10,7 @@ package v2_test
 // 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"cosmossdk.io/math"
 
 // 	"mods.irisnet.org/simapp"
 // 	v2 "mods.irisnet.org/modules/htlc/migrations/v2"
@@ -29,7 +30,7 @@ package v2_test
 // 				SupplyLimit: htlctypes.SupplyLimit{
 // 					Limit:          sdk.NewInt(350000000000000),
 // 					TimeLimited:    false,
-// 					TimeBasedLimit: sdk.ZeroInt(),
+// 					TimeBasedLimit: math.ZeroInt(),
 // 					TimePeriod:     time.Hour,
 // 				},
 // 				Active:        true,
