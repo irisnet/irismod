@@ -16,7 +16,7 @@ func BeginBlocker(c context.Context, k keeper.Keeper) {
 	ctx := sdk.UnwrapSDKContext(c)
 	currentTimestamp := ctx.BlockHeader().Time.Unix()
 	lastBlockHeight := ctx.BlockHeight() - 1
-	lastBlockHash := ctx.BlockHeader().LastBlockId.Hash
+	appHash := ctx.BlockHeader().AppHash
 
 	// get pending random number requests for lastBlockHeight
 	rqIterator := k.IterateRandomRequestQueueByHeight(ctx, lastBlockHeight)
@@ -57,7 +57,7 @@ func BeginBlocker(c context.Context, k keeper.Keeper) {
 			reqID := types.GenerateRequestID(request)
 
 			// generate a random number
-			random := types.MakePRNG(lastBlockHash, currentTimestamp, consumer, nil, false).GetRand()
+			random := types.MakePRNG(appHash, currentTimestamp, consumer, nil, false).GetRand()
 			k.SetRandom(ctx, reqID, types.NewRandom(request.TxHash, lastBlockHeight, random.FloatString(types.RandPrec)))
 
 			// remove the request

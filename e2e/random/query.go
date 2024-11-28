@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"cosmossdk.io/math"
@@ -12,8 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
-	"github.com/tidwall/gjson"
-
 	"mods.irisnet.org/e2e"
 	"mods.irisnet.org/e2e/service"
 	randomcli "mods.irisnet.org/modules/random/client/cli"
@@ -113,8 +112,9 @@ func (s *QueryTestSuite) TestQueryCmd() {
 	txResult = RequestRandomExec(s.T(), s.Network, clientCtx, from.String(), args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	requestID := gjson.Get(txResult.Log, "0.events.1.attributes.0.value").String()
-	requestHeight := gjson.Get(txResult.Log, "0.events.1.attributes.2.value").Int()
+	requestID := txResult.Events[8].Attributes[0].Value
+	heightStr := txResult.Events[8].Attributes[2].Value
+	requestHeight, err := strconv.ParseInt(heightStr, 10, 64)
 
 	// ------test GetCmdQueryRandomRequestQueue()-------------
 	url := fmt.Sprintf("%s/irismod/random/queue", baseURL)

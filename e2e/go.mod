@@ -2,12 +2,11 @@ module mods.irisnet.org/e2e
 
 go 1.21
 
-toolchain go1.23.1
-
 require (
 	cosmossdk.io/api v0.7.5
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/log v1.4.1
+	cosmossdk.io/math v1.3.0
 	cosmossdk.io/store v1.1.1
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
@@ -17,7 +16,6 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/stretchr/testify v1.9.0
-	github.com/tidwall/gjson v1.14.4
 	google.golang.org/protobuf v1.34.2
 	mods.irisnet.org/api v0.0.0-20241121030837-903540d1123f
 	mods.irisnet.org/modules/coinswap v0.0.0-20240725053619-ef0885f8eb03
@@ -41,7 +39,6 @@ require (
 	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/depinject v1.0.0 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
-	cosmossdk.io/math v1.3.0 // indirect
 	cosmossdk.io/x/nft v0.1.1 // indirect
 	cosmossdk.io/x/tx v0.13.5 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
@@ -187,6 +184,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.7.0 // indirect
+	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect

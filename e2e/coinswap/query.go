@@ -62,7 +62,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	// _ = tokentestutil.IssueTokenExec(s.T(), s.Network, clientCtx, from.String(), args...)
 
-	balances := simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances := simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
 	s.Require().Equal("399986975", balances.AmountOf(sdk.DefaultBondDenom).String())
 
@@ -80,7 +80,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	}
 	s.SendMsgs(s.T(), msgAddLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99999000", balances.AmountOf(symbol).String())
 	s.Require().Equal("399980965", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
@@ -110,7 +110,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	}
 	s.SendMsgs(s.T(), msgAddLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399978955", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
@@ -139,7 +139,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	}
 	s.SendMsgs(s.T(), msgSellOrder)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99995999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399979693", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
@@ -168,7 +168,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	}
 	s.SendMsgs(s.T(), msgBuyOrder)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399978930", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
@@ -194,7 +194,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	// prepare txBuilder with msg
 	s.SendMsgs(s.T(), msgRemoveLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99998999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399980923", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
@@ -220,7 +220,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	// prepare txBuilder with msg
 	s.SendMsgs(s.T(), msgRemoveLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
 	s.Require().Equal("399981915", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("0", balances.AmountOf(lptDenom).String())

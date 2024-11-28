@@ -1,9 +1,9 @@
 package htlc
 
 import (
-	"cosmossdk.io/math"
 	"fmt"
 
+	"cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"

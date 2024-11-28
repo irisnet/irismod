@@ -5,14 +5,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tidwall/gjson"
-
 	"mods.irisnet.org/e2e"
 	"mods.irisnet.org/e2e/service"
 	randomcli "mods.irisnet.org/modules/random/client/cli"
@@ -110,9 +109,11 @@ func (s *TxTestSuite) TestTxCmd() {
 
 	txResult = RequestRandomExec(s.T(), s.Network, clientCtx, from.String(), args...)
 	s.Require().Equal(expectedCode, txResult.Code)
+	requestID := txResult.Events[8].Attributes[0].Value
+	heightStr := txResult.Events[8].Attributes[2].Value
+	requestHeight, err := strconv.ParseInt(heightStr, 10, 64)
 
-	requestID := gjson.Get(txResult.Log, "0.events.1.attributes.0.value").String()
-	requestHeight := gjson.Get(txResult.Log, "0.events.1.attributes.2.value").Int()
+	s.Require().NoError(err)
 
 	// ------test GetCmdQueryRandomRequestQueue()-------------
 	qrrResp := QueryRandomRequestQueueExec(
@@ -125,7 +126,7 @@ func (s *TxTestSuite) TestTxCmd() {
 
 	// ------get service request-------------
 	requestHeight++
-	_, err := s.WaitForHeightWithTimeout(
+	_, err = s.WaitForHeightWithTimeout(
 		requestHeight,
 		time.Duration(int64(blockInterval+5)*int64(s.TimeoutCommit)),
 	)
@@ -189,7 +190,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	s.Require().NoError(err)
 	seed, err := hex.DecodeString(seedStr)
 	s.Require().NoError(err)
-	random := randomtypes.MakePRNG(generateBLock.Block.LastBlockID.Hash, generateBLock.Block.Header.Time.Unix(), from, seed, true).
+	random := randomtypes.MakePRNG(generateBLock.Block.AppHash, generateBLock.Block.Header.Time.Unix(), from, seed, true).
 		GetRand().
 		FloatString(randomtypes.RandPrec)
 	s.Require().Equal(random, randomResp.Value)

@@ -67,20 +67,32 @@ func QueryRequestContextByTxQuery(
 		return requestContext, err
 	}
 
-	var msgIndex int
+	msgIndex := -1
 	var found bool
 I:
-	for i, log := range txInfo.Logs {
-		for _, event := range log.Events {
-			if event.Type == types.EventTypeCreateContext {
-				for _, attribute := range event.Attributes {
-					if attribute.Key == types.AttributeKeyRequestContextID &&
-						attribute.Value == params.RequestContextId {
-						msgIndex = i
-						found = true
+	for _, event := range txInfo.Events {
+		if event.Type == types.EventTypeCreateContext {
+			for _, attribute := range event.Attributes {
+				if attribute.Key == types.EventTypeMsgIndex {
+					paresIndex, err := strconv.ParseInt(attribute.Value, 10, 64)
+					if err != nil {
+						return requestContext, err
+					}
+					msgIndex = int(paresIndex)
+				}
+
+				if attribute.Key == types.AttributeKeyRequestContextID &&
+					attribute.Value == params.RequestContextId {
+					found = true
+					if msgIndex != -1 {
 						break I
 					}
 				}
+
+				if found && msgIndex != -1 {
+					break I
+				}
+
 			}
 		}
 	}
@@ -88,7 +100,6 @@ I:
 	if !found {
 		return requestContext, fmt.Errorf("unknown request context: %s", params.RequestContextId)
 	}
-
 	if len(txInfo.GetTx().GetMsgs()) > msgIndex {
 		if requestMsg, ok := txInfo.GetTx().GetMsgs()[msgIndex].(*types.MsgCallService); ok {
 			consumer, err := sdk.AccAddressFromBech32(requestMsg.Consumer)

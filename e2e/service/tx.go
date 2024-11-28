@@ -429,7 +429,6 @@ func (s *TxTestSuite) TestQueryCmd() {
 
 	withdrawalFees := simapp.QueryBalancesExec(
 		s.T(),
-		s.Network,
 		clientCtx,
 		withdrawalAddress.String(),
 	)
@@ -438,7 +437,6 @@ func (s *TxTestSuite) TestQueryCmd() {
 	//------check service tax-------------
 	taxFees := simapp.QueryBalancesExec(
 		s.T(),
-		s.Network,
 		clientCtx,
 		authtypes.NewModuleAddress(servicetypes.FeeCollectorName).String(),
 	)
