@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"cosmossdk.io/math"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -91,7 +92,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -202,7 +203,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -250,7 +251,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -313,7 +314,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -361,7 +362,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -416,7 +417,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -465,7 +466,7 @@ func (s *TxTestSuite) TestTxCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -498,16 +499,16 @@ func newHTLTGenesis(deputyAddress sdk.AccAddress) *htlctypes.GenesisState {
 				{
 					Denom: "htltbnb",
 					SupplyLimit: htlctypes.SupplyLimit{
-						Limit:          sdk.NewInt(350000000000000),
+						Limit:          math.NewInt(350000000000000),
 						TimeLimited:    false,
-						TimeBasedLimit: sdk.ZeroInt(),
+						TimeBasedLimit: math.ZeroInt(),
 						TimePeriod:     time.Hour,
 					},
 					Active:        true,
 					DeputyAddress: deputyAddress.String(),
-					FixedFee:      sdk.NewInt(1000),
-					MinSwapAmount: sdk.OneInt(),
-					MaxSwapAmount: sdk.NewInt(1000000000000),
+					FixedFee:      math.NewInt(1000),
+					MinSwapAmount: math.OneInt(),
+					MaxSwapAmount: math.NewInt(1000000000000),
 					MinBlockLock:  MinTimeLock,
 					MaxBlockLock:  MaxTimeLock,
 				},
@@ -516,10 +517,10 @@ func newHTLTGenesis(deputyAddress sdk.AccAddress) *htlctypes.GenesisState {
 		Htlcs: []htlctypes.HTLC{},
 		Supplies: []htlctypes.AssetSupply{
 			htlctypes.NewAssetSupply(
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
-				sdk.NewCoin("htltbnb", sdk.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
+				sdk.NewCoin("htltbnb", math.ZeroInt()),
 				time.Duration(0),
 			),
 		},

@@ -39,7 +39,7 @@ func (k Keeper) RequestService(
 	}
 
 	prng := types.MakePRNG(
-		ctx.BlockHeader().LastBlockId.Hash,
+		ctx.BlockHeader().AppHash,
 		ctx.BlockHeader().Time.UnixNano(),
 		consumer, nil, true)
 	provider, err := sdk.AccAddressFromBech32(bindings[prng.Intn(len(bindings))].Provider)
@@ -153,14 +153,14 @@ func (k Keeper) HandlerResponse(
 
 	currentTimestamp := ctx.BlockHeader().Time.Unix()
 	lastBlockHeight := ctx.BlockHeight() - 1
-	lastBlockHash := ctx.BlockHeader().LastBlockId.Hash
+	appHash := ctx.BlockHeader().AppHash
 
 	// get the request id
 	reqID := types.GenerateRequestID(request)
 
 	// generate a random number
 	consumer, _ := sdk.AccAddressFromBech32(request.Consumer)
-	random := types.MakePRNG(lastBlockHash, currentTimestamp, consumer, seed, true).GetRand()
+	random := types.MakePRNG(appHash, currentTimestamp, consumer, seed, true).GetRand()
 	k.SetRandom(
 		ctx,
 		reqID,

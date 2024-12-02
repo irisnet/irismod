@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
@@ -61,7 +62,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	// _ = tokentestutil.IssueTokenExec(s.T(), s.Network, clientCtx, from.String(), args...)
 
-	balances := simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances := simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
 	s.Require().Equal("399986975", balances.AmountOf(sdk.DefaultBondDenom).String())
 
@@ -71,15 +72,15 @@ func (s *QueryTestSuite) TestCoinswap() {
 	deadline := status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
 	msgAddLiquidity := &coinswaptypes.MsgAddLiquidity{
-		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(1000)),
-		ExactStandardAmt: sdk.NewInt(1000),
-		MinLiquidity:     sdk.NewInt(1000),
+		MaxToken:         sdk.NewCoin(symbol, math.NewInt(1000)),
+		ExactStandardAmt: math.NewInt(1000),
+		MinLiquidity:     math.NewInt(1000),
 		Deadline:         deadline.Unix(),
 		Sender:           from.String(),
 	}
 	s.SendMsgs(s.T(), msgAddLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99999000", balances.AmountOf(symbol).String())
 	s.Require().Equal("399980965", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
@@ -101,15 +102,15 @@ func (s *QueryTestSuite) TestCoinswap() {
 	deadline = status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
 	msgAddLiquidity = &coinswaptypes.MsgAddLiquidity{
-		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(2001)),
-		ExactStandardAmt: sdk.NewInt(2000),
-		MinLiquidity:     sdk.NewInt(2000),
+		MaxToken:         sdk.NewCoin(symbol, math.NewInt(2001)),
+		ExactStandardAmt: math.NewInt(2000),
+		MinLiquidity:     math.NewInt(2000),
 		Deadline:         deadline.Unix(),
 		Sender:           from.String(),
 	}
 	s.SendMsgs(s.T(), msgAddLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399978955", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
@@ -127,7 +128,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	msgSellOrder := &coinswaptypes.MsgSwapOrder{
 		Input: coinswaptypes.Input{
 			Address: from.String(),
-			Coin:    sdk.NewCoin(symbol, sdk.NewInt(1000)),
+			Coin:    sdk.NewCoin(symbol, math.NewInt(1000)),
 		},
 		Output: coinswaptypes.Output{
 			Address: from.String(),
@@ -138,7 +139,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	}
 	s.SendMsgs(s.T(), msgSellOrder)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99995999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399979693", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
@@ -160,14 +161,14 @@ func (s *QueryTestSuite) TestCoinswap() {
 		},
 		Output: coinswaptypes.Output{
 			Address: from.String(),
-			Coin:    sdk.NewCoin(symbol, sdk.NewInt(1000)),
+			Coin:    sdk.NewCoin(symbol, math.NewInt(1000)),
 		},
 		Deadline:   deadline.Unix(),
 		IsBuyOrder: true,
 	}
 	s.SendMsgs(s.T(), msgBuyOrder)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399978930", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
@@ -183,9 +184,9 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	// Test remove liquidity (remove part)
 	msgRemoveLiquidity := &coinswaptypes.MsgRemoveLiquidity{
-		WithdrawLiquidity: sdk.NewCoin(lptDenom, sdk.NewInt(2000)),
-		MinToken:          sdk.NewInt(2000),
-		MinStandardAmt:    sdk.NewInt(2000),
+		WithdrawLiquidity: sdk.NewCoin(lptDenom, math.NewInt(2000)),
+		MinToken:          math.NewInt(2000),
+		MinStandardAmt:    math.NewInt(2000),
 		Deadline:          deadline.Unix(),
 		Sender:            from.String(),
 	}
@@ -193,7 +194,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	// prepare txBuilder with msg
 	s.SendMsgs(s.T(), msgRemoveLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99998999", balances.AmountOf(symbol).String())
 	s.Require().Equal("399980923", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
@@ -209,9 +210,9 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	// Test remove liquidity (remove all)
 	msgRemoveLiquidity = &coinswaptypes.MsgRemoveLiquidity{
-		WithdrawLiquidity: sdk.NewCoin(lptDenom, sdk.NewInt(1000)),
-		MinToken:          sdk.NewInt(1000),
-		MinStandardAmt:    sdk.NewInt(1000),
+		WithdrawLiquidity: sdk.NewCoin(lptDenom, math.NewInt(1000)),
+		MinToken:          math.NewInt(1000),
+		MinStandardAmt:    math.NewInt(1000),
 		Deadline:          deadline.Unix(),
 		Sender:            from.String(),
 	}
@@ -219,7 +220,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 	// prepare txBuilder with msg
 	s.SendMsgs(s.T(), msgRemoveLiquidity)
 
-	balances = simapp.QueryBalancesExec(s.T(), s.Network, clientCtx, from.String())
+	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
 	s.Require().Equal("399981915", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("0", balances.AmountOf(lptDenom).String())

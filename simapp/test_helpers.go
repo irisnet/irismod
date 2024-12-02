@@ -175,6 +175,7 @@ func NewConfig(depInjectOptions DepinjectOptions) (network.Config, error) {
 			depinject.Supply(
 				providers...,
 			),
+			depinject.Provide(NewDistrKeeperAdapter, NewGovKeeperAdapter),
 		),
 		&appBuilder,
 		&txConfig,
@@ -721,21 +722,20 @@ func FundModuleAccount(
 
 func QueryBalancesExec(
 	t *testing.T,
-	network Network,
 	clientCtx client.Context,
 	address string,
-	extraArgs ...string,
 ) sdk.Coins {
 	t.Helper()
-	args := []string{
-		address,
-		fmt.Sprintf("--%s=json", "output"),
+	queryClient := banktypes.NewQueryClient(clientCtx)
+	req := &banktypes.QueryAllBalancesRequest{
+		Address: address,
 	}
-	args = append(args, extraArgs...)
+	resp, err := queryClient.AllBalances(context.Background(), req)
+	if err != nil {
+		t.Fatalf("failed to query balances: %v", err)
+	}
 
-	result := &banktypes.QueryAllBalancesResponse{}
-	//network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
-	return result.Balances
+	return resp.Balances
 }
 
 func QueryBalanceExec(
@@ -747,16 +747,20 @@ func QueryBalanceExec(
 	extraArgs ...string,
 ) *sdk.Coin {
 	t.Helper()
-	//args := []string{
-	//	address,
-	//	fmt.Sprintf("--%s=%s", bankcli.FlagDenom, denom),
-	//	fmt.Sprintf("--%s=json", "output"),
-	//}
-	//args = append(args, extraArgs...)
+	queryClient := banktypes.NewQueryClient(clientCtx)
+	req := &banktypes.QueryBalanceRequest{
+		Address: address,
+		Denom:   denom,
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-	result := &sdk.Coin{}
-	//network.ExecQueryCmd(t, clientCtx, bankcli.GetBalancesCmd(), args, result)
-	return result
+	result, err := queryClient.Balance(ctx, req)
+	if err != nil {
+		t.Fatalf("failed to query balances: %v", err)
+	}
+
+	return result.Balance
 }
 
 func QueryAccountExec(

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -69,7 +70,7 @@ func (s *TxTestSuite) TestTxCmd() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String()),
 	}
 
 	txResult := service.DefineServiceExec(s.T(), s.Network, clientCtx, author.String(), args...)
@@ -86,7 +87,7 @@ func (s *TxTestSuite) TestTxCmd() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String()),
 	}
 
 	txResult = service.BindServiceExec(s.T(), s.Network, clientCtx, provider.String(), args...)
@@ -110,7 +111,7 @@ func (s *TxTestSuite) TestTxCmd() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String()),
 	}
 
 	txResult = CreateFeedExec(s.T(), s.Network, clientCtx, creator.String(), args...)
@@ -131,7 +132,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String()),
 	}
 
 	txResult = StartFeedExec(s.T(), s.Network, clientCtx, creator.String(), feedName, args...)
@@ -153,7 +154,7 @@ func (s *TxTestSuite) TestTxCmd() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String()),
 	}
 
 	txResult = EditFeedExec(s.T(), s.Network, clientCtx, creator.String(), feedName, args...)
@@ -171,7 +172,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String()),
 	}
 
 	txResult = StartFeedExec(s.T(), s.Network, clientCtx, creator.String(), feedName, args...)
@@ -186,7 +187,7 @@ func (s *TxTestSuite) TestTxCmd() {
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var requestID string
-	for _, event := range blockResult.EndBlockEvents {
+	for _, event := range blockResult.FinalizeBlockEvents {
 		if event.Type == servicetypes.EventTypeNewBatchRequestProvider {
 			var found bool
 			var requestIds []string
@@ -216,7 +217,7 @@ func (s *TxTestSuite) TestTxCmd() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String()),
 	}
 
 	txResult = service.RespondServiceExec(s.T(), s.Network, clientCtx, provider.String(), args...)

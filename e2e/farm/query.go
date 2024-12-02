@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -43,9 +44,9 @@ func (s *QueryTestSuite) TestQueryCmd() {
 	creator := val.Address
 	description := "iris-atom farm pool"
 	startHeight := s.latestHeight() + 2
-	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10)))
+	rewardPerBlock := sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10)))
 	lpTokenDenom := "lpt-1"
-	totalReward := sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(1000)))
+	totalReward := sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(1000)))
 	editable := true
 
 	globalFlags := []string{
@@ -54,7 +55,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -90,7 +91,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		EndHeight:       startHeight + 100,
 		Editable:        editable,
 		Expired:         false,
-		TotalLptLocked:  sdk.NewCoin(lpTokenDenom, sdk.ZeroInt()),
+		TotalLptLocked:  sdk.NewCoin(lpTokenDenom, math.ZeroInt()),
 		TotalReward:     totalReward,
 		RemainingReward: totalReward,
 		RewardPerBlock:  rewardPerBlock,
@@ -109,7 +110,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 	s.Require().NoError(err)
 	s.Require().NoError(s.WaitForNextBlock())
 
-	lpToken := sdk.NewCoin(lpTokenDenom, sdk.NewInt(100))
+	lpToken := sdk.NewCoin(lpTokenDenom, math.NewInt(100))
 	txResult = StakeExec(
 		s.T(),
 		s.Network,
@@ -136,7 +137,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 
 	if farmer.Height-txResult.Height > 0 {
 		expectFarmer.PendingReward = rewardPerBlock.MulInt(
-			sdk.NewInt(farmer.Height - txResult.Height),
+			math.NewInt(farmer.Height - txResult.Height),
 		)
 	}
 	s.Require().EqualValues(expectFarmer, *farmer.List[0])
@@ -181,9 +182,9 @@ func (s *QueryTestSuite) setup() {
 	deadline := status.SyncInfo.LatestBlockTime.Add(time.Minute)
 
 	msgAddLiquidity := &coinswaptypes.MsgAddLiquidity{
-		MaxToken:         sdk.NewCoin(symbol, sdk.NewInt(1000)),
-		ExactStandardAmt: sdk.NewInt(1000),
-		MinLiquidity:     sdk.NewInt(1000),
+		MaxToken:         sdk.NewCoin(symbol, math.NewInt(1000)),
+		ExactStandardAmt: math.NewInt(1000),
+		MinLiquidity:     math.NewInt(1000),
 		Deadline:         deadline.Unix(),
 		Sender:           val.Address.String(),
 	}

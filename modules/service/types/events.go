@@ -23,8 +23,8 @@ const (
 	EventTypeCompleteBatch           = "complete_batch"
 	EventTypeServiceSlash            = "service_slash"
 	EventTypeNoExchangeRate          = "no_exchange_rate"
-
-	AttributeValueCategory = ModuleName
+	EventTypeMsgIndex                = "msg_index"
+	AttributeValueCategory           = ModuleName
 
 	AttributeKeyAuthor              = "author"
 	AttributeKeyServiceName         = "service_name"

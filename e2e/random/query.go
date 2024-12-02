@@ -4,15 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
-	"github.com/tidwall/gjson"
-
 	"mods.irisnet.org/e2e"
 	"mods.irisnet.org/e2e/service"
 	randomcli "mods.irisnet.org/modules/random/client/cli"
@@ -82,7 +82,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
@@ -105,15 +105,17 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
 	txResult = RequestRandomExec(s.T(), s.Network, clientCtx, from.String(), args...)
 	s.Require().Equal(expectedCode, txResult.Code)
 
-	requestID := gjson.Get(txResult.Log, "0.events.1.attributes.0.value").String()
-	requestHeight := gjson.Get(txResult.Log, "0.events.1.attributes.2.value").Int()
+	requestID := txResult.Events[8].Attributes[0].Value
+	heightStr := txResult.Events[8].Attributes[2].Value
+	requestHeight, err := strconv.ParseInt(heightStr, 10, 64)
+	s.Require().NoError(err)
 
 	// ------test GetCmdQueryRandomRequestQueue()-------------
 	url := fmt.Sprintf("%s/irismod/random/queue", baseURL)
@@ -138,7 +140,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 	blockResult, err := val.RPCClient.BlockResults(context.Background(), &requestHeight)
 	s.Require().NoError(err)
 	var requestId string
-	for _, event := range blockResult.EndBlockEvents {
+	for _, event := range blockResult.FinalizeBlockEvents {
 		if event.Type == servicetypes.EventTypeNewBatchRequestProvider {
 			var found bool
 			var requestIds []string
@@ -171,7 +173,7 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		fmt.Sprintf(
 			"--%s=%s",
 			flags.FlagFees,
-			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, sdk.NewInt(10))).String(),
+			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
 
