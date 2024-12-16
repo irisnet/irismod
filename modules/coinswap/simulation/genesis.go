@@ -39,7 +39,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	simState.AppParams.GetOrGenerate(
 		keyPoolCreationFee, &poolCreationFee, simState.Rand,
-		func(r *rand.Rand) { poolCreationFee = sdk.NewInt64Coin(sdk.DefaultBondDenom, r.Int63n(100)) },
+		func(r *rand.Rand) { poolCreationFee = sdk.NewInt64Coin(sdk.DefaultBondDenom, r.Int63n(100)+1) },
 	)
 
 	simState.AppParams.GetOrGenerate(

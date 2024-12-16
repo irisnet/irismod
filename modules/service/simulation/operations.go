@@ -3,7 +3,6 @@ package simulation
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 
 	"cosmossdk.io/math"
 	tmbytes "github.com/cometbft/cometbft/libs/bytes"
@@ -14,6 +13,7 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"math/rand"
 
 	"mods.irisnet.org/modules/service/keeper"
 	"mods.irisnet.org/modules/service/types"
@@ -990,12 +990,15 @@ func SimulateMsgCallService(
 		}
 		timeout := int64(simtypes.RandIntBetween(r, 1, int(k.MaxRequestTimeout(ctx))))
 
-		repeated := true
-		repeatedFrequency := uint64(100)
-		repeatedTotal := int64(10)
+		repeated := r.Intn(2) == 0
+		var repeatedFrequency, repeatedTotal uint64
+		if repeated {
+			repeatedFrequency = uint64(100)
+			repeatedTotal = uint64(10)
+		}
 
 		msg := types.NewMsgCallService(serviceName, providers, consumer, input,
-			serviceFeeCap, timeout, repeated, repeatedFrequency, repeatedTotal)
+			serviceFeeCap, timeout, repeated, repeatedFrequency, int64(repeatedTotal))
 
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		spendable, hasNeg := spendable.SafeSub(serviceFeeCap...)
@@ -1158,6 +1161,15 @@ func SimulateMsgPauseRequestContext(
 				"not authorized operation",
 			), nil, nil
 		}
+
+		if !requestContext.Repeated {
+			return simtypes.NoOpMsg(
+				types.ModuleName,
+				types.TypeMsgPauseRequestContext,
+				"requestContext non repeated",
+			), nil, nil
+		}
+
 		consumer, err := sdk.AccAddressFromBech32(requestContext.Consumer)
 		if err != nil {
 			return simtypes.NoOpMsg(
@@ -1484,6 +1496,10 @@ func SimulateMsgUpdateRequestContext(
 		timeout := r.Int63n(k.MaxRequestTimeout(ctx))
 		repeatedFrequency := uint64(0)
 		repeatedTotal := int64(0)
+		//if requestContext.Repeated {
+		//	repeatedFrequency = requestContext.RepeatedFrequency
+		//	repeatedTotal = int64(repeatedTotal)
+		//}
 
 		msg := types.NewMsgUpdateRequestContext(
 			requestContextId.String(),
