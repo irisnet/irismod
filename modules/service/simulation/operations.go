@@ -1496,10 +1496,6 @@ func SimulateMsgUpdateRequestContext(
 		timeout := r.Int63n(k.MaxRequestTimeout(ctx))
 		repeatedFrequency := uint64(0)
 		repeatedTotal := int64(0)
-		//if requestContext.Repeated {
-		//	repeatedFrequency = requestContext.RepeatedFrequency
-		//	repeatedTotal = int64(repeatedTotal)
-		//}
 
 		msg := types.NewMsgUpdateRequestContext(
 			requestContextId.String(),
