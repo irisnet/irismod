@@ -71,7 +71,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	)
 
 	tokenGenesis := v1.NewGenesisState(
-		v1.NewParams(tokenTaxRate, sdk.NewCoin(sdk.DefaultBondDenom, issueTokenBaseFee), mintTokenFeeRatio, enableErc20, ""),
+		v1.NewParams(tokenTaxRate, sdk.NewCoin(v1.GetNativeToken().Symbol, issueTokenBaseFee), mintTokenFeeRatio, enableErc20, ""),
 		tokens,
 	)
 

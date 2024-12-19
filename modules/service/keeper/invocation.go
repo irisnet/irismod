@@ -236,7 +236,7 @@ func (k Keeper) UpdateRequestContext(
 		repeatedFreq = requestContext.RepeatedFrequency
 	}
 
-	if repeatedFreq < uint64(timeout) {
+	if requestContext.Repeated && repeatedFreq < uint64(timeout) {
 		return errorsmod.Wrapf(
 			types.ErrInvalidRepeatedFreq,
 			"repeated frequency [%d] must not be less than the timeout [%d]",
