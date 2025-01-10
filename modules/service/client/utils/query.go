@@ -101,6 +101,7 @@ func QueryRequestContextByTxQuery(
 
 // findMsgIndex will find the message index in the txInfo.
 func findMsgIndex(txInfo *sdk.TxResponse, params types.QueryRequestContextRequest) (int, error) {
+	const errUnknownContext = "unknown request context: %s"
 	msgIndex := -1
 	var found bool
 	if txInfo.Logs == nil {
@@ -127,7 +128,7 @@ func findMsgIndex(txInfo *sdk.TxResponse, params types.QueryRequestContextReques
 			}
 		}
 
-		return -1, fmt.Errorf("unknown request context: %s", params.RequestContextId)
+		return msgIndex, fmt.Errorf(errUnknownContext, params.RequestContextId)
 	}
 
 	// Compatible with older versions.
@@ -145,7 +146,7 @@ func findMsgIndex(txInfo *sdk.TxResponse, params types.QueryRequestContextReques
 		}
 	}
 
-	return -1, fmt.Errorf("unknown request context: %s", params.RequestContextId)
+	return msgIndex, fmt.Errorf(errUnknownContext, params.RequestContextId)
 }
 
 // QueryRequestByTxQuery will query for a single request via a direct txs tags query.
