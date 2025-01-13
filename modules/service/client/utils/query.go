@@ -66,39 +66,10 @@ func QueryRequestContextByTxQuery(
 	if err != nil {
 		return requestContext, err
 	}
-
-	msgIndex := -1
-	var found bool
-I:
-	for _, event := range txInfo.Events {
-		if event.Type == types.EventTypeCreateContext {
-			for _, attribute := range event.Attributes {
-				if attribute.Key == types.EventTypeMsgIndex {
-					paresIndex, err := strconv.ParseInt(attribute.Value, 10, 64)
-					if err != nil {
-						return requestContext, err
-					}
-					msgIndex = int(paresIndex)
-				}
-
-				if attribute.Key == types.AttributeKeyRequestContextID &&
-					attribute.Value == params.RequestContextId {
-					found = true
-					if msgIndex != -1 {
-						break I
-					}
-				}
-
-				if found && msgIndex != -1 {
-					break I
-				}
-
-			}
-		}
-	}
-
-	if !found {
-		return requestContext, fmt.Errorf("unknown request context: %s", params.RequestContextId)
+	// Get the msg index
+	msgIndex, err := findMsgIndex(txInfo, params)
+	if err != nil {
+		return requestContext, err
 	}
 	if len(txInfo.GetTx().GetMsgs()) > msgIndex {
 		if requestMsg, ok := txInfo.GetTx().GetMsgs()[msgIndex].(*types.MsgCallService); ok {
@@ -126,6 +97,56 @@ I:
 	}
 
 	return requestContext, nil
+}
+
+// findMsgIndex will find the message index in the txInfo.
+func findMsgIndex(txInfo *sdk.TxResponse, params types.QueryRequestContextRequest) (int, error) {
+	const errUnknownContext = "unknown request context: %s"
+	msgIndex := -1
+	var found bool
+	if txInfo.Logs == nil {
+		for _, event := range txInfo.Events {
+			if event.Type == types.EventTypeCreateContext {
+				for _, attribute := range event.Attributes {
+					if attribute.Key == types.EventTypeMsgIndex {
+						paresIndex, err := strconv.ParseInt(attribute.Value, 10, 64)
+						if err != nil {
+							return msgIndex, err
+						}
+						msgIndex = int(paresIndex)
+					}
+
+					if attribute.Key == types.AttributeKeyRequestContextID &&
+						attribute.Value == params.RequestContextId {
+						found = true
+					}
+
+					if found && msgIndex != -1 {
+						return msgIndex, nil
+					}
+				}
+			}
+		}
+
+		return msgIndex, fmt.Errorf(errUnknownContext, params.RequestContextId)
+	}
+
+	// Compatible with older versions.
+	for i, log := range txInfo.Logs {
+		for _, event := range log.Events {
+			if event.Type == types.EventTypeCreateContext {
+				for _, attribute := range event.Attributes {
+					if attribute.Key == types.AttributeKeyRequestContextID &&
+						attribute.Value == params.RequestContextId {
+						msgIndex = i
+						return msgIndex, nil
+					}
+				}
+			}
+		}
+	}
+
+	return msgIndex, fmt.Errorf(errUnknownContext, params.RequestContextId)
 }
 
 // QueryRequestByTxQuery will query for a single request via a direct txs tags query.
