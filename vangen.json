@@ -13,6 +13,7 @@
         "modules/htlc",
         "modules/mt",
         "modules/nft",
+        "modules/oracle",
         "modules/random",
         "modules/record",
         "modules/service",
