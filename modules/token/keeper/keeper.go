@@ -345,7 +345,7 @@ func (k Keeper) calcFeeTokenMinted(
 		return burnt, minted, types.ErrInvalidSwap
 	}
 
-	tokenMinted, err := k.GetToken(ctx, swapParams.MinUnit)
+	tokenMinted, err := k.getTokenByMinUnit(ctx, swapParams.MinUnit)
 	if err != nil {
 		return burnt, minted, err
 	}

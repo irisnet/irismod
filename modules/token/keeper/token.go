@@ -320,7 +320,7 @@ func (k Keeper) setDenomMetaData(ctx sdk.Context, token v1.Token) {
 }
 
 func (k Keeper) assertTokenValid(ctx sdk.Context, token v1.Token) error {
-	if k.HasSymbol(ctx, token.Symbol) {
+	if k.HasSymbol(ctx, token.Symbol) || k.HasMinUint(ctx, token.Symbol) {
 		return errorsmod.Wrapf(
 			types.ErrSymbolAlreadyExists,
 			"symbol already exists: %s",
@@ -328,7 +328,7 @@ func (k Keeper) assertTokenValid(ctx sdk.Context, token v1.Token) error {
 		)
 	}
 
-	if k.HasMinUint(ctx, token.MinUnit) {
+	if k.HasMinUint(ctx, token.MinUnit) || k.HasSymbol(ctx, token.MinUnit) {
 		return errorsmod.Wrapf(
 			types.ErrMinUnitAlreadyExists,
 			"min-unit already exists: %s",
