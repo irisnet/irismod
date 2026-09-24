@@ -30,6 +30,10 @@ type TxTestSuite struct {
 	e2e.TestSuite
 }
 
+func (s *TxTestSuite) SetupSuite() {
+	setupGenesisToken(&s.TestSuite)
+}
+
 // TestTxCmd tests all tx command in the nft module
 func (s *TxTestSuite) TestTxCmd() {
 	val := s.Network.Validators[0]
@@ -54,15 +58,13 @@ func (s *TxTestSuite) TestTxCmd() {
 			sdk.NewCoins(sdk.NewCoin(s.Network.BondDenom, math.NewInt(10))).String(),
 		),
 	}
-	expectedCode := uint32(0)
 	txResult := IssueTokenExec(s.T(), s.Network, clientCtx, from.String(), args...)
-	s.Require().Equal(expectedCode, txResult.Code)
+	s.Require().Equal(tokentypes.ErrIssueTokenDisabled.ABCICode(), txResult.Code)
+	s.Require().Equal(tokentypes.ErrIssueTokenDisabled.Codespace(), txResult.Codespace)
+	s.Require().Contains(txResult.Log, tokentypes.ErrIssueTokenDisabled.Error())
 
-	tokenSymbol := s.Network.GetAttribute(
-		tokentypes.EventTypeIssueToken,
-		tokentypes.AttributeKeySymbol,
-		txResult.Events,
-	)
+	expectedCode := uint32(0)
+	tokenSymbol := symbol
 
 	//------test GetCmdQueryTokens()-------------
 	tokens := QueryTokensExec(s.T(), s.Network, clientCtx, from.String())

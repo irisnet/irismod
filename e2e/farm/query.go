@@ -8,6 +8,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
 
@@ -28,7 +29,9 @@ func (s *QueryTestSuite) SetupSuite() {
 	sdk.SetCoinDenomRegex(func() string {
 		return `[a-zA-Z][a-zA-Z0-9/\-]{2,127}`
 	})
-	s.TestSuite.SetupSuite()
+	s.SetupSuiteWithModifyConfigFn(func(cfg *network.Config) {
+		addTestTokenToGenesis(s.T(), cfg)
+	})
 }
 
 // TestQueryCmd tests all query command in the farm module
@@ -155,25 +158,16 @@ func (s *QueryTestSuite) setup() {
 
 	from := val.Address
 	const symbol = "kitty"
-	const name = "Kitty Token"
 	const minUnit = "kitty"
-	const scale = uint32(0)
 	const initialSupply = uint64(100000000)
-	const maxSupply = uint64(200000000)
-	const mintable = true
 
-	// issue token
-	msgIssueToken := &tokentypes.MsgIssueToken{
-		Symbol:        symbol,
-		Name:          name,
-		Scale:         scale,
-		MinUnit:       minUnit,
-		InitialSupply: initialSupply,
-		MaxSupply:     maxSupply,
-		Mintable:      mintable,
-		Owner:         from.String(),
+	// Fund the owner from the genesis token without using the disabled issue path.
+	msgMintToken := &tokentypes.MsgMintToken{
+		Coin:     sdk.NewCoin(minUnit, math.NewIntFromUint64(initialSupply)),
+		Receiver: from.String(),
+		Owner:    from.String(),
 	}
-	res := s.BlockSendMsgs(s.T(), msgIssueToken)
+	res := s.BlockSendMsgs(s.T(), msgMintToken)
 	s.Require().Equal(uint32(0), res.Code, res.Log)
 
 	// add liquidity
