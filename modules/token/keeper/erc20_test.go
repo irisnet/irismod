@@ -14,12 +14,7 @@ import (
 func (suite *KeeperTestSuite) TestDeployERC20() {
 	token := v1.NewToken("btc", "Bitcoin Network", "satoshi", 18, 21000000, 21000000, false, owner)
 
-	err := suite.keeper.IssueToken(
-		suite.ctx, token.Symbol, token.Name,
-		token.MinUnit, token.Scale, token.InitialSupply,
-		token.MaxSupply, token.Mintable, token.GetOwner(),
-	)
-	suite.NoError(err)
+	suite.issueToken(token)
 
 	hash, err := suite.keeper.DeployERC20(suite.ctx, token.Name, token.Symbol, token.MinUnit, uint8(token.Scale))
 	suite.NoError(err)
@@ -34,12 +29,7 @@ func (suite *KeeperTestSuite) TestDeployERC20() {
 func (suite *KeeperTestSuite) TestSwapFromERC20() {
 	token := v1.NewToken("btc", "Bitcoin Network", "satoshi", 18, 21000000, 21000000, false, owner)
 
-	err := suite.keeper.IssueToken(
-		suite.ctx, token.Symbol, token.Name,
-		token.MinUnit, token.Scale, token.InitialSupply,
-		token.MaxSupply, token.Mintable, token.GetOwner(),
-	)
-	suite.NoError(err)
+	suite.issueToken(token)
 
 	contract, err := suite.keeper.DeployERC20(suite.ctx, token.Name, token.Symbol, token.MinUnit, uint8(token.Scale))
 	suite.NoError(err)
@@ -79,12 +69,7 @@ func (suite *KeeperTestSuite) TestSwapFromERC20() {
 func (suite *KeeperTestSuite) TestSwapToERC20() {
 	token := v1.NewToken("btc", "Bitcoin Network", "satoshi", 18, 21000000, 21000000, false, owner)
 
-	err := suite.keeper.IssueToken(
-		suite.ctx, token.Symbol, token.Name,
-		token.MinUnit, token.Scale, token.InitialSupply,
-		token.MaxSupply, token.Mintable, token.GetOwner(),
-	)
-	suite.NoError(err)
+	suite.issueToken(token)
 
 	contract, err := suite.keeper.DeployERC20(suite.ctx, token.Name, token.Symbol, token.MinUnit, uint8(token.Scale))
 	suite.NoError(err)

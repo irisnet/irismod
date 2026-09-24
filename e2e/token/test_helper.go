@@ -9,13 +9,29 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/require"
 
+	"mods.irisnet.org/e2e"
 	tokencli "mods.irisnet.org/modules/token/client/cli"
 	v1 "mods.irisnet.org/modules/token/types/v1"
 	"mods.irisnet.org/simapp"
 )
+
+func setupGenesisToken(s *e2e.TestSuite) {
+	s.SetupSuiteWithModifyConfigFn(func(cfg *network.Config) {
+		e2e.AddTestTokenToGenesis(s.T(), cfg, v1.Token{
+			Symbol:        symbol,
+			Name:          name,
+			Scale:         scale,
+			MinUnit:       minUnit,
+			InitialSupply: uint64(initialSupply),
+			MaxSupply:     uint64(maxSupply),
+			Mintable:      mintable,
+		})
+	})
+}
 
 // IssueTokenExec executes the command to issue a token on the specified network with the given client context and sender address.
 //

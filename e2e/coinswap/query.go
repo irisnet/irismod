@@ -7,12 +7,13 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
 
 	"mods.irisnet.org/e2e"
 	coinswaptypes "mods.irisnet.org/modules/coinswap/types"
-	tokentypes "mods.irisnet.org/modules/token/types/v1"
+	tokenv1 "mods.irisnet.org/modules/token/types/v1"
 	"mods.irisnet.org/simapp"
 )
 
@@ -26,7 +27,17 @@ func (s *QueryTestSuite) SetupSuite() {
 	sdk.SetCoinDenomRegex(func() string {
 		return `[a-zA-Z][a-zA-Z0-9/\-]{2,127}`
 	})
-	s.TestSuite.SetupSuite()
+	s.SetupSuiteWithModifyConfigFn(func(cfg *network.Config) {
+		e2e.AddTestTokenToGenesis(s.T(), cfg, tokenv1.Token{
+			Symbol:        "kitty",
+			Name:          "Kitty Token",
+			Scale:         0,
+			MinUnit:       "kitty",
+			InitialSupply: 100000000,
+			MaxSupply:     200000000,
+			Mintable:      true,
+		})
+	})
 }
 
 // TestCoinswap tests all query command in the nft module
@@ -37,34 +48,25 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	from := val.Address
 	symbol := "kitty"
-	name := "Kitty Token"
 	minUnit := "kitty"
-	scale := uint32(0)
 	initialSupply := uint64(100000000)
-	maxSupply := uint64(200000000)
-	mintable := true
 	baseURL := val.APIAddress
 	lptDenom := "lpt-1"
 
-	// issue token
-	msgIssueToken := &tokentypes.MsgIssueToken{
-		Symbol:        symbol,
-		Name:          name,
-		Scale:         scale,
-		MinUnit:       minUnit,
-		InitialSupply: initialSupply,
-		MaxSupply:     maxSupply,
-		Mintable:      mintable,
-		Owner:         from.String(),
+	// Fund the owner from the genesis token without using the disabled issue path.
+	msgMintToken := &tokenv1.MsgMintToken{
+		Coin:     sdk.NewCoin(minUnit, math.NewIntFromUint64(initialSupply)),
+		Receiver: from.String(),
+		Owner:    from.String(),
 	}
-	txResult := s.BlockSendMsgs(s.T(), msgIssueToken)
-	s.Require().Equal(uint32(0), txResult.Code, "send issue token msg failed")
+	txResult := s.BlockSendMsgs(s.T(), msgMintToken)
+	s.Require().Equal(uint32(0), txResult.Code, "send mint token msg failed")
 
 	// _ = tokentestutil.IssueTokenExec(s.T(), s.Network, clientCtx, from.String(), args...)
 
 	balances := simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
-	s.Require().Equal("399986975", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("399998689", balances.AmountOf(sdk.DefaultBondDenom).String())
 
 	// test add liquidity (poor not exist)
 	status, err := clientCtx.Client.Status(context.Background())
@@ -82,7 +84,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99999000", balances.AmountOf(symbol).String())
-	s.Require().Equal("399980965", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("399992679", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
 
 	queryPoolResponse := proto.Message(&coinswaptypes.QueryLiquidityPoolResponse{})
@@ -112,7 +114,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
-	s.Require().Equal("399978955", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("399990669", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
@@ -141,7 +143,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99995999", balances.AmountOf(symbol).String())
-	s.Require().Equal("399979693", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("399991407", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
@@ -170,7 +172,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99996999", balances.AmountOf(symbol).String())
-	s.Require().Equal("399978930", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("399990644", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("3000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
@@ -196,7 +198,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("99998999", balances.AmountOf(symbol).String())
-	s.Require().Equal("399980923", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("399992637", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("1000", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)
@@ -222,7 +224,7 @@ func (s *QueryTestSuite) TestCoinswap() {
 
 	balances = simapp.QueryBalancesExec(s.T(), clientCtx, from.String())
 	s.Require().Equal("100000000", balances.AmountOf(symbol).String())
-	s.Require().Equal("399981915", balances.AmountOf(sdk.DefaultBondDenom).String())
+	s.Require().Equal("399993629", balances.AmountOf(sdk.DefaultBondDenom).String())
 	s.Require().Equal("0", balances.AmountOf(lptDenom).String())
 
 	url = fmt.Sprintf("%s/irismod/coinswap/pools/%s", baseURL, lptDenom)

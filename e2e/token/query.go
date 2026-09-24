@@ -21,6 +21,10 @@ type QueryTestSuite struct {
 	e2e.TestSuite
 }
 
+func (s *QueryTestSuite) SetupSuite() {
+	setupGenesisToken(&s.TestSuite)
+}
+
 // TestQueryCmd tests all query command in the token module
 func (s *QueryTestSuite) TestQueryCmd() {
 	val := s.Network.Validators[0]
@@ -47,12 +51,11 @@ func (s *QueryTestSuite) TestQueryCmd() {
 		),
 	}
 	txResult := IssueTokenExec(s.T(), s.Network, clientCtx, from.String(), args...)
+	s.Require().Equal(tokentypes.ErrIssueTokenDisabled.ABCICode(), txResult.Code)
+	s.Require().Equal(tokentypes.ErrIssueTokenDisabled.Codespace(), txResult.Codespace)
+	s.Require().Contains(txResult.Log, tokentypes.ErrIssueTokenDisabled.Error())
 
-	tokenSymbol := s.Network.GetAttribute(
-		tokentypes.EventTypeIssueToken,
-		tokentypes.AttributeKeySymbol,
-		txResult.Events,
-	)
+	tokenSymbol := symbol
 
 	//------test GetCmdQueryTokens()-------------
 	url := fmt.Sprintf("%s/irismod/token/v1/tokens", baseURL)

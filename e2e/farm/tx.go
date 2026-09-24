@@ -7,6 +7,7 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"mods.irisnet.org/e2e"
@@ -19,6 +20,12 @@ import (
 // TxTestSuite is a suite of end-to-end tests for the nft module
 type TxTestSuite struct {
 	e2e.TestSuite
+}
+
+func (s *TxTestSuite) SetupSuite() {
+	s.SetupSuiteWithModifyConfigFn(func(cfg *network.Config) {
+		addTestTokenToGenesis(s.T(), cfg)
+	})
 }
 
 // TestTxCmd tests all tx command in the nft module
@@ -191,25 +198,16 @@ func (s *TxTestSuite) setup() {
 
 	from := val.Address
 	symbol := "kitty"
-	name := "Kitty Token"
 	minUnit := "kitty"
-	scale := uint32(0)
 	initialSupply := uint64(100000000)
-	maxSupply := uint64(200000000)
-	mintable := true
 
-	// issue token
-	msgIssueToken := &tokentypes.MsgIssueToken{
-		Symbol:        symbol,
-		Name:          name,
-		Scale:         scale,
-		MinUnit:       minUnit,
-		InitialSupply: initialSupply,
-		MaxSupply:     maxSupply,
-		Mintable:      mintable,
-		Owner:         from.String(),
+	// Fund the owner from the genesis token without using the disabled issue path.
+	msgMintToken := &tokentypes.MsgMintToken{
+		Coin:     sdk.NewCoin(minUnit, math.NewIntFromUint64(initialSupply)),
+		Receiver: from.String(),
+		Owner:    from.String(),
 	}
-	res := s.Network.BlockSendMsgs(s.T(), msgIssueToken)
+	res := s.Network.BlockSendMsgs(s.T(), msgMintToken)
 	s.Require().Equal(uint32(0), res.Code, res.Log)
 
 	// add liquidity
