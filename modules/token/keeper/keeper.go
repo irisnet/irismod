@@ -93,30 +93,7 @@ func (k Keeper) IssueToken(
 	mintable bool,
 	owner sdk.AccAddress,
 ) error {
-	token := v1.NewToken(
-		symbol, name, minUnit, scale, initialSupply,
-		maxSupply, mintable, owner,
-	)
-
-	if err := k.AddToken(ctx, token, true); err != nil {
-		return err
-	}
-
-	precision := sdkmath.NewIntWithDecimal(1, int(token.Scale))
-	initialCoin := sdk.NewCoin(
-		token.MinUnit,
-		sdkmath.NewIntFromUint64(token.InitialSupply).Mul(precision),
-	)
-
-	mintCoins := sdk.NewCoins(initialCoin)
-
-	// mint coins into module account
-	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, mintCoins); err != nil {
-		return err
-	}
-
-	// sent coins to owner's account
-	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, owner, mintCoins)
+	return types.ErrIssueTokenDisabled
 }
 
 // EditToken edits the specified token

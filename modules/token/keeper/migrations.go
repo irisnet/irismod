@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	v2 "mods.irisnet.org/modules/token/migrations/v2"
-	v3 "mods.irisnet.org/modules/token/migrations/v3"
 	"mods.irisnet.org/modules/token/types"
 )
 
@@ -22,9 +21,4 @@ func NewMigrator(k Keeper, legacySubspace types.Subspace) Migrator {
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	return v2.Migrate(ctx, m.k, m.legacySubspace)
-}
-
-// Migrate2to3 migrates from version 2 to 3.
-func (m Migrator) Migrate2to3(ctx sdk.Context) error {
-	return v3.Migrate(ctx, m.k.storeKey, m.k.cdc, m.k.bankKeeper)
 }

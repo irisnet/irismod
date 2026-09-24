@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"context"
 	"testing"
 
 	"cosmossdk.io/math"
@@ -15,6 +16,7 @@ import (
 	"mods.irisnet.org/modules/token/keeper"
 	tokentypes "mods.irisnet.org/modules/token/types"
 	v1 "mods.irisnet.org/modules/token/types/v1"
+	"mods.irisnet.org/modules/token/types/v1beta1"
 	"mods.irisnet.org/simapp"
 )
 
@@ -98,23 +100,70 @@ func (suite *KeeperTestSuite) issueToken(token v1.Token) {
 
 func (suite *KeeperTestSuite) TestIssueToken() {
 	token := v1.NewToken("btc", "Bitcoin Network", "satoshi", 18, 21000000, 21000000, false, owner)
+	ownerBalance := suite.bk.GetBalance(suite.ctx, token.GetOwner(), token.MinUnit)
+	totalSupply := suite.bk.GetSupply(suite.ctx, token.MinUnit)
 
 	err := suite.keeper.IssueToken(
 		suite.ctx, token.Symbol, token.Name,
 		token.MinUnit, token.Scale, token.InitialSupply,
 		token.MaxSupply, token.Mintable, token.GetOwner(),
 	)
-	suite.NoError(err)
+	suite.ErrorIs(err, tokentypes.ErrIssueTokenDisabled)
+	suite.False(suite.keeper.HasToken(suite.ctx, token.Symbol))
+	suite.Equal(ownerBalance, suite.bk.GetBalance(suite.ctx, token.GetOwner(), token.MinUnit))
+	suite.Equal(totalSupply, suite.bk.GetSupply(suite.ctx, token.MinUnit))
 
-	suite.True(suite.keeper.HasToken(suite.ctx, token.Symbol))
+	// A zero-value keeper proves the guard returns before touching any dependency.
+	err = (keeper.Keeper{}).IssueToken(
+		sdk.Context{}, token.Symbol, token.Name,
+		token.MinUnit, token.Scale, token.InitialSupply,
+		token.MaxSupply, token.Mintable, token.GetOwner(),
+	)
+	suite.ErrorIs(err, tokentypes.ErrIssueTokenDisabled)
+}
 
-	issuedToken, err := suite.keeper.GetToken(suite.ctx, token.Symbol)
-	suite.NoError(err)
+func (suite *KeeperTestSuite) TestIssueTokenMsgServers() {
+	msgServer := keeper.NewMsgServerImpl(suite.keeper)
+	legacyMsgServer := keeper.NewLegacyMsgServerImpl(msgServer, suite.keeper)
+	ownerBalance := suite.bk.GetBalance(suite.ctx, owner, denom)
 
-	suite.Equal(token.MinUnit, issuedToken.GetMinUnit())
-	suite.Equal(token.Owner, issuedToken.GetOwner().String())
+	tests := []struct {
+		name string
+		call func(context.Context) error
+	}{
+		{
+			name: "v1",
+			call: func(ctx context.Context) error {
+				_, err := msgServer.IssueToken(ctx, v1.NewMsgIssueToken(
+					"btc", "satoshi", "Bitcoin Network", 18, 1, 1, false, owner.String(),
+				))
+				return err
+			},
+		},
+		{
+			name: "v1beta1",
+			call: func(ctx context.Context) error {
+				_, err := legacyMsgServer.IssueToken(ctx, v1beta1.NewMsgIssueToken(
+					"btc", "satoshi", "Bitcoin Network", 18, 1, 1, false, owner.String(),
+				))
+				return err
+			},
+		},
+	}
 
-	suite.EqualValues(&token, issuedToken.(*v1.Token))
+	for _, tc := range tests {
+		suite.Run(tc.name, func() {
+			cacheCtx, _ := suite.ctx.CacheContext()
+			err := tc.call(sdk.WrapSDKContext(cacheCtx))
+			suite.ErrorIs(err, tokentypes.ErrIssueTokenDisabled)
+			suite.False(suite.keeper.HasToken(cacheCtx, "btc"))
+			suite.True(suite.bk.GetBalance(cacheCtx, owner, denom).IsLT(ownerBalance))
+
+			// BaseApp discards the message cache on error, rolling back the issuance fee.
+			// AnteHandler transaction fees live in an earlier cache and are unaffected.
+			suite.Equal(ownerBalance, suite.bk.GetBalance(suite.ctx, owner, denom))
+		})
+	}
 }
 
 func (suite *KeeperTestSuite) TestEditToken() {

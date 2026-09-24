@@ -32,4 +32,5 @@ var (
 	ErrInvalidContract      = errorsmod.Register(ModuleName, 25, "invalid contract")
 	ErrERC20Disabled        = errorsmod.Register(ModuleName, 26, "erc20 swap is disabled")
 	ErrBeaconNotSet         = errorsmod.Register(ModuleName, 27, "beacon contract not set")
+	ErrIssueTokenDisabled   = errorsmod.Register(ModuleName, 28, "token issuance is disabled")
 )

@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -169,11 +170,22 @@ func SimulateIssueToken(
 		}
 
 		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+			return handleIssueTokenDeliveryError(msg.Type(), err)
 		}
 
 		return simtypes.NewOperationMsg(msg, true, "simulate issue token"), nil, nil
 	}
+}
+
+func handleIssueTokenDeliveryError(
+	msgType string,
+	err error,
+) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+	if errors.Is(err, types.ErrIssueTokenDisabled) {
+		return simtypes.NoOpMsg(types.ModuleName, msgType, "token issuance is disabled"), nil, nil
+	}
+
+	return simtypes.NoOpMsg(types.ModuleName, msgType, "unable to deliver tx"), nil, err
 }
 
 // SimulateEditToken tests and runs a single msg edit a existed token
