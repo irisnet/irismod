@@ -176,8 +176,10 @@ func (am AppModule) EndBlock(ctx context.Context) error {
 
 // AppModuleSimulation functions
 
-// GenerateGenesisState creates a randomized GenState of the service module.
-func (AppModule) GenerateGenesisState(simState *module.SimulationState) {}
+// GenerateGenesisState creates a GenState of the service module.
+func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(types.DefaultGenesisState())
+}
 
 // RegisterStoreDecoder registers a decoder for service module's types
 func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
