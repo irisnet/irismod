@@ -132,13 +132,16 @@ var (
 		// govtypes.ModuleName
 	}
 
-	// AppConfig application configuration (used by depinject)
-	AppConfig = appconfig.Compose(&appv1alpha1.Config{
+	appConfigDefinition = &appv1alpha1.Config{
 		Modules: []*appv1alpha1.ModuleConfig{
 			{
 				Name: "runtime",
 				Config: appconfig.WrapAny(&runtimev1alpha1.Module{
 					AppName: "SimApp",
+					PreBlockers: []string{
+						upgradetypes.ModuleName,
+						authtypes.ModuleName,
+					},
 					// During begin block slashing happens after distr.BeginBlocker so that
 					// there is nothing left over in the validator fee pool, so as to keep the
 					// CanWithdrawInvariant invariant.
@@ -349,5 +352,8 @@ var (
 				}),
 			},
 		},
-	})
+	}
+
+	// AppConfig application configuration (used by depinject)
+	AppConfig = appconfig.Compose(appConfigDefinition)
 )
