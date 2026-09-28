@@ -195,6 +195,10 @@ func NewConfig(depInjectOptions DepinjectOptions) (network.Config, error) {
 	cfg.InterfaceRegistry = interfaceRegistry
 	cfg.GenesisState = appBuilder.DefaultGenesis()
 	cfg.AppConstructor = func(val network.ValidatorI) servertypes.Application {
+		// CometBFT v0.38 can read its stores from peer goroutines after Node.Stop
+		// closes them. Keep test stores in memory (Close is a no-op), like the app
+		// state below. The SDK opens CometBFT databases after this constructor.
+		val.GetCtx().Config.DBBackend = "memdb"
 		return NewSimApp(
 			log.NewNopLogger(),
 			dbm.NewMemDB(),
